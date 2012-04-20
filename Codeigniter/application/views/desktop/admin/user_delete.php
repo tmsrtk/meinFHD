@@ -16,6 +16,13 @@
 ?>
 
 <div class="row-fluid">
+	<?php echo form_open('', $data_formopen); ?>
+	<div class="span4"><h2>Benutzer löschen</h2></div>
+	<?php echo form_close(); ?>
+</div>
+<hr>
+
+<div class="row-fluid">
 	<table id="user_overview" class="table table-striped">
 		<thead>
 			<tr>

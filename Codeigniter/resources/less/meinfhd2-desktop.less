@@ -11,6 +11,10 @@
  * Tweaks/Anpassungen der Bootstrap Library/Framework für meinFHD2
  */
 
+body {
+
+}
+
 
 #studienplan {
 
@@ -61,7 +65,7 @@
 	// width: @stupla-modul_width;
 	height: @stupla-modul_height;
 
-	.buttonBackground(#AAA, #999);
+	.buttonBackground(#CCC, #BBB);
 
 	margin-top: 5px;
 	margin-bottom: 5px;
@@ -90,10 +94,14 @@
 		color: black;
 		line-height: 8px;
 		font-size: 8px;
+		// font-weight: 800;
 
 		width: 25px;
 		height: 10px;
-		padding: 0;
+		padding-top: 1px;
+		// padding-bottom: 2px;
+
+		.border-radius(2px);
 	}
 
 	// pruefen button
@@ -129,6 +137,15 @@
 			bottom: 3px;
 			left: 3px;
 		font-weight: bold;
+		font-size: 14px;
+	}
+
+	span.modulfach-lang {
+		position: absolute;
+			bottom: 0;
+			left: 5px;
+		font-weight: 300;
+		font-size: 10px;
 	}
 
 	input.modulnote {
@@ -181,9 +198,92 @@
 	.border-radius(4px);
 }
 
+// ---------------------------------------------------------
+
+form#studienplan-form {
+	
+	.table {
+		table-layout: fixed;
+
+		thead th {
+			vertical-align: top;
+
+			h4 {
+				border-bottom: 1px solid #DDD;
+			}
+		}
+	}
+}
+
+
+div#stundenplan {
+	
+	.table {
+		table-layout: fixed;
+
+		thead th {
+
+			h4 {
+				
+			}
+		}
+	}
+}
+
+
+.zero-sem-bg {
+	// background: red;
+	background: url(../img/zero-sem-bg.png) repeat;
+}
+
+
+
+.std-rel { position: relative; }
+.std-abs { position: absolute; }
+
+.std-col {
+	width: 18%;
+/* 		margin-right: 20px; */
+}
+
+.std-col-legend {
+	width: 10%;
+}
+
+.std-event {
+	// overflow: hidden;
+	// border: 1px #FAFAFA solid;
+	// color: #fff;
+
+	overflow: hidden;
+	color: #fff;
+	display: block;
+	
+	&:hover {
+		text-decoration: none;
+	}
+}
+
+.std-event-container {
+	padding: 4px;
+	word-break: break-word;
+}
+
+#stundenplan .table-condensed td.std-time-cell {
+	padding: 0;
+	background-image: url('../img/std-time-stripes-50.png');
+}
+
+
+
+
+
+
+
+
+
+
 // --------------------------------------------------------
-
-
 
 
 

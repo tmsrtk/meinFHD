@@ -2,42 +2,8 @@
 
 <?php startblock('title');?><?php get_extended_block();?> - Stundenplan - Woche<?php endblock(); ?>
 <?php startblock('content'); # content for this view ?>
-<style>
-	.std-rel { position: relative; }
-	.std-abs { position: absolute; }
-	
-	.std-col {
-		width: 18%;
-/* 		margin-right: 20px; */
-	}
-	
-	.std-col-legend {
-		width: 10%;
-	}
-	
-	.std-event {
-		overflow: hidden;
-		/*border: 1px #FAFAFA solid;*/
-		color: #fff;
-	}
-	
-	.std-event-container {
-		padding: 4px;
-		word-break: break-word;
-	}
-
-	#stundenplan .table-condensed td.std-time-cell {
-		padding: 0;
-		background-image: url('../resources/img/std-time-stripes-50.png');
-	}
-	
-</style>
-
-
 
 <?php $event_height = 50; ?>
-
-
 
 <?php # FB::log($stundenplan); ?>
 
@@ -109,7 +75,7 @@
 			}
 
 			echo '<li id="tt-tab-'.$r_id.'">';
-			echo '<a href="#'.$r_id.'-tt" data-toggle="tab">'.$role_name.'</a>';
+			echo '<a href="#tt-'.$r_id.'" data-toggle="tab">'.$role_name.'</a>';
 			echo '</li>';
 		}
 	?>
@@ -120,7 +86,7 @@
 		<?php 
 		// print div for each timetable
 		foreach($stundenplaene as $r_id => $content) : ?>
-		<div class="tab-pane" id="<?php echo "{$r_id}" ?>-tt">
+		<div class="tab-pane fade in " id="tt-<?php echo "{$r_id}" ?>">
 
 			<?php // print role-specific timetable ?>
 			
@@ -186,9 +152,22 @@
 													$css .= 'z-index:'			. (100 - $event['display_data']['column']);
 												?>
 												
-												<a href="<?php print base_url('modul/show/' . $event['KursID']); ?>" class="std-abs std-event <?php print $class; ?>" style="<?php print $css; ?>">
+												<?php 
+												$url = '';
+												if ( in_array(Roles::DOZENT, $this->user_model->get_all_roles()) && Roles::DOZENT == $r_id ||		// has to be extended for needed roles...
+														in_array(Roles::TUTOR, $this->user_model->get_all_roles()) && Roles::TUTOR == $r_id )
+												{
+													$url = 'kursverwaltung/call_coursemgt_from_view/'.$event['KursID']; // show_coursemgt
+													// log_message('error', $url);
+												}
+												else
+												{
+													$url = 'modul/show/' . $event['KursID'];
+												}
+												?>
+												<a href="<?php print base_url($url) ?>" class="std-abs std-event <?php print $class; ?>" style="<?php print $css; ?>">
 													<div class="std-event-container">
-														<h5><?php print $event['kurs_kurz']; ?> <?php print $event['VeranstaltungsformName']; ?></h5>
+														<h5><?php print $event['kurs_kurz'] ?> <?php print $event['VeranstaltungsformName'] ?><span> <?php ( ! empty($event['Raum'])) ? print '('.$event['Raum'].')' : '' ?></span></h5>
 														<p><?php print $event['VeranstaltungsformAlternative']; ?></p>
 													</div>
 												</a>
@@ -202,19 +181,6 @@
 					</table>
 				</div>
 			</div>
-			
-
-			<?php
-			// implementation-detail
-			// 
-			// if there are : 
-			// role-specific buttons or submit-forms can be build directly inside this loop
-			// otherwise (passed via controller) they got to be stuffed with 
-			// the right role-id to provide role-specific function
-			?>
-
-
-
 		</div>
 		<?php endforeach; ?>
 	</div>
@@ -230,7 +196,6 @@
 
 $(function() {
 	$('#tt-tab-navi a:last').tab('show');
-
 });
 
 <?php endblock(); ?>

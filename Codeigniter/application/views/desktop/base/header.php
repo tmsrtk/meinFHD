@@ -21,6 +21,7 @@
 		<link rel="stylesheet" type="text/css" href="<?php print base_url(); ?>resources/css/meinfhd.css">
 		<link rel="stylesheet" type="text/css" href="<?php print base_url(); ?>resources/css/meinfhd-responsive.css">
 		<link rel="stylesheet" type="text/css" href="<?php print base_url(); ?>resources/css/datepicker.css">
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800,300italic,400italic,600italic,700italic,800italic' rel='stylesheet' type='text/css'>
 <?php end_block_marker(); ?>
 		
 <?php start_block_marker('headerJS'); # additional js files ?>

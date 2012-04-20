@@ -53,6 +53,16 @@ class Adminhelper {
 	}
 
 	/**/
+	function get_formvalidation_title()
+	{
+		return array(
+			'field' => 'title',
+			'label' => 'Titel',
+			'rules' => 'alpha_dash_space|max_length[50]'
+			);
+	}
+
+	/**/
 	function get_formvalidation_forename()
 	{
 		return array(
@@ -81,6 +91,16 @@ class Adminhelper {
 			'field' => 'email',
 			'label' => 'E-Mail',
 			'rules' => 'required|valid_email|is_unique[benutzer.Email]'
+			);
+	}
+
+	/**/
+	function get_formvalidation_room()
+	{
+		return array(
+			'field' => 'room',
+			'label' => 'Raum',
+			'rules' => 'alpha_dash_space|max_length[50]'
 			);
 	}
 

@@ -187,8 +187,8 @@ class Stundenplan_Model extends CI_Model {
 		$query = $this->db->query("
 		SELECT 
 			sg.Kursname, sg.kurs_kurz,
-			v.VeranstaltungsformName, v.VeranstaltungsformID, sp.VeranstaltungsformAlternative,
-			sp.DozentID, sp.StartID, sp.EndeID, (sp.EndeID-sp.StartID)+1 AS 'Dauer', sp.GruppeID, sp.Farbe,
+			v.VeranstaltungsformName, v.VeranstaltungsformID, 
+			sp.VeranstaltungsformAlternative, sp.DozentID, sp.StartID, sp.EndeID, (sp.EndeID-sp.StartID)+1 AS 'Dauer', sp.GruppeID, sp.Farbe, sp.Raum,
 			d.Vorname AS 'DozentVorname', d.Nachname AS 'DozentNachname', d.Email AS 'DozentEmail',
 			t.TagName,t.TagID,
 			s_beginn.Beginn, s_ende.Ende,
@@ -403,8 +403,8 @@ class Stundenplan_Model extends CI_Model {
 
 			// Konstantin Voth
 			// if KursHoeren was deactivated in the "Studienplan" and course is a Vorlesung, do not show
-			if ($course["KursHoeren"] == 0 
-				&& $course['VeranstaltungsformID'] == 1)
+			if ($course["KursHoeren"] == 0 )
+				// && $course['VeranstaltungsformID'] == 1) // do not show any kind of events of this course // Dahms choise
 			{
 				$courses[$key]["Anzeigen"] = 0;
 			}

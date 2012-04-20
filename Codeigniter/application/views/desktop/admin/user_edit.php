@@ -3,6 +3,7 @@
 <?php startblock('title');?><?php get_extended_block();?> - Benutzer bearbeiten<?php endblock(); ?>
 
 <?php startblock('content'); # additional markup before content ?>
+
 <?php
 	// needet vars
 	$data_formopen = array('class' => 'form-search', 'id' => 'edit_user');
@@ -13,7 +14,8 @@
 	$data_role_ext = 'class="user_change_rolle_dd" id="user_cr_role"';
 
 	$searchbox_content = '';
-	(!empty($_POST['email']))?$searchbox_content=$_POST['email']:'';
+	#(!empty($_POST['email']))?$searchbox_content=$_POST['email']:'';				// FLASHDATA STUFF
+	$searchbox_content = $this->session->flashdata('searchbox');
 
 	$data_search = array(
 		'id' => 'user_cr_search',
