@@ -55,3 +55,6 @@ sftp-config.json
 # custom environmental files #
 ##############################
 Environment/
+
+# Eclipse-File
+*.project
