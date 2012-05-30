@@ -36,7 +36,7 @@
 						<ul class="nav">
 							<li class="active"><a href="index.html">Dashboard</a></li>
 							<li><a href="#">Studienplanung</a></li>
-							<li><a href="#">Persönlich Daten</a></li>
+							<li><a href="#">PersÃ¶nliche Daten</a></li>
 							<li><a href="#">Hilfe</a></li>
 							<li><a href="#">Impressum</a></li>
 							<!--LOGOUT-->
