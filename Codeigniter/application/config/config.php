@@ -357,6 +357,11 @@ $config['rewrite_short_tags'] = FALSE;
 */
 $config['proxy_ips'] = '';
 
+// please place a file within the Environment directory
+// called local_config.php to overwrite some of the settings above
+// for local development
+@include_once($_SERVER['DOCUMENT_ROOT'] . '/meinFHD/Environment/local_config.php');
+
 
 /* End of file config.php */
 /* Location: ./application/config/config.php */
