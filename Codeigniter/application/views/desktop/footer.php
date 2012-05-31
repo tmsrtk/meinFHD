@@ -5,7 +5,8 @@
 			head.js( <?php # $javascripFilesAlsArray ?>
 				{jquery: "../resources/jquery/jquery.min.js"},
 				{meinfhd: "../resources/js/meinfhd.js"},
-				{bootstrapAlert: "../resources/bootstrap/js/bootstrap-alert.js"}
+				{bootstrap_alert: "../resources/bootstrap/js/bootstrap-alert.js"},
+				{bootstrap_dropdown: "../resources/bootstrap/js/bootstrap-dropdown.js"}
 			);
 		</script>
 	</body> <!-- /body -->
