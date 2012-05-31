@@ -12,7 +12,7 @@
 					<hr />
 					<?php
 						$loginFormAttributes = array(
-							'class' 		=> ''
+							'class' 		=> 'login-form'
 						);
 						
 						// prepare attributes for username input field 
@@ -20,7 +20,7 @@
 							'name'			=> 'username',
 							'id'			=> 'username',
 							'placeholder'	=> 'Benutzername',
-							'class'			=> 'input-xlarge'
+							'class'			=> 'input-xxlarge'
 						);
 						
 						// prepare attributes for username input field 
@@ -28,7 +28,7 @@
 							'name'			=> 'password',
 							'id'			=> 'password',
 							'placeholder'	=> 'Passwort',
-							'class'			=> 'input-xlarge'
+							'class'			=> 'input-xxlarge'
 						);
 						
 						// prepare attributes for permanent login checkbox 
@@ -63,11 +63,33 @@
 									</div>
 								</div>
 							</div>
-							<hr />
-							<label class="checkbox">
-								<?php echo form_checkbox($permanentLoginAttributes); // render the permaLogin field ?>
-								Angemeldet bleiben
-							</label>
+							<div class="control-group">
+								<div class="controls">
+									<label class="checkbox">
+										<?php echo form_checkbox($permanentLoginAttributes); // render the permaLogin field ?>
+										Angemeldet bleiben
+									</label>
+								</div>
+							</div>
+							
+							<hr/>
+							<div class="control-group">
+								<div class="controls">
+									<div class="btn-group dropdown pull-left">
+										<button class="btn">Weitere Optionen</button>
+										<button class="btn dropdown-toggle" data-toggle="dropdown">
+											<span class="caret"></span>
+										</button>
+										<ul class="dropdown-menu">
+											<!--Modal trigger Zugang-->
+											<li><a  class="" data-toggle="modal" href="#accountdata">Zugang anfordern</a></li>
+											<!--Modal trigger pw-->
+											<li><a class="" data-toggle="modal" href="#accountdata">Passwort vergessen</a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+								
 							<?php echo form_button($submitButtonAttributes); // render the submit button ?>
 						<?php echo form_fieldset_close(); // close the fieldset ?>
 					<?php echo form_close(); // close the whole login form ?>
@@ -75,24 +97,8 @@
 			
 			</div><!-- /.span4-->
 			<div class="span4"></div>
-		</div><!--first row ends here-->
-		<div class="row-fluid">
-			<div class="span4"></div>
-			<!--DESKTOP AND TABLET ONLY-->
-			<div class="span4">
-				<div class="well well-small clearfix">
-					<!--Modal trigger Zugang-->
-					<a  class="btn pull-left" data-toggle="modal" href="#accountdata">neuer Zugang</a>
-				
-					<!--Modal trigger pw-->
-					<a class="btn pull-right" data-toggle="modal" href="#accountdata">Passwort vergessen</a>
-				</div>
-			
-			</div><!-- /.span4 -->
-			<div class="span4"></div>
-		</div>
-		
+		</div><!--first row ends here -->
 	</div>
-		<!-- CONTENT ENDE-->
+	<!-- CONTENT ENDE-->
 
 <?php include('footer.php'); ?>
