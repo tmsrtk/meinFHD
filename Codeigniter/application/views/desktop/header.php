@@ -12,8 +12,8 @@
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		
 		<!-- Styles -->
-		<link rel="stylesheet/less" type="text/css" href="../resources/bootstrap/less/bootstrap.less">
-		<link rel="stylesheet/less" type="text/css" href="../resources/bootstrap/less/responsive.less">
+	<!--	<link rel="stylesheet/less" type="text/css" href="../resources/bootstrap/less/bootstrap.less">
+		<link rel="stylesheet/less" type="text/css" href="../resources/bootstrap/less/responsive.less"> -->
 		<link rel="stylesheet/less" type="text/css" href="../resources/less/meinfhd.less">
 		<link rel="stylesheet/less" type="text/css" href="../resources/less/meinfhd-responsive.less">
 		
@@ -36,7 +36,7 @@
 						<ul class="nav">
 							<li class="active"><a href="index.html">Dashboard</a></li>
 							<li><a href="#">Studienplanung</a></li>
-							<li><a href="#">Persönlich Daten</a></li>
+							<li><a href="#">PersÃ¶nliche Daten</a></li>
 							<li><a href="#">Hilfe</a></li>
 							<li><a href="#">Impressum</a></li>
 							<!--LOGOUT-->

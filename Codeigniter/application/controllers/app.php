@@ -36,14 +36,14 @@ class App extends FHD_Controller {
 	public function login()
 	{
 		// read the post parameters
-		$name = $this->input->post('name');
-		$pass = $this->input->post('pass');
+		$username = $this->input->post('username');
+		$password = $this->input->post('password');
 		
 		// if we have a value
-		if ($name || $pass)
+		if ($username || $password)
 		{
 			// call the login funtion from the authentication class
-			if ($this->authentication->login($name, $pass))
+			if ($this->authentication->login($username, $password))
 			{
 				// user is logged in -> set message and redirect to frontpage
 				$this->message->set(sprintf('Eingeloggt! (ID: %s)', $this->authentication->user_id()));

@@ -1,0 +1,31 @@
+// PORTRAIT TABLET TO DEFAULT DESKTOP
+// ----------------------------------
+
+@media (min-width: 768px) and (max-width: 979px) {
+
+  // Fixed grid
+  #grid > .core(42px, 20px);
+
+  // Fluid grid
+  #grid > .fluid(5.801104972%, 2.762430939%);
+
+  // Input grid
+  #grid > .input(42px, 20px);
+
+  // No need to reset .thumbnails here since it's the same @gridGutterWidth
+
+  // But don't let it screw up prepend/append inputs
+  .input-prepend input,
+  .input-append input,
+  .input-prepend input[class*="span"],
+  .input-append input[class*="span"] {
+    display: inline-block; // redeclare so they don't wrap to new lines
+  }
+	// input sizes for fluid layouts
+	.row-fluid .input-mini		{ width: 17%; }
+	.row-fluid .input-small		{ width: 27%; }
+	.row-fluid .input-medium	{ width: 42%; }
+	.row-fluid .input-large		{ width: 62%; }
+	.row-fluid .input-xlarge	{ width: 72%; }
+	.row-fluid .input-xxlarge	{ width: 82%; }
+}
