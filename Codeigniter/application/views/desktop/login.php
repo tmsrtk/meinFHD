@@ -1,45 +1,85 @@
 <?php include('header.php'); ?>
+
 <!-- CONTENT -->
-		<!-- CONTENT -->
-	<div class="container container-fluid">
-		<div class="row">
-			<div class="span8">
+	<div class="container container-fluid app-login">
+		<div class="row-fluid">
+			<div class="span4">
+				
+			</div>
+			<div class="span4">
 				<div class="well well-small clearfix">
-					<!--Titel-->
-					<h1 class="maintitle">meinFHD<span>mobile</span></h1>
+					<h1 class="maintitle">Login</h1>
 					<hr />
-					
-					<!--Loginform-->
-					<?php print form_open('app/login', array('class' => 'form-inline' )); // create the login form ?>
-				<!--	<form class="form-inline"> -->
+					<?php
+						$loginFormAttributes = array(
+							'class' 		=> ''
+						);
 						
-						<input name="user" type="text" class="span2" placeholder="Benutzername" /><br />
-					
-						<input name="pw" type="password" class="span2" placeholder="Passwort" /><br />
-						<hr class="hidden-phone" />
+						// prepare attributes for username input field 
+						$usernameInputAttributes = array(
+							'name'			=> 'username',
+							'id'			=> 'username',
+							'placeholder'	=> 'Benutzername',
+							'class'			=> 'input-xlarge'
+						);
 						
-						<div class="well well-small clearfix">	
-							
-							<!--stay logged in-->
+						// prepare attributes for username input field 
+						$passwordInputAttributes = array(
+							'name'			=> 'password',
+							'id'			=> 'password',
+							'placeholder'	=> 'Passwort',
+							'class'			=> 'input-xlarge'
+						);
+						
+						// prepare attributes for permanent login checkbox 
+						$permanentLoginAttributes = array(
+							'name'			=> 'permanentLogin',
+							'id'			=> 'permanentLogin',
+							'class'			=> ''
+						);
+						
+						// prepare attributes for submit button 
+						$submitButtonAttributes = array(
+							'name'			=> 'submit',
+							'type'			=> 'submit',
+							'id'			=> 'submitLoginForm',
+							'content'			=> 'Anmelden',
+							'class'			=> 'btn btn-primary pull-right'
+						);
+					?>
+					<?php echo form_open('app/login', $loginFormAttributes ); // create opening tag of login form ?>
+						<?php echo form_fieldset(); // wrap elements ina a fieldset due to semantics ?>
+							<div class="control-group">
+								<div class="controls">
+									<div class="input-prepend">
+										<span class="add-on"><i class="icon-user"></i></span><?php echo form_input($usernameInputAttributes); // render the username field ?>
+									</div>
+								</div>
+							</div>
+							<div class="control-group">
+								<div class="controls">
+									<div class="input-prepend">
+										<span class="add-on"><i class="icon-lock"></i></span><?php echo form_password($passwordInputAttributes); // render the password field ?>
+									</div>
+								</div>
+							</div>
+							<hr />
 							<label class="checkbox">
-								<input name="staylogged" type="checkbox" />
-								&nbsp;eingeloggt bleiben
+								<?php echo form_checkbox($permanentLoginAttributes); // render the permaLogin field ?>
+								Angemeldet bleiben
 							</label>
-							
-							<!--Login btn-->
-							<a href="dashboard" class="btn btn-inverse pull-right">
-								<i class="icon-arrow-right icon-white"></i>
-								 anmelden
-							</a>
-						</div>
-					</form>
+							<?php echo form_button($submitButtonAttributes); // render the submit button ?>
+						<?php echo form_fieldset_close(); // close the fieldset ?>
+					<?php echo form_close(); // close the whole login form ?>
 				</div>
 			
-			</div><!-- /.span8-->
-			
+			</div><!-- /.span4-->
+			<div class="span4"></div>
+		</div><!--first row ends here-->
+		<div class="row-fluid">
+			<div class="span4"></div>
 			<!--DESKTOP AND TABLET ONLY-->
 			<div class="span4">
-			
 				<div class="well well-small clearfix">
 					<!--Modal trigger Zugang-->
 					<a  class="btn pull-left" data-toggle="modal" href="#accountdata">neuer Zugang</a>
@@ -48,18 +88,11 @@
 					<a class="btn pull-right" data-toggle="modal" href="#accountdata">Passwort vergessen</a>
 				</div>
 			
-			</div><!-- /.span4 -->						
-			
-		</div><!--first row ends here-->
+			</div><!-- /.span4 -->
+			<div class="span4"></div>
+		</div>
+		
 	</div>
 		<!-- CONTENT ENDE-->
-<?php
-	// create the login form
-	print form_open('app/login');
-	print form_input('name');
-	print form_password('pass');
-	print form_submit('button', 'Anmelden');
-	print form_close();
-?>
 
 <?php include('footer.php'); ?>
