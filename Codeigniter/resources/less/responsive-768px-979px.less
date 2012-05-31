@@ -14,4 +14,12 @@
 
   // No need to reset .thumbnails here since it's the same @gridGutterWidth
 
+  // But don't let it screw up prepend/append inputs
+  .input-prepend input,
+  .input-append input,
+  .input-prepend input[class*="span"],
+  .input-append input[class*="span"] {
+    display: inline-block; // redeclare so they don't wrap to new lines
+  }
+
 }

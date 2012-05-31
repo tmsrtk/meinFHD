@@ -1,6 +1,16 @@
 // LARGE DESKTOP & UP
 // ------------------
 
+@media (min-width: 980px) {	
+	// Don't let it screw up prepend/append inputs
+	.input-prepend input,
+	.input-append input,
+	.input-prepend input[class*="span"],
+	.input-append input[class*="span"] {
+		display: inline-block; // redeclare so they don't wrap to new lines
+	}
+}
+
 @media (min-width: 1200px) {
 
   // Fixed grid
@@ -22,5 +32,4 @@
   .row-fluid .thumbnails {
     margin-left: 0;
   }
-
 }
