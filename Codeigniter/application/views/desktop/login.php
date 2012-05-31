@@ -20,7 +20,7 @@
 							'name'			=> 'username',
 							'id'			=> 'username',
 							'placeholder'	=> 'Benutzername',
-							'class'			=> 'input-xlarge'
+							'class'			=> 'input-xxlarge'
 						);
 						
 						// prepare attributes for username input field 
@@ -28,7 +28,7 @@
 							'name'			=> 'password',
 							'id'			=> 'password',
 							'placeholder'	=> 'Passwort',
-							'class'			=> 'input-xlarge'
+							'class'			=> 'input-xxlarge'
 						);
 						
 						// prepare attributes for permanent login checkbox 
@@ -63,11 +63,17 @@
 									</div>
 								</div>
 							</div>
+							<div class="control-group">
+								<div class="controls">
+									<label class="checkbox">
+										<?php echo form_checkbox($permanentLoginAttributes); // render the permaLogin field ?>
+										Angemeldet bleiben
+									</label>
+								</div>
+							</div>
+							
 							<hr />
-							<label class="checkbox">
-								<?php echo form_checkbox($permanentLoginAttributes); // render the permaLogin field ?>
-								Angemeldet bleiben
-							</label>
+							
 							<?php echo form_button($submitButtonAttributes); // render the submit button ?>
 						<?php echo form_fieldset_close(); // close the fieldset ?>
 					<?php echo form_close(); // close the whole login form ?>

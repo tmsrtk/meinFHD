@@ -2,6 +2,10 @@
 // ------------------
 
 @media (min-width: 980px) {	
+	.app-login {
+		margin-top: 80px;
+	}
+	
 	// Don't let it screw up prepend/append inputs
 	.input-prepend input,
 	.input-append input,
@@ -9,6 +13,14 @@
 	.input-append input[class*="span"] {
 		display: inline-block; // redeclare so they don't wrap to new lines
 	}
+	
+	// input sizes for fluid layouts
+	.row-fluid .input-mini		{ width: 22%; }
+	.row-fluid .input-small		{ width: 32%; }
+	.row-fluid .input-medium	{ width: 47%; }
+	.row-fluid .input-large		{ width: 67%; }
+	.row-fluid .input-xlarge	{ width: 77%; }
+	.row-fluid .input-xxlarge	{ width: 87%; }
 }
 
 @media (min-width: 1200px) {

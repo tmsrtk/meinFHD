@@ -241,14 +241,6 @@ select:focus {
 .input-xlarge     { width: 270px; }
 .input-xxlarge    { width: 530px; }
 
-// input sizes for fluid layouts
-.row-fluid .input-mini		{ width: 25%; }
-.row-fluid .input-small		{ width: 35%; }
-.row-fluid .input-medium	{ width: 50%; }
-.row-fluid .input-large		{ width: 70%; }
-.row-fluid .input-xlarge	{ width: 80%; }
-.row-fluid .input-xxlarge	{ width: 90%; }
-
 // Grid style input sizes
 input[class*="span"],
 select[class*="span"],
@@ -587,4 +579,24 @@ legend + .control-group {
   .form-actions {
     padding-left: 160px;
   }
+}
+
+// bootstrap adjustmends for meinFHD
+//------------------------------------
+
+// input sizes for fluid layouts
+.row-fluid .input-mini		{ width: 24%; }
+.row-fluid .input-small		{ width: 34%; }
+.row-fluid .input-medium	{ width: 49%; }
+.row-fluid .input-large		{ width: 69%; }
+.row-fluid .input-xlarge	{ width: 79%; }
+.row-fluid .input-xxlarge	{ width: 89%; }
+
+// buttongroup
+
+.input-prepend,
+.input-append {
+	.add-on {
+		min-width: 5%;
+	}
 }
