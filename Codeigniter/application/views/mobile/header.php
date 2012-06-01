@@ -18,7 +18,7 @@
 		<link rel="stylesheet/less" type="text/css" href="../resources/less/meinfhd-responsive.less">
 		
 		<!--LESS compiler-->
-		<script src="../resources/lessjs/dist/less-1.3.0.min.js" type="text/javascript"></script>
+		<script src="../resources/lessjs/less-1.3.0.min.js" type="text/javascript"></script>
 	</head> <!-- /head -->
 	<body>
 		<?php print $messages; ?>
