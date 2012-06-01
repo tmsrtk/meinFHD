@@ -58,3 +58,6 @@ Environment/
 
 # Eclipse-File
 *.project
+
+# netbeans ide project files
+/nbproject/
