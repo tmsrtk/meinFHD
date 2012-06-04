@@ -21,12 +21,8 @@ class Studienplan extends FHD_Controller
     public function index()
     {
         // load model
-        $this->load->model('studienplan');
-        $plan = $this->studienplan->queryStudyplan();
-
-        // create new Studyplan-Object
-        //$Studyplan = new Studienplan();
-        //$plan = $Studyplan->queryStudyplan();
+        $this->load->model('Studienplan_Model');
+        $plan = $this->Studienplan_Model->queryStudyplan();
         
         // add the resultset/array to the data-object
         $this->data->add('studienplan', $plan);
