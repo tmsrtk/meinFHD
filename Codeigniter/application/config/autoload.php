@@ -52,7 +52,7 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = array('krumo', 'user_agent', 'detection', 'database', 'session', 'data', 'message', 'authentication');
+$autoload['libraries'] = array('krumo', 'user_agent', 'detection', 'database', 'session', 'data', 'global_data', 'message', 'authentication');
 
 
 /*
