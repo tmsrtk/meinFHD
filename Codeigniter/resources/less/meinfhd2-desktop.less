@@ -1,0 +1,99 @@
+/*
+ * meinFHD 2.0
+ * http://www..de/
+ *
+ * Konstantin Voth
+ * Copyright 2012
+ *
+ */
+
+/* 
+ * CSS Style
+ * Tweaks/Anpassungen der Bootstrap Library/Framework
+ */
+
+@semestermodul_breite: 110px;
+@semestermodul_hoehe: 40px;
+
+.semestermodul {
+	span {
+		display: block;
+		text-align: left;
+	}
+
+	span.modulfach {
+		font-weight: bold;
+	}
+
+	span.modulfachnote {
+		display: inline;
+		float: left;
+	}
+
+	width: @semestermodul_breite;
+	height: @semestermodul_hoehe;
+
+	margin-bottom: 5px;
+}
+
+input#modulnote {
+	width: 20px;
+	float: right;
+}
+
+.highlight {
+	border: 3px solid red;
+}
+
+.semesterplanspalte {
+	width: @semestermodul_breite + 40;
+	float: left;
+	padding-bottom: 40px;
+}
+
+.semester_ueberschrift {
+	display: block;
+}
+
+form#create_user input {
+	display: block;
+}
+
+#user_cr_search {
+	float: right;
+}
+
+div#menuefooter {
+	background-color: black;
+	color: white;
+
+	width: 940px;
+	position: fixed;
+	bottom: 0;
+	z-index: 9999;
+
+	#menuefooter_button {
+		width: 940px;
+		padding-top: 10px;
+		height: 25px;
+		cursor: pointer;
+
+		#toggle_button {
+			background-color: red;
+			float: left;
+			width: 70px;
+			height: 50px;
+			margin-left: 30px;
+		}
+
+		.up {
+			margin-top: -30px;
+			padding-top: 10px;
+		}
+	}
+
+	#menuefooter_content {
+		display: none;
+		padding: 50px;
+	}
+}
