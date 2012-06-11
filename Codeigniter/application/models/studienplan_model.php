@@ -122,6 +122,7 @@ class Studienplan_Model extends CI_Model
     }
 
 
+    // TODO: ID mit einbinden, am besten Kurs-ID damit der Wert in die View eingebunden werden kann
     /**
      * Queries the Db for the Studyplan of the user
      * @return Array
@@ -688,8 +689,7 @@ class Studienplan_Model extends CI_Model
     
     
     
-    // ERROR: Datensatz kann nicht eingefügt werden, da Tabelle dann doppelten 
-    // Datensatz besitzt. Deswegen muss eine eindeutige ID mit vergeben werden
+    // TODO: Tabelle bleibt wie bisher bestehen.
     /**
      * Duplicate a module if it's not passed
      * @param int $moduleId 
