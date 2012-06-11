@@ -18,7 +18,6 @@ class Stundenplan extends FHD_Controller {
      * 
      * @var Array
      */
-    private $data;
     
 	
 	
@@ -32,7 +31,7 @@ class Stundenplan extends FHD_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->data['titel'] = "Stundenplan";
+		$this->data->add('titel', "Stundenplan");
 		$this->load->model('Stundenplan_Model');
 	}
 
@@ -50,13 +49,13 @@ class Stundenplan extends FHD_Controller {
 	{
 		$stundenplan = $this->Stundenplan_Model->get_stundenplan(1384);
 
-		$this->data['tage'] = $stundenplan[0];
-		$this->data['zeiten'] = $stundenplan[1];
-		$this->data['stundenplan'] = $stundenplan[2];
-		$this->data['aktivekurse'] = $stundenplan[3]; //Debug
+		$this->data->add('tage', $stundenplan[0]);
+		$this->data->add('zeiten', $stundenplan[1]);
+		$this->data->add('stundenplan', $stundenplan[2]);
+		$this->data->add('aktivekurse', $stundenplan[3]); //Debug
 
 		//$this->krumo->dump($this->data);
-		$this->load->view('Stundenplan_View', $this->data);
+		$this->load->view('Stundenplan', $this->data->load());
 	}
 
 }
