@@ -34,10 +34,8 @@ class Stundenplan extends FHD_Controller {
 		$this->data->add('titel', "Stundenplan");
 		$this->load->model('Stundenplan_Model');
 	}
-
-/**
- * 
- */	
+	
+	
     /**
      * Index-method, loads for testing purposes the Stundenplan_view
      * 

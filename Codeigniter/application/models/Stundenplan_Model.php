@@ -24,9 +24,9 @@ class Stundenplan_Model extends CI_Model {
 	/**
 	 * getSemesterTyp()													
 	 *																		
-	 * Gibt den aktuellen Semestertyp zurück. (Übernommen von Herr Sauer)								
+	 * wirtten by Jochen Sauer, inherited function								
 	 *																		
-	 * @return Aktueller Semestertyp als String.						
+	 * @return Actual Typ of Semester (Winter or Summer)						
 	 */
 	function getSemesterTyp() 
 	{		
@@ -36,15 +36,17 @@ class Stundenplan_Model extends CI_Model {
 	 
 	/**
 	 *	printSemesterInteger()												
-	 *																		
+	 *							
+	 *  wirtten by Jochen Sauer, inherited function	
+	 *											
 	 *	Gibt anhand der übergebenen persönlichen Daten das aktuelle 		
 	 *	Semester des Studenten zurück.										
 	 *																		
-	 *	@param	$semestertyp	zweistelliger String des Semestertyps 		
-	 *							(WS oder SS) des Startjahres.				
-	 *	@param	$studienbehinn	vierstellige Jahreszahl des Studienbeginns.	
+	 *	@param	$semestertyp	 (WS or SS)	
+	 *											
+	 *	@param	$studienbeginn	Four-digit-number, year the study started	
 	 *																		
-	 *	@return	$semester 		Aktuelles Semester als String.				
+	 *	@return	$semester 		Actual Semester as String.				
 	 */
 	function getSemester( $semestertyp, $studienbeginn ) 
 	{
@@ -66,13 +68,21 @@ class Stundenplan_Model extends CI_Model {
 	}	
 
 
-	//Constructs and returns an empty array which will contain the times
-	private function create_zeiten_array()
-	{
-		$query_zeiten = $this->db->query("SELECT Beginn FROM Stunde");
-		$zeiten = $query_zeiten->result_array();
 
-		return $zeiten;
+	/**
+	 * Function create_times_array
+	 *
+	 * Constructs and returns an empty array which will contain the times, can be returned
+	 *
+	 * @param type name // nicht vorhanden
+	 * @return array // structure of times_table
+	 */	
+	private function create_times_array()
+	{
+		$query_times = $this->db->query("SELECT Beginn FROM Stunde");
+		$times = $query_times->result_array();
+
+		return $times;
 	}
 
 	//Constructs and returns an empty array which will contain the days
@@ -162,7 +172,7 @@ class Stundenplan_Model extends CI_Model {
 
 		$tage = $this->create_tage_array();
 
-		$zeiten = $this->create_zeiten_array();
+		$times = $this->create_times_array();
 		
 		$courses = $this->get_courses($id);
 
@@ -190,7 +200,7 @@ class Stundenplan_Model extends CI_Model {
 
 		array_push($return, $tage);
 
-		array_push($return, $zeiten);
+		array_push($return, $times);
 
 		array_push($return, $stundenplan);
 
