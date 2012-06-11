@@ -688,16 +688,45 @@ class Studienplan_Model extends CI_Model
     
     
     
-    // Modul duplizieren, nachdem man durchgefallen ist + Versuch erhöhen
+    // ERROR: Datensatz kann nicht eingefügt werden, da Tabelle dann doppelten 
+    // Datensatz besitzt. Deswegen muss eine eindeutige ID mit vergeben werden
     /**
      * Duplicate a module if it's not passed
-     * @param int $id 
+     * @param int $moduleId 
      */
-    public function duplicateModule($id)
+    public function duplicateModule($moduleId)
     {
         try 
         {
-            $modules = $this->queryAllModules();
+            $this->db->select('*');
+            $this->db->from('semesterkurs');
+            $this->db->where('SemesterplanID', $this->studyplanID);
+            $this->db->where('KursID', $moduleId);
+            $this->db->order_by('VersucheBislang');
+            $module = $this->db->get();
+            
+            foreach($module->result() as $mod)
+            {
+                if($mod->VersucheBislang <= 3)
+                {
+                    $data = array(
+                        'SemesterplanID'    => $mod->SemesterplanID,
+                        'KursID'            => $mod->KursID,
+                        'Semester'          => $mod->Semester,
+                        'KursHoeren'        => $mod->KursHoeren,
+                        'KursSchreiben'     => $mod->KursSchreiben,
+                        'PruefungsstatusID' => $mod->PruefungsstatusID,
+                        'VersucheBislang'   => $mod->VersucheBislang + 1,
+                        'Notenpunkte'       => $mod->Notenpunkte
+                    );
+                }
+                else
+                {
+                    echo 'Du kannst diese Prüfung nicht mehr wiederholen';
+                }
+            }
+            
+            $this->db->insert('semesterkurs', $data);
         }
         catch(Exception $e)
         {
@@ -706,10 +735,20 @@ class Studienplan_Model extends CI_Model
     }
     
     
+    // Änderungen abspeichern
+    // TODO: Spezifizieren, wie das Array aufgebaut werden soll
+    /**
+     * Saves all made changes
+     * @param Array $dataarray  Array with changed Module-ID's
+     */
+    public function save($dataarray)
+    {
+        
+    }
+    
+    
     // Infos über das Modul. Was wird hier benötigt?
     public function moduleInfo(){}
-    // Änderungen abspeichern
-    public function save(){}
 
 
     

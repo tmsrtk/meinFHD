@@ -32,6 +32,7 @@ class Studienplan extends FHD_Controller
         //$this->Studienplan_Model->acceptMarks(342);
         //$this->Studienplan_Model->reset();
         //var_dump($this->Studienplan_Model->calculateSwsAndCp());
+        $this->Studienplan_Model->duplicateModule(635);
         
         // add the resultset/array to the data-object
         $this->data->add('studienplan', $plan);
