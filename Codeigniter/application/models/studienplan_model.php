@@ -39,6 +39,8 @@ class Studienplan_Model extends CI_Model
 
     /**
      * Constructs the Studienplan-Object 
+     * 
+     * method -> checked
      */
     public function __construct()
     {
@@ -53,13 +55,15 @@ class Studienplan_Model extends CI_Model
     /**
      * Queries the DB for the Studycourse-ID (Studiengang-ID)
      * @return int 
+     * 
+     * method -> checked
      */
     public function queryStudycourseId()
     {
        $id = 0;
         
        try
-        {
+       {
             $this->db->select('StudiengangID');
             $this->db->from('benutzer');
             $this->db->where('BenutzerID', $this->userID);
@@ -86,6 +90,8 @@ class Studienplan_Model extends CI_Model
     /**
      * Queries the DB for the Studyplan-ID (Semesterplan-ID)
      * @return int 
+     * 
+     * method -> checked
      */
     public function queryStudyplanId()
     {
@@ -118,7 +124,9 @@ class Studienplan_Model extends CI_Model
 
     /**
      * Queries the Db for the Studyplan of the user
-     * @return Array 
+     * @return Array
+     * 
+     * method -> checked
      */
     public function queryStudyplan()
     { 
@@ -127,13 +135,14 @@ class Studienplan_Model extends CI_Model
         {
             // query DB
             $this->db->select('studiengangkurs.Semester, 
-                                studiengangkurs.Kursname, 
+                                studiengangkurs.Kursname,
+                                studiengangkurs.kurs_kurz,
                                 semesterkurs.KursHoeren, 
                                 semesterkurs.KursSchreiben, 
                                 semesterkurs.Notenpunkte');
             $this->db->from('studiengangkurs');
             $this->db->join('semesterkurs', 'semesterkurs.KursID = studiengangkurs.KursID');
-            $this->db->where('SemesterplanID', $this->studyplanID);
+            $this->db->where('semesterkurs.SemesterplanID', $this->studyplanID);
             $this->db->order_by('studiengangkurs.Semester', 'ASC');
             $studyplan = $this->db->get();
 
@@ -142,26 +151,26 @@ class Studienplan_Model extends CI_Model
             $data['plan'][0][] = array(
                 'Semester'      => 0,
                 'Kursname'      => '',
+                'Kurzname'      => '',
                 'Hoeren'        => '',
                 'Schreiben'     => '',
                 'Notenpunkte'   => ''
             );
             
             
-            // group the resultset by semester in an array
+            // group the resultset by semester in array
             foreach($studyplan->result() as $sq)
             {
-                // if semester equals count, add it to the array on position count
-                // TODO: Flag für aktuelles Semester eintragen
                 $data['plan'][$sq->Semester][] = array(
                     'Semester'      => $sq->Semester,
                     'Kursname'      => $sq->Kursname,
+                    'Kurzname'      => $sq->kurs_kurz,
                     'Hoeren'        => $sq->KursHoeren,
                     'Schreiben'     => $sq->KursSchreiben,
                     'Notenpunkte'   => $sq->Notenpunkte
                 );
             }
-            
+
             return $data;
         }
         // catch all exceptions and echo the Exception-message
@@ -170,133 +179,67 @@ class Studienplan_Model extends CI_Model
             echo 'Exception: ', $e->getMessage();
         }
     }
-    
-    
-    
-    
-    /**
-     * Creates an object with the course of study data
-     */
-    /*public function createCourseOfStudy()
-    {
-        try
-        {
-            // query database for Studiengang
-            $course_of_study_query = $this->db->query("SELECT * 
-                                                        FROM studiengang 
-                                                        WHERE StudiengangID = ".$this->studycourseID);
-
-            // fetch result
-            $this->courseOfStudy = $course_of_study_query->result();
-        }
-        catch(Exception $e)
-        {
-            echo 'Exception: ', $e->getMessage();
-        }
-        
-    }*/
 
 
     
     /**
      * Creates a new Studyplan if it not already exists
+     * 
+     * method -> checked
      */
     public function createStudyplan()
     {
         try
         {
-            // Query the Semesterplan of an user
-            /*$semesterplan_query = $this->db->query("SELECT *
-                                                    FROM semesterplan
-                                                    WHERE BenutzerID = ".$this->userID);*/
-            // $semesterplan_result = $semesterplan_query->result();
-            
-            $this->db->select('*');
-            $this->db->from('semesterplan');
-            $this->db->where('BenutzerID', $this->userID);
-            
-            $semesterplan_query = $this->db->get();
-
-
-            // if query has no result (wenn studiengang und startsemester bereits ausgewählt wurden) create a new Semesterplan
-            if($semesterplan_query == null)
+            if($this->studyplanID == 0)
             {
-                // query DB for the Regelsemester
-                /*$regelsemester_query = $this->db->query("SELECT Regelsemester
-                                                        FROM studiengang
-                                                        WHERE StudiengangID = ".$this->studycourseID."");*/
-                //$regelsemester_result = $regelsemester_query->result();
-                
                 $this->db->select('Regelsemester');
                 $this->db->from('studiengang');
                 $this->db->where('StudiengangID', $this->studycourseID);
-                
                 $regelsemester_result = $this->db->get();
                 
                 
-                // insert new Semesterplan in database
-                /*$insert_query = $this->db->query("
-                    INSERT INTO semesterplan (
-                        BenutzerID, 
-                        Semesteranzahl) 
-                    VALUES (".
-                        $this->userID.", ".
-                        $regelsemester_result.")"
-                );
-                $insert_query->result();*/
-                
-                $dataarray = array(
-                    'BenutzerID'    => $this->userID,
-                    'Semesteranzahl'=> $regelsemester_result
-                );
-                
-                $this->db->insert('semesterplan', $dataarray);
-                unset($dataarray);
-
-
-                // query database for KursID & Semester of the user
-                /*$kurs_semester_query = $this->db->query("SELECT KursID, Semester 
-                                                            FROM studiengangkurs 
-                                                            WHERE StudiengangID = ".$this->studycourseID);
-                $kurs_semester_result = $kurs_semester_query->result();*/
-                
-                $this->db->select('KursID', 'Semester');
-                $this->db->from('studiengangkurs');
-                $this->db->where('StudiengangID', $this->studycourseID);
-                $kurs_semester_result = $this->db->get();
-
-                // insert in semesterkurs all data from the query above
-                foreach($kurs_semester_result as $kurs_semester)
+                foreach($regelsemester_result->result() as $regel)
                 {
-                    /*$insert_query = $this->db->query("
-                        INSERT INTO semesterkurs (
-                            SemesterplanID, 
-                            KursID, 
-                            Semester) 
-                        VALUES (".
-                            $this->studyplanID.", ".
-                            $kurs_semester->KursID.", ".
-                            $kurs_semester->Semester.")"
-                    );
-                    $insert_query->result();*/
-                    
                     $dataarray = array(
-                        'SemesterplanID'=> $this->studyplanID,
-                        'KursID'        => $kurs_semester->KursID,
-                        'Semester'      => $kurs_semester->Semester
+                        'BenutzerID'    => $this->userID,
+                        'Semesteranzahl'=> $regel->Regelsemester
                     );
-                
-                    $this->db->insert('semesterkurs', $dataarray);
-                }
-                unset($dataarray);
 
-                // Eexecute the createTimetablCourses method
+                    $this->db->insert('semesterplan', $dataarray);
+                    
+                    // query studycourseID
+                    $this->studyplanID = $this->queryStudyplanId();
+                    
+                    
+                    $this->db->select('KursID, Semester');
+                    $this->db->from('studiengangkurs');
+                    $this->db->where('StudiengangID', $this->studycourseID);
+                    $kurs_semester = $this->db->get();
+                    
+                    foreach($kurs_semester->result() as $ks)
+                    {
+                        $dataarray = array(
+                            'SemesterplanID'    => $this->studyplanID,
+                            'KursID'            => $ks->KursID,
+                            'Semester'          => $ks->Semester,
+                            'KursHoeren'        => 1,
+                            'KursSchreiben'     => 1,
+                            'PruefungsstatusID' => 1,
+                            'VersucheBislang'   => 0,
+                            'Notenpunkte'       => 101
+                        );
+                        
+                        $this->db->insert('semesterkurs', $dataarray);
+                    }
+                }
+                
+                // Eexecute  createTimetableCourses method
                 $this->createTimetableCourses();
             }
-            // if query has no result
             else
             {
-                // TODO: NACHRICHT AUSGEBEN, BESPRECHEN WIE DAS GEMACHT WIRD
+                echo 'Studienplan existiert bereits';
             }
         }
         catch(Exception $e)
@@ -310,27 +253,14 @@ class Studienplan_Model extends CI_Model
     
     /**
      * Creates the Courses of the timetable 
+     * 
+     * method -> checked
      */
     public function createTimetableCourses()
     {
         try
         {
-            // query the database for courses of the timetable
-            /*$timetable_query = $this->db->query("
-                SELECT a.*, b.Semester
-                FROM stundenplankurs AS a
-                INNER JOIN kursreferenz AS c
-                ON c.ReferenzKursID = a.KursID
-                INNER JOIN semesterkurs AS b
-                ON b.KursID = c.KursID
-                INNER JOIN semesterplan AS d
-                ON d.SemesterplanID = b.SemesterplanID
-                WHERE d.BenutzerID = ".$this->userID."
-                AND d.SemesterplanID = ".$this->studyplanID."");
-
-            $timetable_result = $timetable_query->result();*/
-            
-            $this->db->select('stundenplankurs.*', 'semesterkurs.Semester');
+            $this->db->select('stundenplankurs.*, semesterkurs.Semester');
             $this->db->from('stundenplankurs');
             $this->db->join('kursreferenz', 'kursreferenz.ReferenzKursID = stundenplankurs.KursID');
             $this->db->join('semesterkurs', 'semesterkurs.KursID = kursreferenz.KursID');
@@ -340,26 +270,8 @@ class Studienplan_Model extends CI_Model
             $timetable_result = $this->db->get();
             
             // insert in benutzerkurs all data from the query above
-            foreach($timetable_result as $time)
+            foreach($timetable_result->result() as $time)
             {
-                /*$this->db->query("
-                    INSERT INTO benutzerkurs (
-                        BenutzerID, 
-                        KursID, 
-                        SPKursID, 
-                        SemesterID, 
-                        aktiv, 
-                        changed_at, 
-                        edited_by)
-                    VALUES (".
-                        $this->userID.", ".
-                        $time->KursID.", ".
-                        $time->SPKursID.", ".
-                        $time->Semester.", ".
-                        (($time->VeranstaltungsformID == 1 || $time->VeranstaltungsformID == 6) ? '1' : '0').", 
-                        'studienplan_semesterplan: create benutzerkurs', ".
-                        $_SESSION['userid']);*/
-                
                 $dataarray = array(
                     'BenutzerID'    => $this->userID,
                     'KursID'        => $time->KursID,
@@ -370,12 +282,10 @@ class Studienplan_Model extends CI_Model
                     'edited_by'     => $this->userID
                 );
 
-                $this->db->insert('benutzerkurs', $dataarray);
-                unset($dataarray);
-                
+                $this->db->insert('benutzerkurs', $dataarray); 
             }
 
-            // TODO: NACHRICHT AUSGEBEN, BESPRECHEN WIE DAS GEMACHT WIRD
+            echo 'Stundenplan erfolgreich erstellt';
         }
         catch(Exception $e)
         {
@@ -386,32 +296,59 @@ class Studienplan_Model extends CI_Model
     
     
     /**
-     * Adds a new coloumn
-     * raises the coloumn Semesteranzahl
+     * Adds a new coloumn (raises the coloumn Semesteranzahl)
+     * 
+     * method -> checked
      */
     public function createNewSemesterColoumn()
     {
         try
         {
-            /*$getSemestercount = $this->db_query("SELECT Semesteranzahl 
-                                                FROM semesterplan 
-                                                WHERE SemesterplanID = ".$this->studyplanID);
-            $semestercount = $getSemestercount->result();*/
-            
             $this->db->select('Semesteranzahl');
             $this->db->from('semesterplan');
             $this->db->where('SemesterplanID', $this->studyplanID);
             $semestercount = $this->db->get();
+            
+            foreach($semestercount->result() as $semcount)
+            {
+                $semester = $semcount->Semesteranzahl;
+            }
 
-            $newSemestercount = $semestercount++;
-
-            /*$this->db->query("UPDATE semesterplan 
-                                SET Semesteranzahl = ".$newSemestercount."
-                                WHERE SemesterplanID = ".$this->studyplanID);*/
+            $semester++;
+            
+            $dataarray = array(
+                'Semesteranzahl' => $semester
+            );
             
             $this->db->where('SemesterplanID', $this->studyplanID);
-            $this->db->update('benutzerkurs', array('Semesteranzahl' => $newSemestercount));
+            $this->db->update('semesterplan', $dataarray);
             
+        }
+        catch(Exception $e)
+        {
+            echo 'Exception: ', $e->getMessage();
+        }
+    }
+    
+    
+    /**
+     * If studyplan has more semester than Regelsemester and this coloumn has 
+     * modules, this method updates the semestercoloumn in semesterkurs
+     * @param int $kurs_id 
+     *
+     * method -> checked
+     */
+    public function updateSemesterColoumn($kurs_id, $semester)
+    {
+        try
+        {   
+            $dataarray = array(
+                'Semester' => $semester
+            );
+            
+            $this->db->where('SemesterplanID', $this->studyplanID);
+            $this->db->where('KursID', $kurs_id);
+            $this->db->update('semesterkurs', $dataarray);
         }
         catch(Exception $e)
         {
@@ -483,143 +420,113 @@ class Studienplan_Model extends CI_Model
     }
     
     
+    
     /**
      * Queries all Modules
      * @return Object 
+     * 
+     * method -> checked
      */
     public function queryAllModules()
     {
         try
         {
-            $this->db->select('semesterkurs.SemesterplanID', 
-                                'semesterkurs.KursID', 
-                                'semesterkurs.Notenpunkte', 
-                                'studiengangkurs.Creditpoints');
+            $this->db->select('semesterkurs.SemesterplanID, 
+                                semesterkurs.KursID,
+                                semesterkurs.Notenpunkte,
+                                studiengangkurs.Creditpoints');
             $this->db->from('semesterkurs');
             $this->db->join('studiengangkurs', 'semesterkurs.KursID = studiengangkurs.KursID');
             $this->db->where('SemesterplanID', $this->studyplanID);
+            $moduleQuery = $this->db->get();
             
-            return $this->db->get();
+            foreach($moduleQuery->result() as $mod)
+            {
+                $data[] = array(
+                    'SemesterplanID'    => $mod->SemesterplanID,
+                    'KursID'            => $mod->KursID,
+                    'Notenpunkte'       => $mod->Notenpunkte,
+                    'Creditpoints'      => $mod->Creditpoints,
+                );
+            }
+            
+            return $data;
         }
         catch(Exception $e)
         {
             echo 'Exception: ', $e->getMessage();
         }
     }
-
-
     
-    
-    /**
-     * Returns all passed modules
-     * @return Object 
-     */
-    /*public function queryDbForMarks()
-    {
-        try
-        {
-            //TODO: Wie muss hören/schreiben beachtet werden
-            // query all modules from a user
-            $modules_query = $this->db->query("SELECT a.SemesterplanID, a.KursID, a.Notenpunkte, b.Creditpoints 
-                                                FROM semesterkurs as a
-                                                INNER JOIN studiengangkurs as b
-                                                ON a.KursID = b.KursID
-                                                WHERE SemesterplanID = ".$this->studyplanID."");
-            // WHERE PruefungsstatusID = 4 wird nach neuem Verfahren nicht  mehr benötigt
-            //return $modules_query->result();
-            
-            
-        }
-        catch(Exception $e)
-        {
-            echo 'Exception: ', $e->getMessage();
-        }
-    }*/
-
 
 
     /**
      * Calculates the average mark
-     * @param boolean $returnAsString
      * @return float 
+     * 
+     * methos -> checked
      */
-    public function calculateAverageMark($returnAsString)
+    public function calculateAverageMark()
     {
         $sum = 0;
+        $credits = 0;
         
         try
         {
             $modules = $this->queryAllModules();
-            
-            // query sum of creditpoints of studycourse
-            /*$cp_query = $this->db->query("SELECT Creditpoints
-                                            FROM studiengang
-                                            WHERE StudiengangID = ".$this->studycourseID);
-            $cp = $cp_query->result();*/
+                     
             $this->db->select('Creditpoints');
-            $this->db->from(studiengang);
+            $this->db->from('studiengang');
             $this->db->where('StudiengangID', $this->studycourseID);
-            $cp = $this->db->get();
+            $wholeCpQuery = $this->db->get();
+            
+            foreach($wholeCpQuery->result() as $wholeCp)
+            {
+                $credits = $wholeCp->Creditpoints;
+            }
 
             foreach($modules as $mod)
             {
-                $sum += $mod->Notenpunkte * $mod->Creditpoints;
+                if($mod['Notenpunkte'] != 101)
+                {
+                    $sum += $mod['Notenpunkte'] * $mod['Creditpoints'];
+                }
             }
-
-
-            if($returnAsString)
-            {
-                return calculateMark($sum/$cp);
-            }
-            else
-            {
-                return $sum/$cp;
-            }
+            
+            return $sum/$credits;
         }
         catch(Exception $e)
         {
             echo 'Exception: ', $e->getMessage();
         }
-        
-        // delete variable
-        unset($sum);
     }
     
     
-    // TODO: METHODE ÜBERARBEITEN, DA SIE NICH DAS ERGEBNIS ZURÜCKLIEFERT WELCHES SIE SOLLTE
+    
     /**
      * Returns the percentage of the Study
-     * @param boolean $returnAsString
-     * @return boolean or int dependent on $returnAsString 
+     * @return float
+     * 
+     * method -> checked
      */
-    public function calculatePercentageOfStudy($returnAsString)
+    public function calculatePercentageOfStudy()
     {  
+        $passedModules = 0;
+        
         try
         {
-            // query ALL modules
-            /*$modules_query = $this->db->query("SELECT a.SemesterplanID, a.KursID, a.Notenpunkte, b.Creditpoints 
-                                                FROM semesterkurs as a
-                                                INNER JOIN studiengangkurs as b
-                                                ON a.KursID = b.KursID
-                                                WHERE SemesterplanID = ".$this->studyplanID."");
-            $allModules = $modules_query->result();*/
-            
             $allModules = $this->queryAllModules();
-
-            // query passed modules
-            //$modules = $this->queryAllModules();
-            // get affected rows
-            $numberOfModules = $allModules->num_rows();
-
-
-            if($returnAsString)
+            $moduleCount = count($this->queryAllModules());
+            
+            foreach($allModules as $mod)
             {
-                return round(($numberOfModules/$allModules)*100, 0)." %";
+                if($mod['Notenpunkte'] < 101 && $mod['Notenpunkte'] >= 50)
+                {
+                    $passedModules ++;
+                }
             }
-            else
-            {
-                return round(($numberOfModules/$allModules)*100, 0);
-            }
+            
+            return round(($passedModules/$moduleCount)*100, 0);
         }
         catch(Exception $e)
         {
@@ -631,17 +538,21 @@ class Studienplan_Model extends CI_Model
     // TODO: MIT WELCHER NOTE WERDEN DIE MODULE ANERKANNT???????
     /**
      * Set the module with the $moduleID as accepted
-     * @param int $moduleID 
+     * @param int $moduleID
+     * 
+     * method -> checked 
      */
     public function acceptMarks($moduleID)
     {
         try
         {
-            $updateQuery = $this->db->query("UPDATE semesterkurs 
-                                        SET Notenpunkte = 50
-                                        WHERE SemesterplanID = ".$this->studyplanID."
-                                        AND KursID = ".$moduleID."");
-            $updateQuery->result();
+            $dataarray = array(
+                'Notenpunkte' => 50
+            );
+            
+            $this->db->where('SemesterplanID', $this->studyplanID);
+            $this->db->where('KursID', $moduleID);
+            $this->db->update('semesterkurs', $dataarray);
         }
         catch(Exception $e)
         {
@@ -653,35 +564,25 @@ class Studienplan_Model extends CI_Model
     
     /**
      * Resets all Studyplan-data of a user 
+     * 
+     * method -> checked
      */
     public function reset()
     {
         try
         {
-            /*$studyplan_query = $this->db->query("SELECT * 
-                                                FROM semesterkurs
-                                                WHERE SemesterplanID = ".$this->studyplanID."");
-            $modules = $studyplan_query->result();*/
-            
-            $this->db->select('*');
-            $this->db->from('semesterkurs');
-            $this->db->where('SemesterplanID', $this->studyplanID);
+            $this->db->select('studiengangkurs.KursID, studiengangkurs.Semester');
+            $this->db->from('studiengangkurs');
+            $this->db->join('semesterkurs', 'semesterkurs.KursID = studiengangkurs.KursID');
+            $this->db->where('semesterkurs.SemesterplanID', $this->studyplanID);
+            $this->db->order_by('studiengangkurs.Semester', 'ASC');
             $modules = $this->db->get();
             
             
-            foreach($modules as $module)
+            foreach($modules->result() as $mod)
             {
-                /*$resetQuery = $this->db->query("UPDATE semesterkurs
-                                                SET KursHoeren = 1, 
-                                                    KursSchreiben = 1, 
-                                                    PruefungsstatusID = 1, 
-                                                    VersucheBislang = 0, 
-                                                    Notenpunkte = 101
-                                                WHERE SemesterplanID = ".$this->studyplanID."
-                                                AND KursID = ".$module->KursID."");
-                $resetQuery->result();*/
-                
                 $dataarray = array(
+                    'Semester'          => $mod->Semester,
                     'KursHoeren'        => 1,
                     'KursSchreiben'     => 1,
                     'PruefungsstatusID' => 1,
@@ -690,7 +591,7 @@ class Studienplan_Model extends CI_Model
                 );
                 
                 $this->db->where('SemesterplanID', $this->studyplanID);
-                $this->db->where('KursID', $module->KursID);
+                $this->db->where('KursID', $mod->KursID);
                 $this->db->update('semesterkurs', $dataarray);
             }
         }
@@ -705,80 +606,76 @@ class Studienplan_Model extends CI_Model
     /**
      * Calculates the Sum of the SWS and the CP for each Semester
      * @return Array 
+     * 
+     * method -> checked
      */
     public function calculateSwsAndCp()
     {
-        // Semestercounter
-        $counter = 1;
         $swsSum = 0;
         $cpSum = 0;
+        $counter = 1;
+        $data = array();
         $sumArray = array();
-        
+         
         try
         {
-            /*$swsCpQuery = $this->db->query("SELECT a.KursID, 
-                                        a.Kursname, 
-                                        a.kurs_kurz, 
-                                        a.Creditpoints, 
-                                        a.SWS_Vorlesung, 
-                                        a.SWS_Uebung, 
-                                        a.SWS_Praktikum, 
-                                        a.SWS_Projekt, 
-                                        a.SWS_Seminar,
-                                        a.SWS_Seminarunterricht,
-                                        b.Semester
-                                FROM studiengangkurs AS a
-                                INNER JOIN semesterkurs AS b
-                                ON b.KursID = a.KursID
-                                WHERE b.SemesterplanID = ".$this->studyplanID."
-                                ORDER BY b.Semester ASC");
-            $swsCpResult = $swsCpQuery->result();*/
-            
-            $this->db->select('studiengangkurs.KursID',
-                                'studiengangkurs.Kursname',
-                                'studiengangkurs.kurs_kurz',
-                                'studiengangkurs.Creditpoints',
-                                'studiengangkurs.SWS_Vorlesung',
-                                'studiengangkurs.SWS_Uebung',
-                                'studiengangkurs.SWS_Praktikum',
-                                'studiengangkurs.SWS_Projekt',
-                                'studiengangkurs.SWS_Seminar',
-                                'studiengangkurs.SWS_Seminarunterricht',
-                                'semesterkurs.Semester');
+            $this->db->select('studiengangkurs.KursID,
+                                studiengangkurs.Kursname,
+                                studiengangkurs.kurs_kurz,
+                                studiengangkurs.Creditpoints,
+                                studiengangkurs.SWS_Vorlesung,
+                                studiengangkurs.SWS_Uebung,
+                                studiengangkurs.SWS_Praktikum,
+                                studiengangkurs.SWS_Projekt,
+                                studiengangkurs.SWS_Seminar,
+                                studiengangkurs.SWS_Seminarunterricht,
+                                semesterkurs.Semester');
             $this->db->from('studiengangkurs');
             $this->db->join('semesterkurs', 'semesterkurs.KursID = studiengangkurs.KursID');
             $this->db->where('semesterkurs.SemesterplanID', $this->studyplanID);
-            $this->db->order('semesterkurs.Semester', 'ASC');
+            $this->db->order_by('semesterkurs.Semester', 'ASC');
             $swsCpResult = $this->db->get();
             
-            // calculate each sum
-            foreach($swsCpResult as $swsCp)
+            
+            // order modules by semester in array
+            foreach($swsCpResult->result() as $swsCp)
             {
-                if($counter == $swsCp->Semester)
+                $data[$swsCp->Semester][] = array(
+                    'SWS_Vorlesung'         => $swsCp->SWS_Vorlesung,
+                    'SWS_Uebung'            => $swsCp->SWS_Uebung,
+                    'SWS_Praktikum'         => $swsCp->SWS_Praktikum,
+                    'SWS_Projekt'           => $swsCp->SWS_Projekt,
+                    'SWS_Seminar'           => $swsCp->SWS_Seminar,
+                    'SWS_Seminarunterricht' => $swsCp->SWS_Seminarunterricht,
+                    'Creditpoints'          => $swsCp->Creditpoints
+                );
+            }
+            
+            // step through the ordered array
+            foreach($data as $semester)
+            {
+                foreach($semester as $module)
                 {
                     // Sum of SWS
-                    $swsSum = $swsSum + 
-                            $swsCp->SWS_Vorlesung + 
-                            $swsCp->SWS_Uebung + 
-                            $swsCp->SWS_Praktikum + 
-                            $swsCp->SWS_Projekt + 
-                            $swsCp->SWS_Seminar + 
-                            $swsCp->SWS_Seminarunterricht;
-                    
+                    $swsSum += $module['SWS_Vorlesung'] + 
+                                $module['SWS_Uebung'] + 
+                                $module['SWS_Praktikum'] + 
+                                $module['SWS_Projekt'] + 
+                                $module['SWS_Seminar'] + 
+                                $module['SWS_Seminarunterricht'];
+
                     // Sum of Creditpoints
-                    $cpSum += $swsCp->Creditpoints;
-                    
+                    $cpSum += $module['Creditpoints'];
+
                     // write sums in array
-                    $sumArray[$counter]['SWS_Summe'] = $swsSum;
-                    $sumArray[$counter]['CP_Summe'] = $cpSum;
-                    
-                    // raise counter
-                    $counter++;
-                    
-                    // unset locale varibales for next turn
-                    unset($swsSum);
-                    unset($cpSum);
+                    $sumArray[$counter]['SWS_Summe'] = intval($swsSum);
+                    $sumArray[$counter]['CP_Summe'] = intval($cpSum);
                 }
+                
+                // reset locale variables
+                $swsSum = 0;
+                $cpSum = 0;
+                $counter++;
             }
             
             return $sumArray;
@@ -787,13 +684,30 @@ class Studienplan_Model extends CI_Model
         {
             echo 'Exception: ', $e->getMessage();
         } 
-    }  
+    } 
+    
+    
+    
+    // Modul duplizieren, nachdem man durchgefallen ist + Versuch erhöhen
+    /**
+     * Duplicate a module if it's not passed
+     * @param int $id 
+     */
+    public function duplicateModule($id)
+    {
+        try 
+        {
+            $modules = $this->queryAllModules();
+        }
+        catch(Exception $e)
+        {
+            echo 'Exception: ', $e->getMessage();
+        } 
+    }
     
     
     // Infos über das Modul. Was wird hier benötigt?
     public function moduleInfo(){}
-    // Modul duplizieren, nachdem man durchgefallen ist + Versuch erhöhen
-    public function duplicateModule($id){}
     // Änderungen abspeichern
     public function save(){}
 
