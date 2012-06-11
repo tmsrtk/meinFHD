@@ -180,7 +180,7 @@ class Stundenplan_Model extends CI_Model {
 			}
 		}
 
-		$this->krumo->dump($stundenplan);
+		//$this->krumo->dump($stundenplan);
 
 
 
@@ -196,7 +196,7 @@ class Stundenplan_Model extends CI_Model {
 
 		array_push($return, $courses);
 
-		$this->krumo->dump($return);
+		//$this->krumo->dump($return);
 		
 		return $return;
 	}
