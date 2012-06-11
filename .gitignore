@@ -57,7 +57,11 @@ sftp-config.json
 Environment/
 
 # Eclipse-File
+###############################
 *.project
+.settings
 
+# exclude .svn directories by default
+.svn
 # netbeans ide project files
 /nbproject/
