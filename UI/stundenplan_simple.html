@@ -24,6 +24,7 @@
 		<!--LESS compiler-->
 		<script src="bootstrap/js/less.js" type="text/javascript"></script>
 		
+		
 	</head> <!-- /head -->
 	<body>	
 	
@@ -214,6 +215,24 @@
 	<script src="bootstrap/js/jquery.js" type="text/javascript"></script>		
 	<script src="bootstrap/js/bootstrap.js" type="text/javascript"></script>
 	
+	<script>
+		 			
+			/*icon-switch for accordion*/
+			$(function(){									
+				$('.collapse')
+					.on('hidden', function(e) {						
+						$(e.target).parent().find('i.icon-minus').removeClass('icon-minus').addClass('icon-plus');
+						console.debug(e.target);
+					})
+					.on('shown', function(e){						
+						$(e.target).parent().find('i.icon-plus').removeClass('icon-plus').addClass('icon-minus');
+						console.debug(e.target);
+					});
+
+			});
+			
+		
+	</script>
 
 	</body> <!-- /body -->
 </html> <!-- /html -->
