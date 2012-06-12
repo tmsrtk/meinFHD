@@ -1,4 +1,7 @@
-﻿*.doc  diff=astextplain
+﻿# Set default behaviour, in case users don't have core.autocrlf set.
+* text=auto
+
+*.doc  diff=astextplain
 *.DOC	diff=astextplain
 *.docx	diff=astextplain
 *.DOCX	diff=astextplain
@@ -9,6 +12,7 @@
 *.rtf	diff=astextplain
 *.RTF	diff=astextplain
 
+# Denote all files that are truly binary and should not be modified.
 *.jpg  	binary
 *.png 	binary
 *.gif 	binary
@@ -46,4 +50,11 @@
 *.vbproj text=auto merge=union 
 *.fsproj text=auto merge=union 
 *.dbproj text=auto merge=union 
-*.sln text=auto eol=crlf merge=union 
+
+# Declare files that will always have CRLF line endings on checkout.
+*.sln text eol=crlf merge=union 
+
+# Explicitly declare text files we want to always be normalized and converted 
+# to native line endings on checkout.
+*.c text
+*.h text
