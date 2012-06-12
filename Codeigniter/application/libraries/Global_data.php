@@ -6,7 +6,7 @@ class Global_data {
 	private $CI;
 
 	//1361 admin, 1360 dozent
-	private $userid = 1361;  // muss dynamisch von der aktuellen session geladen werden
+	private $userid = 1357;  // muss dynamisch von der aktuellen session geladen werden
 
 	/*
 	*/
