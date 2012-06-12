@@ -9,8 +9,7 @@
 	<script src="<?php echo base_url(); ?>resources/jquery/jquery.min.js"></script>
 	<script src="<?php echo base_url(); ?>resources/jquery/jquery-ui.js"></script>
 	<script src="<?php echo base_url(); ?>resources/bootstrap/js/bootstrap-dropdown.js"></script>
-	<script src="<?php echo base_url(); ?>
-	resources/bootstrap/js/bootstrap-modal.js"></script>
+	<script src="<?php echo base_url(); ?>resources/bootstrap/js/bootstrap-modal.js"></script>
 </head>
 
 <body>
