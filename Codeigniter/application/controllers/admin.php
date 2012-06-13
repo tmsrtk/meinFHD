@@ -514,70 +514,13 @@ class Admin extends FHD_Controller {
 		$role_id = $this->input->get('role_id');
 		$searchletter = $this->input->get('searchletter');
 
-		$q = $this->admin_model->get_user_per_role_searchletter($role_id, $searchletter);
+		$q = $this->admin_model->get_user_per_role_searchletter($role_id, $searchletter);  ///////////////////// query if result 0 !!!!!!!!!!!
 
 		$result = '';
 
 		foreach ($q as $key => $value) {
-			$result.="<tr>";
-
-			$attrs = array('id' => 'edit_user_row');
-			$result.=form_open('admin/validate_edit_user_form/', $attrs);
-			$result.=form_hidden('user_id', $value['BenutzerID']);
-			// hidden input for deciding the clicked button !!!!!!!!!!!!!!!!!!!!!! <
-			$result.=form_hidden('action_to_perform', '0');
-
-			$data = array(
-					'class' => 'span2',
-					'name' => 'loginname',
-					'placeholder' => 'kein Eintrag',
-					'value' => $value['LoginName']
-				);
-			$result.="<td>".form_input($data)."</td>";
-
-			$data = array(
-					'class' => 'span2',
-					'name' => 'lastname',
-					'placeholder' => 'kein Eintrag',
-					'value' => $value['Nachname']
-				);
-			$result.="<td>".form_input($data)."</td>";
-
-			$data = array(
-					'class' => 'span2',
-					'name' => 'forename',
-					'placeholder' => 'kein Eintrag',
-					'value' => $value['Vorname']
-				);
-			$result.="<td>".form_input($data)."</td>";
-
-			$data = array(
-					'class' => 'span2',
-					'name' => 'email',
-					'placeholder' => 'kein Eintrag',
-					'value' => $value['Email']
-				);
-			$result.="<td>".form_input($data)."</td>";
-
-			// function dropdown
-			$class_dd = 'id="user_function" class="span2"';
-			$dropdown_data = array('Speichern', 'Passwort resetten', 'Stundenplan resetten', 'Als ... anmelden');
-
-			$result.="<td>".form_dropdown('user_function', $dropdown_data, '0', $class_dd)."</td>";
-
-			$submit_data = array(
-					'id' 			=> 'save',
-					'name'			=> 'submit',
-					'class'			=> 'btn btn-mini btn-danger'
-				);
-			$result.="<td>".form_submit($submit_data, 'LOS!')."</td>";
-			
-
-			$result.=form_close();
-
-			$result.="</tr>";
+			$result .= $this->load->view('admin-subviews/user_tr', $value, TRUE);
 		}
-
 		echo $result;
 	}
 
