@@ -20,7 +20,27 @@ class Admin extends FHD_Controller {
 		$this->roleIds = $this->admin_model->getAllRoleIds();
 		
 		// get all stdgnge for the views
-		$data['allStdgnge'] = $this->admin_model->getAllStdgnge();	
+		$data['allStdgnge'] = $this->admin_model->getAllStdgnge();
+
+
+		//// data
+		// userdata
+		$session_userid = 1357;
+
+		$loginname = $this->admin_model->get_loginname($session_userid); 				///////////////////////////////
+		$user_permissions = $this->admin_model->get_all_userpermissions($session_userid);
+		$roles = $this->admin_model->get_all_roles();
+		
+		$userdata = array(
+				'userid' => $session_userid,
+				'username' => $loginname['LoginName'],
+				'userpermissions' => $user_permissions,
+				'roles' => $roles
+			);
+
+		$this->data->add('userdata', $userdata);
+
+
 	}
 	
 	
@@ -92,7 +112,7 @@ class Admin extends FHD_Controller {
 // 		echo '</pre>';
 		
 		// VIEW
-		$data['global_data'] = $this->global_data->get_global_data();
+		$data['global_data'] = $this->data->load();
 		$data['title'] = 'Rollenverwaltung';
 		$data['main_content'] = 'admin_rollenverwaltung';
 		
@@ -149,7 +169,7 @@ class Admin extends FHD_Controller {
 		$data['title'] = 'Benutzer erstellen';
 		$data['main_content'] = 'admin_create_user_mask';
 
-		$data['global_data'] = $this->global_data->get_global_data();
+		$data['global_data'] = $this->data->load();
 		//----------------------------------------------------------------------
 
 		// all studiengänge
@@ -167,7 +187,7 @@ class Admin extends FHD_Controller {
 		$data['title'] = 'Benutzer anzeigen';
 		$data['main_content'] = 'admin_edit_user_mask';
 
-		$data['global_data'] = $this->global_data->get_global_data();
+		$data['global_data'] = $this->data->load();
 		//----------------------------------------------------------------------
 
 		// all users
@@ -186,7 +206,7 @@ class Admin extends FHD_Controller {
 		$data['title'] = 'Benutzer loeschen';
 		$data['main_content'] =  'admin_delete_user_mask';
 
-		$data['global_data'] = $this->global_data->get_global_data();
+		$data['global_data'] = $this->data->load();
 		//----------------------------------------------------------------------
 		$data['user'] = $this->admin_model->get_all_user();
 		//----------------------------------------------------------------------
@@ -201,7 +221,7 @@ class Admin extends FHD_Controller {
 		$data['title'] = 'Benutzerrechte anzeigen';
 		$data['main_content'] =  'admin_show_permissions';
 
-		$data['global_data'] = $this->global_data->get_global_data();
+		$data['global_data'] = $this->data->load();
 		//----------------------------------------------------------------------
 		// everything that is needed is in the global_data var
 		//----------------------------------------------------------------------
@@ -331,7 +351,7 @@ class Admin extends FHD_Controller {
 			$data['title'] = 'Erfolgreich';
 			$data['main_content'] = 'admin_create_user_success';
 
-			$data['global_data'] = $this->global_data->get_global_data();
+			$data['global_data'] = $this->data->load();
 
 			$this->load->view('includes/template', $data);
 		}
@@ -583,7 +603,7 @@ class Admin extends FHD_Controller {
 		$data['allStdgnge'] = $this->admin_model->getAllStdgnge();
 		
 		// VIEW
-		$data['global_data'] = $this->global_data->get_global_data();
+		$data['global_data'] = $this->data->load();
 		$data['title'] = 'Studiengangverwaltung';
 		$data['main_content'] = 'admin_stdgng_list';
 		
@@ -600,7 +620,7 @@ class Admin extends FHD_Controller {
 		$data['allStdgnge'] = $this->admin_model->getAllStdgnge();
 		
 		// VIEW
-		$data['global_data'] = $this->global_data->get_global_data();
+		$data['global_data'] = $this->data->load();
 		$data['title'] = 'Neuen Studiengang anlegen';
 		$data['main_content'] = 'admin_stdgng_createnew';
 		
@@ -613,7 +633,7 @@ class Admin extends FHD_Controller {
 		$data['allStdgnge'] = $this->admin_model->getAllStdgnge();
 		
 		// VIEW
-		$data['global_data'] = $this->global_data->get_global_data();
+		$data['global_data'] = $this->data->load();
 		$data['title'] = 'Studiengang löschen';
 		$data['main_content'] = 'admin_stdgng_delete';
 		
@@ -1056,7 +1076,7 @@ class Admin extends FHD_Controller {
 		
 		
 		// VIEW
-		$data['global_data'] = $this->global_data->get_global_data();
+		$data['global_data'] = $this->data->load();
 		$data['title'] = 'Stundenplan anzeigen';
 		$data['main_content'] = 'admin_stdplan_list';
 		
