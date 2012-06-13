@@ -1,4 +1,4 @@
-<h2>Benutzer loeschen Test</h2>
+<h2>Benutzer loeschen</h2>
 
 <table id="user_overview" class="table table-striped table-bordered table-condensed">
 	<thead>
