@@ -3,10 +3,17 @@
 
 class Adminhelper {
 
+	/**
+	 *
+	 */
+	public function __construct()
+	{
+
+	}
+
 	/* creates a random pw with a length of 10 chars - jochens function */
 	function passwort_generator() 
 	{
-	
 		$laenge = 10;
 		$string = md5((string)mt_rand() . $_SERVER["REMOTE_ADDR"] . time());
 		  

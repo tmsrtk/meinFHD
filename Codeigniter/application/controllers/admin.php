@@ -354,6 +354,9 @@ class Admin extends FHD_Controller {
 			// save in db
 			$this->create_user();
 
+			// flash message
+			$this->message->set('User erfolgreich erstellt!');
+
 			// load new view with success message
 			$data['title'] = 'Erfolgreich';
 			$data['main_content'] = 'admin_create_user_success';
@@ -470,6 +473,7 @@ class Admin extends FHD_Controller {
 		{
 			// save in db
 			$this->save_user_changes();
+
 			redirect(site_url().'admin/edit_user_mask');
 		}
 	}
