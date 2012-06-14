@@ -19,7 +19,6 @@ class Admin extends FHD_Controller {
 		// get all stdgnge for the views
 		$data['allStdgnge'] = $this->admin_model->getAllStdgnge();
 
-
 		//// data
 		// userdata
 		$session_userid = 1357;
@@ -598,6 +597,9 @@ class Admin extends FHD_Controller {
 		
 		// get all stdgnge for filter-view
 		$data['all_stdgnge'] = $this->admin_model->getAllStdgnge();
+		// set stdgng_id to 0 - indicates, that view has been loaded directly from controller
+		// no autoreload without validation
+		$data['stdgng_id_automatic_reload'] = 0;
 		
 		// VIEW
 		$data['global_data'] = $this->data->load();
@@ -729,6 +731,90 @@ class Admin extends FHD_Controller {
 		$this->admin_model->delete_stdgng($deleteId);
 		
 		$this->show_stdgng_list();
+	}
+	
+	
+	/**
+	 * validates if all changes that've been made are correct
+	 * - PO - required, numeric
+	 * - Name - required
+	 * - Abk. - required
+	 * - Regelsemester - required, numeric
+	 * - CP - required, numeric
+	 */
+	function validate_stdgng_details_changes(){
+	    
+	    // TODO PO, Name, Abk. Kombi muss unique sein
+	    
+	    
+	    
+	    // get all stdgnge for filter-view
+	    $data['all_stdgnge'] = $this->admin_model->getAllStdgnge();
+	    
+	    // get all course-ids belonging to a specified stdgng
+	    $stdgng_id = $this->input->post('stdgng_id');
+	    
+	    $this->form_validation->set_rules(
+		    $stdgng_id.'Pruefungsordnung', $stdgng_id.'TODO - Kursname', 'required');
+	    $this->form_validation->set_rules(
+		    $stdgng_id.'StudiengangName', $stdgng_id.'TODO', 'required');
+	    $this->form_validation->set_rules(
+		    $stdgng_id.'StudiengangAbkuerzung', $stdgng_id.'TODO', 'required');
+	    $this->form_validation->set_rules(
+		    $stdgng_id.'Regelsemester', $stdgng_id.'TODO', 'required|numeric');
+	    $this->form_validation->set_rules(
+		    $stdgng_id.'Creditpoints', $stdgng_id.'TODO', 'required|numeric');
+	    $this->form_validation->set_rules(
+		    $stdgng_id.'Beschreibung', $stdgng_id.'TODO', 'required');
+	    
+	    $data['stdgng_id_automatic_reload'] = $stdgng_id;
+	    
+	    if ($this->form_validation->run() == FALSE) {
+		// reload view
+		$data['global_data'] = $this->data->load();
+		$data['title'] = 'Studiengang Kursliste bearbeiten';
+		$data['main_content'] = 'admin_stdgng_edit';
+		
+		$this->load->view('includes/template', $data);
+	    } else {
+		$this->save_stdgng_details_changes();
+	    }
+	}
+	
+	
+	function validate_stdgng_course_changes(){
+	    
+	    // get all stdgnge for filter-view
+	    $data['all_stdgnge'] = $this->admin_model->getAllStdgnge();
+	    
+	    // get all course-ids belonging to a specified stdgng
+	    $stdgng_id = $this->input->post('stdgng_id');
+	    $stdgng_course_ids = $this->admin_model->getStdgngCourseIds($stdgng_id);
+	    
+	    foreach($stdgng_course_ids as $id){
+		// run through all ids and generate id-specific validation-rules
+		$this->form_validation->set_rules(
+			$id->KursID.'Kursname', $id->KursID.'TODO - Kursname', 'required');
+		$this->form_validation->set_rules(
+			$id->KursID.'kurs_kurz', $id->KursID.'TODO', 'required');
+		$this->form_validation->set_rules(
+			$id->KursID.'Creditpoints', $id->KursID.'TODO', 'required|numeric');
+		$this->form_validation->set_rules(
+			$id->KursID.'Semester', $id->KursID.'TODO', 'greater_than[0]');
+	    }
+	    
+	    $data['stdgng_id_automatic_reload'] = $stdgng_id;
+	    
+	    if ($this->form_validation->run() == FALSE) {
+		// reload view
+		$data['global_data'] = $this->data->load();
+		$data['title'] = 'Studiengang Kursliste bearbeiten';
+		$data['main_content'] = 'admin_stdgng_edit';
+		
+		$this->load->view('includes/template', $data);
+	    } else {
+		$this->save_stdgng_course_changes();
+	    }
 	}
 	
 	/**

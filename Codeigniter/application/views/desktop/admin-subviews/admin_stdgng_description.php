@@ -1,6 +1,6 @@
 <div id="stdgng-details">
 
-	<?php echo form_open('admin/save_stdgng_details_changes'); ?>
+	<?php echo form_open('admin/validate_stdgng_details_changes'); ?>
 	
 	<div id="stdgng-details-1" style='float:left;'>
 	    <table>

@@ -29,9 +29,11 @@
 </div>
 
 
-<script>
+<script>    
+    
+    
 	(function() {
-
+	    
 		// update stdgnge-view according to chosen field in dropdown
 		$('#admin-stdgngfilter').change(function() {
 			$("#stdgng-list").html('suche...');
@@ -41,15 +43,23 @@
 					"<?php echo site_url();?>admin/ajax_show_courses_of_stdgng/",
 					'stdgng_id='+$(this).val(),
 					function(response) {
-						// 
-						$('#stdgng-list').html(response);
+					    // returns view into div
+					    $('#stdgng-list').html(response);
 					});
 			} else {
 				$("#stdgng-list").html('');
 			}
 
 		});
-
+		
+//		$('#stdgng-save-button').submit(function() {
+//		    console.log("submit");
+//		    // aufruf abfrage auf id
+//		    // reload wenn wert drin ist
+//		    auto_load_data_for_id();
+////		    return false;
+//		});
+		
 		// dialog for delete-button
 		$('#stdgng-change-view').on('click', '#delete_btn_stdgng', function(){
 		    var id = $(this).attr('data-id');
@@ -73,8 +83,46 @@
 			    $(this).dialog('close');
 			}
 		    }
-		})
+		});
 		
 	})(); // self envoked anonymous function
+
+	var stdgng_id = "<?php echo $stdgng_id_automatic_reload; ?>";
+	console.log("nix?: "+ stdgng_id);
+	if(stdgng_id != "0"){
+	    console.log(" != 0");
+	    // auto_load_data_for_id($(this));
+	    $("#stdgng-list").html('suche...');
+		// ajax
+		$.get(
+		    "<?php echo site_url();?>admin/ajax_show_courses_of_stdgng/",
+		    'stdgng_id='+stdgng_id,
+		    function(response) {
+			// 
+			$('#stdgng-list').html(response);
+		    });
+	} else {
+	    console.log("else");
+	}
+
+//	function auto_load_data_for_id(){
+//	    // if $stdgng_id_automatic_reload is set, reload get stdgng_id, to show 
+//		var stdgng_id = "<?php echo $stdgng_id_automatic_reload; ?>";
+//		if(stdgng_id != 0){
+//		    console.log(" != 0");
+//		    // auto_load_data_for_id($(this));
+//		    ("#stdgng-list").html('suche...');
+//			// ajax
+//			$.get(
+//			    "<?php echo site_url();?>admin/ajax_show_courses_of_stdgng/",
+//			    'stdgng_id='+stdgng_id,
+//			    function(response) {
+//				// 
+//				$('#stdgng-list').html(response);
+//			    });
+//		} else {
+//		    console.log("else");
+//		}
+//	}
 
 </script>

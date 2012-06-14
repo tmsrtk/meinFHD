@@ -1,5 +1,4 @@
-<div id="stdplan-change-view">
-    
+   
     <?php 
 	// open form
 	print form_open('admin/save_stdplan_changes');
@@ -40,5 +39,3 @@
 	print form_submit('savestdplanchanges', 'Änderungen speichern', $btn_attributes);
 	print form_close();
     ?>
-    
-</div>
