@@ -244,11 +244,17 @@ class Admin extends FHD_Controller {
 		// get values from post
 		$form_data = $this->input->post();
 		// delete last element (submit button value, not needet for db user save)
-		array_pop($form_data);
+		// array_pop($form_data);
 		// var_dump($form_data);
 
+
+		// generate password
+		$password = $this->adminhelper->passwort_generator();
+
 		// save new user in db
-		$this->admin_model->save_new_user($form_data);
+		$this->admin_model->save_new_user($form_data, $password);
+
+		// TODO: send mail with password
 
 		// // redirect to mask again
 		// redirect(site_url().'admin/create_user_mask');
@@ -392,12 +398,16 @@ class Admin extends FHD_Controller {
 	/**/
 	function validate_edits()
 	{
+		// set custom delimiter for validation errors
+		$this->form_validation->set_error_delimiters('<div class="val_error">', '</div>');
+
+
 		$rules = array();
 
 		// values, from actual form
 		$new_form_values = $this->input->post();
 
-		// current db user data
+		// current user data in db
 		$current_user_data = $this->admin_model->get_user_by_id($this->input->post('user_id'));
 
 		// check if current value is different from the value in db
@@ -471,26 +481,12 @@ class Admin extends FHD_Controller {
 		$new_form_values = $this->input->post();
 
 		$data = array(
-				'Passwort' => $this->passwort_generator()
+				'Passwort' => $this->adminhelper->passwort_generator()
 			);
 
 		$this->admin_model->update_user($new_form_values['user_id'], $data);
 
 		redirect(site_url().'admin/edit_user_mask');
-	}
-
-	/* creates a random pw with a length of 10 chars - jochens function */
-	function passwort_generator() 
-	{
-	
-		$laenge = 10;
-		$string = md5((string)mt_rand() . $_SERVER["REMOTE_ADDR"] . time());
-		  
-		$start = rand(0,strlen($string)-$laenge);
-		 
-		$password = substr($string, $start, $laenge);
-		 
-		return md5($password);
 	}
 
 	/*

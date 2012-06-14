@@ -11,22 +11,16 @@ foreach ($global_data['userdata']['userpermissions'] as $zeile) {
 
 <div id ="menuefooter">
 	<div id="menuefooter_button">
-		<div id="toggle_button" class="up">O</div>
+		<div id="toggle_button" class="up">Menue</div>
 	</div>
 
 	<div id="menuefooter_content">
-		<p>
-		Challenges
-		I’ve had the pleasure to consult and collaborate with large multidisciplinary teams, on projects ranging from brand strategy and communication, interaction design, web design, motion and visual communication. Think you might have a challenge for me? Then I would love to hear from you.
-		</p>
-		<p>
-		Challenges
-		I’ve had the pleasure to consult and collaborate with large multidisciplinary teams, on projects ranging from brand strategy and communication, interaction design, web design, motion and visual communication. Think you might have a challenge for me? Then I would love to hear from you.
-		</p>
-		<p>
-		Challenges
-		I’ve had the pleasure to consult and collaborate with large multidisciplinary teams, on projects ranging from brand strategy and communication, interaction design, web design, motion and visual communication. Think you might have a challenge for me? Then I would love to hear from you.
-		</p>
+		<div id="mf_content">
+			<h2>Praktika</h2>
+			<button class="btn btn-large btn-success">OOP1</button>
+			<button class="btn btn-large btn-success">DBS1</button>
+			<button class="btn btn-large btn-success">MedGest1</button>
+		</div>
 	</div>
 </div>
 
@@ -35,7 +29,6 @@ foreach ($global_data['userdata']['userpermissions'] as $zeile) {
 (function() {
 
 	$("div#toggle_button").click(function() {
-		var menue = "div#menuefooter";
 		var menue_button = "div#menuefooter_content";
 
 		if ( $(menue_button).hasClass("open") ) {
@@ -49,7 +42,7 @@ foreach ($global_data['userdata']['userpermissions'] as $zeile) {
 		} else {
 			$(menue_button).show();
 			$(menue_button).animate({
-				height: 500
+				height: 200
 			}, 500, function() {
 				// alert("animation ready");
 			})

@@ -110,19 +110,22 @@ class Admin_model extends CI_Model {
 	* Konstantin Voth
 	*/
 
-	// save new user
-	public function save_new_user($form_data)
+	/*
+	*
+	*/
+	public function save_new_user($form_data, $password)
 	{
 		// prepare data for insert
 		$data = array(
-				'LoginName' => $form_data['username'],
-				'Email' => $form_data['email'],
-				'Vorname' => $form_data['forename'],
-				'Nachname' => $form_data['lastname'],
-				'Matrikelnummer' => $form_data['matrikelnummer'],
-				'StudienbeginnJahr' => $form_data['startjahr'],
-				'StudienbeginnSemestertyp' => $form_data['semester_def'],
-				'StudiengangID' => $form_data['studiengang_dd']
+				'LoginName' 				=> $form_data['username'],
+				'Email' 					=> $form_data['email'],
+				'Vorname'					=> $form_data['forename'],
+				'Nachname' 					=> $form_data['lastname'],
+				'Matrikelnummer' 			=> $form_data['matrikelnummer'],
+				'StudienbeginnJahr' 		=> $form_data['startjahr'],
+				'StudienbeginnSemestertyp' 	=> $form_data['semester_def'],
+				'StudiengangID' 			=> $form_data['studiengang_dd'],
+				'Passwort' 					=> md5($password)
 			);
 
 		$this->db->insert('benutzer', $data);
@@ -138,6 +141,9 @@ class Admin_model extends CI_Model {
 		$this->db->insert('benutzer_mm_rolle', $data);
 	}
 	
+	/*
+	*
+	*/
 	public function get_all_roles()
 	{
 		// query raw data
@@ -199,13 +205,13 @@ class Admin_model extends CI_Model {
 	}
 
 	// get specific user
-	public function get_user_by_loginname($user_specification)
+	public function get_user_by_loginname($loginname)
 	{
-		// if (is_string($user_specification))
+		// if (is_string($loginname))
 		// {
 			$this->db->select('*')
 					 ->from('benutzer')
-					 ->where('LoginName', $user_specification);
+					 ->where('LoginName', $loginname);
 			return $this->db->get()->row_array();
 		// }
 	}

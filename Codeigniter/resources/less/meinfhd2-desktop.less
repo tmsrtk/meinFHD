@@ -64,8 +64,11 @@ form#create_user input {
 }
 
 div#menuefooter {
-	background-color: black;
+	background-color: #2C2C2C;
 	color: white;
+	border-left: 1px solid black;
+	border-top: 1px solid black;
+	border-right: 1px solid black;
 
 	width: 940px;
 	position: fixed;
@@ -79,6 +82,7 @@ div#menuefooter {
 		cursor: pointer;
 
 		#toggle_button {
+			text-align: center;
 			background-color: red;
 			float: left;
 			width: 70px;
@@ -94,6 +98,16 @@ div#menuefooter {
 
 	#menuefooter_content {
 		display: none;
-		padding: 50px;
+		height: 0px;
+		// padding: 50px;
+
+		#mf_content {
+			width: 600px;
+			margin: 0 auto;
+		}
 	}
+}
+
+div.val_error {
+	color: red;
 }
