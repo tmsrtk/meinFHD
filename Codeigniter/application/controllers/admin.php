@@ -229,11 +229,39 @@ class Admin extends FHD_Controller {
 		$this->load->view('includes/template', $data);
 	}
 
+	/*
+	* loads content for the admin_request_user_invitation_mask.php
+	*/
+	public function request_user_invitation_mask()
+	{
+		$data['title'] = 'Einladungsaufforderungen anzeigen';
+		$data['main_content'] =  'admin_request_user_invitation_mask';
 
+		$data['global_data'] = $this->data->load();
+		//----------------------------------------------------------------------
+
+		// all studiengänge
+		$data['studiengaenge'] = $this->admin_model->get_all_studiengaenge();
+
+		// user invitations
+		$data['user_invitations'] = $this->admin_model->request_all_invitations();
+
+		//----------------------------------------------------------------------
+		$this->load->view('includes/template', $data);
+	}
 
 
 
 	// action controller =======================================================
+
+
+	// /*
+	// * creates a new user 
+	
+	// public function request_invitation()
+	// {
+
+	// }*/
 
 	/*
 	* creates a new user 
@@ -258,6 +286,48 @@ class Admin extends FHD_Controller {
 
 		// // redirect to mask again
 		// redirect(site_url().'admin/create_user_mask');
+	}
+
+	/*
+	* puts a user invitation request 
+	*/
+	public function put_user_into_invitation_requests()
+	{
+		// get values from post
+		$form_data = $this->input->post();
+
+		// save new user in db
+		$this->admin_model->put_new_user_to_invitation_requests($form_data);
+
+		// TODO: send mail to admin, that a new request was send
+		// TODO: send mail to user, that he has to wait 
+	}
+
+	/*
+	* creates a new user from invitation
+	*/
+	public function create_user_from_invitation()
+	{
+		// get values from post | 
+		$form_data = $this->input->post();
+
+		// 0: create user, 1: delete request
+
+		// get choosen action from "functions dropdown"
+		$user_function = $this->input->post('user_function');
+
+		switch ($user_function) {
+			case '0':
+				// save the user into benutzer table
+				$this->admin_model->save_new_user_from_invitation($form_data);
+				break;
+			case '1':
+				$this->admin_model->delete_invitation_request($invitation_id);
+				break;
+			default:
+				# code...
+				break;
+		}
 	}
 
 	/*
@@ -356,6 +426,72 @@ class Admin extends FHD_Controller {
 
 			// flash message
 			$this->message->set('User erfolgreich erstellt!');
+
+			// load new view with success message
+			$data['title'] = 'Erfolgreich';
+			$data['main_content'] = 'admin_create_user_success';
+
+			$data['global_data'] = $this->data->load();
+
+			$this->load->view('includes/template', $data);
+		}
+	}
+
+	/*
+	*
+	*/
+	public function validate_request_user_invitation_form()
+	{
+		// set custom delimiter for validation errors
+		$this->form_validation->set_error_delimiters('<div class="val_error">', '</div>');
+
+		$rules = array();
+
+		// values, from actual form
+		$form_values = $this->input->post();
+
+		// add rules
+		$rules = array(
+			array(
+				'field' => 'forename',
+				'label' => 'Vorname',
+				'rules' => 'required|alpha'
+				),
+			array(
+				'field' => 'lastname',
+				'label' => 'Nachname',
+				'rules' => 'required|alpha'
+				),
+			array(
+				'field' => 'startjahr',
+				'label' => 'Startjahr',
+				'rules' => 'required|integer|exact_length[4]'
+				),
+			array(
+				'field' => 'matrikelnummer',
+				'label' => 'Matrikelnummer',
+				'rules' => 'required|integer|exact_length[6]|is_unique[benutzer.Matrikelnummer]'
+				),
+			array(
+				'field' => 'email',
+				'label' => 'E-Mail',
+				'rules' => 'required|valid_email|is_unique[benutzer.Email]'
+				)
+		);
+
+		// set the rules
+		$this->form_validation->set_rules($rules);
+
+		// check for (in)correctness
+		if($this->form_validation->run() == FALSE)
+		{
+			// call edit user mask again
+			$this->request_user_invitation_mask();
+		}
+		else
+		{
+			// save in db
+			$this->put_user_into_invitation_requests();
 
 			// load new view with success message
 			$data['title'] = 'Erfolgreich';

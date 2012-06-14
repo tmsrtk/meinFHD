@@ -35,7 +35,7 @@
 					</a>
 					<ul class="dropdown-menu">
 						<?php if (in_array(201, $global_data['userdata']['userpermissions'])) : ?>
-						<li><a href="#">Einladungsaufforderung</a></li>
+						<li><a href="<?php echo site_url(); ?>admin/request_user_invitation_mask">Einladungsaufforderung</a></li>
 						<?php endif ?>
 						<?php if (in_array(202, $global_data['userdata']['userpermissions'])) : ?>
 						<li><a href="<?php echo site_url(); ?>admin/create_user_mask">Benutzer anlegen</a></li>

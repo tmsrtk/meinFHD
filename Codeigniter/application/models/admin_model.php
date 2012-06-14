@@ -110,6 +110,23 @@ class Admin_model extends CI_Model {
 	* Konstantin Voth
 	*/
 
+
+
+	/*
+	*
+	*/
+	public function request_all_invitations()
+	{
+		$this->db->select('*')
+				 ->from('anfrage')
+				 ->order_by('AnfrageID', 'asc');
+
+		$q = $this->db->get();
+
+		return $q->result_array();
+	}
+
+
 	/*
 	*
 	*/
@@ -139,6 +156,31 @@ class Admin_model extends CI_Model {
 				'RolleID' => $form_data['rolle_dd']
 			);
 		$this->db->insert('benutzer_mm_rolle', $data);
+	}
+
+	public function put_new_user_to_invitation_requests($form_data)
+	{
+		// prepare data for insert
+		$data = array(
+				'Vorname'					=> $form_data['forename'],
+				'Nachname' 					=> $form_data['lastname'],
+				'Startjahr'			 		=> $form_data['startjahr'],
+				'Matrikelnummer' 			=> $form_data['matrikelnummer'],
+				'Emailadresse' 				=> $form_data['email'],
+				'Semester'				 	=> $form_data['semester_def'],
+				'Studiengang' 				=> $form_data['studiengang_dd'],
+				'TypID'						=> $form_data['user_type']
+			);
+
+		$this->db->insert('anfrage', $data);
+	}
+
+	/*
+	*
+	*/
+	public function save_new_user_from_invitation($form_data)
+	{
+
 	}
 	
 	/*
