@@ -597,15 +597,15 @@ class Admin extends FHD_Controller {
 	 * Get all data for a selectable (dropdown) list of Studiengänge
 	 * TODO have to be dynamic - right now - static stdgng_id !!!
 	 */
-	function showStdgngCourseList(){
+	function show_stdgng_course_list(){
 		
 		// get all stdgnge for filter-view
-		$data['allStdgnge'] = $this->admin_model->getAllStdgnge();
+		$data['all_stdgnge'] = $this->admin_model->getAllStdgnge();
 		
 		// VIEW
 		$data['global_data'] = $this->data->load();
 		$data['title'] = 'Studiengangverwaltung';
-		$data['main_content'] = 'admin_stdgng_list';
+		$data['main_content'] = 'admin_stdgng_edit';
 		
 		$this->load->view('includes/template', $data);
 		
@@ -648,13 +648,15 @@ class Admin extends FHD_Controller {
 
 		// get submitted data - AJAX
 		$stdgng_chosen_id = $this->input->get('stdgng_id');
-		$chosen_stdgng_data = $this->admin_model->getStdgngDetails($stdgng_chosen_id);
+//		$stdgng_chosen_id = 1;
+		$courses_of_single_stdgng = $this->admin_model->get_stdgng_courses($stdgng_chosen_id);
+//		$details_of_single_stdgng = $this->admin_model->get_stdgng_details($stdgng_chosen_id);
 		
-		$stdgng_details = $this->admin_model->get_stdgng_details_asrow($stdgng_chosen_id);
+		$details_of_single_stdgng = $this->admin_model->get_stdgng_details_asrow($stdgng_chosen_id);
 		$attributes = array('class' => 'listform', 'id' => 'stdgngform');
 	
-		// get number of semesters an prepare data for dropdown
-		$regelsemester = $stdgng_details->Regelsemester;
+		// get number of semesters and prepare data for dropdown
+		$regelsemester = $details_of_single_stdgng->Regelsemester;
 		for($i = 0; $i <= $regelsemester; $i++){
 		    if($i != 0){
 			    $semester_dropdown_options[$i] = $i;
@@ -664,268 +666,125 @@ class Admin extends FHD_Controller {
 	        }
 		
 //		echo '<pre>';
-//		print_r($semester_dropdown_options);
+//		print_r($details_of_single_stdgng);
 //		echo '</pre>';
 		
 		// fill first element of object-array with default-values - necessary because first line of table view should be for creation of new course
 		// only KursID is needed, because creation of input-fields grabs KursID to generate unique names
-		$chosen_stdgng_data[0]->KursID = '0';
-		$chosen_stdgng_data[0]->Kursname = '';
-		$chosen_stdgng_data[0]->kurs_kurz = '';
-		$chosen_stdgng_data[0]->Creditpoints = '';
-		$chosen_stdgng_data[0]->SWS_Vorlesung = '';
-		$chosen_stdgng_data[0]->SWS_Uebung = '';
-		$chosen_stdgng_data[0]->SWS_Praktikum = '';
-		$chosen_stdgng_data[0]->SWS_Projekt = '';
-		$chosen_stdgng_data[0]->SWS_Seminar = '';
-		$chosen_stdgng_data[0]->SWS_SeminarUnterricht = '';
-		$chosen_stdgng_data[0]->Semester = '';
-		$chosen_stdgng_data[0]->Beschreibung = '';
+		$courses_of_single_stdgng[0]->KursID = '0';
+		$courses_of_single_stdgng[0]->Kursname = '';
+		$courses_of_single_stdgng[0]->kurs_kurz = '';
+		$courses_of_single_stdgng[0]->Creditpoints = '';
+		$courses_of_single_stdgng[0]->SWS_Vorlesung = '';
+		$courses_of_single_stdgng[0]->SWS_Uebung = '';
+		$courses_of_single_stdgng[0]->SWS_Praktikum = '';
+		$courses_of_single_stdgng[0]->SWS_Projekt = '';
+		$courses_of_single_stdgng[0]->SWS_Seminar = '';
+		$courses_of_single_stdgng[0]->SWS_SeminarUnterricht = '';
+		$courses_of_single_stdgng[0]->Semester = '';
+		$courses_of_single_stdgng[0]->Beschreibung = '';
+//		
+//		// init result and put data into a div
+//		$result = ''; // init
+//		$result = '<div id="stdgng-change-view"><div id="stdgng-details">';
+//		
+//		// first table holding the details of a single stdgng
+//		$result .= form_open('admin/saveStdgngDescriptionChanges');
+//		
+//		    // fields to fill in details-form (Name, Abk., PO, Semester, CP)...
+//		    $result .= '<div id="stdgng-details-1" style=\'float:left;\'><table></tbody>';
+//		    
+//
+//			    foreach ($stdgng_details as $key => $value){
+//				    if($key == 'StudiengangName' || $key == 'StudiengangAbkuerzung' || $key == 'Pruefungsordnung'
+//						    || $key == 'Regelsemester' || $key == 'Creditpoints'){
+//
+//					    $result .= '<tr><td>'.$key.'</td><td>';
+//
+//					    // get data to display in input-field
+//					    $inputFieldData = array(
+//						'name' => ($stdgng_details->StudiengangID).$key,
+//						'id' => 'input-stdgng-details',
+//						'value' => $value,
+//						'rows' => 7,
+//						'cols' => 40
+//					    );
+//					    $result .= form_input($inputFieldData).'</td></tr>';
+//				    }
+//			    }
+//			
+//		    // ... (Beschreibung) ...
+//		    $result .= '</tbody></table></div><div id="stdgng-details-2">';
+//			    $stdgngDetailTextareaData = array(
+//				'name' => ($stdgng_details->StudiengangID).'Beschreibung',
+//				'id' => 'input-stdgng-beschreibung',
+//				'value' => $stdgng_details->Beschreibung,
+//				'rows' => 7,
+//				'cols' => 40
+//			    );
+//			    $result .= form_textarea($stdgngDetailTextareaData).'</div>';
+//
+//		    // .. Buttons
+//		    $result .= '<div id="stdgng-details-3" style=\'clear:both;\'>';
+//			
+//		// hidden field to transmit the stdgng-id
+//		$result .= form_hidden('stdgng_id', $stdgng_chosen_id);
+//			
+//		// return submit-button for details
+//		$btn_attributes = 'class = "btn-warning"';
+//		$result .= form_submit('save_stdgng_detail_changes', 'Änderungen an den Details speichern', $btn_attributes);
+//		$result .= form_close();
+//		
+//		$result .= '</div>'; // close stdgng-details-3
 		
-		// init result and put data into a div
-		$result = ''; // init
-		$result = '<div id="stdgng-change-view"><div id="stdgng-details">';
-		
-		// first table holding the details of a single stdgng
-		$result .= form_open('admin/saveStdgngDescriptionChanges');
-		
-		    // fields to fill in details-form (Name, Abk., PO, Semester, CP)...
-		    $result .= '<div id="stdgng-details-1" style=\'float:left;\'><table></tbody>';
-		    
 
-			    foreach ($stdgng_details as $key => $value){
-				    if($key == 'StudiengangName' || $key == 'StudiengangAbkuerzung' || $key == 'Pruefungsordnung'
-						    || $key == 'Regelsemester' || $key == 'Creditpoints'){
-
-					    $result .= '<tr><td>'.$key.'</td><td>';
-
-					    // get data to display in input-field
-					    $inputFieldData = array(
-						'name' => ($stdgng_details->StudiengangID).$key,
-						'id' => 'input-stdgng-details',
-						'value' => $value,
-						'rows' => 7,
-						'cols' => 40
-					    );
-					    $result .= form_input($inputFieldData).'</td></tr>';
-				    }
-			    }
-			
-		    // ... (Beschreibung) ...
-		    $result .= '</tbody></table></div><div id="stdgng-details-2">';
-			    $stdgngDetailTextareaData = array(
-				'name' => ($stdgng_details->StudiengangID).'Beschreibung',
-				'id' => 'input-stdgng-beschreibung',
-				'value' => $stdgng_details->Beschreibung,
-				'rows' => 7,
-				'cols' => 40
-			    );
-			    $result .= form_textarea($stdgngDetailTextareaData).'</div>';
-
-		    // .. Buttons
-		    $result .= '<div id="stdgng-details-3" style=\'clear:both;\'>';
-			
-		// hidden field to transmit the stdgng-id
-		$result .= form_hidden('stdgng_id', $stdgng_chosen_id);
-			
-		// return submit-button for details
-		$btn_attributes = 'class = "btn-warning"';
-		$result .= form_submit('save_stdgng_detail_changes', 'Änderungen an den Details speichern', $btn_attributes);
-		$result .= form_close();
+//		echo '<pre>';
+//		print_r($semester_dropdown_options);
+//		echo '</pre>';
 		
-		$result .= '</div>'; // close stdgng-details-3
-		
-		
-		// return dividing div
-		$result .= '<div id="stdgng-data-list"  style=\'clear:both; background:#fff;\'>';
-		
-		// open form
-		$result .= form_open('admin/save_stdgng_changes', $attributes);
-		
-		// second table holding the course-list
-		$result .= 
-			'<table class="table table-striped table-bordered table-condensed"><thead><tr>
-			<th>Kursname:</hd>
-			<th>Abk.:</th>
-			<th>CP:</th>
-			<th>SWS:</th>
-			<th>Sem.:</th>
-			<th>Beschreibung:</th>
-			<th>Aktion:</th>
-			</tr></thead>';
-		
-		// tablebody
-		$result .= '<tbody>';
+		$rows = array(); 
 		
 		//for each record - print out table-row with form-fields
-		foreach($chosen_stdgng_data as $sd){
-		
-			// building a single row in detail-list-table
-			$result .= '<tr>';
-			
-			// get data and store in associative array to use code-igniters form_input
-			$kursnameData = array(
-			    'name' => $sd->KursID.'Kursname',
-			    'id' => 'Kursname',
-			    'value' => $sd->Kursname
-			);
-			$result .= '<td>'.form_input($kursnameData);
-			
-			$kursnameKurzData = array(
-			    'name' => $sd->KursID.'kurs_kurz',
-			    'id' => 'KursnameKurz',
-			    'value' => $sd->kurs_kurz,
-			    'class' => 'span1'
-			);
-			$result .= '</td><td>'.form_input($kursnameKurzData);
-			
-			$creditpointsData = array(
-			    'name' => $sd->KursID.'Creditpoints',
-			    'id' => 'CP',
-			    'value' => $sd->Creditpoints,
-			    'class' => 'span1'
-			);
-			$result .= '</td><td>'.form_input($creditpointsData);
-			
-			
-			// run through all 6 SWS-types and generate data-array for usage with input-field
-			// get data for Vorlesung
-			if($sd->SWS_Vorlesung === '0'){
-				$sd_SWS_Vorlesung = ' ';
-			} else {
-				$sd_SWS_Vorlesung = $sd->SWS_Vorlesung;
-			}
-			$swsDataVorl = array(
-			    'name' => $sd->KursID.'SWS_Vorlesung',
-			    'id' => 'SWS_Vorl',
-			    'value' => $sd_SWS_Vorlesung,
-			    'class' => 'span1'
-			);
-			
-			// get data for Uebung
-			if($sd->SWS_Uebung === '0'){
-				$sd_SWS_Uebung = ' ';
-			} else {
-				$sd_SWS_Uebung = $sd->SWS_Uebung;
-			}
-			$swsDataUeb = array(
-			    'name' => $sd->KursID.'SWS_Uebung',
-			    'id' => 'SWS_Ueb',
-			    'value' => $sd_SWS_Uebung,
-			    'class' => 'span1'
-			);
-			
-			// get data for Praktikum
-			if($sd->SWS_Praktikum === '0'){
-				$sd_SWS_Praktikum = ' ';
-			} else {
-				$sd_SWS_Praktikum = $sd->SWS_Praktikum;
-			}
-			$swsDataPrakt = array(
-			    'name' => $sd->KursID.'SWS_Praktikum',
-			    'id' => 'SWS_Prakt',
-			    'value' => $sd_SWS_Praktikum,
-			    'class' => 'span1'
-			);
-			
-			// get data for Projekt
-			if($sd->SWS_Projekt === '0'){
-				$sd_SWS_Projekt = ' ';
-			} else {
-				$sd_SWS_Projekt = $sd->SWS_Projekt;
-			}
-			$swsDataPro = array(
-			    'name' => $sd->KursID.'SWS_Projekt',
-			    'id' => 'SWS_Pro',
-			    'value' => $sd_SWS_Projekt,
-			    'class' => 'span1'
-			);
-			
-			// get data for Seminar
-			if($sd->SWS_Seminar === '0'){
-				$sd_SWS_Seminar = ' ';
-			} else {
-				$sd_SWS_Seminar = $sd->SWS_Seminar;
-			}
-			$swsDataSem = array(
-			    'name' => $sd->KursID.'SWS_Seminar',
-			    'id' => 'SWS_Sem',
-			    'value' => $sd_SWS_Seminar,
-			    'class' => 'span1'
-			);
-			
-			// get data for Seminarunterricht - ?? // TODO check if this field is still needed / in use?
-			if($sd->SWS_SeminarUnterricht === '0'){
-				$sd_SWS_SeminarUnterricht = ' ';
-			} else {
-				$sd_SWS_SeminarUnterricht = $sd->SWS_SeminarUnterricht;
-			}
-			$swsDataSemU = array(
-			    'name' => $sd->KursID.'SWS_SeminarUnterricht',
-			    'id' => 'SWS_SemU',
-			    'value' => $sd_SWS_SeminarUnterricht,
-			    'class' => 'span1'
-			);
-			
-			$result .= '</td><td><table class="">
-			    <tbody><tr><td>'.form_input($swsDataVorl);
-			$result .= '</td><td>'.form_input($swsDataUeb);
-			$result .= '</td><td>'.form_input($swsDataPrakt);
-			$result .= '</td><td>'.form_input($swsDataPro);
-			$result .= '</td><td>'.form_input($swsDataSem);
-			$result .= '</td><td>'.form_input($swsDataSemU);
-			$result .= '</td></tr></tbody></table></td><td>';
-				
-			// output dropdown to choose the Regelsemester in which the course takes place
-			$dropdown_attributes = 'class = "span1"';
-			$result .= form_dropdown($sd->KursID.'Semester', $semester_dropdown_options,
-				$sd->Semester, $dropdown_attributes).'</td><td>';
-			
-			$textareaData = array(
-			    'name' => $sd->KursID.'Beschreibung',
-			    'id' => 'Beschreibung',
-			    'value' => $sd->Beschreibung,
-			    'rows' => 3,
-			    'cols' => 5
-			);
-			$result .= form_textarea($textareaData).'</td><td>';
-			
-			if($sd->KursID == 0){ 
-				$buttonData = array(
-				    'name' => $sd->KursID.'createCourse',
-				    'id' => 'create_btn_stdgng',
-				    'value' => true,
-				    'content' => 'Hinzufügen'
-				);
-			} else {
-				$buttonData = array(
-				    'name' => $sd->KursID.'deleteCourse',
-				    'id' => 'delete_btn_stdgng',
-				    'data-id' => $sd->KursID,
-				    'value' => true,
-				    'content' => 'Löschen'
-				);
-			}
-			// TODO event for button-click - id vergeben und über AJAX
-			$result .= form_button($buttonData);	
-			
-			$result .= '</td></tr>';
-			
+		foreach($courses_of_single_stdgng as $sd){
+		    // build a table-row for each course
+		    $data = array(
+			'KursID' => $sd->KursID,
+			'Kursname' => $sd->Kursname,
+			'kurs_kurz' => $sd->kurs_kurz,
+			'Creditpoints' => $sd->Creditpoints,
+			'SWS_Vorlesung' => $sd->SWS_Vorlesung,
+			'SWS_Uebung' => $sd->SWS_Uebung,
+			'SWS_Praktikum' => $sd->SWS_Praktikum,
+			'SWS_Projekt' => $sd->SWS_Projekt,
+			'SWS_Seminar' => $sd->SWS_Seminar,
+			'SWS_SeminarUnterricht' => $sd->SWS_SeminarUnterricht,
+			'SemesterDropdown' => $semester_dropdown_options,	// array holding all dropdown-options
+			'Semester' => $sd->Semester,
+			'Beschreibung' => $sd->Beschreibung,
+		    );
+
+		    // array holding all rows
+		    $rows[] = $this->load->view('admin-subviews/admin_stdgng_coursetable_row', $data, TRUE);
 		}
 		
-		// close table, table-div and surrounding-div
-		$result .= '</tbody></table>';
 		
-		// hidden field to transmit the stdgng-id
-		$result .= form_hidden('stdgng_id', $stdgng_chosen_id);
+		$data['stdgng_details'] = $details_of_single_stdgng;
+		$data['std_course_rows'] = $rows;
+		$data['stdgng_id'] = $stdgng_chosen_id;
 		
-		$btn_attributes = 'class = "btn-warning"';
-		$result .= form_submit('save_stdgng_changes', 'Änderungen speichern', $btn_attributes);
-		$result .= form_close();
-		
-		$result .= '</div>';
+		// return content
+		$result = '';
+		$result .= $this->load->view('admin-subviews/admin_stdgng_description', $data, TRUE);
+		$result .= $this->load->view('admin-subviews/admin_stdgng_coursetable_content', $data, TRUE);
 		
 		echo $result;
+		
+//		$data['global_data'] = $this->data->load();
+//		$data['title'] = 'Studiengang Kursliste anzeigen';
+//		$data['main_content'] = 'admin_stdgng_list';
+		
+//		$this->load->view('includes/template', $data);
+		
 	}
 	
 	

@@ -359,7 +359,7 @@ class Admin_model extends CI_Model {
 	 * @param unknown_type $stdgng_id
 	 * @return unknown
 	 */
-	function getStdgngDetails($stdgng_id){
+	function get_stdgng_courses($stdgng_id){
 		$q = $this->db->get_where('studiengangkurs', array('StudiengangID' => $stdgng_id));
 		
 		// first line of stdgng-list-view should give the opportunity to create an own course
@@ -407,12 +407,11 @@ class Admin_model extends CI_Model {
 	}
 	
 	/**
-	 * Returns the Regelsemester from a specified Stdgng
+	 * Returns all details from a specified Stdgng
 	 * @param unknown_type $stdgng_id
 	 * @return unknown
 	 */
 	function get_stdgng_details_asrow($stdgng_id){
-// 		$this->db->select('Regelsemester');
 		$q = $this->db->get_where('studiengang', array('StudiengangID' => $stdgng_id));
 		
 		if($q->num_rows() == 1){

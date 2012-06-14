@@ -42,14 +42,14 @@
 		</div>
 		<div id="stdgng-details-2">
 			<?php 
-				$stdgngDetailTextareaData = array(
+				$stdgng_details_textarea_data = array(
 						'name' => 'Beschreibung',
 						'id' => 'input-stdgng-beschreibung',
 						'value' => '',
 						'rows' => 7,
 						'cols' => 40
 				);
-				echo form_textarea($stdgngDetailTextareaData);
+				echo form_textarea($stdgng_details_textarea_data);
 				
 			?>
 	</div>

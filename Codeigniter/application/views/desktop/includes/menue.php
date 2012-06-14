@@ -69,7 +69,7 @@
 						<li><a href="#">Studiengang importieren</a></li>
 						<?php endif ?>
 						<?php if (in_array(303, $global_data['userdata']['userpermissions'])) : ?>
-						<li><a href="<?php echo site_url(); ?>admin/showStdgngCourseList">Studiengang bearbeiten</a></li>
+						<li><a href="<?php echo site_url(); ?>admin/show_stdgng_course_list">Studiengang bearbeiten</a></li>
 						<?php endif ?>
 						<?php if (in_array(304, $global_data['userdata']['userpermissions'])) : ?>
 						<li><a href="#">Studiengang kopieren</a></li>
