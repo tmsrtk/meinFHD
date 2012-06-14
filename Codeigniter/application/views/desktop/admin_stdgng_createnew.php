@@ -8,37 +8,37 @@
 
 	<div id="stdgng-details">
 		<div id="stdgng-details-1" style='float:left;'>
-			<table>
-			<?php 
-				foreach ($allStdgnge[0] as $key => $value){
-					if($key == 'StudiengangName' || $key == 'StudiengangAbkuerzung' || $key == 'Pruefungsordnung'
-							|| $key == 'Regelsemester' || $key == 'Creditpoints'){
+		    <table>
+		    <?php 
+			foreach ($allStdgnge[0] as $key => $value){
+			    if($key == 'StudiengangName' || $key == 'StudiengangAbkuerzung' || $key == 'Pruefungsordnung'
+					    || $key == 'Regelsemester' || $key == 'Creditpoints'){
 
-						echo '<tr><td>';
-						echo $key;
-						echo '</td><td>';
-						
-						
-						// create empty fields - new course will be created
-						$inputFieldData = array(
-								'name' => $key,
-								'id' => 'input-stdgng-details',
-								'value' => '',
-						);
-						echo form_input($inputFieldData);
-						echo '</td>';
-					}
-				}
+				echo '<tr><td>';
+				echo $key;
+				echo '</td><td>';
 
-				// put some static data into post - CreditpointsMin (actually not needed) and FachbereichID (final = 5)
-				$staticData = array(
-						'CreditpointsMin' => '0',
-						'FachbereichID' => '5'
+
+				// create empty fields - new course will be created
+				$inputFieldData = array(
+						'name' => $key,
+						'id' => 'input-stdgng-details',
+						'value' => '',
 				);
-				echo form_hidden($staticData);
-				
-			?>
-			</table>
+				echo form_input($inputFieldData);
+				echo '</td>';
+			    }
+			}
+
+			// put some static data into post - CreditpointsMin (actually not needed) and FachbereichID (final = 5)
+			$staticData = array(
+					'CreditpointsMin' => '0',
+					'FachbereichID' => '5'
+			);
+			echo form_hidden($staticData);
+
+		    ?>
+		    </table>
 		</div>
 		<div id="stdgng-details-2">
 			<?php 

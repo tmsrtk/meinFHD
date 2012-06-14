@@ -63,7 +63,7 @@
 					</a>
 					<ul class="dropdown-menu">
 						<?php if (in_array(301, $global_data['userdata']['userpermissions'])) : ?>
-						<li><a href="<?php echo site_url(); ?>admin/createNewStdgng">Studiengang anlegen</a></li>
+						<li><a href="<?php echo site_url(); ?>admin/create_new_stdgng">Studiengang anlegen</a></li>
 						<?php endif ?>
 						<?php if (in_array(302, $global_data['userdata']['userpermissions'])) : ?>
 						<li><a href="#">Studiengang importieren</a></li>
@@ -75,7 +75,7 @@
 						<li><a href="#">Studiengang kopieren</a></li>
 						<?php endif ?>
 						<?php if (in_array(305, $global_data['userdata']['userpermissions'])) : ?>
-						<li><a href="<?php echo site_url(); ?>admin/showStdgngList">Studiengang loeschen</a></li>
+						<li><a href="<?php echo site_url(); ?>admin/show_stdgng_list">Studiengang loeschen</a></li>
 						<?php endif ?>
 					</ul>
 				</li>

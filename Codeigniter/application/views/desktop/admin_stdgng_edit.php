@@ -16,14 +16,7 @@
 	?>
 
 	<div id="stdgng-list">
-<!--	    <div id="stdgng-list-details">
-		<?php // print $stdgng_change_view; ?>
-	    </div>-->
-
-	    <!--	table with all courses belonging to a single stdgng -->
-<!--	    <div id="stdgng-list-courses">
-
-	    </div>-->
+	    <!-- this div is dynamically filled after user chose an option from dropdown -->
 	</div>
 	
 	<!--	confirmation-dialog after pressing delete-button -->

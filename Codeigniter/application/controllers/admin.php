@@ -614,7 +614,7 @@ class Admin extends FHD_Controller {
 	/**
 	 * Show page with empty inpuf-fields 
 	 */
-	function createNewStdgng(){
+	function create_new_stdgng(){
 				
 		// get all stdgnge for the view
 		$data['allStdgnge'] = $this->admin_model->getAllStdgnge();
@@ -628,7 +628,7 @@ class Admin extends FHD_Controller {
 		
 	}
 	
-	function showStdgngList(){
+	function show_stdgng_list(){
 		// get all stdgnge for the view
 		$data['allStdgnge'] = $this->admin_model->getAllStdgnge();
 		
@@ -642,18 +642,18 @@ class Admin extends FHD_Controller {
 	}
 	
 	/**
-	 * Returns an div holding the stdgng-table for a specified stdgng >> $this->input->get('stdgng_id')
+	 * Returns an div holding the stdgng-table for a specified stdgng
+	 * >> $this->input->get('stdgng_id')
 	 */
 	function ajax_show_courses_of_stdgng(){
 
 		// get submitted data - AJAX
 		$stdgng_chosen_id = $this->input->get('stdgng_id');
-//		$stdgng_chosen_id = 1;
-		$courses_of_single_stdgng = $this->admin_model->get_stdgng_courses($stdgng_chosen_id);
-//		$details_of_single_stdgng = $this->admin_model->get_stdgng_details($stdgng_chosen_id);
+		$courses_of_single_stdgng = $this->admin_model->
+			get_stdgng_courses($stdgng_chosen_id);
 		
-		$details_of_single_stdgng = $this->admin_model->get_stdgng_details_asrow($stdgng_chosen_id);
-		$attributes = array('class' => 'listform', 'id' => 'stdgngform');
+		$details_of_single_stdgng = $this->admin_model->
+			get_stdgng_details_asrow($stdgng_chosen_id);
 	
 		// get number of semesters and prepare data for dropdown
 		$regelsemester = $details_of_single_stdgng->Regelsemester;
@@ -669,8 +669,11 @@ class Admin extends FHD_Controller {
 //		print_r($details_of_single_stdgng);
 //		echo '</pre>';
 		
-		// fill first element of object-array with default-values - necessary because first line of table view should be for creation of new course
-		// only KursID is needed, because creation of input-fields grabs KursID to generate unique names
+		// fill first element of object-array with default-values -
+		// >> necessary because first line of table view should be
+		// for creation of new courses
+		// only KursID is needed, because creation of input-fields grabs
+		// KursID to generate unique names
 		$courses_of_single_stdgng[0]->KursID = '0';
 		$courses_of_single_stdgng[0]->Kursname = '';
 		$courses_of_single_stdgng[0]->kurs_kurz = '';
@@ -683,66 +686,6 @@ class Admin extends FHD_Controller {
 		$courses_of_single_stdgng[0]->SWS_SeminarUnterricht = '';
 		$courses_of_single_stdgng[0]->Semester = '';
 		$courses_of_single_stdgng[0]->Beschreibung = '';
-//		
-//		// init result and put data into a div
-//		$result = ''; // init
-//		$result = '<div id="stdgng-change-view"><div id="stdgng-details">';
-//		
-//		// first table holding the details of a single stdgng
-//		$result .= form_open('admin/saveStdgngDescriptionChanges');
-//		
-//		    // fields to fill in details-form (Name, Abk., PO, Semester, CP)...
-//		    $result .= '<div id="stdgng-details-1" style=\'float:left;\'><table></tbody>';
-//		    
-//
-//			    foreach ($stdgng_details as $key => $value){
-//				    if($key == 'StudiengangName' || $key == 'StudiengangAbkuerzung' || $key == 'Pruefungsordnung'
-//						    || $key == 'Regelsemester' || $key == 'Creditpoints'){
-//
-//					    $result .= '<tr><td>'.$key.'</td><td>';
-//
-//					    // get data to display in input-field
-//					    $inputFieldData = array(
-//						'name' => ($stdgng_details->StudiengangID).$key,
-//						'id' => 'input-stdgng-details',
-//						'value' => $value,
-//						'rows' => 7,
-//						'cols' => 40
-//					    );
-//					    $result .= form_input($inputFieldData).'</td></tr>';
-//				    }
-//			    }
-//			
-//		    // ... (Beschreibung) ...
-//		    $result .= '</tbody></table></div><div id="stdgng-details-2">';
-//			    $stdgngDetailTextareaData = array(
-//				'name' => ($stdgng_details->StudiengangID).'Beschreibung',
-//				'id' => 'input-stdgng-beschreibung',
-//				'value' => $stdgng_details->Beschreibung,
-//				'rows' => 7,
-//				'cols' => 40
-//			    );
-//			    $result .= form_textarea($stdgngDetailTextareaData).'</div>';
-//
-//		    // .. Buttons
-//		    $result .= '<div id="stdgng-details-3" style=\'clear:both;\'>';
-//			
-//		// hidden field to transmit the stdgng-id
-//		$result .= form_hidden('stdgng_id', $stdgng_chosen_id);
-//			
-//		// return submit-button for details
-//		$btn_attributes = 'class = "btn-warning"';
-//		$result .= form_submit('save_stdgng_detail_changes', 'Änderungen an den Details speichern', $btn_attributes);
-//		$result .= form_close();
-//		
-//		$result .= '</div>'; // close stdgng-details-3
-		
-
-//		echo '<pre>';
-//		print_r($semester_dropdown_options);
-//		echo '</pre>';
-		
-		$rows = array(); 
 		
 		//for each record - print out table-row with form-fields
 		foreach($courses_of_single_stdgng as $sd){
@@ -767,7 +710,8 @@ class Admin extends FHD_Controller {
 		    $rows[] = $this->load->view('admin-subviews/admin_stdgng_coursetable_row', $data, TRUE);
 		}
 		
-		
+	
+		// make data available in view
 		$data['stdgng_details'] = $details_of_single_stdgng;
 		$data['std_course_rows'] = $rows;
 		$data['stdgng_id'] = $stdgng_chosen_id;
@@ -779,12 +723,6 @@ class Admin extends FHD_Controller {
 		
 		echo $result;
 		
-//		$data['global_data'] = $this->data->load();
-//		$data['title'] = 'Studiengang Kursliste anzeigen';
-//		$data['main_content'] = 'admin_stdgng_list';
-		
-//		$this->load->view('includes/template', $data);
-		
 	}
 	
 	
@@ -795,21 +733,20 @@ class Admin extends FHD_Controller {
 		$deleteId = $this->input->post('deleteStdgngId');
 		$this->admin_model->deleteStdgng($deleteId);
 		
-		$this->showStdgngList();
+		$this->show_stdgng_list();
 	}
 	
 	/**
 	 * Saving all Values from $_POST after submit button has been clicked.
 	 */
-	function save_stdgng_changes(){
+	function save_stdgng_course_changes(){
 		
 		// TODO react on KursID 0 >> CREATE NEW COURSE
 		// TODO validation incoming data - specially when course is created
-	    
-		
-		echo '<pre>';
-		print_r($this->input->post());
-		echo '</pre>';
+	    	
+//		echo '<pre>';
+//		print_r($this->input->post());
+//		echo '</pre>';
 		
 		// build an array, containing all keys that have to be updated in db
 		$updateFields = array(
@@ -842,19 +779,18 @@ class Admin extends FHD_Controller {
 			$updateStdgngData[$updateFields[$i]] = $this->input->post($id.$updateFields[$i]);
 		    }
 		    // call function in model to update records
-		    $this->admin_model->updateStdgngDetails($updateStdgngData, $id);
+		    $this->admin_model->update_stdgng_courses($updateStdgngData, $id);
 		}
 		
 		// show StudiengangDetails-List again
-		$this->showStdgngCourseList();
-		
+		$this->show_stdgng_course_list();	
 	}
 	
 	
 	/**
-	 * Save all fields (studiengangkurs) - getting data from $_POST, after button-click
+	 * Save all fields (studiengang) - getting data from $_POST, after button-click
 	 */
-	function saveStdgngDescriptionChanges(){
+	function save_stdgng_details_changes(){
 		$updateFields = array(
 		    'Pruefungsordnung',
 		    'StudiengangName',
@@ -873,10 +809,10 @@ class Admin extends FHD_Controller {
 		}
 		
 		// save data
-		$this->admin_model->updateStdgngDescriptionData($updateStdgngDescriptionData, $stdgngId);
+		$this->admin_model->update_stdgng_description_data($updateStdgngDescriptionData, $stdgngId);
 		
 		// show StudiengangDetails-List again
-		$this->showStdgngCourseList();
+		$this->show_stdgng_course_list();
 		
 	}
 	

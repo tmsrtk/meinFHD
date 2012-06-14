@@ -429,7 +429,7 @@ class Admin_model extends CI_Model {
 	 * @param unknown_type $data
 	 * @param unknown_type $stdgng_id
 	 */
-	function updateStdgngDetails($data, $kurs_id){
+	function update_stdgng_courses($data, $kurs_id){
 		$this->db->where('KursID', $kurs_id);
 		$this->db->update('studiengangkurs', $data);
 	}
@@ -440,7 +440,7 @@ class Admin_model extends CI_Model {
 	 * @param unknown_type $data
 	 * @param unknown_type $stdgng_id
 	 */
-	function updateStdgngDescriptionData($data, $stdgng_id){
+	function update_stdgng_description_data($data, $stdgng_id){
 		$this->db->where('StudiengangID', $stdgng_id);
 		$this->db->update('studiengang', $data);
 	}

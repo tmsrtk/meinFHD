@@ -1,4 +1,4 @@
-<?php form_open('admin/save_stdgng_changes'); ?>
+<?php print form_open('admin/save_stdgng_course_changes'); ?>
     <table class="table table-striped table-bordered table-condensed">
 	<thead>
 	    <tr>
@@ -23,11 +23,11 @@
 
 <?php
     // hidden field to transmit the stdgng-id
-    form_hidden('stdgng_id', $stdgng_id);
+    print form_hidden('stdgng_id', $stdgng_id);
 
     // save-button
     $btn_attributes = 'class = "btn-warning"';
-    form_submit('save_stdgng_changes', 'Änderungen speichern', $btn_attributes);
+    print form_submit('save_stdgng_changes', 'Änderungen speichern', $btn_attributes);
     // close form
-    form_close();
+    print form_close();
 ?>

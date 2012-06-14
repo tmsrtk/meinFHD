@@ -1,15 +1,6 @@
 <div id="stdgng-details">
 
-<!-- 	<pre> 
-	<?php // print_r($stdgng_details); ?>
- 	</pre> -->
-	
-	<?php echo form_open('admin/saveStdgngDescriptionChanges'); 
-	
-// 	TODO get active StudiengangID !!!!!!!!!!!!!!
-	$stdgngIndexImArray = 0;
-	?>
-
+	<?php echo form_open('admin/save_stdgng_details_changes'); ?>
 	
 	<div id="stdgng-details-1" style='float:left;'>
 	    <table>
@@ -38,6 +29,7 @@
 	    ?>
 	    </table>
 	</div>
+
 	<div id="stdgng-details-2">
 	    <?php 
 		$stdgng_details_textarea_data = array(
@@ -54,10 +46,13 @@
 	<div id="stdgng-details-3" style='clear:both;'>
 	    <?php
 		$btn_attributes = 'class = "btn-warning"';
+		
+		// hidden field to transmit the stdgng-id
+		echo form_hidden('stdgng_id', $stdgng_id);
+		
 		echo form_submit('save_stdgng_detail_changes', 'Änderungen an den Details speichern', $btn_attributes);
 		echo form_close();
 	    ?>
 	</div>
 	
-
 </div>
