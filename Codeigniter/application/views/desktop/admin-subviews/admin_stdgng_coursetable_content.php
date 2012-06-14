@@ -14,7 +14,7 @@
 	<tbody>
 	    <!-- TODO first row as insert-row -->
 
-	    <?php foreach($std_course_rows as $row) : ?>
+	    <?php foreach($stdgng_course_rows as $row) : ?>
 		<tr><?php print $row; ?></tr>
 	    <?php endforeach; ?>
 

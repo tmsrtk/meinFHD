@@ -446,11 +446,11 @@ class Admin_model extends CI_Model {
 	}
 	
 	
-	function createNewStdgng($data){
+	function create_new_stdgng($data){
 		$this->db->insert('studiengang', $data);
 	}
 	
-	function deleteStdgng($id){
+	function delete_stdgng($id){
 		$this->db->where('StudiengangID', $id);
 		$this->db->delete('studiengang');
 		

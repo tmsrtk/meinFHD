@@ -4,7 +4,7 @@
 	<?php //print_r($allStdgnge); ?>
 <!-- 	</pre> -->
 	
-	<?php echo form_open('admin/saveNewCreatedStdgng'); ?>
+	<?php echo form_open('admin/save_new_created_stdgng'); ?>
 
 	<div id="stdgng-details">
 		<div id="stdgng-details-1" style='float:left;'>

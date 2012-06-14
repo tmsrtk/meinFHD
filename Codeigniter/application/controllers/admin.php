@@ -11,9 +11,6 @@ class Admin extends FHD_Controller {
 		
 		$this->load->model('admin_model');
 
-		// @frank, no need to load it here every time, take a look at autolaod.php
-		// $this->load->helper(array('form', 'url'));
-		
 		// Daten holen - Alle Rollen mit Bezeichnung, Alle Berechtigungen mit Bezeichnung, gesondert die RoleIds
 		$this->roles = $this->admin_model->getAllRoles();
 		$this->permissions = $this->admin_model->getAllPermissions();
@@ -690,21 +687,19 @@ class Admin extends FHD_Controller {
 		//for each record - print out table-row with form-fields
 		foreach($courses_of_single_stdgng as $sd){
 		    // build a table-row for each course
-		    $data = array(
-			'KursID' => $sd->KursID,
-			'Kursname' => $sd->Kursname,
-			'kurs_kurz' => $sd->kurs_kurz,
-			'Creditpoints' => $sd->Creditpoints,
-			'SWS_Vorlesung' => $sd->SWS_Vorlesung,
-			'SWS_Uebung' => $sd->SWS_Uebung,
-			'SWS_Praktikum' => $sd->SWS_Praktikum,
-			'SWS_Projekt' => $sd->SWS_Projekt,
-			'SWS_Seminar' => $sd->SWS_Seminar,
-			'SWS_SeminarUnterricht' => $sd->SWS_SeminarUnterricht,
-			'SemesterDropdown' => $semester_dropdown_options,	// array holding all dropdown-options
-			'Semester' => $sd->Semester,
-			'Beschreibung' => $sd->Beschreibung,
-		    );
+		    $data['KursID'] = $sd->KursID;
+		    $data['Kursname'] = $sd->Kursname;
+		    $data['kurs_kurz'] = $sd->kurs_kurz;
+		    $data['Creditpoints'] = $sd->Creditpoints;
+		    $data['SWS_Vorlesung'] = $sd->SWS_Vorlesung;
+		    $data['SWS_Uebung'] = $sd->SWS_Uebung;
+		    $data['SWS_Praktikum'] = $sd->SWS_Praktikum;
+		    $data['SWS_Projekt'] = $sd->SWS_Projekt;
+		    $data['SWS_Seminar'] = $sd->SWS_Seminar;
+		    $data['SWS_SeminarUnterricht'] = $sd->SWS_SeminarUnterricht;
+		    $data['SemesterDropdown'] = $semester_dropdown_options;	// array holding all dropdown-options
+		    $data['Semester'] = $sd->Semester;
+		    $data['Beschreibung'] = $sd->Beschreibung;
 
 		    // array holding all rows
 		    $rows[] = $this->load->view('admin-subviews/admin_stdgng_coursetable_row', $data, TRUE);
@@ -713,7 +708,7 @@ class Admin extends FHD_Controller {
 	
 		// make data available in view
 		$data['stdgng_details'] = $details_of_single_stdgng;
-		$data['std_course_rows'] = $rows;
+		$data['stdgng_course_rows'] = $rows;
 		$data['stdgng_id'] = $stdgng_chosen_id;
 		
 		// return content
@@ -729,9 +724,9 @@ class Admin extends FHD_Controller {
 	/**
 	 * Deltes a whole Stdgng
 	 */
-	function deleteStdgng() {
+	function delete_stdgng() {
 		$deleteId = $this->input->post('deleteStdgngId');
-		$this->admin_model->deleteStdgng($deleteId);
+		$this->admin_model->delete_stdgng($deleteId);
 		
 		$this->show_stdgng_list();
 	}
@@ -820,7 +815,7 @@ class Admin extends FHD_Controller {
 	/**
 	 * Insert new entry into db with given values ($_POST)
 	 */
-	function saveNewCreatedStdgng(){
+	function save_new_created_stdgng(){
 		// check if given name and version are already used - in this case return show errormessage
 		
 		
@@ -843,7 +838,7 @@ class Admin extends FHD_Controller {
 		}
 		
 		// save
-		$this->admin_model->createNewStdgng($insertNewStdgng);
+		$this->admin_model->create_new_stdgng($insertNewStdgng);
 		
 // 		echo '<pre>';
 // 		print_r($insertNewStdgng);
@@ -873,7 +868,7 @@ class Admin extends FHD_Controller {
 		// VIEW
 		$data['global_data'] = $this->data->load();
 		$data['title'] = 'Stundenplan anzeigen';
-		$data['main_content'] = 'admin_stdplan_list';
+		$data['main_content'] = 'admin_stdplan_edit';
 		
 		$this->load->view('includes/template', $data);
 		
@@ -886,9 +881,10 @@ class Admin extends FHD_Controller {
 	 */
 	function ajax_show_events_of_stdplan(){
 	    $ids = $this->input->post('stdplan_ids');
+//	    $ids = "BMI_2_2010";
 	    
 	    // get all events of a stundenplan specified by stdgng-abk., semester, po
-	    $splitted_ids = explode("_", $ids);
+	    $splitted_ids = explode("_", "$ids");
 	    $stdplan_events_of_id = $this->admin_model->get_stdplan_data($splitted_ids);
 	    
 	    // get dropdown-data: all event-types, profs, times, days
@@ -897,6 +893,13 @@ class Admin extends FHD_Controller {
 	    $times = $this->admin_model->get_start_end_times();
 	    $days = $this->admin_model->get_days();
 	    $colors = $this->admin_model->get_colors_from_stdplan();
+	    
+	    // save dropdown-data into $data
+	    $data['eventtypes'] = $eventtypes;
+	    $data['all_profs'] = $all_profs;
+	    $data['times'] = $times;
+	    $data['days'] = $days;
+	    $data['colors'] = $colors;
 	    
 	    // and prepare for dropdowns
 	    // evenettypes
@@ -942,162 +945,41 @@ class Admin extends FHD_Controller {
 			$colors_dropdown_options[$i] = '';
 		}
 	    }
-	    // common dropdown attrs
-	    $dropdown_attributes = 'class = "span2"';
-	    
+
+	    // save dropdown options into $data
+	    $data['eventtype_dropdown_options'] = $eventtype_dropdown_options;
+	    $data['profs_dropdown_options'] = $profs_dropdown_options;
+	    $data['starttimes_dropdown_options'] = $starttimes_dropdown_options;
+	    $data['endtimes_dropdown_options'] = $endtimes_dropdown_options;
+	    $data['days_dropdown_options'] = $days_dropdown_options;
+	    $data['colors_dropdown_options'] = $colors_dropdown_options;
 	    
 //	    echo '<pre>';
-//	    print_r($profs_dropdown_options);
+//	    print_r($data);
 //	    echo '</pre>';
 	    
-	    
-	    // init result, table and form
-	    $result = '';
-	    $result = '<div id="stdplan-change-view">';
-	    $result .= form_open('admin/save_stdplan_changes');
-	    $result .= 
-		'<table class="table table-striped table-bordered table-condensed"><thead><tr>
-		<th>Veranstaltungsname:</th>
-		<th>Veranstaltungsform:</th>
-		<th>Alternative:</th>
-		<th>Raum:</th>
-		<th>verantw. Lehrkörper:</th>
-		<th>Beginn:</th>
-		<th>Ende:</th>
-		<th>Tag:</th>
-		<th>WPF?:</th>
-		<th>WPF-Name:</th>
-		<th>Farbe:</th>
-		<th>Aktion:</th>
-		</tr></thead>';
-	    
-	    // ########## structure of table
-	    $result .= '<tbody>';
-	    
-	    // build first row static - empty values TODO
-	    
-	    
-	    // !! important: to save changed data correctly, name has to consist of SPKursID and the collumn-name in database
-	    foreach($stdplan_events_of_id as $sp_events){
-//		echo '<pre>';
-//		print_r($sp_events);
-//		echo '</pre>';
-	
-		// input-field for course-name - cannot be changed!! --> change via studiengangkurs!!
-//		$course_name_data = array(
-//		    // attention: changes data in studiengangkurs NOT stundenplankurs!!
-//		    'name' => $sp_events->SPKursID.'_'.$sp_events->KursID.'Kursname',
-//		    'id' => 'stdplan-list-coursename',
-//		    'value' => $sp_events->Kursname
-//		);
-//		$result .= '<tr><td>'.form_input($course_name_data);
-		$course_name_attrs = array(
-		    'id' => 'stdplan-list-coursename',
-		);
-		$result .= '<tr><td>'.form_label($sp_events->Kursname, $course_name_attrs);
-
-		// dropdown for event-types
-		$result .= '</td><td>'.form_dropdown($sp_events->SPKursID.'_VeranstaltungsformID', $eventtype_dropdown_options,
-			$eventtypes[$sp_events->VeranstaltungsformID]->VeranstaltungsformID, $dropdown_attributes);
-
-		// input-field for alternatives
-		$eventy_alt_data = array(
-		    'name' => $sp_events->SPKursID.'_VeranstaltungsformAlternative',
-		    'id' => 'stdplan-list-alternative',
-		    'value' => $sp_events->VeranstaltungsformAlternative,
-		    'class' => 'span1'
-		);
-		$result .= '</td><td>'.form_input($eventy_alt_data);
-
-		// room
-		$room_data = array(
-		    'name' => $sp_events->SPKursID.'_Raum',
-		    'id' => 'stdplan-list-room',
-		    'value' => $sp_events->Raum,
-		    'class' => 'span2'
-		);
-		$result .= '</td><td>'.form_input($room_data);
+	    foreach ($stdplan_events_of_id as $sp_events){
+		$data['spkurs_id'] = $sp_events->SPKursID;
+		$data['kursname'] = $sp_events->Kursname;
+		$data['veranstaltungsform_id'] = $sp_events->VeranstaltungsformID;
+		$data['alternative'] = $sp_events->VeranstaltungsformAlternative;
+		$data['raum'] = $sp_events->Raum;
+		$data['dozent_id'] = $sp_events->DozentID;
+		$data['beginn_id'] = $sp_events->StartID;
+		$data['ende_id'] = $sp_events->EndeID;
+		$data['tag_id'] = $sp_events->TagID;
+		$data['wpf_flag'] = $sp_events->isWPF;
+		$data['wpf_name'] = $sp_events->WPFName;
+		$data['farbe'] = $sp_events->Farbe;
 		
-		// dropdown for profs
-		$result .= '</td><td>'.form_dropdown($sp_events->SPKursID.'_DozentID', $profs_dropdown_options,
-			$sp_events->DozentID, $dropdown_attributes);
-
-		// dropdown for starttime
-		$result .= '</td><td>'.form_dropdown($sp_events->SPKursID.'_StartID', $starttimes_dropdown_options,
-			$times[$sp_events->StartID]->StundeID, $dropdown_attributes);
+		// array holding all rows
+		$rows[] = $this->load->view('admin-subviews/admin_stdplan_coursetable_row', $data, TRUE);
 		
-		// dropdown for endtime
-		$result .= '</td><td>'.form_dropdown($sp_events->SPKursID.'_EndeID', $endtimes_dropdown_options,
-			$times[$sp_events->EndeID]->StundeID, $dropdown_attributes);
-
-		// dropdown for day
-		$result .= '</td><td>'.form_dropdown($sp_events->SPKursID.'_TagID', $days_dropdown_options,
-			$days[$sp_events->TagID]->TagID, $dropdown_attributes);
-
-		// checkbox for wpf
-		$wpf_cb_data = array(
-		    'name' => $sp_events->SPKursID.'_isWPF',
-		    'id' => 'stdplan-list-wpfcheckbox',
-		    'value' => 'accept',
-		    'checked' => ($sp_events->isWPF === '1') ? true : false
-		);
-		$result .= '</td><td>'.  form_checkbox($wpf_cb_data);
-		
-
-		// inputfield for wpf-name
-		$wpf_data = array(
-		    'name' => $sp_events->SPKursID.'_WPFName',
-		    'id' => 'stdplan-list-wpfname',
-		    'value' => $sp_events->WPFName,
-		    'class' => 'span2'
-		);
-		$result .= '</td><td>'.form_input($wpf_data);
-
-		// dropdown for color - at first: find out key
-		$ck = '';
-		foreach ($colors_dropdown_options as $key => $value){
-		    if($value == $sp_events->Farbe) {
-			$ck = $key;
-		    }
-		}
-		$result .= '</td><td>'.form_dropdown($sp_events->SPKursID.'_'.'Farbe', $colors_dropdown_options,
-			$ck, $dropdown_attributes);;
-		
-
-		// delete/add button
-		if($sp_events->SPKursID == 0){ 
-			$buttonData = array(
-			    'name' => $sp_events->SPKursID.'createCourse',
-			    'id' => 'create_btn_stdpln',
-			    'value' => true,
-			    'content' => 'Hinzufügen'
-			);
-		} else {
-			$buttonData = array(
-			    'name' => $sp_events->SPKursID.'deleteCourse',
-			    'id' => 'delete_btn_stdpln',
-			    'data-id' => $sp_events->SPKursID,
-			    'value' => true,
-			    'content' => 'Löschen'
-			);
-		}
-		// TODO event for button-click - id vergeben und über AJAX
-		$result .= '</td><td>'.form_button($buttonData);	
-
-		$result .= '</td></tr>';
+	    }
 	    
-		
-	    } // ende foreach
+	    $data['stdplan_course_rows'] = $rows;
 	    
-	    $result .= '</tbody></table>';
-	    
-	    // submitbutton
-	    $btn_attributes = 'class = "btn-warning"';
-	    $result .= form_submit('savestdplanchanges', 'Änderungen speichern', $btn_attributes);
-	    $result .= form_close().'</div>';
-	    
-	    
-	    echo $result;
+	    echo $this->load->view('admin-subviews/admin_stdplan_coursetable_content', $data, TRUE);
 	    
 	}
 	

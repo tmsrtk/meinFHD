@@ -17,4 +17,4 @@
 	<div class="container">
 		
 		<!-- Menue -->
-		<?php include $_SERVER['DOCUMENT_ROOT'] . '/phpProjects/meinfhd2_ci_base/application/views/includes/menue.php';  ?>
+		<?php $this->load->view('includes/menue'); ?>
