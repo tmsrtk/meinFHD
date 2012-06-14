@@ -44,8 +44,9 @@ class Admin extends FHD_Controller {
 	}
 	
 	
-	function index(){
-				
+	public function index()
+	{
+		$this->create_user_mask();
 	}
 	
 	
