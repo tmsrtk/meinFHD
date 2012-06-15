@@ -178,9 +178,56 @@ class Admin_model extends CI_Model {
 	/*
 	*
 	*/
-	public function save_new_user_from_invitation($form_data)
+	public function save_new_user_from_invitation($invitation_id)
 	{
 
+		// query data from invitation_id
+		$this->db->select('*')
+				 ->from('anfrage')
+				 ->where('AnfrageID', $invitation_id);
+		$q = $this->db->get()->row_array();
+
+		// generate password
+		$password = $this->adminhelper->passwort_generator();
+
+		// prepare data to save
+		$data = array(
+				'LoginName'					=> $q['Emailadresse'],
+				'Vorname'					=> $q['Vorname'],
+				'Nachname' 					=> $q['Nachname'],
+				'StudienbeginnJahr'	 		=> $q['Startjahr'],
+				'Matrikelnummer' 			=> $q['Matrikelnummer'],
+				'Email' 					=> $q['Emailadresse'],
+				'StudienbeginnJahr'		 	=> $q['Semester'],
+				'StudiengangID' 			=> $q['Studiengang'],
+				'Passwort'					=> md5($password)
+			);
+
+		$this->db->insert('benutzer', $data);
+
+		// query directly the user_id of the created user
+		$last_id = mysql_insert_id();
+
+		// insert into benutzer_mm_rolle
+		$data = array(
+				'BenutzerID' => $last_id,
+				'RolleID' => $q['TypID']
+			);
+		$this->db->insert('benutzer_mm_rolle', $data);
+
+		// TODO: send email to user
+		// $message
+		// $password
+
+
+		// delete requested invitation
+		$this->delete_invitation($invitation_id);
+	}
+
+	function delete_invitation($invitation_id)
+	{
+		$this->db->where('AnfrageID', $invitation_id);
+		$this->db->delete('anfrage'); 
 	}
 	
 	/*

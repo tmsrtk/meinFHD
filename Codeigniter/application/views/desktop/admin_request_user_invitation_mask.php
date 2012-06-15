@@ -42,26 +42,31 @@
 		);
 	$class_dd = 'class="studiengang_dd"';
 ?>
-<p>Jahr, Semester &amp; Studiengang: <?php echo form_input($data_jahr); ?> WS: <?php echo form_radio('semester_def', 'WS', TRUE); ?> SS: <?php echo form_radio('semester_def', 'SS', FALSE); ?></p>
-<p><?php echo form_dropdown('studiengang_dd', $studiengaenge, /*standard value*/'', $class_dd); ?></p>
 
-<?php
-	$data_matrikelnummer = array(
-		'class' => 'span2',
-		'name' => 'matrikelnummer',
-		'placeholder' => 'Matrikelnummer',
-		'value' => set_value('matrikelnummer')
-	);
+<div id="studentendaten">
 
-	$data_email = array(
-		'class' => 'span3',
-		'name' => 'email',
-		'placeholder' => 'E-Mail',
-		'value' => set_value('email')
-	);
-?>
+	<p>Jahr, Semester &amp; Studiengang: <?php echo form_input($data_jahr); ?> WS: <?php echo form_radio('semester_def', 'WS', TRUE); ?> SS: <?php echo form_radio('semester_def', 'SS', FALSE); ?></p>
+	<p><?php echo form_dropdown('studiengang_dd', $studiengaenge, /*standard value*/'', $class_dd); ?></p>
 
-<p>Matrikelnummer: <?php echo form_input($data_matrikelnummer) ?></p>
+	<?php
+		$data_matrikelnummer = array(
+			'class' => 'span2',
+			'name' => 'matrikelnummer',
+			'placeholder' => 'Matrikelnummer',
+			'value' => set_value('matrikelnummer')
+		);
+
+		$data_email = array(
+			'class' => 'span3',
+			'name' => 'email',
+			'placeholder' => 'E-Mail',
+			'value' => set_value('email')
+		);
+	?>
+
+	<p>Matrikelnummer: <?php echo form_input($data_matrikelnummer) ?></p>
+
+</div>
 
 <p>E-Mail: <?php echo form_input($data_email); ?></p>
 
@@ -112,6 +117,7 @@ $submit_data = array(
 		<?php foreach ($user_invitations as $key => $value) { ?>
 		<tr>
 			<?php echo form_open('admin/create_user_from_invitation/', $attrs); ?>
+			<?php echo form_hidden('request_id', $value['AnfrageID']); ?>
 
 			<?php
 				
@@ -138,3 +144,33 @@ $submit_data = array(
 		<?php } ?>
 	</tbody>
 </table>
+
+
+<script>
+
+(function() {
+
+	// onchange to radiobuttons 
+	// input[name='radio-button-gruppe']
+	$("input[name='user_type']").change(function() {
+		toggle_more_info($(this));
+	});
+
+})();
+
+function toggle_more_info(c) {
+	var additional_student_data = $("div#studentendaten");
+
+	// c jQuery object of toggle button
+	if (c.val() === '4') {
+		// show additional student da
+		additional_student_data.show();
+		console.log(c.val());
+	}
+	else {
+		additional_student_data.hide();
+		console.log(c.val());
+	}
+}
+
+</script>

@@ -309,20 +309,23 @@ class Admin extends FHD_Controller {
 	public function create_user_from_invitation()
 	{
 		// get values from post | 
-		$form_data = $this->input->post();
+		$invitation_id = $this->input->post('request_id');
 
 		// 0: create user, 1: delete request
 
 		// get choosen action from "functions dropdown"
 		$user_function = $this->input->post('user_function');
 
-		switch ($user_function) {
+		switch ($user_function)
+		{
 			case '0':
 				// save the user into benutzer table
-				$this->admin_model->save_new_user_from_invitation($form_data);
+				$this->admin_model->save_new_user_from_invitation($invitation_id);
+				$this->request_user_invitation_mask();
 				break;
 			case '1':
-				$this->admin_model->delete_invitation_request($invitation_id);
+				$this->admin_model->delete_invitation($invitation_id);
+				$this->request_user_invitation_mask();
 				break;
 			default:
 				# code...
@@ -463,16 +466,6 @@ class Admin extends FHD_Controller {
 				'rules' => 'required|alpha'
 				),
 			array(
-				'field' => 'startjahr',
-				'label' => 'Startjahr',
-				'rules' => 'required|integer|exact_length[4]'
-				),
-			array(
-				'field' => 'matrikelnummer',
-				'label' => 'Matrikelnummer',
-				'rules' => 'required|integer|exact_length[6]|is_unique[benutzer.Matrikelnummer]'
-				),
-			array(
 				'field' => 'email',
 				'label' => 'E-Mail',
 				'rules' => 'required|valid_email|is_unique[benutzer.Email]'
@@ -481,6 +474,39 @@ class Admin extends FHD_Controller {
 
 		// set the rules
 		$this->form_validation->set_rules($rules);
+
+
+
+
+		// which role was selected?
+		$role = $this->input->post('user_type');
+
+		// depending on role, different validations
+		// if student
+		if ($role === '4'/*student*/)
+		{
+			// additional validation rules for the student role
+			// $this->form_validation->set_rules('matrikelnummer', 'Matrikelnummer', 'required');
+			// $this->form_validation->set_rules('startjahr', 'Startjahr', 'required');
+			// $this->form_validation->set_rules('semester_def', 'Semesterperiode', 'required');
+
+			$rules = array(
+				array(
+					'field' => 'startjahr',
+					'label' => 'Startjahr',
+					'rules' => 'required|integer|exact_length[4]'
+					),
+				array(
+					'field' => 'matrikelnummer',
+					'label' => 'Matrikelnummer',
+					'rules' => 'required|integer|exact_length[6]|is_unique[benutzer.Matrikelnummer]'
+					)
+			);
+			$this->form_validation->set_rules($rules);
+		}
+
+
+
 
 		// check for (in)correctness
 		if($this->form_validation->run() == FALSE)
