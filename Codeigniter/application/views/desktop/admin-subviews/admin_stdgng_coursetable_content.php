@@ -7,6 +7,7 @@
 <table class="table table-striped table-bordered table-condensed">
     <thead>
 	<tr>
+	    <th>ID:</hd>
 	    <th>Kursname:</hd>
 	    <th>Abk.:</th>
 	    <th>CP:</th>

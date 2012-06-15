@@ -1,7 +1,8 @@
 <div>
-
 	<!-- build array for Studiengang-Filter -->
 	<?php 
+	    echo validation_errors();
+	    
 	    $stdgnge_filter[0] = 'Bitte auswählen';
 	    foreach($all_stdgnge as $sg){ 
 		$stdgnge_filter[$sg->StudiengangID] =
@@ -87,42 +88,27 @@
 		
 	})(); // self envoked anonymous function
 
+	// autoreload after submission AND validation-errors
 	var stdgng_id = "<?php echo $stdgng_id_automatic_reload; ?>";
 	console.log("nix?: "+ stdgng_id);
+	// TODO antoher flag that asks for save-button-click
 	if(stdgng_id != "0"){
 	    console.log(" != 0");
 	    // auto_load_data_for_id($(this));
 	    $("#stdgng-list").html('suche...');
-		// ajax
+		// reload view
 		$.get(
 		    "<?php echo site_url();?>admin/ajax_show_courses_of_stdgng/",
-		    'stdgng_id='+stdgng_id,
+		    // send stdgng_id AND a flag to signalize that default-values for input-fields should be empty
+		    {stdgng_id: stdgng_id},
 		    function(response) {
 			// 
 			$('#stdgng-list').html(response);
 		    });
-	} else {
-	    console.log("else");
+		// set correct dropdown-value
+		$("#admin-stdgngfilter").val(stdgng_id);
+		stdgng_id = "";
 	}
 
-//	function auto_load_data_for_id(){
-//	    // if $stdgng_id_automatic_reload is set, reload get stdgng_id, to show 
-//		var stdgng_id = "<?php echo $stdgng_id_automatic_reload; ?>";
-//		if(stdgng_id != 0){
-//		    console.log(" != 0");
-//		    // auto_load_data_for_id($(this));
-//		    ("#stdgng-list").html('suche...');
-//			// ajax
-//			$.get(
-//			    "<?php echo site_url();?>admin/ajax_show_courses_of_stdgng/",
-//			    'stdgng_id='+stdgng_id,
-//			    function(response) {
-//				// 
-//				$('#stdgng-list').html(response);
-//			    });
-//		} else {
-//		    console.log("else");
-//		}
-//	}
 
 </script>

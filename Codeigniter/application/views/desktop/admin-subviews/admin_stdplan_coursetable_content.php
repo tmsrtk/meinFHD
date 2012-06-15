@@ -1,7 +1,7 @@
    
     <?php 
 	// open form
-	print form_open('admin/save_stdplan_changes');
+	print form_open('admin/validate_stdplan_changes');
     ?>
     
     <table class="table table-striped table-bordered table-condensed">
@@ -34,6 +34,11 @@
     </table>
 	    
     <?php 
+	// hidden field to transmit the stdgng-id
+	print form_hidden('stdplan_id_abk', $kurs_ids_split[0]);
+	print form_hidden('stdplan_id_sem', $kurs_ids_split[1]);
+	print form_hidden('stdplan_id_po', $kurs_ids_split[2]);
+	
 	// submitbutton and close form
 	$btn_attributes = 'class = "btn-warning"';
 	print form_submit('savestdplanchanges', 'Änderungen speichern', $btn_attributes);

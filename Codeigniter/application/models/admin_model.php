@@ -534,6 +534,35 @@ class Admin_model extends CI_Model {
 //where c.`Pruefungsordnung` = 2010 and b.`Semester` = 1 and c.`StudiengangAbkuerzung` = "BMI";
 // letzte zeile dann mit den einzelnen werten aus dem filter füllen
 
+	
+	/**
+	 * Returns StundenplankursIDs
+	 * @param type $ids
+	 * @return type
+	 */
+	function get_stdplan_ids($ids){
+	    $this->db->distinct();
+	    $this->db->select('a.SPKursID');
+	    $this->db->from('stundenplankurs as a');
+	    $this->db->join('studiengangkurs as b', 'a.KursID = b.KursID');
+	    $this->db->join('studiengang as c', 'b.StudiengangID = c.StudiengangID');
+	    $this->db->where('c.StudiengangAbkuerzung', $ids[0]);
+	    $this->db->where('b.Semester', $ids[1]);
+	    $this->db->where('c.Pruefungsordnung', $ids[2]);
+	    
+	    
+	    $q = $this->db->get();
+	    	    
+	    if($q->num_rows() > 0){
+		foreach ($q->result() as $row){
+			$data[] = $row;
+		}
+		return $data;
+	    }
+	    
+	}
+
+
 	/**
 	 * Returns all enventtypes
 	 */

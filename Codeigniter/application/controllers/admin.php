@@ -665,7 +665,7 @@ class Admin extends FHD_Controller {
 	        }
 		
 //		echo '<pre>';
-//		print_r($details_of_single_stdgng);
+//		print_r($flag);
 //		echo '</pre>';
 		
 		// fill first element of object-array with default-values -
@@ -702,12 +702,12 @@ class Admin extends FHD_Controller {
 		    $data['SemesterDropdown'] = $semester_dropdown_options;	// array holding all dropdown-options
 		    $data['Semester'] = $sd->Semester;
 		    $data['Beschreibung'] = $sd->Beschreibung;
-
+		    
 		    // array holding all rows
 		    $rows[] = $this->load->view('admin-subviews/admin_stdgng_coursetable_row', $data, TRUE);
 		}
 		
-	
+		
 		// make data available in view
 		$data['stdgng_details'] = $details_of_single_stdgng;
 		$data['stdgng_course_rows'] = $rows;
@@ -744,28 +744,28 @@ class Admin extends FHD_Controller {
 	 */
 	function validate_stdgng_details_changes(){
 	    
-	    // TODO PO, Name, Abk. Kombi muss unique sein
+	    // TODO??? PO, Name, Abk. Kombi muss unique sein
 	    
 	    
 	    
 	    // get all stdgnge for filter-view
 	    $data['all_stdgnge'] = $this->admin_model->getAllStdgnge();
 	    
-	    // get all course-ids belonging to a specified stdgng
+	    // get stdgng_id
 	    $stdgng_id = $this->input->post('stdgng_id');
 	    
 	    $this->form_validation->set_rules(
-		    $stdgng_id.'Pruefungsordnung', $stdgng_id.'TODO - Kursname', 'required');
+		    $stdgng_id.'Pruefungsordnung', 'Pruefungsordnung fehlt', 'required');
 	    $this->form_validation->set_rules(
-		    $stdgng_id.'StudiengangName', $stdgng_id.'TODO', 'required');
+		    $stdgng_id.'StudiengangName', 'Name für den Studiengang fehlt', 'required');
 	    $this->form_validation->set_rules(
-		    $stdgng_id.'StudiengangAbkuerzung', $stdgng_id.'TODO', 'required');
+		    $stdgng_id.'StudiengangAbkuerzung', 'Abkürzung fehlt', 'required');
 	    $this->form_validation->set_rules(
-		    $stdgng_id.'Regelsemester', $stdgng_id.'TODO', 'required|numeric');
+		    $stdgng_id.'Regelsemester', 'Regelsemester fehlt', 'required|numeric');
 	    $this->form_validation->set_rules(
-		    $stdgng_id.'Creditpoints', $stdgng_id.'TODO', 'required|numeric');
+		    $stdgng_id.'Creditpoints', 'Creditpoints fehlen', 'required|numeric');
 	    $this->form_validation->set_rules(
-		    $stdgng_id.'Beschreibung', $stdgng_id.'TODO', 'required');
+		    $stdgng_id.'Beschreibung', 'Beschreibung fehlt', 'required');
 	    
 	    $data['stdgng_id_automatic_reload'] = $stdgng_id;
 	    
@@ -794,13 +794,13 @@ class Admin extends FHD_Controller {
 	    foreach($stdgng_course_ids as $id){
 		// run through all ids and generate id-specific validation-rules
 		$this->form_validation->set_rules(
-			$id->KursID.'Kursname', $id->KursID.'TODO - Kursname', 'required');
+			$id->KursID.'Kursname', 'Kursname fehlt - ID: '.$id->KursID, 'required');
 		$this->form_validation->set_rules(
-			$id->KursID.'kurs_kurz', $id->KursID.'TODO', 'required');
+			$id->KursID.'kurs_kurz', 'Kurzbezeichnung fehlt - ID: '.$id->KursID, 'required');
 		$this->form_validation->set_rules(
-			$id->KursID.'Creditpoints', $id->KursID.'TODO', 'required|numeric');
+			$id->KursID.'Creditpoints', 'Creditpoints fehlen oder nicht numerisch - ID: '.$id->KursID, 'required|numeric');
 		$this->form_validation->set_rules(
-			$id->KursID.'Semester', $id->KursID.'TODO', 'greater_than[0]');
+			$id->KursID.'Semester', 'Wählen Sie ein Semester aus - ID: '.$id->KursID, 'greater_than[0]');
 	    }
 	    
 	    $data['stdgng_id_automatic_reload'] = $stdgng_id;
@@ -945,11 +945,13 @@ class Admin extends FHD_Controller {
 	function show_stdplan_list(){
 		// get all stdplan-data
 		$data['all_stdplan_filterdata'] = $this->admin_model->get_stdplan_filterdata();
+		
+		// no autoreload without validation
+		$data['stdplan_id_automatic_reload'] = 0;
 
 //		echo '<pre>';
 // 		print_r($a);
 // 		echo '</pre>';
-		
 		
 		// VIEW
 		$data['global_data'] = $this->data->load();
@@ -971,6 +973,7 @@ class Admin extends FHD_Controller {
 	    
 	    // get all events of a stundenplan specified by stdgng-abk., semester, po
 	    $splitted_ids = explode("_", "$ids");
+	    $data['kurs_ids_split'] = $splitted_ids;
 	    $stdplan_events_of_id = $this->admin_model->get_stdplan_data($splitted_ids);
 	    
 	    // get dropdown-data: all event-types, profs, times, days
@@ -1067,6 +1070,55 @@ class Admin extends FHD_Controller {
 	    
 	    echo $this->load->view('admin-subviews/admin_stdplan_coursetable_content', $data, TRUE);
 	    
+	}
+
+	function validate_stdplan_changes(){
+	    
+	    // get all stdplan-data
+	    $data['all_stdplan_filterdata'] = $this->admin_model->get_stdplan_filterdata();
+	    
+	    // get all course-ids belonging to a specified stdgng
+	    $stdplan_id = array(
+		$this->input->post('stdplan_id_abk'),
+		$this->input->post('stdplan_id_sem'),
+		$this->input->post('stdplan_id_po'));
+	    
+	    $stdplan_course_ids = $this->admin_model->get_stdplan_ids($stdplan_id);
+	    
+//	    echo '<pre>';
+//	    echo print_r($stdplan_course_ids);
+//	    echo '</pre>';
+	    
+	    foreach($stdplan_course_ids as $id){
+		// run through all ids and generate id-specific validation-rules
+		$this->form_validation->set_rules(
+			$id->SPKursID.'_VeranstaltungsformID', 'Fehler', 'greater_than[0]');
+		$this->form_validation->set_rules(
+			$id->SPKursID.'_Raum', 'Fehler', 'required');
+		$this->form_validation->set_rules(
+			$id->SPKursID.'_DozentID', 'Fehler', 'greater_than[0]');
+		$this->form_validation->set_rules(
+			$id->SPKursID.'_StartID', 'Fehler', 'greater_than[0]');
+		$this->form_validation->set_rules(
+			$id->SPKursID.'_EndeID', 'Fehler', 'greater_than[0]');
+		$this->form_validation->set_rules(
+			$id->SPKursID.'_TagID', 'Fehler', 'greater_than[0]');
+		$this->form_validation->set_rules(
+			$id->SPKursID.'_Farbe', 'Fehler', 'greater_than[0]');
+	    }
+	    
+	    $data['stdplan_id_automatic_reload'] = $stdplan_id[0].'_'.$stdplan_id[1].'_'.$stdplan_id[2];
+	    
+	    if ($this->form_validation->run() == FALSE) {
+		// reload view
+		$data['global_data'] = $this->data->load();
+		$data['title'] = 'Stundenplan Kursliste bearbeiten';
+		$data['main_content'] = 'admin_stdplan_edit';
+		
+		$this->load->view('includes/template', $data);
+	    } else {
+		$this->save_stdplan_changes();
+	    }
 	}
 	
 	/**
