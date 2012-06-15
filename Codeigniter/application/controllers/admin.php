@@ -405,7 +405,7 @@ class Admin extends FHD_Controller {
 	public function validate_request_user_invitation_form()
 	{
 		// set custom delimiter for validation errors
-		$this->form_validation->set_error_delimiters('<div class="val_error">', '</div>');
+		$this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
 
 		$rules = array();
 
