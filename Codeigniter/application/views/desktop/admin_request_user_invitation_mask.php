@@ -11,8 +11,8 @@
 	echo form_open('admin/validate_request_user_invitation_form/', $attrs);
 ?>
 
-<p><?php echo form_radio('user_type', '4', TRUE) ?> Ich bin ein Stundent</p>
-<p><?php echo form_radio('user_type', '2', FALSE) ?> Ich bin ein Dozent</p>
+<p><?php echo form_radio('role', '4', TRUE) ?> Ich bin ein Stundent</p>
+<p><?php echo form_radio('role', '2', FALSE) ?> Ich bin ein Dozent</p>
 
 <p>Gib bitte die folgenden Daten an, damit wir feststellen können, dass Du ein Student an diesem Fachbereich bist. 
 	Die Emailadresse wird für die Kommunikation mit meinFHD, den Dozenten und Studierenden verwendet.</p>
@@ -42,10 +42,19 @@
 		);
 	$class_dd = 'class="studiengang_dd"';
 ?>
+<?php
+	$data_email = array(
+		'class' => 'span3',
+		'name' => 'email',
+		'placeholder' => 'E-Mail',
+		'value' => set_value('email')
+	);
+?>
+<p>E-Mail: <?php echo form_input($data_email); ?></p>
 
 <div id="studentendaten">
-
-	<p>Jahr, Semester &amp; Studiengang: <?php echo form_input($data_jahr); ?> WS: <?php echo form_radio('semester_def', 'WS', TRUE); ?> SS: <?php echo form_radio('semester_def', 'SS', FALSE); ?></p>
+<hr />
+	<p>Jahr, Semester &amp; Studiengang: <?php echo form_input($data_jahr); ?> WS: <?php echo form_radio('semesteranfang', 'WS', TRUE); ?> SS: <?php echo form_radio('semesteranfang', 'SS', FALSE); ?></p>
 	<p><?php echo form_dropdown('studiengang_dd', $studiengaenge, /*standard value*/'', $class_dd); ?></p>
 
 	<?php
@@ -55,20 +64,12 @@
 			'placeholder' => 'Matrikelnummer',
 			'value' => set_value('matrikelnummer')
 		);
-
-		$data_email = array(
-			'class' => 'span3',
-			'name' => 'email',
-			'placeholder' => 'E-Mail',
-			'value' => set_value('email')
-		);
 	?>
 
 	<p>Matrikelnummer: <?php echo form_input($data_matrikelnummer) ?></p>
 
 </div>
 
-<p>E-Mail: <?php echo form_input($data_email); ?></p>
 
 <?php
 $submit_data = array(
@@ -76,6 +77,8 @@ $submit_data = array(
 		'class'			=> 'btn btn-danger'
 	);
 ?>
+
+<hr />
 
 <?php echo form_submit($submit_data, 'Einladung auffordern'); ?>
 
@@ -152,7 +155,7 @@ $submit_data = array(
 
 	// onchange to radiobuttons 
 	// input[name='radio-button-gruppe']
-	$("input[name='user_type']").change(function() {
+	$("input[name='role']").change(function() {
 		toggle_more_info($(this));
 	});
 

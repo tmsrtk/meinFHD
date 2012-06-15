@@ -33,7 +33,7 @@ class Admin extends FHD_Controller {
 		
 		$userdata = array(
 				'userid' => $session_userid,
-				'username' => $loginname['LoginName'],
+				'loginname' => $loginname['LoginName'],
 				'userpermissions' => $user_permissions,
 				'roles' => $roles
 			);
@@ -250,31 +250,30 @@ class Admin extends FHD_Controller {
 		$this->load->view('includes/template', $data);
 	}
 
+	public function show_successful_page()
+	{
+		// load new view with success message
+		$data['title'] = 'Erfolgreich';
+		$data['main_content'] = 'admin_create_user_success';
+		//----------------------------------------------------------------------
+		$data['global_data'] = $this->data->load();
+		//----------------------------------------------------------------------
+		$this->load->view('includes/template', $data);
+	}
 
 
 	// action controller =======================================================
 
 
-	// /*
-	// * creates a new user 
-	
-	// public function request_invitation()
-	// {
 
-	// }*/
 
 	/*
 	* creates a new user 
 	*/
 	public function create_user()
 	{
-		
 		// get values from post
 		$form_data = $this->input->post();
-		// delete last element (submit button value, not needet for db user save)
-		// array_pop($form_data);
-		// var_dump($form_data);
-
 
 		// generate password
 		$password = $this->adminhelper->passwort_generator();
@@ -284,8 +283,6 @@ class Admin extends FHD_Controller {
 
 		// TODO: send mail with password
 
-		// // redirect to mask again
-		// redirect(site_url().'admin/create_user_mask');
 	}
 
 	/*
@@ -356,63 +353,30 @@ class Admin extends FHD_Controller {
 	*/
 	public function validate_create_user_form()
 	{
-		// 1. name, 2. human name in errors messages, 3. validation rules
-		// $this->form_validation->set_rules('username', 'Benutzername', 'required');
-		// $this->form_validation->set_rules('email', 'E-Mail', 'required');
+		$rules = array();
 
-		$rules = array(
-				array(
-					'field' => 'username',
-					'label' => 'Benutzername',
-					'rules' => 'required|alpha_dash|min_length[4]|max_length[20]|is_unique[benutzer.LoginName]'
-				),
-				array(
-					'field' => 'email',
-					'label' => 'E-Mail',
-					'rules' => 'required|valid_email|is_unique[benutzer.Email]'
-				),
-				array(
-					'field' => 'forename',
-					'label' => 'Vorname',
-					'rules' => ''
-				),
-				array(
-					'field' => 'lastname',
-					'label' => 'Nachname',
-					'rules' => ''
-				)
-			);
+		$rules[] = $this->adminhelper->get_formvalidation_role();
+		$rules[] = $this->adminhelper->get_formvalidation_loginname();
+		$rules[] = $this->adminhelper->get_formvalidation_email();
+		$rules[] = $this->adminhelper->get_formvalidation_forename();
+		$rules[] = $this->adminhelper->get_formvalidation_lastname();
+
 		$this->form_validation->set_rules($rules);
 
 		// which role was selected?
-		$role = $this->input->post('rolle_dd');
+		$role = $this->input->post('role');
 
 		// depending on role, different validations
 		// if student
 		if ($role === '4'/*student*/)
 		{
-			// additional validation rules for the student role
-			// $this->form_validation->set_rules('matrikelnummer', 'Matrikelnummer', 'required');
-			// $this->form_validation->set_rules('startjahr', 'Startjahr', 'required');
-			// $this->form_validation->set_rules('semester_def', 'Semesterperiode', 'required');
+			$rules = array();
 
-			$rules = array(
-				array(
-					'field' => 'matrikelnummer',
-					'label' => 'Matrikelnummer',
-					'rules' => 'integer|exact_length[6]|is_unique[benutzer.Matrikelnummer]'
-				),
-				array(
-					'field' => 'startjahr',
-					'label' => 'Startjahr',
-					'rules' => 'integer|exact_length[4]'
-				),
-				array(
-					'field' => 'semester_def',
-					'label' => 'Semesterperiode',
-					'rules' => ''
-				)
-			);
+			$rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
+			$rules[] = $this->adminhelper->get_formvalidation_startjahr();
+			$rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
+			$rules[] = $this->adminhelper->get_formvalidation_studiengang();
+
 			$this->form_validation->set_rules($rules);
 		}
 
@@ -428,15 +392,10 @@ class Admin extends FHD_Controller {
 			$this->create_user();
 
 			// flash message
-			$this->message->set('User erfolgreich erstellt!');
+			$this->message->set('User erfolgreich erstellt!');  //////////////// NOT WORKING
 
-			// load new view with success message
-			$data['title'] = 'Erfolgreich';
-			$data['main_content'] = 'admin_create_user_success';
 
-			$data['global_data'] = $this->data->load();
-
-			$this->load->view('includes/template', $data);
+			$this->show_successful_page();
 		}
 	}
 
@@ -454,59 +413,30 @@ class Admin extends FHD_Controller {
 		$form_values = $this->input->post();
 
 		// add rules
-		$rules = array(
-			array(
-				'field' => 'forename',
-				'label' => 'Vorname',
-				'rules' => 'required|alpha'
-				),
-			array(
-				'field' => 'lastname',
-				'label' => 'Nachname',
-				'rules' => 'required|alpha'
-				),
-			array(
-				'field' => 'email',
-				'label' => 'E-Mail',
-				'rules' => 'required|valid_email|is_unique[benutzer.Email]'
-				)
-		);
-
+		$rules[] = $this->adminhelper->get_formvalidation_role();
+		$rules[] = $this->adminhelper->get_formvalidation_forename();
+		$rules[] = $this->adminhelper->get_formvalidation_lastname();
+		$rules[] = $this->adminhelper->get_formvalidation_email();
 		// set the rules
 		$this->form_validation->set_rules($rules);
 
 
-
-
 		// which role was selected?
-		$role = $this->input->post('user_type');
+		$role = $this->input->post('role');
 
 		// depending on role, different validations
 		// if student
 		if ($role === '4'/*student*/)
 		{
-			// additional validation rules for the student role
-			// $this->form_validation->set_rules('matrikelnummer', 'Matrikelnummer', 'required');
-			// $this->form_validation->set_rules('startjahr', 'Startjahr', 'required');
-			// $this->form_validation->set_rules('semester_def', 'Semesterperiode', 'required');
+			$rules = array();
 
-			$rules = array(
-				array(
-					'field' => 'startjahr',
-					'label' => 'Startjahr',
-					'rules' => 'required|integer|exact_length[4]'
-					),
-				array(
-					'field' => 'matrikelnummer',
-					'label' => 'Matrikelnummer',
-					'rules' => 'required|integer|exact_length[6]|is_unique[benutzer.Matrikelnummer]'
-					)
-			);
+			$rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
+			$rules[] = $this->adminhelper->get_formvalidation_startjahr();
+			$rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
+			$rules[] = $this->adminhelper->get_formvalidation_studiengang();
+
 			$this->form_validation->set_rules($rules);
 		}
-
-
-
 
 		// check for (in)correctness
 		if($this->form_validation->run() == FALSE)
@@ -520,12 +450,7 @@ class Admin extends FHD_Controller {
 			$this->put_user_into_invitation_requests();
 
 			// load new view with success message
-			$data['title'] = 'Erfolgreich';
-			$data['main_content'] = 'admin_create_user_success';
-
-			$data['global_data'] = $this->data->load();
-
-			$this->load->view('includes/template', $data);
+			$this->show_successful_page();
 		}
 	}
 
@@ -578,49 +503,55 @@ class Admin extends FHD_Controller {
 		// check if current value is different from the value in db
 		if ($current_user_data['LoginName'] != $new_form_values['loginname']) 
 		{
-			// add the rules, if there was a change
-			$new_rule = array(
-				'field' => 'loginname',
-				'label' => 'Benutzername',
-				'rules' => 'required|alpha_dash|min_length[4]|max_length[20]|is_unique[benutzer.LoginName]'
-			);
-			// push value to global rules var
-			array_push($rules, $new_rule);
+			// // add the rules, if there was a change
+			// $new_rule = array(
+			// 	'field' => 'loginname',
+			// 	'label' => 'Benutzername',
+			// 	'rules' => 'required|alpha_dash|min_length[4]|max_length[20]|is_unique[benutzer.LoginName]'
+			// );
+			// // push value to global rules var
+			// array_push($rules, $new_rule);
+			$rules[] = $this->adminhelper->get_formvalidation_loginname();
 		}
 
 		// same procedure for the other form inputs
 		if ($current_user_data['Email'] != $new_form_values['email']) 
 		{
-			// add the rules, if there was a change
-			$new_rule = array(
-				'field' => 'email',
-				'label' => 'E-Mail',
-				'rules' => 'required|valid_email|is_unique[benutzer.Email]'
-			);
-			// push value to global rules var
-			array_push($rules, $new_rule);
+			// // add the rules, if there was a change
+			// $new_rule = array(
+			// 	'field' => 'email',
+			// 	'label' => 'E-Mail',
+			// 	'rules' => 'required|valid_email|is_unique[benutzer.Email]'
+			// );
+			// // push value to global rules var
+			// array_push($rules, $new_rule);
+			$rules[] = $this->adminhelper->get_formvalidation_email();
 		}
 
 		// even if these fields do not need any validation rules, they have to be set, otherwise
 		// they are not avaliable after the ->run() method
 		if ($current_user_data['Vorname'] != $new_form_values['forename'])
 		{
-			$new_rule = array(
-				'field' => 'forename',
-				'label' => 'Vorname',
-				'rules' => ''
-			);
-			array_push($rules, $new_rule);
+			// $new_rule = array(
+			// 	'field' => 'forename',
+			// 	'label' => 'Vorname',
+			// 	'rules' => ''
+			// );
+			// array_push($rules, $new_rule);
+
+			$rules[] = $this->adminhelper->get_formvalidation_forename();
 		}
 
 		if ($current_user_data['Nachname'] != $new_form_values['lastname'])
 		{
-			$new_rule = array(
-				'field' => 'lastname',
-				'label' => 'Nachname',
-				'rules' => ''
-			);
-			array_push($rules, $new_rule);
+			// $new_rule = array(
+			// 	'field' => 'lastname',
+			// 	'label' => 'Nachname',
+			// 	'rules' => ''
+			// );
+			// array_push($rules, $new_rule);
+
+			$rules[] = $this->adminhelper->get_formvalidation_lastname();
 		}
 
 		$this->form_validation->set_rules($rules);
@@ -660,7 +591,6 @@ class Admin extends FHD_Controller {
 	*/
 	public function delete_user()
 	{
-		// 
 		$user_id = $this->input->post('user_id');
 
 		$this->admin_model->model_delete_user($user_id);

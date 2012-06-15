@@ -24,6 +24,112 @@ class Adminhelper {
 		return md5($password);
 	}
 
+	// get standard user from rules
+	function get_standard_userform_rules()
+	{
+		$rules = array(
+			$this->get_formvalidation_forename(),
+			$this->get_formvalidation_lastname(),
+			$this->get_formvalidation_email()
+		);
+
+		return $rules;
+	}
+
+	// modular form validation rules
+
+
+
+	/**/
+	function get_formvalidation_role()
+	{
+		return array(
+			'field' => 'role',
+			'label' => 'Rolle',
+			'rules' => 'integer'
+			);
+	}
+
+	/**/
+	function get_formvalidation_loginname()
+	{
+		return array(
+			'field' => 'loginname',
+			'label' => 'Benutzername',
+			'rules' => 'required|alpha_dash|min_length[4]|max_length[20]|is_unique[benutzer.LoginName]'
+			);
+	}
+
+	/**/
+	function get_formvalidation_forename()
+	{
+		return array(
+			'field' => 'forename',
+			'label' => 'Vorname',
+			'rules' => 'alpha|max_length[50]'
+			);
+	}
+
+	/**/
+	function get_formvalidation_lastname()
+	{
+		return array(
+			'field' => 'lastname',
+			'label' => 'Nachname',
+			'rules' => 'alpha|max_length[50]'
+			);
+	}
+
+	/**/
+	function get_formvalidation_email()
+	{
+		return array(
+			'field' => 'email',
+			'label' => 'E-Mail',
+			'rules' => 'required|valid_email|is_unique[benutzer.Email]'
+			);
+	}
+
+	/**/
+	function get_formvalidation_matrikelnummer()
+	{
+		return array(
+			'field' => 'matrikelnummer',
+			'label' => 'Matrikelnummer',
+			'rules' => 'integer|exact_length[6]|is_unique[benutzer.Matrikelnummer]'
+			);
+	}
+
+	/**/
+	function get_formvalidation_startjahr()
+	{
+		return array(
+			'field' => 'startjahr',
+			'label' => 'Startjahr',
+			'rules' => 'integer|exact_length[4]'
+			);
+	}
+
+	/**/
+	function get_formvalidation_semesteranfang()
+	{
+		return array(
+			'field' => 'semesteranfang',  // should be named: semesteranfang
+			'label' => 'Semesteranfang',
+			'rules' => 'alpha'
+			);
+	}
+
+	/**/
+	function get_formvalidation_studiengang()
+	{
+		return array(
+			'field' => 'studiengang',
+			'label' => 'Studiengang',
+			'rules' => 'integer'
+			);
+	}
+
 }
 
 

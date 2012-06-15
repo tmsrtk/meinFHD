@@ -134,13 +134,13 @@ class Admin_model extends CI_Model {
 	{
 		// prepare data for insert
 		$data = array(
-				'LoginName' 				=> $form_data['username'],
+				'LoginName' 				=> $form_data['loginname'],
 				'Email' 					=> $form_data['email'],
 				'Vorname'					=> $form_data['forename'],
 				'Nachname' 					=> $form_data['lastname'],
 				'Matrikelnummer' 			=> $form_data['matrikelnummer'],
 				'StudienbeginnJahr' 		=> $form_data['startjahr'],
-				'StudienbeginnSemestertyp' 	=> $form_data['semester_def'],
+				'StudienbeginnSemestertyp' 	=> $form_data['semesteranfang'],
 				'StudiengangID' 			=> $form_data['studiengang_dd'],
 				'Passwort' 					=> md5($password)
 			);
@@ -153,7 +153,7 @@ class Admin_model extends CI_Model {
 		// insert into benutzer_mm_rolle
 		$data = array(
 				'BenutzerID' => $last_id,
-				'RolleID' => $form_data['rolle_dd']
+				'RolleID' => $form_data['role']
 			);
 		$this->db->insert('benutzer_mm_rolle', $data);
 	}
@@ -167,9 +167,9 @@ class Admin_model extends CI_Model {
 				'Startjahr'			 		=> $form_data['startjahr'],
 				'Matrikelnummer' 			=> $form_data['matrikelnummer'],
 				'Emailadresse' 				=> $form_data['email'],
-				'Semester'				 	=> $form_data['semester_def'],
+				'Semester'				 	=> $form_data['semesteranfang'],
 				'Studiengang' 				=> $form_data['studiengang_dd'],
-				'TypID'						=> $form_data['user_type']
+				'TypID'						=> $form_data['role']
 			);
 
 		$this->db->insert('anfrage', $data);
