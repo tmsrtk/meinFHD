@@ -627,6 +627,72 @@ class Admin extends FHD_Controller {
 		
 	}
 	
+	/**
+	 * Validates if form is filled correctly.
+	 */
+	function validate_new_created_stdgng(){
+		
+	    $this->form_validation->set_rules(
+		    'Pruefungsordnung', 'Pruefungsordnung fehlt', 'required|numeric');
+	    $this->form_validation->set_rules(
+		    'StudiengangName', 'Name für den Studiengang fehlt', 'required');
+	    $this->form_validation->set_rules(
+		    'StudiengangAbkuerzung', 'Abkürzung fehlt', 'required');
+	    $this->form_validation->set_rules(
+		    'Regelsemester', 'Regelsemester fehlt', 'required|numeric');
+	    $this->form_validation->set_rules(
+		    'Creditpoints', 'Creditpoints fehlen', 'required|numeric');
+	    $this->form_validation->set_rules(
+		    'Beschreibung', 'Beschreibung fehlt', 'required');
+	    
+	    if ($this->form_validation->run() == FALSE) {
+		// reload view
+		$this->create_new_stdgng();
+	    } else {
+		$this->save_stdgng_details_changes();
+	    }
+	}
+	
+	
+	/**
+	 * Insert new entry into db with given values ($_POST)
+	 */
+	function save_new_created_stdgng(){
+		// check if given name and version are already used - in this case return show errormessage
+		
+		
+		$insertFields = array(
+				'Pruefungsordnung',
+				'StudiengangName',
+				'StudiengangAbkuerzung',
+				'Regelsemester',
+				'Creditpoints',
+				'CreditpointsMin',
+				'FachbereichID',
+				'Beschreibung'
+				);
+		
+		// get data from form-submission
+		for($i = 0; $i < count($insertFields); $i++){
+			if($_POST[$insertFields[$i]] != null){
+				$insertNewStdgng[$insertFields[$i]] = $_POST[$insertFields[$i]];
+			}
+		}
+		
+		// save
+		$this->admin_model->create_new_stdgng($insertNewStdgng);
+		
+// 		echo '<pre>';
+// 		print_r($insertNewStdgng);
+// 		echo '</pre>';
+		
+		
+	}
+	
+	
+	
+	
+	
 	function show_stdgng_list(){
 		// get all stdgnge for the view
 		$data['allStdgnge'] = $this->admin_model->getAllStdgnge();
@@ -755,7 +821,7 @@ class Admin extends FHD_Controller {
 	    $stdgng_id = $this->input->post('stdgng_id');
 	    
 	    $this->form_validation->set_rules(
-		    $stdgng_id.'Pruefungsordnung', 'Pruefungsordnung fehlt', 'required');
+		    $stdgng_id.'Pruefungsordnung', 'Pruefungsordnung fehlt', 'required|numeric');
 	    $this->form_validation->set_rules(
 		    $stdgng_id.'StudiengangName', 'Name für den Studiengang fehlt', 'required');
 	    $this->form_validation->set_rules(
@@ -894,42 +960,6 @@ class Admin extends FHD_Controller {
 		
 		// show StudiengangDetails-List again
 		$this->show_stdgng_course_list();
-		
-	}
-	
-	
-	/**
-	 * Insert new entry into db with given values ($_POST)
-	 */
-	function save_new_created_stdgng(){
-		// check if given name and version are already used - in this case return show errormessage
-		
-		
-		$insertFields = array(
-				'Pruefungsordnung',
-				'StudiengangName',
-				'StudiengangAbkuerzung',
-				'Regelsemester',
-				'Creditpoints',
-				'CreditpointsMin',
-				'FachbereichID',
-				'Beschreibung'
-				);
-		
-		// get data from form-submission
-		for($i = 0; $i < count($insertFields); $i++){
-			if($_POST[$insertFields[$i]] != null){
-				$insertNewStdgng[$insertFields[$i]] = $_POST[$insertFields[$i]];
-			}
-		}
-		
-		// save
-		$this->admin_model->create_new_stdgng($insertNewStdgng);
-		
-// 		echo '<pre>';
-// 		print_r($insertNewStdgng);
-// 		echo '</pre>';
-		
 		
 	}
 	

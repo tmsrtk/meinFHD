@@ -4,7 +4,10 @@
 	<?php //print_r($allStdgnge); ?>
 <!-- 	</pre> -->
 	
-	<?php echo form_open('admin/save_new_created_stdgng'); ?>
+	<?php 
+	    echo validation_errors();
+	    echo form_open('admin/validate_new_created_stdgng');
+	?>
 
 	<div id="stdgng-details">
 		<div id="stdgng-details-1" style='float:left;'>
@@ -23,7 +26,7 @@
 				$inputFieldData = array(
 						'name' => $key,
 						'id' => 'input-stdgng-details',
-						'value' => '',
+						'value' => set_value($key, ''),
 				);
 				echo form_input($inputFieldData);
 				echo '</td>';
