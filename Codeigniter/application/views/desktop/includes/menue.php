@@ -75,7 +75,7 @@
 						<li><a href="#">Studiengang kopieren</a></li>
 						<?php endif ?>
 						<?php if (in_array(305, $global_data['userdata']['userpermissions'])) : ?>
-						<li><a href="<?php echo site_url(); ?>admin/show_stdgng_list">Studiengang loeschen</a></li>
+						<li><a href="<?php echo site_url(); ?>admin/delete_stdgng_view">Studiengang loeschen</a></li>
 						<?php endif ?>
 					</ul>
 				</li>
@@ -94,7 +94,7 @@
 						<li><a href="<?php echo site_url(); ?>admin/show_stdplan_list">Stundenplan bearbeiten</a></li>
 						<?php endif ?>
 						<?php if (in_array(403, $global_data['userdata']['userpermissions'])) : ?>
-						<li><a href="#">Stundenplan loeschen</a></li>
+						<li><a href="<?php echo site_url(); ?>admin/delete_stdplan_view">Stundenplan loeschen</a></li>
 						<?php endif ?>
 					</ul>
 				</li>

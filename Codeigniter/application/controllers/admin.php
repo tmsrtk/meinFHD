@@ -692,8 +692,10 @@ class Admin extends FHD_Controller {
 	
 	
 	
-	
-	function show_stdgng_list(){
+	/**
+	 * Shows list of all stdgng to give the opportunity to delete them
+	 */
+	function delete_stdgng_view(){
 		// get all stdgnge for the view
 		$data['allStdgnge'] = $this->admin_model->getAllStdgnge();
 		
@@ -790,13 +792,13 @@ class Admin extends FHD_Controller {
 	
 	
 	/**
-	 * Deltes a whole Stdgng
+	 * Deltes a whole Stdgng - called when button is clicked
 	 */
 	function delete_stdgng() {
 		$deleteId = $this->input->post('deleteStdgngId');
 		$this->admin_model->delete_stdgng($deleteId);
 		
-		$this->show_stdgng_list();
+		$this->delete_stdgng_view();
 	}
 	
 	
@@ -1203,6 +1205,44 @@ class Admin extends FHD_Controller {
 //	    echo '</pre>';
 	    
 	    $this->show_stdplan_list();
+	}
+	
+	
+	function delete_stdplan_view(){
+	    $data['delete_view_data'] = $this->admin_model->get_stdplan_filterdata_plus_id();
+	    
+	    // VIEW
+	    $data['global_data'] = $this->data->load();
+	    $data['title'] = 'Stundenplan löschen';
+	    $data['main_content'] = 'admin_stdplan_delete';
+
+	    $this->load->view('includes/template', $data);
+
+	}
+	
+	
+	function delete_stdplan(){
+	    
+	    // get data from post
+	    $stdgng_ids = array(
+		$this->input->post('stdplan_abk'),
+		$this->input->post('stdplan_semester'),
+		$this->input->post('stdplan_po'),
+	    );
+	    
+	    // get spkursids to delete
+	    // TODO - check if there is another way to get data - stdgng-id is given!!
+	    $stdplan_ids = $this->admin_model->get_stdplan_ids($stdgng_ids);
+
+	    // get groupe_ids to delete from gruppe-table
+	    $group_ids = '';
+	    foreach($stdplan_ids as $id) {
+		$group_ids[] = $this->admin_model->get_group_id_to_delete($id->SPKursID);
+	    }
+	    
+	    echo '<pre>';
+	    print_r($group_ids);
+	    echo '</pre>';
 	}
 	
 	/* *****************************************************

@@ -3,7 +3,7 @@
 		<!-- tablehead -->
 		<thead><tr>
 			<th>StudiengangName:</th>
-			<th>Prüfungsordnung:</th>
+			<th>Kurzbezeichnung:</th>
 			<th>Löschen</th>
 		</tr></thead>
 	
@@ -11,22 +11,25 @@
 		<?php 
 		    $btn_attributes = 'class = "btn-danger"';
 		    
-		    foreach($allStdgnge as $sg) :  
-			echo form_open('admin/delete_stdgng'); ?>
+		    foreach($delete_view_data as $sp) :  
+			echo form_open('admin/delete_stdplan'); ?>
 			<tr>
-			    <td><?php echo $sg->StudiengangName; ?></td>
-			    <td><?php echo $sg->Pruefungsordnung; ?></td>
+			    <td style="width:200px;"><?php echo $sp->StudiengangName; ?></td>
+			    <td><?php echo $sp->StudiengangAbkuerzung.'_'.$sp->Semester.'_'.$sp->Pruefungsordnung; ?></td>
 			    <td>
 				<?php
 				    $attributes = array('class' => 'listform', 'id' => 'stdgngform');
-				    echo form_submit('delete_sdtgng', 'Studiengang löschen', $btn_attributes);
+				    echo form_submit('delete_sdtplan', 'Stundenplan loeschen', $btn_attributes);
 				?>
 			    </td>
 			</tr>
 			<?php 
 			    // put some static data into post - CreditpointsMin (actually not needed) and FachbereichID (final = 5)
 			    $hiddenData = array(
-				    'deleteStdgngId' => $sg->StudiengangID
+//				'stdgng_id' => $sp->StudiengangID,
+				'stdplan_abk' => $sp->StudiengangAbkuerzung,
+				'stdplan_semester' => $sp->Semester,
+				'stdplan_po' => $sp->Pruefungsordnung
 			    );
 			    echo form_hidden($hiddenData);
 			    echo form_close();
