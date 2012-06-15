@@ -54,19 +54,23 @@
 
 <div id="studentendaten">
 <hr />
-	<p>Jahr, Semester &amp; Studiengang: <?php echo form_input($data_jahr); ?> WS: <?php echo form_radio('semesteranfang', 'WS', TRUE); ?> SS: <?php echo form_radio('semesteranfang', 'SS', FALSE); ?></p>
-	<p><?php echo form_dropdown('studiengang_dd', $studiengaenge, /*standard value*/'', $class_dd); ?></p>
 
-	<?php
-		$data_matrikelnummer = array(
-			'class' => 'span2',
-			'name' => 'matrikelnummer',
-			'placeholder' => 'Matrikelnummer',
-			'value' => set_value('matrikelnummer')
-		);
-	?>
+	<p>Ich bin Erstsemestler! <?php echo form_checkbox('erstsemestler', 'accept', FALSE) ?> </p>
 
-	<p>Matrikelnummer: <?php echo form_input($data_matrikelnummer) ?></p>
+	<div id="erstsemestler">
+		<p>Jahr, Semester &amp; Studiengang: <?php echo form_input($data_jahr); ?> WS: <?php echo form_radio('semesteranfang', 'WS', TRUE); ?> SS: <?php echo form_radio('semesteranfang', 'SS', FALSE); ?></p>
+	</div>
+
+		<p><?php echo form_dropdown('studiengang_dd', $studiengaenge, '0', $class_dd); ?></p>
+		<?php
+			$data_matrikelnummer = array(
+				'class' => 'span2',
+				'name' => 'matrikelnummer',
+				'placeholder' => 'Matrikelnummer',
+				'value' => set_value('matrikelnummer')
+			);
+		?>
+		<p>Matrikelnummer: <?php echo form_input($data_matrikelnummer) ?></p>
 
 </div>
 
@@ -159,6 +163,10 @@ $submit_data = array(
 		toggle_more_info($(this));
 	});
 
+	$("input[name='erstsemestler']").change(function() {
+		toggle_erstsemestler($(this));
+	});
+
 })();
 
 function toggle_more_info(c) {
@@ -167,13 +175,26 @@ function toggle_more_info(c) {
 	// c jQuery object of toggle button
 	if (c.val() === '4') {
 		// show additional student da
-		additional_student_data.show();
+		additional_student_data.fadeIn('slow');
 		console.log(c.val());
 	}
 	else {
-		additional_student_data.hide();
+		additional_student_data.fadeOut('slow');
 		console.log(c.val());
 	}
+}
+
+function toggle_erstsemestler(c) {
+	var erstsemestler_data = $("div#erstsemestler");
+
+	if (c.attr('checked')) {
+		erstsemestler_data.fadeOut('slow');
+	}
+	else {
+		erstsemestler_data.fadeIn('slow');
+	}
+
+	console.log(c.attr('checked'));
 }
 
 </script>
