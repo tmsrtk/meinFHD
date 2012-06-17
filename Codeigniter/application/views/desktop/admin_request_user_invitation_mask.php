@@ -195,6 +195,7 @@ $submit_data = array(
 	<tbody>
 		<?php $attrs2 = array('class' => 'well form-horizontal', 'id' => 'accept_invitation'); ?>
 		<?php foreach ($user_invitations as $key => $value) { ?>
+		<?php FB::log($value); ?>
 		<tr>
 			<?php echo form_open('admin/create_user_from_invitation/', $attrs2); ?>
 			<?php echo form_hidden('request_id', $value['AnfrageID']); ?>
