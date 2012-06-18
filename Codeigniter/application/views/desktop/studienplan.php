@@ -1,9 +1,10 @@
 <?php include('header.php'); ?>
 
-<h1>Desktop Stundenplan View</h1>
+<h1>Desktop Studienplan View</h1>
 
 <style>
     #tablestyle{
+        margin-top: 5%;
         border-collapse: collapse;
         border: 1px dotted black;
     }
@@ -32,9 +33,9 @@
     <tr>
         
     <?php foreach($studienplan as $semester): ?>
-        <?php $count = 0; 
+        <?php $count = 0;
         foreach($semester as $modul): ?>
-            <td class="coloumnstyle"> <?php echo 'Semester '.$count; ?>
+        <td class="coloumnstyle"> <?php echo 'Semester '.$count ;?>
                 <?php foreach($modul as $data): ?>
 
                 <div id="box_border_1"><?php echo $data['Kurzname']; ?></div>
