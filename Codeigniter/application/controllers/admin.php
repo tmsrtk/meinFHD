@@ -29,7 +29,7 @@ class Admin extends FHD_Controller {
 		
 		$userdata = array(
 				'userid' => $session_userid,
-				'username' => $loginname['LoginName'],
+				'loginname' => $loginname['LoginName'],
 				'userpermissions' => $user_permissions,
 				'roles' => $roles
 			);
@@ -40,8 +40,9 @@ class Admin extends FHD_Controller {
 	}
 	
 	
-	function index(){
-				
+	public function index()
+	{
+		$this->create_user_mask();
 	}
 	
 	
@@ -224,29 +225,105 @@ class Admin extends FHD_Controller {
 		$this->load->view('includes/template', $data);
 	}
 
+	/*
+	* loads content for the admin_request_user_invitation_mask.php
+	*/
+	public function request_user_invitation_mask()
+	{
+		$data['title'] = 'Einladungsaufforderungen anzeigen';
+		$data['main_content'] =  'admin_request_user_invitation_mask';
 
+		$data['global_data'] = $this->data->load();
+		//----------------------------------------------------------------------
 
+		// all studiengänge
+		$data['studiengaenge'] = $this->admin_model->get_all_studiengaenge();
+
+		// user invitations
+		$data['user_invitations'] = $this->admin_model->request_all_invitations();
+
+		//----------------------------------------------------------------------
+		$this->load->view('includes/template', $data);
+	}
+
+	public function show_successful_page()
+	{
+		// load new view with success message
+		$data['title'] = 'Erfolgreich';
+		$data['main_content'] = 'admin_create_user_success';
+		//----------------------------------------------------------------------
+		$data['global_data'] = $this->data->load();
+		//----------------------------------------------------------------------
+		$this->load->view('includes/template', $data);
+	}
 
 
 	// action controller =======================================================
+
+
+
 
 	/*
 	* creates a new user 
 	*/
 	public function create_user()
 	{
-		
 		// get values from post
 		$form_data = $this->input->post();
-		// delete last element (submit button value, not needet for db user save)
-		array_pop($form_data);
-		// var_dump($form_data);
+
+		// generate password
+		$password = $this->adminhelper->passwort_generator();
 
 		// save new user in db
-		$this->admin_model->save_new_user($form_data);
+		$this->admin_model->save_new_user($form_data, $password);
 
-		// // redirect to mask again
-		// redirect(site_url().'admin/create_user_mask');
+		// TODO: send mail with password
+
+	}
+
+	/*
+	* puts a user invitation request 
+	*/
+	public function put_user_into_invitation_requests()
+	{
+		// get values from post
+		$form_data = $this->input->post();
+
+		// save new user in db
+		$this->admin_model->put_new_user_to_invitation_requests($form_data);
+
+		// TODO: send mail to admin, that a new request was send
+		// TODO: send mail to user, that he has to wait 
+	}
+
+	/*
+	* creates a new user from invitation
+	*/
+	public function create_user_from_invitation()
+	{
+		// get values from post | 
+		$invitation_id = $this->input->post('request_id');
+
+		// 0: create user, 1: delete request
+
+		// get choosen action from "functions dropdown"
+		$user_function = $this->input->post('user_function');
+
+		switch ($user_function)
+		{
+			case '0':
+				// save the user into benutzer table
+				$this->admin_model->save_new_user_from_invitation($invitation_id);
+				$this->request_user_invitation_mask();
+				break;
+			case '1':
+				$this->admin_model->delete_invitation($invitation_id);
+				$this->request_user_invitation_mask();
+				break;
+			default:
+				# code...
+				break;
+		}
 	}
 
 	/*
@@ -272,63 +349,30 @@ class Admin extends FHD_Controller {
 	*/
 	public function validate_create_user_form()
 	{
-		// 1. name, 2. human name in errors messages, 3. validation rules
-		// $this->form_validation->set_rules('username', 'Benutzername', 'required');
-		// $this->form_validation->set_rules('email', 'E-Mail', 'required');
+		$rules = array();
 
-		$rules = array(
-				array(
-					'field' => 'username',
-					'label' => 'Benutzername',
-					'rules' => 'required|alpha_dash|min_length[4]|max_length[20]|is_unique[benutzer.LoginName]'
-				),
-				array(
-					'field' => 'email',
-					'label' => 'E-Mail',
-					'rules' => 'required|valid_email|is_unique[benutzer.Email]'
-				),
-				array(
-					'field' => 'forename',
-					'label' => 'Vorname',
-					'rules' => ''
-				),
-				array(
-					'field' => 'lastname',
-					'label' => 'Nachname',
-					'rules' => ''
-				)
-			);
+		$rules[] = $this->adminhelper->get_formvalidation_role();
+		$rules[] = $this->adminhelper->get_formvalidation_loginname();
+		$rules[] = $this->adminhelper->get_formvalidation_email();
+		$rules[] = $this->adminhelper->get_formvalidation_forename();
+		$rules[] = $this->adminhelper->get_formvalidation_lastname();
+
 		$this->form_validation->set_rules($rules);
 
 		// which role was selected?
-		$role = $this->input->post('rolle_dd');
+		$role = $this->input->post('role');
 
 		// depending on role, different validations
 		// if student
 		if ($role === '4'/*student*/)
 		{
-			// additional validation rules for the student role
-			// $this->form_validation->set_rules('matrikelnummer', 'Matrikelnummer', 'required');
-			// $this->form_validation->set_rules('startjahr', 'Startjahr', 'required');
-			// $this->form_validation->set_rules('semester_def', 'Semesterperiode', 'required');
+			$rules = array();
 
-			$rules = array(
-				array(
-					'field' => 'matrikelnummer',
-					'label' => 'Matrikelnummer',
-					'rules' => 'integer|exact_length[6]|is_unique[benutzer.Matrikelnummer]'
-				),
-				array(
-					'field' => 'startjahr',
-					'label' => 'Startjahr',
-					'rules' => 'integer|exact_length[4]'
-				),
-				array(
-					'field' => 'semester_def',
-					'label' => 'Semesterperiode',
-					'rules' => ''
-				)
-			);
+			$rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
+			$rules[] = $this->adminhelper->get_formvalidation_startjahr();
+			$rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
+			$rules[] = $this->adminhelper->get_formvalidation_studiengang();
+
 			$this->form_validation->set_rules($rules);
 		}
 
@@ -343,13 +387,66 @@ class Admin extends FHD_Controller {
 			// save in db
 			$this->create_user();
 
+			// flash message
+			$this->message->set('User erfolgreich erstellt!');  //////////////// NOT WORKING
+
+
+			$this->show_successful_page();
+		}
+	}
+
+	/*
+	*
+	*/
+	public function validate_request_user_invitation_form()
+	{
+		// set custom delimiter for validation errors
+		$this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+
+		$rules = array();
+
+		// values, from actual form
+		$form_values = $this->input->post();
+
+		// add rules
+		$rules[] = $this->adminhelper->get_formvalidation_role();
+		$rules[] = $this->adminhelper->get_formvalidation_forename();
+		$rules[] = $this->adminhelper->get_formvalidation_lastname();
+		$rules[] = $this->adminhelper->get_formvalidation_email();
+		// set the rules
+		$this->form_validation->set_rules($rules);
+
+
+		// which role was selected?
+		$role = $this->input->post('role');
+
+		// depending on role, different validations
+		// if student
+		if ($role === '4'/*student*/)
+		{
+			$rules = array();
+
+			$rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
+			$rules[] = $this->adminhelper->get_formvalidation_startjahr();
+			$rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
+			$rules[] = $this->adminhelper->get_formvalidation_studiengang();
+
+			$this->form_validation->set_rules($rules);
+		}
+
+		// check for (in)correctness
+		if($this->form_validation->run() == FALSE)
+		{
+			// call edit user mask again
+			$this->request_user_invitation_mask();
+		}
+		else
+		{
+			// save in db
+			$this->put_user_into_invitation_requests();
+
 			// load new view with success message
-			$data['title'] = 'Erfolgreich';
-			$data['main_content'] = 'admin_create_user_success';
-
-			$data['global_data'] = $this->data->load();
-
-			$this->load->view('includes/template', $data);
+			$this->show_successful_page();
 		}
 	}
 
@@ -387,60 +484,70 @@ class Admin extends FHD_Controller {
 	/**/
 	function validate_edits()
 	{
+		// set custom delimiter for validation errors
+		$this->form_validation->set_error_delimiters('<div class="val_error">', '</div>');
+
+
 		$rules = array();
 
 		// values, from actual form
 		$new_form_values = $this->input->post();
 
-		// current db user data
+		// current user data in db
 		$current_user_data = $this->admin_model->get_user_by_id($this->input->post('user_id'));
 
 		// check if current value is different from the value in db
 		if ($current_user_data['LoginName'] != $new_form_values['loginname']) 
 		{
-			// add the rules, if there was a change
-			$new_rule = array(
-				'field' => 'loginname',
-				'label' => 'Benutzername',
-				'rules' => 'required|alpha_dash|min_length[4]|max_length[20]|is_unique[benutzer.LoginName]'
-			);
-			// push value to global rules var
-			array_push($rules, $new_rule);
+			// // add the rules, if there was a change
+			// $new_rule = array(
+			// 	'field' => 'loginname',
+			// 	'label' => 'Benutzername',
+			// 	'rules' => 'required|alpha_dash|min_length[4]|max_length[20]|is_unique[benutzer.LoginName]'
+			// );
+			// // push value to global rules var
+			// array_push($rules, $new_rule);
+			$rules[] = $this->adminhelper->get_formvalidation_loginname();
 		}
 
 		// same procedure for the other form inputs
 		if ($current_user_data['Email'] != $new_form_values['email']) 
 		{
-			// add the rules, if there was a change
-			$new_rule = array(
-				'field' => 'email',
-				'label' => 'E-Mail',
-				'rules' => 'required|valid_email|is_unique[benutzer.Email]'
-			);
-			// push value to global rules var
-			array_push($rules, $new_rule);
+			// // add the rules, if there was a change
+			// $new_rule = array(
+			// 	'field' => 'email',
+			// 	'label' => 'E-Mail',
+			// 	'rules' => 'required|valid_email|is_unique[benutzer.Email]'
+			// );
+			// // push value to global rules var
+			// array_push($rules, $new_rule);
+			$rules[] = $this->adminhelper->get_formvalidation_email();
 		}
 
 		// even if these fields do not need any validation rules, they have to be set, otherwise
 		// they are not avaliable after the ->run() method
 		if ($current_user_data['Vorname'] != $new_form_values['forename'])
 		{
-			$new_rule = array(
-				'field' => 'forename',
-				'label' => 'Vorname',
-				'rules' => ''
-			);
-			array_push($rules, $new_rule);
+			// $new_rule = array(
+			// 	'field' => 'forename',
+			// 	'label' => 'Vorname',
+			// 	'rules' => ''
+			// );
+			// array_push($rules, $new_rule);
+
+			$rules[] = $this->adminhelper->get_formvalidation_forename();
 		}
 
 		if ($current_user_data['Nachname'] != $new_form_values['lastname'])
 		{
-			$new_rule = array(
-				'field' => 'lastname',
-				'label' => 'Nachname',
-				'rules' => ''
-			);
-			array_push($rules, $new_rule);
+			// $new_rule = array(
+			// 	'field' => 'lastname',
+			// 	'label' => 'Nachname',
+			// 	'rules' => ''
+			// );
+			// array_push($rules, $new_rule);
+
+			$rules[] = $this->adminhelper->get_formvalidation_lastname();
 		}
 
 		$this->form_validation->set_rules($rules);
@@ -455,6 +562,7 @@ class Admin extends FHD_Controller {
 		{
 			// save in db
 			$this->save_user_changes();
+
 			redirect(site_url().'admin/edit_user_mask');
 		}
 	}
@@ -466,7 +574,7 @@ class Admin extends FHD_Controller {
 		$new_form_values = $this->input->post();
 
 		$data = array(
-				'Passwort' => $this->passwort_generator()
+				'Passwort' => $this->adminhelper->passwort_generator()
 			);
 
 		$this->admin_model->update_user($new_form_values['user_id'], $data);
@@ -474,26 +582,11 @@ class Admin extends FHD_Controller {
 		redirect(site_url().'admin/edit_user_mask');
 	}
 
-	/* creates a random pw with a length of 10 chars - jochens function */
-	function passwort_generator() 
-	{
-	
-		$laenge = 10;
-		$string = md5((string)mt_rand() . $_SERVER["REMOTE_ADDR"] . time());
-		  
-		$start = rand(0,strlen($string)-$laenge);
-		 
-		$password = substr($string, $start, $laenge);
-		 
-		return md5($password);
-	}
-
 	/*
 	* deletes an user by his id
 	*/
 	public function delete_user()
 	{
-		// 
 		$user_id = $this->input->post('user_id');
 
 		$this->admin_model->model_delete_user($user_id);
@@ -510,70 +603,13 @@ class Admin extends FHD_Controller {
 		$role_id = $this->input->get('role_id');
 		$searchletter = $this->input->get('searchletter');
 
-		$q = $this->admin_model->get_user_per_role_searchletter($role_id, $searchletter);
+		$q = $this->admin_model->get_user_per_role_searchletter($role_id, $searchletter);  ///////////////////// query if result 0 !!!!!!!!!!!
 
 		$result = '';
 
 		foreach ($q as $key => $value) {
-			$result.="<tr>";
-
-			$attrs = array('id' => 'edit_user_row');
-			$result.=form_open('admin/validate_edit_user_form/', $attrs);
-			$result.=form_hidden('user_id', $value['BenutzerID']);
-			// hidden input for deciding the clicked button !!!!!!!!!!!!!!!!!!!!!! <
-			$result.=form_hidden('action_to_perform', '0');
-
-			$data = array(
-					'class' => 'span2',
-					'name' => 'loginname',
-					'placeholder' => 'kein Eintrag',
-					'value' => $value['LoginName']
-				);
-			$result.="<td>".form_input($data)."</td>";
-
-			$data = array(
-					'class' => 'span2',
-					'name' => 'lastname',
-					'placeholder' => 'kein Eintrag',
-					'value' => $value['Nachname']
-				);
-			$result.="<td>".form_input($data)."</td>";
-
-			$data = array(
-					'class' => 'span2',
-					'name' => 'forename',
-					'placeholder' => 'kein Eintrag',
-					'value' => $value['Vorname']
-				);
-			$result.="<td>".form_input($data)."</td>";
-
-			$data = array(
-					'class' => 'span2',
-					'name' => 'email',
-					'placeholder' => 'kein Eintrag',
-					'value' => $value['Email']
-				);
-			$result.="<td>".form_input($data)."</td>";
-
-			// function dropdown
-			$class_dd = 'id="user_function" class="span2"';
-			$dropdown_data = array('Speichern', 'Passwort resetten', 'Stundenplan resetten', 'Als ... anmelden');
-
-			$result.="<td>".form_dropdown('user_function', $dropdown_data, '0', $class_dd)."</td>";
-
-			$submit_data = array(
-					'id' 			=> 'save',
-					'name'			=> 'submit',
-					'class'			=> 'btn btn-mini btn-danger'
-				);
-			$result.="<td>".form_submit($submit_data, 'LOS!')."</td>";
-			
-
-			$result.=form_close();
-
-			$result.="</tr>";
+			$result .= $this->load->view('admin-subviews/user_tr', $value, TRUE);
 		}
-
 		echo $result;
 	}
 

@@ -110,19 +110,39 @@ class Admin_model extends CI_Model {
 	* Konstantin Voth
 	*/
 
-	// save new user
-	public function save_new_user($form_data)
+
+
+	/*
+	*
+	*/
+	public function request_all_invitations()
+	{
+		$this->db->select('*')
+				 ->from('anfrage')
+				 ->order_by('AnfrageID', 'asc');
+
+		$q = $this->db->get();
+
+		return $q->result_array();
+	}
+
+
+	/*
+	*
+	*/
+	public function save_new_user($form_data, $password)
 	{
 		// prepare data for insert
 		$data = array(
-				'LoginName' => $form_data['username'],
-				'Email' => $form_data['email'],
-				'Vorname' => $form_data['forename'],
-				'Nachname' => $form_data['lastname'],
-				'Matrikelnummer' => $form_data['matrikelnummer'],
-				'StudienbeginnJahr' => $form_data['startjahr'],
-				'StudienbeginnSemestertyp' => $form_data['semester_def'],
-				'StudiengangID' => $form_data['studiengang_dd']
+				'LoginName' 				=> $form_data['loginname'],
+				'Email' 					=> $form_data['email'],
+				'Vorname'					=> $form_data['forename'],
+				'Nachname' 					=> $form_data['lastname'],
+				'Matrikelnummer' 			=> $form_data['matrikelnummer'],
+				'StudienbeginnJahr' 		=> $form_data['startjahr'],
+				'StudienbeginnSemestertyp' 	=> $form_data['semesteranfang'],
+				'StudiengangID' 			=> $form_data['studiengang_dd'],
+				'Passwort' 					=> md5($password)
 			);
 
 		$this->db->insert('benutzer', $data);
@@ -133,11 +153,86 @@ class Admin_model extends CI_Model {
 		// insert into benutzer_mm_rolle
 		$data = array(
 				'BenutzerID' => $last_id,
-				'RolleID' => $form_data['rolle_dd']
+				'RolleID' => $form_data['role']
 			);
 		$this->db->insert('benutzer_mm_rolle', $data);
 	}
+
+	public function put_new_user_to_invitation_requests($form_data)
+	{
+		// prepare data for insert
+		$data = array(
+				'Vorname'					=> $form_data['forename'],
+				'Nachname' 					=> $form_data['lastname'],
+				'Startjahr'			 		=> $form_data['startjahr'],
+				'Matrikelnummer' 			=> $form_data['matrikelnummer'],
+				'Emailadresse' 				=> $form_data['email'],
+				'Semester'				 	=> $form_data['semesteranfang'],
+				'Studiengang' 				=> $form_data['studiengang_dd'],
+				'TypID'						=> $form_data['role']
+			);
+
+		$this->db->insert('anfrage', $data);
+	}
+
+	/*
+	*
+	*/
+	public function save_new_user_from_invitation($invitation_id)
+	{
+
+		// query data from invitation_id
+		$this->db->select('*')
+				 ->from('anfrage')
+				 ->where('AnfrageID', $invitation_id);
+		$q = $this->db->get()->row_array();
+
+		// generate password
+		$password = $this->adminhelper->passwort_generator();
+
+		// prepare data to save
+		$data = array(
+				'LoginName'					=> $q['Emailadresse'],
+				'Vorname'					=> $q['Vorname'],
+				'Nachname' 					=> $q['Nachname'],
+				'StudienbeginnJahr'	 		=> $q['Startjahr'],
+				'Matrikelnummer' 			=> $q['Matrikelnummer'],
+				'Email' 					=> $q['Emailadresse'],
+				'StudienbeginnJahr'		 	=> $q['Semester'],
+				'StudiengangID' 			=> $q['Studiengang'],
+				'Passwort'					=> md5($password)
+			);
+
+		$this->db->insert('benutzer', $data);
+
+		// query directly the user_id of the created user
+		$last_id = mysql_insert_id();
+
+		// insert into benutzer_mm_rolle
+		$data = array(
+				'BenutzerID' => $last_id,
+				'RolleID' => $q['TypID']
+			);
+		$this->db->insert('benutzer_mm_rolle', $data);
+
+		// TODO: send email to user
+		// $message
+		// $password
+
+
+		// delete requested invitation
+		$this->delete_invitation($invitation_id);
+	}
+
+	function delete_invitation($invitation_id)
+	{
+		$this->db->where('AnfrageID', $invitation_id);
+		$this->db->delete('anfrage'); 
+	}
 	
+	/*
+	*
+	*/
 	public function get_all_roles()
 	{
 		// query raw data
@@ -199,13 +294,13 @@ class Admin_model extends CI_Model {
 	}
 
 	// get specific user
-	public function get_user_by_loginname($user_specification)
+	public function get_user_by_loginname($loginname)
 	{
-		// if (is_string($user_specification))
+		// if (is_string($loginname))
 		// {
 			$this->db->select('*')
 					 ->from('benutzer')
-					 ->where('LoginName', $user_specification);
+					 ->where('LoginName', $loginname);
 			return $this->db->get()->row_array();
 		// }
 	}
