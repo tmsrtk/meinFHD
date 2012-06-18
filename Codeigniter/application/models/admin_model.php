@@ -459,10 +459,6 @@ class Admin_model extends CI_Model {
 		$this->db->where('StudiengangID', $id);
 		$this->db->delete('studiengangkurs');		
 		
-		
-		// TODO alles was da noch mit dranhängt
-		// >> ?? wird bisher noch gar nicht gemacht..
-		// stundenplankurs, benutzerkurs, (prüfungskram)
 	}
 	
 	

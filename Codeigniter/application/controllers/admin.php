@@ -1233,9 +1233,9 @@ class Admin extends FHD_Controller {
 	    // delete all data related to chosen stdplan
 	    $this->admin_model->delete_stdplan_related_records($stdgng_ids);
 	    
-//	    echo '<pre>';
-//	    print_r($group_ids);
-//	    echo '</pre>';
+	    // reload view
+	    $this->delete_stdplan_view();
+	    
 	}
 	
 	/* *****************************************************
