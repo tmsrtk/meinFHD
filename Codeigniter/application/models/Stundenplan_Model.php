@@ -27,6 +27,23 @@ class Stundenplan_Model extends CI_Model {
 		$query = $this->db->query("Select * From benutzer Where BenutzerID Like '".$id."' LIMIT 1");
 		$this->user = $query->row_array();
 	}
+
+	public function enroll_in_course($user_id, $course_id) {
+
+		$this->db->select('*');
+		$this->db->from('gruppenteilnehmer');
+		$this->db->where('BenutzerID', $user_id);
+		$this->db->where('GruppeID', $course_id);
+		
+		$students_in_course = $this->db->count_all_results();
+
+		echo $students_in_course;
+
+		if (false) {
+			# code...
+		}
+
+	}
 	
 	/**
 	 * get_Semester_Typ()													
@@ -35,7 +52,7 @@ class Stundenplan_Model extends CI_Model {
 	 *																		
 	 * @return Actual Typ of Semester (Winter or Summer)						
 	 */
-	function get_Semester_Typ() 
+	private function get_Semester_Typ() 
 	{		
 		// Errechne aktuellen Semestertyp
 		return (date("n") >= 3 && date("n") <= 8) ? "SS" : "WS";		
@@ -55,7 +72,7 @@ class Stundenplan_Model extends CI_Model {
 	 *																		
 	 *	@return	$semester 		Actual Semester as String.				
 	 */
-	function get_Semester( $semestertyp, $studienbeginn ) 
+	private function get_Semester( $semestertyp, $studienbeginn ) 
 	{
 		
 		// definiere Rückgabewert
@@ -121,7 +138,6 @@ class Stundenplan_Model extends CI_Model {
 
 
 		return $stundenplan;
-
 	}
 
 	/**
@@ -208,7 +224,6 @@ class Stundenplan_Model extends CI_Model {
 		}
 
 		return $courses;
-
 	}
 
 	private function courses_into_timetable($courses, $timetable)

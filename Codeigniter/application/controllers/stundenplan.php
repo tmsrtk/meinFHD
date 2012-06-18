@@ -14,13 +14,13 @@
  */
 class Stundenplan extends FHD_Controller {
     /*
-     * data-array, the whole data concerning the timetable will be stored here in nested arrays.
+ 
      * 
      * @var Array
      */
     
 	
-	
+	//2490
 
     /**
      * Constructor Method
