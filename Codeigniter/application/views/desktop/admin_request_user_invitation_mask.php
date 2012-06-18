@@ -41,7 +41,7 @@
 
 
 	$submit_data = array(
-			'name'			=> 'submit',
+			'name'			=> 'los',
 			'class'			=> 'btn btn-danger'
 		);
 
@@ -164,7 +164,7 @@
 
 
 
-<h3>Uebersicht aller Einladungsaufforderungen</h3>
+<h3 class="freak">Uebersicht aller Einladungsaufforderungen</h3>
 
 <?php
 
@@ -175,46 +175,44 @@ $dropdown_data = array('Erstellen', 'Loeschen');
 
 $submit_data = array(
 		'id' 			=> 'save',
-		'name'			=> 'submit',
+		'name'			=> 'los',
 		'class'			=> 'btn btn-mini btn-danger'
 	);
 
 ?>
 
-<table id="user_overview" class="table table-striped table-bordered table-condensed">
-	<thead>
-		<tr>
-			<th>Rolle</th>
-			<th>Nachname</th>
-			<th>Vorname</th>
-			<th>Email</th>
-			<th>Funktion</th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		<?php $attrs2 = array('class' => 'well form-horizontal', 'id' => 'accept_invitation'); ?>
-		<?php foreach ($user_invitations as $key => $value) { ?>
-		<?php FB::log($value); ?>
-		<tr>
-			<?php echo form_open('admin/create_user_from_invitation/', $attrs2); ?>
-			<?php echo form_hidden('request_id', $value['AnfrageID']); ?>
 
-			<td></td>
-			<td><?php echo $value['Nachname']; ?></td>
-			<td><?php echo $value['Vorname']; ?></td>
-			<td><?php echo $value['Emailadresse']; ?></td>
+<div class="row">
+	<div class="span2">Test</div>
+	<div class="span2">Test</div>
+	<div class="span2">Test</div>
+	<div class="span2">Test</div>
+	<div class="span2">Test</div>
+	<div class="span2">Test</div>
+</div>
 
-			<?php echo "<td>".form_dropdown('user_function', $dropdown_data, '0', $class_dd)."</td>"; ?>
 
-			<?php $js = 'onclick="confirm_modal($(this), e)"'; ?>
-			<?php echo "<td>".form_submit($submit_data, 'LOS!', $js)."</td>"; ?>
 
-			<?php echo form_close(); ?>
-		</tr>
-		<?php } ?>
-	</tbody>
-</table>
+<?php $attrs2 = array('class' => 'form-horizontal', 'id' => 'accept_invitation'); ?>
+	<?php foreach ($user_invitations as $key => $value) { ?>
+	<?php FB::log($value); ?>
+
+<div class="row">
+	<?php echo form_open('admin/create_user_from_invitation/', $attrs2); ?>
+	<?php echo form_hidden('request_id', $value['AnfrageID']); ?>
+
+	<div class="span2">leer</div>
+	<div class="span2"><?php echo $value['Nachname']; ?></div>
+	<div class="span2"><?php echo $value['Vorname']; ?></div>
+	<div class="span2"><?php echo $value['Emailadresse']; ?></div>
+
+	<?php echo "<div class=\"span2\">".form_dropdown('user_function', $dropdown_data, '0', $class_dd)."</div>"; ?>
+
+	<?php echo "<div class=\"span2\">".form_submit($submit_data, 'LOS!')."</div>"; ?>
+
+	<?php echo form_close(); ?>
+</div>
+<?php } ?>
 
 
 <!-- Modal -->
@@ -237,14 +235,13 @@ $submit_data = array(
 		toggle_erstsemestler($(this));
 	});
 
-	// prevent_submit();
 
-	// $("#accept_invitation").submit(function() {
-	// 	// confirm_modal();
-	// 	// return false;
-	// 	alert("fdas");
-	// 	return false;
-	// });
+
+	confirm_modal();
+
+	$("h3.freak").click(function() {
+		$("#dialog-confirm").dialog('open');
+	});
 
 })();
 
@@ -272,35 +269,34 @@ function toggle_erstsemestler(c) {
 	}
 }
 
-function test(button) {
-	alert(button);
-	return false;
-}
+function confirm_modal() {
 
-function prevent_submit() {
-	$("input[type='submit']").click(function(e) {
+	$("#accept_invitation input#save").click(function(e) {
 		e.preventDefault();
-		// confirm_modal();
-		console.log(e);
-	});
-}
 
-function confirm_modal(button, e) {
-	e.preventDefault();
-	// $( "#dialog-confirm" ).dialog({
-	// 	resizable: false,
-	// 	height:140,
-	// 	modal: true,
-	// 	buttons: {
-	// 		"Delete all items": function() {
-	// 			button.trigger();
-	// 			$( this ).dialog( "close" );
-	// 		},
-	// 		Cancel: function() {
-	// 			$( this ).dialog( "close" );
-	// 		}
-	// 	}
-	// });
+		// add custom attribute to determine later
+		$(this).attr("clicked", "true");
+
+		$( "#dialog-confirm" ).dialog({
+			// autoOpen: false,
+			resizable: false,
+			height:140,
+			modal: true,
+			buttons: {
+				"Delete all items": function() {
+					$("input[type=submit][clicked=true]").parents("form").submit();
+					$( this ).dialog( "close" );
+				},
+				Cancel: function() {
+					$( this ).dialog( "close" );
+				}
+			}
+		});
+
+		// $("#dialog-confirm").dialog('open');
+
+	});
+
 }
 
 </script>
