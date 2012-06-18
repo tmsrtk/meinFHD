@@ -124,8 +124,6 @@ class Stundenplan_Model extends CI_Model {
 
 	}
 
-	
-
 	/**
 	 * Returns all courses in complex query.
 	 *	
