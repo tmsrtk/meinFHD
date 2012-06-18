@@ -13,7 +13,14 @@ class Stundenplan_Model extends CI_Model {
 	}
 
 
-	//Eventuell später entfernen
+	/**
+	 * Defines global record of variables, in case additional information about the User is needed.
+	 *
+	 * Example: $this->user['VorName'];
+	 *
+	 * @param integer // ID of a User
+	 * @return row_array // Information about User
+	 */	
 	private function define_user($id)
 	{
 	
@@ -22,13 +29,13 @@ class Stundenplan_Model extends CI_Model {
 	}
 	
 	/**
-	 * getSemesterTyp()													
+	 * get_Semester_Typ()													
 	 *																		
 	 * wirtten by Jochen Sauer, copyed function								
 	 *																		
 	 * @return Actual Typ of Semester (Winter or Summer)						
 	 */
-	function getSemesterTyp() 
+	function get_Semester_Typ() 
 	{		
 		// Errechne aktuellen Semestertyp
 		return (date("n") >= 3 && date("n") <= 8) ? "SS" : "WS";		
@@ -48,14 +55,14 @@ class Stundenplan_Model extends CI_Model {
 	 *																		
 	 *	@return	$semester 		Actual Semester as String.				
 	 */
-	function getSemester( $semestertyp, $studienbeginn ) 
+	function get_Semester( $semestertyp, $studienbeginn ) 
 	{
 		
 		// definiere Rückgabewert
 		$semester = "";
 		
 		// ermittel semestertyp
-		$errechneter_semestertyp = $this->getSemesterTyp();
+		$errechneter_semestertyp = $this->get_Semester_Typ();
 		
 		// stimmt aktueller Semestertyp mit Studienbeginn-Semestertyp überein?
 		$gleicher_semestertyp = ($errechneter_semestertyp == $semestertyp) ? true : false;
@@ -66,7 +73,6 @@ class Stundenplan_Model extends CI_Model {
 		// Gebe String zurück
 		return $semester;
 	}	
-
 
 
 	/**
@@ -86,26 +92,26 @@ class Stundenplan_Model extends CI_Model {
 	}
 
 	//Constructs and returns an empty array which will contain the days
-	private function create_tage_array()
+	private function create_days_array()
 	{
-		$query_tage = $this->db->query("SELECT TagName FROM Tag");
-		$tage = $query_tage->result_array();
+		$query_days = $this->db->query("SELECT TagName FROM Tag");
+		$days = $query_days->result_array();
 
-		return $tage;
+		return $days;
 	}
 
 	//Constructs and returns an empty 2D array which will contain the timetable
-	private function create_stplan_array()
+	private function create_timetable_array()
 	{
-		$query_tage = $this->db->query("SELECT TagName FROM Tag");
-		$tage = $query_tage->result_array();
+		$query_days = $this->db->query("SELECT TagName FROM Tag");
+		$days = $query_days->result_array();
 
 		$query_stunden = $this->db->query("SELECT StundeID FROM Stunde");
 		$stunden = $query_stunden->result_array();
 
 		$stundenplan = array();
 
-		foreach ($tage as $tag) 
+		foreach ($days as $tag) 
 		{
 			foreach ($stunden as $stunde) {
 			$stundenplan[$tag['TagName']][$stunde['StundeID']] = array();
@@ -118,7 +124,16 @@ class Stundenplan_Model extends CI_Model {
 
 	}
 
-	//Returns all courses
+	
+
+	/**
+	 * Returns all courses in complex query.
+	 *	
+	 * (For documentation of query look inside of function)
+	 *
+	 * @param Integer // ID of User
+	 * @return row-array // List of all courses in this semster linked to the USER-ID
+	 */	
 	private function get_courses($id) 
 	{
 		
@@ -126,7 +141,7 @@ class Stundenplan_Model extends CI_Model {
 		//studiengangkurs: Die Namen im Klartext (Nur deswegen in Query)
 		//stundenplankurs: Genauere Informationen zu Kursen(Startzeit, Typ)
 		//veranstaltungsform: Die Namen der Veranstaltungsformen im Klartext
-		//Tag: Um TagIds von Stplankurs in Klartext darzustellen, wichtig 
+		//Tag: Um TagIds von timetablekurs in Klartext darzustellen, wichtig 
 		//Stunde: Doppelt verwendet für Startzeitpunkt und Endzeitpunkt des Kurses
 		//Dozent: Für DozentID im Klartext benutzer noch einmal
 		//Gruppe: Enthält maximale Anzahl, ob Anmeldung freigeschaltet ist
@@ -163,7 +178,7 @@ class Stundenplan_Model extends CI_Model {
 			t.TagID = sp.TagID AND
 			sp.DozentID = d.BenutzerID AND
 			b.BenutzerID = ".$id." AND 
-			b.SemesterID = ".$this->getSemester($this->user['StudienbeginnSemestertyp'] , $this->user['StudienbeginnJahr'])." AND
+			b.SemesterID = ".$this->get_Semester($this->user['StudienbeginnSemestertyp'] , $this->user['StudienbeginnJahr'])." AND
 			sp.GruppeID = g.GruppeID AND
 			sp.IsWPF = 0
 		ORDER BY 
@@ -176,51 +191,40 @@ class Stundenplan_Model extends CI_Model {
 	}
 
 	/**
-	 * Function sets the courses in the Timtable active if the schould be displayed.
+	 * Function sets the courses in the Timtable active if they schould be displayed.
 	 *
-	 * The "aktiv"-Flag in the Database needs to be manually set in certain courses.
-	 * A "Seminar" for example is set not set to active in the Database, but it schould be because the always will be displayed in the view.
-	 * A "Praktikum" needs to be set active, but only if there is not one in there already in the active-state.
+	 * The "aktiv"-Flag in the Database needs to be manually set in certain courses:
+	 * 
+	 * 1. If there is no alternativ course
 	 *
-	 * @param type name // nicht vorhanden
-	 * @return type // nicht vorhanden
+	 * @param type name // Record of courses
+	 * @return type // Record of courses, all courses which schould be displayed flagged active
 	 */	
-	private function set_active($timetable)
+	private function set_active($courses)
 	{
 
-		//Durchlaufen des Arrays, 
+		foreach ($courses as $index =>$course) {
+			if (!$course['VeranstaltungsformAlternative']) {
+				$courses[$index]['Aktiv'] = "1";
+			}
+		}
+
+		return $courses;
 
 	}
 
-	/**
-	 * Central function, returns various arrays, the most important one is the "stundenplan"-Array (found under index [0])
-	 * The Array is 3-Demnsional (The first Array in there is indexed by Days, for example $stundenplan['Montag']]), then hours,
-	 * then an Array for all courses in this hour. You would get the first )
-	 *
-	 * @param type name // nicht vorhanden
-	 * @return type // nicht vorhanden
-	 */	
-	public function get_stundenplan($id)
+	private function courses_into_timetable($courses, $timetable)
 	{
-		//Eventuell entfernen, nicht ganz klar wie Informationen von User erhalten werden(von Manuel)
-		$this->define_user($id);
 
-		$stundenplan = $this->create_stplan_array();
 
-		$tage = $this->create_tage_array();
-
-		$times = $this->create_times_array();
-		
-		$courses = $this->get_courses($id);
-
-		//insert active courses in the empty timetable array
-		foreach ($stundenplan as $TagName => $TagInhalt) {
+		//insert courses in the empty timetable array via for-each
+		foreach ($timetable as $TagName => $TagInhalt) {
 			foreach ($TagInhalt as $StundeID => $StundeInhalt) {
 				
 				//For every course in $courses check, if it is at that specific day/hour
 				foreach ($courses as $course) {
 					if ($course['TagName'] == $TagName && $course['StartID'] == $StundeID) {
-							array_push($stundenplan[$TagName][$StundeID], $course);
+							array_push($timetable[$TagName][$StundeID], $course);
 					}
 				}
 
@@ -228,9 +232,36 @@ class Stundenplan_Model extends CI_Model {
 		}
 
 
-		//$this->krumo->dump($stundenplan);
+		return $timetable;
+	}
 
+	/**
+	 * Central function, returns various arrays, the most important one is the "stundenplan"-Array (found under index [0])
+	 * The Array is 3-Demnsional.
+	 * The first Array in there is indexed by Days, for example $stundenplan['Montag']]), then hours,
+	 * then an Array for all courses in this hour. 
+	 * You would get the name of the first course at hour 1 on a Monday by $stundenplan['Montag'][0][0]['Kursname']])
+	 *
+	 * @param integer // The ID of a User
+	 * @return array // Various arrays
+	 */	
+	public function get_stundenplan($id)
+	{
+		//Set global variable in this class for informtion concering the User.
+		$this->define_user($id);
+		
 
+		//Query all courses from Database
+		$courses = $this->get_courses($id);
+
+		//Control active-flag of courses, change if necsassary(see function-doc)
+		$courses = $this->set_active($courses);
+
+		//Create empty structure of timetable
+		$timetable = $this->create_timetable_array();
+
+		//Sort courses into timetable-array-structure
+		$stundenplan = $this->courses_into_timetable($courses, $timetable);
 
 
 		//Assemble return-array
@@ -240,9 +271,11 @@ class Stundenplan_Model extends CI_Model {
 		array_push($return, $stundenplan);
 
 		//[1] : The days, indexed by Numbers (Not requiered actually)
-		array_push($return, $tage);
+		$days = $this->create_days_array();
+		array_push($return, $days);
 
 		//[2] : The times, indexed by Numbers (Not requiered actually)
+		$times = $this->create_times_array();
 		array_push($return, $times);
 
 		//[3] : The courses in a list, indexed by Numbers, ordered by day and hour(Not requiered actually)
