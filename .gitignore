@@ -59,9 +59,10 @@ Environment/
 # Eclipse-File
 ###############################
 *.project
-.settings
+/.settings/
 
 # exclude .svn directories by default
 .svn
+
 # netbeans ide project files
 /nbproject/
