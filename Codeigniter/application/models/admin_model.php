@@ -599,7 +599,7 @@ class Admin_model extends CI_Model {
 	 * @param type $ids
 	 * @return type
 	 */
-	function get_stdplan_ids($ids){
+	function get_stdplan_course_ids($ids){
 	    $this->db->distinct();
 	    $this->db->select('a.SPKursID');
 	    $this->db->from('stundenplankurs as a');
@@ -732,22 +732,76 @@ class Admin_model extends CI_Model {
 	
 	//######################### methods needed to delete a stdplan
 	
+	/**
+	 * Deleting all records related to a stundenplan
+	 * - getting spkursIDs for this stundenplan
+	 * - getting groupids
+	 * - deleting from group
+	 * - deleting from benutzerkurs
+	 * - deleting from stundenplankurs
+	 * @param type $stdplan_ids
+	 */
+	function delete_stdplan_related_records($stdplan_ids){
+	    // get spkursids to delete
+	    $stdplan_course_ids = $this->get_stdplan_course_ids($stdplan_ids);
+	    
+	    // get groupids
+	    $group_ids = '';
+	    foreach($stdplan_course_ids as $id){
+		$group_ids[] = $this->get_group_id_to_delete($id->SPKursID);
+	    }
+	    
+	    // delete from gruppe (group_ids)
+	    foreach($group_ids as $id){
+		$this->delete_from_group($id);
+	    }
+	    
+	    // delete from benutzerkurs (spkurs_ids)
+	    foreach($stdplan_course_ids as $id){
+		$this->delete_from_benutzerkurs($id->SPKursID);
+	    }
+	    
+	    // delete from stundenplankurs (spkursids)
+	    foreach($stdplan_course_ids as $id){
+		$this->delete_from_stundenplankurs($id->SPKursID);
+	    }
+	    
+//	    echo '<pre>';
+//	    print_r($id);
+//	    echo '<p/re>';
+	}
+	
+	
 	// get group_ids from stundenplankurs (spkurs_id = )
-	function get_group_id_to_delete($spkurs_ids){
+	function get_group_id_to_delete($spkurs_id){
 	    $this->db->select('GruppeID');
-	    $this->db->where('SPKursID', $spkurs_ids);
+	    $this->db->where('SPKursID', $spkurs_id);
 	    $q = $this->db->get('stundenplankurs');
 	    
-	    foreach ($q->result_array() as $row) {
-		return $row;
+	    if($q->num_rows() > 0){
+		foreach ($q->result() as $row){
+		    return $row->GruppeID;
+		}
 	    }
 	}
 	
-	// delete from gruppe (groupe_ids)
 	
-	// delete from benutzerkurs (spkurs_ids)
+	function delete_from_group($g_id){
+	    $this->db->where('GruppeID', $g_id);
+	    $this->db->delete('gruppe');
+	}
 	
-	// delete from stundenplankurs (spkursids)
+	function delete_from_benutzerkurs($spk_id){
+	    $this->db->where('SPKursID', $spk_id);
+	    $this->db->delete('benutzerkurs');
+	}
+	
+	function delete_from_stundenplankurs($spk_id){
+	    $this->db->where('SPKursID', $spk_id);
+	    $this->db->delete('stundenplankurs');
+	}
+	
+	
 	
 	
 }

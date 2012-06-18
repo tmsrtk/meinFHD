@@ -1115,7 +1115,7 @@ class Admin extends FHD_Controller {
 		$this->input->post('stdplan_id_sem'),
 		$this->input->post('stdplan_id_po'));
 	    
-	    $stdplan_course_ids = $this->admin_model->get_stdplan_ids($stdplan_id);
+	    $stdplan_course_ids = $this->admin_model->get_stdplan_course_ids($stdplan_id);
 	    
 //	    echo '<pre>';
 //	    echo print_r($stdplan_course_ids);
@@ -1229,20 +1229,13 @@ class Admin extends FHD_Controller {
 		$this->input->post('stdplan_semester'),
 		$this->input->post('stdplan_po'),
 	    );
-	    
-	    // get spkursids to delete
-	    // TODO - check if there is another way to get data - stdgng-id is given!!
-	    $stdplan_ids = $this->admin_model->get_stdplan_ids($stdgng_ids);
 
-	    // get groupe_ids to delete from gruppe-table
-	    $group_ids = '';
-	    foreach($stdplan_ids as $id) {
-		$group_ids[] = $this->admin_model->get_group_id_to_delete($id->SPKursID);
-	    }
+	    // delete all data related to chosen stdplan
+	    $this->admin_model->delete_stdplan_related_records($stdgng_ids);
 	    
-	    echo '<pre>';
-	    print_r($group_ids);
-	    echo '</pre>';
+//	    echo '<pre>';
+//	    print_r($group_ids);
+//	    echo '</pre>';
 	}
 	
 	/* *****************************************************
