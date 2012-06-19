@@ -12,7 +12,6 @@ class Stundenplan_Model extends CI_Model {
 		
 	}
 
-
 	/**
 	 * Defines global record of variables, in case additional information about the User is needed.
 	 *
@@ -29,7 +28,7 @@ class Stundenplan_Model extends CI_Model {
 	}
 
 	public function enroll_in_course($user_id, $course_id) {
-		
+
 		$this->db->select('*');
 		$this->db->from('gruppenteilnehmer');
 		$this->db->where('BenutzerID', $user_id);
@@ -108,11 +107,53 @@ class Stundenplan_Model extends CI_Model {
 		return $times;
 	}
 
-	//Constructs and returns an empty array which will contain the days
+	//
+	/**
+	 * Constructs and returns an empty array which will contain the days and their date
+	 *
+	 * The Date is depending on the actual day and calcualted for Monday in this week.
+	 *
+	 * @param type name // nicht vorhanden
+	 * @return type // Days in a array with their date
+	 */	
 	private function create_days_array()
 	{
+		//Create row array containing the names of the days
 		$query_days = $this->db->query("SELECT TagName FROM Tag");
 		$days = $query_days->result_array();
+
+		//Clear Saturday and Sunday
+		unset( $days[5]);
+		unset( $days[6]);
+
+
+		//Add the belonging date to the specific day 
+
+		//Contains 1 if it's Monday, 2 if Tuesday..
+		$actual_day = date('w');
+
+
+		//For every day past since monday, substract the time for 24 hours (86400 Sek)
+		$time_since_monday = 0;
+
+		while ($actual_day > 1) {
+			$time_since_monday = $time_since_monday + 86400;
+			$actual_day--;
+		}
+
+		$date_monday = date('d.m.Y', time() - $time_since_monday);
+
+		//Add to the row array the specific date counting from Monday to Friday
+		$actual_date = $date_monday;
+
+		foreach ($days as $key => $value) {
+
+			$days[$key]["Datum"] = $actual_date;
+			$time_since_monday = $time_since_monday - 86400;
+
+			$actual_date = date('d.m.Y', time() - $time_since_monday);
+
+		}
 
 		return $days;
 	}
@@ -136,6 +177,9 @@ class Stundenplan_Model extends CI_Model {
 
 		}
 
+		//Erase Saturday and Sunday
+		unset( $stundenplan['Samstag']);
+		unset( $stundenplan['Sonntag']);
 
 		return $stundenplan;
 	}
