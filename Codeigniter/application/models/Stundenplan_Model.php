@@ -29,7 +29,7 @@ class Stundenplan_Model extends CI_Model {
 	}
 
 	public function enroll_in_course($user_id, $course_id) {
-
+		
 		$this->db->select('*');
 		$this->db->from('gruppenteilnehmer');
 		$this->db->where('BenutzerID', $user_id);
