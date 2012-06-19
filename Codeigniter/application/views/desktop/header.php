@@ -14,11 +14,11 @@
 		<!-- Styles -->
 	<!--	<link rel="stylesheet/less" type="text/css" href="../resources/bootstrap/less/bootstrap.less">
 		<link rel="stylesheet/less" type="text/css" href="../resources/bootstrap/less/responsive.less"> -->
-		<link rel="stylesheet/less" type="text/css" href="../resources/less/meinfhd.less">
-		<link rel="stylesheet/less" type="text/css" href="../resources/less/meinfhd-responsive.less">
+		<link rel="stylesheet/less" type="text/css" href="<?php print base_url(); ?>resources/less/meinfhd.less">
+		<link rel="stylesheet/less" type="text/css" href="<?php print base_url(); ?>resources/less/meinfhd-responsive.less">
 		
 		<!--LESS compiler-->
-		<script src="../resources/lessjs/dist/less-1.3.0.min.js" type="text/javascript"></script>
+		<script src="<?php print base_url(); ?>resources/lessjs/less-1.3.0.min.js" type="text/javascript"></script>
 	</head> <!-- /head -->
 	<body>
 		<?php print $messages; ?>
