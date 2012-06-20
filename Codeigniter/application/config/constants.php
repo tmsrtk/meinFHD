@@ -36,6 +36,25 @@ define('FOPEN_READ_WRITE_CREATE',				'a+b');
 define('FOPEN_WRITE_CREATE_STRICT',				'xb');
 define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 
+/*
+|--------------------------------------------------------------------------
+| Environmental switch
+|--------------------------------------------------------------------------
+|
+| Switches the environment depending on SERVER_NAME
+|
+*/
+if(strpos($_SERVER['SERVER_NAME'], 'local') !== FALSE) {
+	define('ENVIRONMENT', 'development');
+}
+
+elseif(strpos($_SERVER['SERVER_NAME'], 'dev.') === 0) {
+	define('ENVIRONMENT', 'staging');
+}
+
+else {
+	define('ENVIRONMENT', 'live');
+}
 
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

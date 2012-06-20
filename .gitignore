@@ -62,15 +62,12 @@ $RECYCLE.BIN/
 
 # CodeIgniter files
 ######################################################################################################
-*/config/development
-*/logs/log-*.php
-*/logs/!index.html
-*/cache/*
-*/cache/!index.html
-
-# custom environmental files
-######################################################################################################
-Environment/
+*Codeigniter/application/config/development
+*Codeigniter/application/config/live
+*Codeigniter/application/logs/log-*.php
+*Codeigniter/application/logs/!index.html
+*Codeigniter/application/cache/*
+*Codeigniter/application/cache/!index.html
 
 # SVN files
 ######################################################################################################
