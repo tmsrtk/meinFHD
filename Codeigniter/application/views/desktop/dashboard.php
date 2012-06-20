@@ -50,38 +50,41 @@
 				<div class="span4">
 				
 					<div class="well widget">
+					
 		            	 <i class="icon icon-question-sign pull-right" title="Willst Du es wissen wile lange noch in diesen Semester hast?" rel="tooltip"></i>
 		           		 <h5><i class="icon icon-tasks"></i>Semestercountdown</h5>
 		           		 
 		           		 <div id="widgetContainer"class="widget-content">
 		           		 
-		            	 	
 		            	 	<div id="frontSide">
+		            	 	
 			            	 	<div id="counter1">
 			            	 		<div class="bold" style="text-align:center;">Semesterende in</div>
 				            	 	<div id="countdown" class="countdownHolder"> </div>
 				            	 	<p id="note"></p> 
-				            	 </div>
-				            	 <div id="counter2">
+				            	</div>
+				            	 
+				            	<div id="counter2">
 				            	 	<div class="bold" style="text-align:center;">Klausuren in</div>
 				            	 	<div id="countdown2" class="countdownHolder"> </div>
 				                	<p id="note2"></p>
 				                	
 			            	 	</div>
 			            	 	<a href="#" id="flipToSettings" class="flipLink"><i class="icon icon-info-sign pull-right"></i></a>
-			                </div> 
+							</div> 
+							
 			                <div  id="backSide" >
+			                
 			                	<div class="widget-edit ">Edit Counter
-			                		    <form >
-										    <label>Suche Deine Counter </label>
-										    
-										    <input type="checkbox" id ="semesterende" onclick="toggle_counter($(this))"> Semester Ende
-										    <input type="checkbox" id ="klausurstart" onclick="toggle_counter($(this))" > Klausur Start
-										  
-										 </form>
+			                		<form >
+										<label>Suche Deine Counter </label>
+										<input type="checkbox" id ="semesterende" onclick="toggle_counter($(this))"> Semester Ende
+										<input type="checkbox" id ="klausurstart" onclick="toggle_counter($(this))" > Klausur Start
+									</form>
 			                		<a href="#" id="flipToFront" class="flipLink"><button>ok</button></a>
 			                	</div>
-			          	    </div>  
+	
+			          	</div>  
 			          	    		
 		            	 </div> 
 		            	   	
