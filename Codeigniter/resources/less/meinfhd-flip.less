@@ -1,9 +1,13 @@
 
 
-#widgetContainer, #backSide{
+#widgetContainer{
 	margin:0 auto;
 	position:relative;
 	z-index:1;
+	
+		-moz-perspective: 800px;
+	-webkit-perspective: 800px;
+	perspective: 800px;
 	
 }
 
@@ -40,9 +44,9 @@
 
 
 #frontSide{
-	
-	height: 180px;
+
 	z-index:100;
+	height:170px;
 }
 
 #backSide{
@@ -105,11 +109,9 @@
 	left:0;
 }
 
-
-
 .widget-edit{
 background:#A5A5A5;
-height:170px;
+height:180px;
 margin-top:-170px;
 
 }
