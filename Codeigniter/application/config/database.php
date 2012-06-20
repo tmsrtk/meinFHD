@@ -64,10 +64,5 @@ $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
 
-// please place a file within the Environment directory
-// called local_database.php to overwrite some of the settings above
-// for local development
-@include_once($_SERVER['DOCUMENT_ROOT'] . '/meinFHD/Environment/local_database.php');
-
 /* End of file database.php */
 /* Location: ./application/config/database.php */
