@@ -164,7 +164,7 @@
 
 
 
-<h3 class="freak">Uebersicht aller Einladungsaufforderungen</h3>
+<h3>Uebersicht aller Einladungsaufforderungen</h3>
 
 <?php
 
@@ -220,6 +220,8 @@ $submit_data = array(
 	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
 </div>
 
+<button id="opener">Test</button>
+
 
 <script>
 
@@ -237,11 +239,67 @@ $submit_data = array(
 
 
 
-	confirm_modal();
 
-	$("h3.freak").click(function() {
-		$("#dialog-confirm").dialog('open');
+
+	var $mydialog = $('<div id="dialog-confirm" title="Empty the recycle bin?"></div>')
+					.html('<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>')
+					.dialog({
+						autoOpen: false,
+						resizable: false,
+						height: 200,
+						modal: true,
+						buttons: {
+							"Ja, löschen": function() {
+								$("input[type=submit][clicked=true]").parents("form").submit();
+								$("#accept_invitation input#save").removeAttr("clicked");
+								$( this ).dialog( "close" );
+							},
+							Abbrechen: function() {
+								$("#accept_invitation input#save").removeAttr("clicked");
+								$mydialog.dialog( "close" );
+							}
+						}
+					});
+
+
+	$("#accept_invitation input#save").click(function(e) {
+		e.preventDefault();
+
+		// add custom attribute to determine later
+		$(this).attr("clicked", "true");
+
+		$mydialog.dialog("open");
 	});
+
+
+
+	// confirm_modal();
+
+
+	// $("#dialog-confirm").click(function() {
+	// 	$mydialog.dialog('open');
+	// 	return false;
+	// });
+
+
+		// $( "#dialog-confirm" ).dialog({
+		// 	autoOpen: false,
+		// 	resizable: false,
+		// 	height:140,
+		// 	modal: true,
+		// 	buttons: {
+		// 		"Ja, löschen": function() {
+		// 			$("input[type=submit][clicked=true]").parents("form").submit();
+		// 			that.removeAttr("clicked");
+		// 			$( this ).dialog( "close" );
+		// 		},
+		// 		Abbrechen: function() {
+		// 			that.removeAttr("clicked");
+		// 			$( this ).dialog( "close" );
+		// 		}
+		// 	}
+		// });
+
 
 })();
 
@@ -269,34 +327,21 @@ function toggle_erstsemestler(c) {
 	}
 }
 
-function confirm_modal() {
+// function confirm_modal() {
 
-	$("#accept_invitation input#save").click(function(e) {
-		e.preventDefault();
+// 	$("#accept_invitation input#save").click(function(e) {
+// 		e.preventDefault();
 
-		// add custom attribute to determine later
-		$(this).attr("clicked", "true");
+// 		var that = $(this);
+// 		// add custom attribute to determine later
+// 		$(this).attr("clicked", "true");
 
-		$( "#dialog-confirm" ).dialog({
-			// autoOpen: false,
-			resizable: false,
-			height:140,
-			modal: true,
-			buttons: {
-				"Delete all items": function() {
-					$("input[type=submit][clicked=true]").parents("form").submit();
-					$( this ).dialog( "close" );
-				},
-				Cancel: function() {
-					$( this ).dialog( "close" );
-				}
-			}
-		});
 
-		// $("#dialog-confirm").dialog('open');
+// 		$mydialog.dialog("open");
+// 		// $("#dialog-confirm").dialog('open');
 
-	});
+// 	});
 
-}
+// }
 
 </script>
