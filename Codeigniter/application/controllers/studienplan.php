@@ -23,6 +23,24 @@ class Studienplan extends FHD_Controller
         // load model
         $this->load->model('Studienplan_Model');
         $plan = $this->Studienplan_Model->queryStudyplan();
+        $this->swsUndCpBerechnen();
+        
+        // add the resultset/array to the data-object
+        $this->data->add('studienplan', $plan);
+        $this->load->view('studienplan', $this->data->load());
+    }
+    
+    
+    
+    /**
+     * Mobile Index-Method, which loads the Studienplan
+     */
+    public function mobile_index()
+    {
+        // load model
+        $this->load->model('Studienplan_Model');
+        $plan = $this->Studienplan_Model->queryStudyplan();
+        $this->swsUndCpBerechnen();
         
         // add the resultset/array to the data-object
         $this->data->add('studienplan', $plan);
@@ -38,6 +56,8 @@ class Studienplan extends FHD_Controller
     {
         $this->load->model('Studienplan_Model');
         $this->Studienplan_Model->createStudyplan();
+        
+        $this->message->set(sprintf('Der Studienplan wurde erfolgreich erstellt.'));
     }
     
     
@@ -80,9 +100,37 @@ class Studienplan extends FHD_Controller
     
     
     /**
+     * Mobile: Calculate the average mark 
+     */
+    public function mobile_durchschnittsnoteBerechnen()
+    {
+        $this->load->model('Studienplan_Model');
+        $average = $this->Studienplan_Model->$this->Studienplan_Model->calculateAverageMark();
+        
+        $this->data->add('averageMark', $average);
+        $this->load->view('studienplan', $this->data->load());
+    }
+    
+    
+    
+    /**
      * Calculate the percentage of current study-status 
      */
     public function prozentsatzBerechnen()
+    {
+        $this->load->model('Studienplan_Model');
+        $percent = $this->Studienplan_Model->$this->Studienplan_Model->calculatePercentageOfStudy();
+        
+        $this->data->add('percentage', $percent);
+        $this->load->view('studienplan', $this->data->load());
+    }
+    
+    
+    
+    /**
+     * Mobile: Calculate the percentage of current study-status 
+     */
+    public function mobile_prozentsatzBerechnen()
     {
         $this->load->model('Studienplan_Model');
         $percent = $this->Studienplan_Model->$this->Studienplan_Model->calculatePercentageOfStudy();
@@ -112,12 +160,14 @@ class Studienplan extends FHD_Controller
     {
         $this->load->model('Studienplan_Model');
         $this->Studienplan_Model->reset();
+        
+        $this->message->set(sprintf('Der Studienplan wurde erfolgreich zurükgesetzt.'));
     }
     
     
     
     /**
-     *Calculate the SWS and the Creditpoints 
+     * Calculate the SWS and the Creditpoints 
      */
     public function swsUndCpBerechnen()
     {
@@ -125,7 +175,6 @@ class Studienplan extends FHD_Controller
         $swsCp = $this->Studienplan_Model->calculateSwsAndCp();
         
         $this->data->add('swsCp', $swsCp);
-        $this->load->view('studienplan', $this->data->load());
     }
     
     
@@ -157,9 +206,37 @@ class Studienplan extends FHD_Controller
     
     
     /**
+     * Mobile: Get information about all modules 
+     */
+    public function mobile_modulinfo()
+    {
+        $this->load->model('Studienplan_Model');
+        $info = $this->Studienplan_Model->moduleInfo();
+        
+        $this->data->add('moduleinfo', $info);
+        $this->load->view('studienplan', $this->data->load());
+    }
+    
+    
+    
+    /**
      * Show all participated groups
      */
     public function gruppenAnzeigen()
+    {
+        $this->load->model('Studienplan_Model');
+        $groups = $this->Studienplan_Model->groups();
+        var_dump($groups);
+        //$this->data->add('groups', $groups);
+        //$this->load->view('studienplan', $this->data->load());
+    }
+    
+    
+    
+    /**
+     * Mobile: Show all participated groups
+     */
+    public function mobile_gruppenAnzeigen()
     {
         $this->load->model('Studienplan_Model');
         $groups = $this->Studienplan_Model->groups();

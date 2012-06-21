@@ -165,6 +165,7 @@ class Studienplan_Model extends CI_Model
     public function queryStudyplan()
     { 
         $data = array();
+        $counter = 1;
         
         // try to query the database
         try
@@ -192,9 +193,9 @@ class Studienplan_Model extends CI_Model
                 'Kursname'          => '',
                 'Kurzname'          => '',
                 'graduateSemester'  => 0,
-                'Hoeren'            => '',
-                'Schreiben'         => '',
-                'Notenpunkte'       => ''
+                'Teilnehmen'        => '',
+                'Pruefen'           => '',
+                'Notenpunkte'       => '',
             );
             
             
@@ -211,8 +212,8 @@ class Studienplan_Model extends CI_Model
                         'Kursname'          => $sq->Kursname,
                         'Kurzname'          => $sq->kurs_kurz,
                         'graduateSemester'  => $sq->graduateSemester,
-                        'Hoeren'            => $sq->KursHoeren,
-                        'Schreiben'         => $sq->KursSchreiben,
+                        'Teilnehmen'        => $sq->KursHoeren,
+                        'Pruefen'           => $sq->KursSchreiben,
                         'Notenpunkte'       => $sq->Notenpunkte
                     );
                 }
@@ -225,13 +226,24 @@ class Studienplan_Model extends CI_Model
                         'Kursname'          => $sq->Kursname,
                         'Kurzname'          => $sq->kurs_kurz,
                         'graduateSemester'  => $sq->graduateSemester,
-                        'Hoeren'            => $sq->KursHoeren,
-                        'Schreiben'         => $sq->KursSchreiben,
+                        'Teilnehmen'        => $sq->KursHoeren,
+                        'Pruefen'           => $sq->KursSchreiben,
                         'Notenpunkte'       => $sq->Notenpunkte
                     );
                 }
             }
             
+            
+            // fetching the SWS & CP into the Studyplan-Array
+            /*$swsCp = $this->calculateSwsAndCp();
+            $counter = 1;
+            
+            foreach($swsCp as $points)
+            {
+                $data['plan'][$counter]['Punkte'] = $points;
+                $counter++;
+            }*/
+            //var_dump($data['plan']);
             return $data;
         }
         // catch all exceptions and echo the Exception-message
@@ -716,9 +728,14 @@ class Studienplan_Model extends CI_Model
                     'SWS_Projekt'           => $swsCp->SWS_Projekt,
                     'SWS_Seminar'           => $swsCp->SWS_Seminar,
                     'SWS_Seminarunterricht' => $swsCp->SWS_Seminarunterricht,
-                    'Creditpoints'          => $swsCp->Creditpoints
+                    'Creditpoints'          => $swsCp->Creditpoints,
+                    'Semester'              => $swsCp->Semester
                 );
             }
+            
+            // initial zero entry
+            $sumArray[0]['SWS_Summe'] = 0;
+            $sumArray[0]['CP_Summe'] = 0;
             
             // step through the ordered array
             foreach($data as $semester)
@@ -737,8 +754,8 @@ class Studienplan_Model extends CI_Model
                     $cpSum += $module['Creditpoints'];
 
                     // write sums in array
-                    $sumArray[$counter]['SWS_Summe'] = intval($swsSum);
-                    $sumArray[$counter]['CP_Summe'] = intval($cpSum);
+                    $sumArray[$module['Semester']]['SWS_Summe'] = intval($swsSum);
+                    $sumArray[$module['Semester']]['CP_Summe'] = intval($cpSum);
                 }
                 
                 // reset locale variables
@@ -746,7 +763,7 @@ class Studienplan_Model extends CI_Model
                 $cpSum = 0;
                 $counter++;
             }
-            
+            var_dump($sumArray);
             return $sumArray;
         }
         catch(Exception $e)
@@ -882,7 +899,7 @@ class Studienplan_Model extends CI_Model
     }
     
     
-    
+    // TODO: DIESE METHODE LIEFERT KEINE ERGEBNISSE, DA DIE DATEN NICHT PASSEN
     /**
      * Returns an array of all participated groups
      * 
