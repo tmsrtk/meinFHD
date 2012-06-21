@@ -219,22 +219,17 @@ $submit_data = array(
 
 (function() {
 
-	// onchange to radiobuttons 
-	// input[name='radio-button-gruppe']
+	// onchange for radiobuttons 
 	$("input[name='role']").change(function() {
-		toggle_more_info($(this));
+		toggle_studentdata($(this));
 	});
 
 	$("input[name='erstsemestler']").change(function() {
-		toggle_erstsemestler($(this));
+		toggle_erstsemestlerdata($(this));
 	});
 
-
-
-
-
-	var $mydialog = $('<div id="dialog-confirm" title="Empty the recycle bin?"></div>')
-					.html('<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>')
+	var $mydialog = $('<div id="dialog-confirm" title="Einladung löschen"></div>')
+					.html('<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Die Einladungsaufforderung wird endgültig gelöscht. OK?</p>')
 					.dialog({
 						autoOpen: false,
 						resizable: false,
@@ -254,48 +249,33 @@ $submit_data = array(
 					});
 
 
-	$("#accept_invitation input#save").click(function(e) {
-		e.preventDefault();
+	$("#accept_invitation input#save").click(function() {
 
-		// add custom attribute to determine later
-		$(this).attr("clicked", "true");
+		// determine which function was selected from the dropdown
+		// 0 = erstellen, 1 = löschen
+		var user_function = $("#user_function").val();
 
-		$mydialog.dialog("open");
+		if (user_function === '0') {
+
+			return true;
+
+		} else if (user_function === '1') {
+			// add custom attribute to determine later
+			$(this).attr("clicked", "true");
+
+			$mydialog.dialog("open");
+
+		} else {
+
+		}
+
+		// prevent default submit behaviour
+		return false;
 	});
-
-
-
-	// confirm_modal();
-
-
-	// $("#dialog-confirm").click(function() {
-	// 	$mydialog.dialog('open');
-	// 	return false;
-	// });
-
-
-		// $( "#dialog-confirm" ).dialog({
-		// 	autoOpen: false,
-		// 	resizable: false,
-		// 	height:140,
-		// 	modal: true,
-		// 	buttons: {
-		// 		"Ja, löschen": function() {
-		// 			$("input[type=submit][clicked=true]").parents("form").submit();
-		// 			that.removeAttr("clicked");
-		// 			$( this ).dialog( "close" );
-		// 		},
-		// 		Abbrechen: function() {
-		// 			that.removeAttr("clicked");
-		// 			$( this ).dialog( "close" );
-		// 		}
-		// 	}
-		// });
-
-
 })();
 
-function toggle_more_info(c) {
+/* toggles additional student data when user selected 'student' from the dropdown */
+function toggle_studentdata(c) {
 	var additional_student_data = $("div#studentendaten");
 
 	// c jQuery object of toggle button
@@ -308,7 +288,8 @@ function toggle_more_info(c) {
 	}
 }
 
-function toggle_erstsemestler(c) {
+/* toggles additional semester data when user checked 'Erstsemester' */
+function toggle_erstsemestlerdata(c) {
 	var erstsemestler_data = $("div#erstsemestler");
 
 	if (c.attr('checked')) {
@@ -318,22 +299,5 @@ function toggle_erstsemestler(c) {
 		erstsemestler_data.fadeIn('slow');
 	}
 }
-
-// function confirm_modal() {
-
-// 	$("#accept_invitation input#save").click(function(e) {
-// 		e.preventDefault();
-
-// 		var that = $(this);
-// 		// add custom attribute to determine later
-// 		$(this).attr("clicked", "true");
-
-
-// 		$mydialog.dialog("open");
-// 		// $("#dialog-confirm").dialog('open');
-
-// 	});
-
-// }
 
 </script>

@@ -22,7 +22,7 @@
 				</li>
 				<?php endif ?>
 				<?php if (in_array(600, $global_data['userdata']['userpermissions'])) : ?>
-				<li><a href="#">Mein Semesterplan</a></li>
+				<li><a href="semesterplan/">Mein Semesterplan</a></li>
 				<?php endif ?>
 				<?php if (in_array(700, $global_data['userdata']['userpermissions'])) : ?>
 				<li><a href="#">Mein Stundenplan</a></li>
