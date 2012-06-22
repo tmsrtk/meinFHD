@@ -130,4 +130,4 @@ nb-configuration.xml
 # PHPStorm files
 ######################################################################################################
 .idea/
-/Codeigniter/nbproject/private/
+CI_phpStorm.php
