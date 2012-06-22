@@ -3,13 +3,13 @@ $(function(){
 	// Checking for CSS 3D transformation support
 	$.support.css3d = supportsCSS3D();
 	
-	var widgetContainer = $('.flipBox');
+	var flipBox = $('.flipBox');
 	
 	// Listening for clicks on the ribbon links
 	$('.flipLink').click(function(e){
 		
 		// Flipping the forms
-		widgetContainer.toggleClass('flipped');
+		flipBox.toggleClass('flipped');
 		
 		// If there is no CSS3 3D support, simply
 		// hide the frontSide form (exposing the backSide one)
@@ -19,7 +19,7 @@ $(function(){
 		e.preventDefault();
 	});
 	
-	widgetContainer.find('form').submit(function(e){
+	flipBox.find('form').submit(function(e){
 		// Preventing form submissions. If you implement
 		// a backend, you might want to remove this code
 		e.preventDefault();

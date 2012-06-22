@@ -48,34 +48,38 @@
 			</div><!--first row ends here-->
 			<div class="row"><!--second row starts here-->
 				<div class="span4 flipBox" style="position: relative;">
-					<div class="frontSide">
-						<div class="well widget">
-							<i class="icon icon-question-sign pull-right" title="Willst Du es wissen wile lange noch in diesen Semester hast?" rel="tooltip"></i>
-							<h5><i class="icon icon-tasks"></i>Semestercountdown</h5>
-							<div id="widgetContainer" class="widget-content">
-								<div id="counter1">
-									<div class="bold" style="text-align:center;">Semesterende in</div>
-									<div id="countdown" class="countdownHolder"> </div>
-									<p id="note"></p>
-								</div>
-								<div id="counter2">
-									<div class="bold" style="text-align:center;">Klausuren in</div>
-									<div id="countdown2" class="countdownHolder"> </div>
-									<p id="note2"></p>
-								</div>
-								<a href="#" id="flipToSettings" class="flipLink"><i class="icon icon-info-sign pull-right"></i></a>
+					<div class="well widget frontSide">
+						<i class="icon icon-question-sign pull-right" title="Willst Du es wissen wile lange noch in diesen Semester hast?" rel="tooltip"></i>
+						<h5><i class="icon icon-tasks"></i>Semestercountdown</h5>
+						<div class="widget-content">
+							<div id="counter1">
+								<div class="bold" style="text-align:center;">Semesterende in</div>
+								<div id="countdown" class="countdownHolder"> </div>
+								<p id="note"></p>
 							</div>
+						<!--	<div id="counter2">
+								<div class="bold" style="text-align:center;">Klausuren in</div>
+								<div id="countdown2" class="countdownHolder"> </div>
+								<p id="note2"></p>
+							</div> -->
 						</div>
-					</div>
-					<div class="backSide">
-						<div class="widget-edit ">
+						<div class="well">
+							<a href="#" class="flipLink"><i class="icon icon-info-sign pull-right"></i></a>
+						</div>
+					</div> <!-- ende frontSide -->
+					<div class="well widget backSide">
+						<i class="icon icon-question-sign pull-right" title="Willst Du es wissen wile lange noch in diesen Semester hast?" rel="tooltip"></i>
+						<h5><i class="icon icon-tasks"></i>Semestercountdown EDIT</h5>
+						<div class="widget-edit">
 							Edit Counter
 							<form >
 								<label>Suche Deine Counter </label>
 								<input type="checkbox" id ="semesterende" onclick="toggle_counter($(this))"> Semester Ende
 								<input type="checkbox" id ="klausurstart" onclick="toggle_counter($(this))" > Klausur Start
 							</form>
-							<a href="#" id="flipToFront" class="flipLink">ok</a>
+							<a href="#" class="flipLink btn btn-success pull-right">
+								<i class="icon-white icon-ok pull-left"></i>
+							</a>
 						</div>
 					</div>
 				</div><!-- /.span4-->
