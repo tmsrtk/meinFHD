@@ -16,6 +16,9 @@
             <link rel="stylesheet/less" type="text/css" href="../resources/bootstrap/less/responsive.less"> -->
     <link rel="stylesheet/less" type="text/css" href="<?php print base_url(); ?>resources/less/meinfhd.less">
     <link rel="stylesheet/less" type="text/css" href="<?php print base_url(); ?>resources/less/meinfhd-responsive.less">
+    <script src="<?php echo base_url(); ?>resources/jquery/jquery.min.js"></script>
+    <script src="<?php print base_url(); ?>resources/jquery/jquery-ui.js"></script>
+    
 
     <!--LESS compiler-->
     <script src="<?php print base_url(); ?>resources/lessjs/less-1.3.0.min.js" type="text/javascript"></script>
