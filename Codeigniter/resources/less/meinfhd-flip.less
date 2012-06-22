@@ -1,17 +1,16 @@
 
 
-#widgetContainer{
+.flipBox {
 	margin:0 auto;
 	position:relative;
 	z-index:1;
-	
-		-moz-perspective: 800px;
+	-moz-perspective: 800px;
 	-webkit-perspective: 800px;
 	perspective: 800px;
-	
 }
 
-#widgetContainer div{
+.flipBox .frontSide,
+.flipBox .backSide {
 	
 	/* Enabling 3d space for the transforms */
 	-moz-transform-style: preserve-3d;
@@ -43,13 +42,12 @@
 }
 
 
-#frontSide{
-
+.frontSide{
 	z-index:100;
 	height:170px;
 }
 
-#backSide{
+.backSide{
 	background: gray;
 	z-index:1;
 	opacity:0;
@@ -59,9 +57,7 @@
 	-webkit-transform:rotateY(180deg);
 	transform:rotateY(180deg);
 }
-
-#widgetContainer.flipped #frontSide{
-	
+.flipBox.flipped .frontSide {
 	opacity:0;
 	
 	/**
@@ -73,9 +69,7 @@
 	-webkit-transform:rotateY(-180deg);
 	transform:rotateY(-180deg);
 }
-
-#widgetContainer.flipped #backSide{
-	
+.flipBox.flipped .backSide {
 	opacity:1;
 	
 	/* Rotating the backSide div into view */
@@ -84,42 +78,30 @@
 	transform:rotateY(0deg);
 }
 
-
 /*----------------------------
 	Inputs, Buttons & Links
 -----------------------------*/
 
-
-#frontSide .flipLink,
-#backSide .flipLink{
-	
+.frontSide .flipLink,
+.backSide .flipLink {
 	/* The blue ribbon links */
-	
 	height: 15px;
-    overflow: hidden;
-    
-    right: 0;
-    text-indent: -9999px;
-    bottom: 0;
-    width: 15px;
+	overflow: hidden;
+	
+	right: 0;
+	text-indent: -9999px;
+	bottom: 0;
+	width: 15px;
 }
 
-#backSide .flipLink{
+.backSide .flipLink {
 	right:auto;
 	left:0;
 }
 
-.widget-edit{
-background:#A5A5A5;
-height:180px;
-margin-top:-170px;
-
+.widget-edit {
+	background: #A5A5A5;
+	background: red;
+	height: 180px;
+	margin-top: -170px;
 }
-
-
-
-
-
-
-
-
