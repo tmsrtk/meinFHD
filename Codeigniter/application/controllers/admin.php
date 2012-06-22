@@ -1279,4 +1279,118 @@ class Admin extends FHD_Controller {
 	 * *****************************************************/
 	
 	
+	/* *****************************************************
+	 * ************** Stundenplan IMPORT *******************
+	 * *****************************************************/
+	
+	function import_stdplan_view(){
+	    
+	    $this->load->helper('directory');
+	    
+	    $data['error'] = '';
+	    // get files from upload-folder
+	    $upload_dir = directory_map('./resources/uploads');
+	    // get stdgnge
+	    $stdgnge = $this->admin_model->getAllStdgnge();
+	    $data['stdgng_uploads'] = '';
+	    
+	    $last_id = 0;
+	    
+	    
+	    // prepare data for view
+	    // generate array, that contains all 
+	    foreach($stdgnge as $sg){
+		$po = $sg->Pruefungsordnung;
+		$abk = $sg->StudiengangAbkuerzung;
+		$id = $sg->StudiengangID;
+		$data['stdgng_uploads_headlines'][$id] = $abk.' - '.$po.':';
+		// run through dirs and distribute found data to view-array
+		foreach($upload_dir as $dir){
+		    $needle_po = strstr($dir, $po);
+		    $needle_abk = strstr($dir, $abk);
+		    if($needle_po != null && $needle_abk != null){
+			$data['stdgng_uploads'][$id][] = $dir;
+		    }
+		}
+		$last_id = $id;
+	    }
+	    
+	    // prepare data to 
+	    foreach($data['stdgng_uploads'] as $nested_array){
+		foreach($nested_array as $file){
+		    $files_with_po[] = $file;
+		}
+	    }
+	    
+//	    echo '<pre>';
+//	    print_r($clean);
+//	    echo '</pre>';  
+	    
+	    // one additional field for other
+	    $data['stdgng_uploads_headlines'][42] = 'Andere:';
+	    // check if there are dirs, that don't belong to a po
+	    // i.e. not in array, that contains the files that are already shown
+	    foreach($upload_dir as $dir){
+		if(!in_array($dir, array_values($files_with_po))){
+		    $data['stdgng_uploads'][42][] = $dir;
+		}
+	    }
+	    
+	    // VIEW
+	    $data['global_data'] = $this->data->load();
+	    $data['title'] = 'Stundenplan importieren';
+	    $data['main_content'] = 'admin_stdplan_import';
+
+	    $this->load->view('includes/template', $data);
+	}
+	
+	
+	function import_stdplan_and_parse(){
+	    $config['upload_path'] = './resources/uploads/';
+	    $config['allowed_types'] = 'xml';
+
+	    $this->load->library('upload', $config);
+	    $this->upload->initialize($config);
+	    $this->load->library('stdplan_parser');
+
+	    if ( ! $this->upload->do_upload()){
+		$data['error'] = $this->upload->display_errors();
+		
+		// VIEW
+		$data['global_data'] = $this->data->load();
+		$data['title'] = 'Stundenplan importieren';
+		$data['main_content'] = 'admin_stdplan_import';
+
+		$this->load->view('includes/template', $data);
+	    } else {
+		$data = array('upload_data' => $this->upload->data());
+		
+		// start parsing stdplan
+		$returned = $this->stdplan_parser->parse_stdplan($data['upload_data']);
+		
+//		echo '<pre>';
+//		print_r($returned);
+//		echo '</pre>';  
+
+		// VIEW
+		$data['global_data'] = $this->data->load();
+		$data['title'] = 'Stundenplan importieren';
+		$data['main_content'] = 'admin_stdplan_import_success';
+
+		$this->load->view('includes/template', $data);
+	    }
+
+	}
+	
+	
+	function delete_stdplan_file(){
+	    $file_to_delete = $this->input->post('std_file_to_delete');
+	    
+	    // delete file
+	    unlink('./resources/uploads/'.$file_to_delete);
+	    
+	    $this->import_stdplan_view();
+	}
+	
+	
 }

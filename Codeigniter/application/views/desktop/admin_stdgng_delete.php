@@ -9,7 +9,6 @@
 	
 		<tbody>
 		<?php 
-		    $btn_attributes = 'class = "btn-danger"';
 		    
 		    foreach($allStdgnge as $sg) :  
 			echo form_open('admin/delete_stdgng'); ?>
@@ -18,7 +17,7 @@
 			    <td><?php echo $sg->Pruefungsordnung; ?></td>
 			    <td>
 				<?php
-				    $attributes = array('class' => 'listform', 'id' => 'stdgngform');
+				    $btn_attributes = 'class = "btn-danger"';
 				    echo form_submit('delete_sdtgng', 'Studiengang löschen', $btn_attributes);
 				?>
 			    </td>

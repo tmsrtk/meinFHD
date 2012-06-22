@@ -882,6 +882,13 @@ class Admin_model extends CI_Model {
 	    $this->db->delete('gruppe');
 	}
 	
+	
+	// gruppenteilnehmer zu überlegen
+	// - mehrere pos in einer gruppe?
+	// - dahm: gruppen über das semesterende hinaus behalten
+	// wird das referenzmodul oder ?!?!
+	
+	
 	function delete_from_benutzerkurs($spk_id){
 	    $this->db->where('SPKursID', $spk_id);
 	    $this->db->delete('benutzerkurs');

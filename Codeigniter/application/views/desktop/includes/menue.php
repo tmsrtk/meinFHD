@@ -88,7 +88,7 @@
 					</a>
 					<ul class="dropdown-menu">
 						<?php if (in_array(401, $global_data['userdata']['userpermissions'])) : ?>
-						<li><a href="#">Stundenplan importieren</a></li>
+						<li><a href="<?php echo site_url(); ?>admin/import_stdplan_view">Stundenplan importieren</a></li>
 						<?php endif ?>
 						<?php if (in_array(402, $global_data['userdata']['userpermissions'])) : ?>
 						<li><a href="<?php echo site_url(); ?>admin/show_stdplan_list">Stundenplan bearbeiten</a></li>
