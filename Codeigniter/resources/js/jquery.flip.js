@@ -3,7 +3,7 @@ $(function(){
 	// Checking for CSS 3D transformation support
 	$.support.css3d = supportsCSS3D();
 	
-	var widgetContainer = $('#widgetContainer');
+	var widgetContainer = $('.flipBox');
 	
 	// Listening for clicks on the ribbon links
 	$('.flipLink').click(function(e){
@@ -14,7 +14,7 @@ $(function(){
 		// If there is no CSS3 3D support, simply
 		// hide the frontSide form (exposing the backSide one)
 		if(!$.support.css3d){
-			$('#frontSide').toggle();
+			$('.frontSide').toggle();
 		}
 		e.preventDefault();
 	});
