@@ -3,7 +3,7 @@
 			
 			var note = $('#note'),
 				note2 = $('#note2')
-				endOfSemester = new Date(2012, 5,31,11,13,0),//monat-1  This date should come from a DB
+				endOfSemester = new Date(2012, 5,20,19,2,0),//monat-1  This date should come from a DB
 				examStartDay  = new  Date(2012,6,9,13,20,30)
 				endOfSemesterReached = false;
 				examStartDayReached = false;
@@ -25,7 +25,8 @@
 			$('#countdown').countdown({
 				timestamp	: endOfSemester,
 				callback	: function(days, hours, minutes, seconds){
-					
+					var $this = $(this);
+				//	console.log($this);
 					var message1 = "";
 					
 					message1 +=  " Tag" + ( days==1 ? '':'e' ) ;
@@ -35,7 +36,8 @@
 					
 					if(endOfSemesterReached){
 						message1 = "viel Spass.. No more Days left.";
-												//$('#countdown').hide();
+						$this.hide();
+						
 					}
 					
 					
