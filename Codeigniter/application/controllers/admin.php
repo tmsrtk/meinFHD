@@ -1315,24 +1315,26 @@ class Admin extends FHD_Controller {
 		$last_id = $id;
 	    }
 	    
-	    // prepare data to 
-	    foreach($data['stdgng_uploads'] as $nested_array){
-		foreach($nested_array as $file){
-		    $files_with_po[] = $file;
+	    if($data['stdgng_uploads'] != null){
+		// prepare data to 
+		foreach($data['stdgng_uploads'] as $nested_array){
+		    foreach($nested_array as $file){
+			$files_with_po[] = $file;
+		    }
 		}
-	    }
-	    
-//	    echo '<pre>';
-//	    print_r($clean);
-//	    echo '</pre>';  
-	    
-	    // one additional field for other
-	    $data['stdgng_uploads_headlines'][42] = 'Andere:';
-	    // check if there are dirs, that don't belong to a po
-	    // i.e. not in array, that contains the files that are already shown
-	    foreach($upload_dir as $dir){
-		if(!in_array($dir, array_values($files_with_po))){
-		    $data['stdgng_uploads'][42][] = $dir;
+
+    //	    echo '<pre>';
+    //	    print_r($clean);
+    //	    echo '</pre>';  
+
+		// one additional field for other
+		$data['stdgng_uploads_headlines'][42] = 'Andere:';
+		// check if there are dirs, that don't belong to a po
+		// i.e. not in array, that contains the files that are already shown
+		foreach($upload_dir as $dir){
+		    if(!in_array($dir, array_values($files_with_po))){
+			$data['stdgng_uploads'][42][] = $dir;
+		    }
 		}
 	    }
 	    
@@ -1351,7 +1353,8 @@ class Admin extends FHD_Controller {
 
 	    $this->load->library('upload', $config);
 	    $this->upload->initialize($config);
-	    $this->load->library('stdplan_parser');
+//	    $this->load->controller('stdplan_parser');
+	    $this->load->model('admin_model_parsing');
 
 	    if ( ! $this->upload->do_upload()){
 		$data['error'] = $this->upload->display_errors();
@@ -1366,7 +1369,8 @@ class Admin extends FHD_Controller {
 		$data = array('upload_data' => $this->upload->data());
 		
 		// start parsing stdplan
-		$returned = $this->stdplan_parser->parse_stdplan($data['upload_data']);
+//		$returned = $this->stdplan_parser->parse_stdplan($data['upload_data']);
+		$this->admin_model_parsing->parse_stdplan($data['upload_data']);
 		
 //		echo '<pre>';
 //		print_r($returned);
