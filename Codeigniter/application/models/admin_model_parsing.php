@@ -277,11 +277,15 @@ class Admin_model_parsing extends CI_Model {
 		    
 		    
 		    // get course_id
-		    $course_tmp = null;
+		    $course_tmp = 'leer';
 		    if($isWPF){
 			$course_tmp = $this->get_course_id($wpf_kurz, $stdgng_id);
 		    } else {
-			$course_tmp = $this->get_course_id($course_name, $stdgng_id);
+			$course_tmp = $this->get_course_id($course[0], $stdgng_id);
+//			echo '<pre>';
+//			print_r($course_tmp);
+//			print_r($course[0]);
+//			echo '</pre>';
 		    }
 		    // only if there is a course_id
 		    if($course_tmp){
@@ -348,7 +352,7 @@ class Admin_model_parsing extends CI_Model {
 			    $semester = $semester_tmp->Semester;
 			}
 			
-			$this->pre($semester);
+//			echo $this->pre($semester);
 			
 			// proceed only if there is a course_name
 			// otherwise this part of array is empty (i.e. no courses at this time)
@@ -375,10 +379,10 @@ class Admin_model_parsing extends CI_Model {
     
 
     function write_data_to_db(){
-	echo '<pre>';
+//	echo '<pre>';
 //	print_r($this->array_fachtext);
 //	print_r($this->array_veranstaltungen);
-	echo '<pre>';
+//	echo '<pre>';
 	
 	// DEBUGGING: 
 //	$this->create_new_group();
@@ -463,9 +467,9 @@ class Admin_model_parsing extends CI_Model {
     }
     
     
-    function get_course_id($course_short, $stdgng_id){
+    function get_course_id($course_name, $stdgng_id){
 	$this->db->select('KursID');
-	$this->db->where('kurs_kurz', $course_short);
+	$this->db->where('kurs_kurz', $course_name);
 	$this->db->where('StudiengangID', $stdgng_id);
 	$q = $this->db->get('studiengangkurs');
 	
@@ -556,13 +560,7 @@ class Admin_model_parsing extends CI_Model {
     
     ///////////// DEBUG
     function pre($var){
-	$result = '';
-	
-	$result += '<pre>';
-	$result += print_r($var);
-	$result += '</pre>';
-	
-	return $result;
+	return '<pre>'.print_r($var).'</pre>';
     }
 }
 
