@@ -256,6 +256,21 @@ class Studienplan extends FHD_Controller
         $this->load->model('Studienplan_Model');
         $this->Studienplan_Model->calculateMark($mark);
     }
+    
+    
+    
+    
+    /**
+     * Get the Context text 
+     */
+    public function kontextFuerSelectboxHolen()
+    {
+        $this->load->model('Studienplan_Model');
+        $context = $this->Studienplan_Model->getContextForSemesterSelectBox;
+        
+        $this->data->add('context', $context);
+        $this->load->view('studienplan', $this->data->load());
+    }
 }
 
 /* End of file studienplan.php */

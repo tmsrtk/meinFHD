@@ -38,8 +38,14 @@
             <td class="coloumnstyle"> <?php echo 'Semester '.$count; ?>
                 <?php foreach($modul as $data): ?>
 
-                <div class="box_border_1"><?php echo $data['Kurzname']; ?></div>
-                <div class="box_border_2"><?php echo "Notenpunkte :".$data['Notenpunkte']; ?></div>
+                <?php if($data['Kurzname'] != null): ?>
+                    <div class="box_border_1"><?php echo $data['Kurzname']; ?></div>
+                    <div class="box_border_2"><?php echo "Notenpunkte :".$data['Notenpunkte']; ?></div>
+                <?php endif; ?>
+                
+                <?php if($data['Kurzname'] == null): ?>
+                    <div></div>
+                <?php endif; ?>
 
                 <?php endforeach; ?>
             </td>
