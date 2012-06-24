@@ -72,7 +72,6 @@ class Admin_model_parsing extends CI_Model {
 	
 	// get data from parser and prepare for db-queries
 	$this->prepare_parsed_stdplan_data();
-	$this->write_data_to_db();
     }
     
     
@@ -324,10 +323,27 @@ class Admin_model_parsing extends CI_Model {
 		    $group_tmp = $this->get_max_group_id_from_gruppe();
 		    $group_id = $group_tmp->GruppeID;
 
-		    // TODO - save data
+		    // TODO - CHECK!! save data
+		    $this->write_stdplan_data(
+			$course_id,
+			$event_type_id,
+			substr($course[1], 2),
+			($isWPF ? $wpfname : ''),
+			$course[2],
+			$dozent_id,
+			$course[5] + 1,
+			$course[5] + $course_duration,
+			$course[4] + 1,
+			($isWPF ? '1' : '0'),
+			$course[6],
+			$group_id,
+			99
+		    );
+		     
 		    // get max spkurs_id
 		    $spcourse_tmp = $this->get_max_spkurs_id();
 		    $spcourse_id = $spcourse_tmp->SPKursID;
+		    
 		    
 		    
 		    // ########## update USERS >> benutzerkurs
@@ -378,7 +394,9 @@ class Admin_model_parsing extends CI_Model {
     }
     
 
-    function write_data_to_db(){
+    function write_stdplan_data($coures_id, $event_type_id, $eventy_type,
+	    $wpf_name, $room, $dozent_id, $start_id, $end_id, $is_wpf,
+	    $day_id, $group_id, $color, $editor){
 //	echo '<pre>';
 //	print_r($this->array_fachtext);
 //	print_r($this->array_veranstaltungen);
@@ -388,22 +406,22 @@ class Admin_model_parsing extends CI_Model {
 //	$this->create_new_group();
 	
 	$stdplan_record = array(
-//	    'KursID' => ,
-//	    'VeranstaltungsformID' => ,
-//	    'VeranstaltungsformAlternative' => ,
-//	    'WPFName' => ,
-//	    'Raum' => ,
-//	    'DozentID' => ,
-//	    'StartID' => ,
-//	    'EndeID' => ,
-//	    'isWPF' => ,
-//	    'TagID' => ,
-//	    'GruppeID' => 
-//	    'Farbe' => 
-//	    'Editor' => 
-	    
+	    'KursID' => $coures_id,
+	    'VeranstaltungsformID' => $event_type_id,
+	    'VeranstaltungsformAlternative' => $eventy_type,
+	    'WPFName' => $wpf_name,
+	    'Raum' => $room,
+	    'DozentID' => $dozent_id,
+	    'StartID' => $start_id,
+	    'EndeID' => $end_id,
+	    'isWPF' => $is_wpf,
+	    'TagID' => $day_id,
+	    'GruppeID' => $group_id,
+	    'Farbe' => $color,
+	    'Editor' => $editor
 	);
-	
+
+	$this->db->insert('stundenplankurs', $stdplan_record);
     }
     
     
