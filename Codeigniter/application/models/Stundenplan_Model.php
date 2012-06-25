@@ -8,8 +8,7 @@ class Stundenplan_Model extends CI_Model {
 	
 	public function __construct()
 	{
-		$this->load->database();
-		
+
 	}
 
 	/**
@@ -102,7 +101,7 @@ class Stundenplan_Model extends CI_Model {
 	 */	
 	private function create_times_array()
 	{
-		$query_times = $this->db->query("SELECT Beginn FROM Stunde");
+		$query_times = $this->db->query("SELECT Beginn FROM stunde");
 		$times = $query_times->result_array();
 
 		return $times;
@@ -120,7 +119,7 @@ class Stundenplan_Model extends CI_Model {
 	private function create_days_array()
 	{
 		//Create row array containing the names of the days
-		$query_days = $this->db->query("SELECT TagName FROM Tag");
+		$query_days = $this->db->query("SELECT TagName FROM tag");
 		$days = $query_days->result_array();
 
 		//Clear Saturday and Sunday
@@ -162,10 +161,10 @@ class Stundenplan_Model extends CI_Model {
 	//Constructs and returns an empty 2D array which will contain the timetable
 	private function create_timetable_array()
 	{
-		$query_days = $this->db->query("SELECT TagName FROM Tag");
+		$query_days = $this->db->query("SELECT TagName FROM tag");
 		$days = $query_days->result_array();
 
-		$query_stunden = $this->db->query("SELECT StundeID FROM Stunde");
+		$query_stunden = $this->db->query("SELECT StundeID FROM stunde");
 		$stunden = $query_stunden->result_array();
 
 		$stundenplan = array();
