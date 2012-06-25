@@ -25,10 +25,15 @@ class Studienplan extends FHD_Controller
         $plan = $this->Studienplan_Model->queryStudyplan();
         $this->swsUndCpBerechnen();
         
+        $data['main_content'] = 'semesterplan_show';
+        
         // add the resultset/array to the data-object
         $this->data->add('studienplan', $plan);
         //$this->load->view('studienplan', $this->data->load());
-        $this->load->view('semesterplan_show', $this->data->load());
+        //$this->load->view('semesterplan_show', $this->data->load());
+        
+        $data['global_data'] = $this->data->load();
+        $this->load->view('includes/template', $data);
     }
     
     

@@ -29,7 +29,7 @@
 <?php //FB::log($global_data['studienplan']); ?>
 
 
-<?php foreach($studienplan as $semester): ?>
+<?php foreach($global_data['studienplan'] as $semester): ?>
 	<?php $i = 0; ?>
     <?php foreach($semester as $modul): ?>
     
@@ -91,7 +91,7 @@
 
 				console.log(module_serialisiert);
 
-				$.get("<?php echo site_url();?>ajax/schreibe_reihenfolge_in_db/", 
+				$.get("<?php echo site_url();?>studienplan/modulVerschieben", 
 					module_serialisiert, function(response) {
 						// entferne wieder den roten Rahmen wenn request erfolgreich
 						$(ui.item).children(".semestermodul").toggleClass("highlight");
