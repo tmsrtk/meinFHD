@@ -28,54 +28,56 @@
 				<?php //--------------------Loop for one course-------------------- ?>
 				<?php foreach ($day as $hourID => $hour) : ?>
 
-				<?php if ($hour) { //If entry at this hour exists ?>
-
+				<?php //--------------------If entry at this hour exists -------------------- ?>
+				<?php if ($hour) { ?>
 
 					<?php //--------------------Loop for one hour (if many courses)-------------------- ?>
 					<?php foreach ($hour as $courseID => $course) : ?>
 
-					<?php if ($course['Aktiv'] == 1) { //If course is active ?>
+						<?php //--------------------Only if course is active-------------------- ?>
+						<?php if ($course['Aktiv'] == 1) { ?>
 
-					<!--accordion-group-->	
-					<div class="well-small">
-						<div class="accordion-heading">
-							<table>
-								<tbody>
-									<tr>
-										<td width="45%"><?php echo $course['Beginn']; ?> - <?php echo $course['Ende']; ?></td>
-										<td width="55%"><?php echo $course['kurs_kurz']; ?>&nbsp;<?php echo utf8_decode($course['VeranstaltungsformName']); ?></td>
-										<td>
-											<a class="btn accordion-toggle pull-right" data-toggle="collapse" data-parent="#stundenplan_accordion" href="#collapseThree">
-												<i class="icon-plus"></i>
-											</a>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-						<div id="collapseThree" class="accordion-body collapse">
-							<hr />
-							<div class="alert alert-info clearfix">
-							<button class="btn pull-left attendant">
-								<i class="icon-ok"></i>
-								anwesend
-							</button>
-							<a href="modul.html" class="btn btn-primary pull-right">
-								Details
-								<i class="icon-arrow-right icon-white"></i>
-							</a>					
-						</div>
-						</div>
-					</div><!--/accordion-group-->
+							<!--accordion-group-->	
+							<div class="well-small">
+								<div class="accordion-heading">
+									<table>
+										<tbody>
+											<tr>
+												<td width="45%"><?php echo $course['Beginn']; ?> - <?php echo $course['Ende']; ?></td>
+												<td width="55%"><?php echo $course['kurs_kurz']; ?>&nbsp;<?php echo utf8_decode($course['VeranstaltungsformName']); ?></td>
+												<td>
+													<a class="btn accordion-toggle pull-right" data-toggle="collapse" data-parent="#stundenplan_accordion" href="#collapseThree">
+														<i class="icon-plus"></i>
+													</a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								<div id="collapseThree" class="accordion-body collapse">
+									<hr />
+									<div class="alert alert-info clearfix">
+									<button class="btn pull-left attendant">
+										<i class="icon-ok"></i>
+										anwesend
+									</button>
+									<a href="modul.html" class="btn btn-primary pull-right">
+										Details
+										<i class="icon-arrow-right icon-white"></i>
+									</a>					
+								</div>
+								</div>
+							</div><!--/accordion-group-->
 
 
-					<?php } //End If course is active ?>
-
+						<?php //--------------------End If course is active-------------------- ?>	
+						<?php }  ?>
 
 					<?php //--------------------End Loop for one hour (if many courses)-------------------- ?>	
 					<?php endforeach; ?>	
 
-				<?php } //End If  ?>
+				<?php //--------------------End If entry at this hour exists -------------------- ?>
+				<?php }   ?>
 
 			<?php //--------------------End Loop for one course --------------------?>			
 			<?php endforeach; ?>	
