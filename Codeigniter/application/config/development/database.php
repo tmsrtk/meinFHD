@@ -49,9 +49,9 @@ $active_group = 'default';
 $active_record = TRUE;
 
 $db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'meinFHDuser';
-$db['default']['password'] = 'meinFHDpassword';
-$db['default']['database'] = 'meinFHDdatabase';
+$db['default']['username'] = 'root';
+$db['default']['password'] = '';
+$db['default']['database'] = 'meinfhd2_mobile';
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;
@@ -63,6 +63,11 @@ $db['default']['dbcollat'] = 'utf8_general_ci';
 $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
+
+// please place a file within the Environment directory
+// called local_database.php to overwrite some of the settings above
+// forl local development
+@include_once($_SERVER['DOCUMENT_ROOT'] . '/meinFHD/Environment/local_database.php');
 
 /* End of file database.php */
 /* Location: ./application/config/database.php */

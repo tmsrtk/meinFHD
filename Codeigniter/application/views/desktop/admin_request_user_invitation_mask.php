@@ -41,7 +41,7 @@
 
 
 	$submit_data = array(
-			'name'			=> 'submit',
+			'name'			=> 'los',
 			'class'			=> 'btn btn-danger'
 		);
 
@@ -175,79 +175,107 @@ $dropdown_data = array('Erstellen', 'Loeschen');
 
 $submit_data = array(
 		'id' 			=> 'save',
-		'name'			=> 'submit',
+		'name'			=> 'los',
 		'class'			=> 'btn btn-mini btn-danger'
 	);
 
 ?>
 
-<table id="user_overview" class="table table-striped table-bordered table-condensed">
-	<thead>
-		<tr>
-			<th>Rolle</th>
-			<th>Nachname</th>
-			<th>Vorname</th>
-			<th>Email</th>
-			<th>Funktion</th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		<?php $attrs2 = array('class' => 'well form-horizontal', 'id' => 'accept_invitation'); ?>
-		<?php foreach ($user_invitations as $key => $value) { ?>
-		<tr>
-			<?php echo form_open('admin/create_user_from_invitation/', $attrs2); ?>
-			<?php echo form_hidden('request_id', $value['AnfrageID']); ?>
 
-			<td></td>
-			<td><?php echo $value['Nachname']; ?></td>
-			<td><?php echo $value['Vorname']; ?></td>
-			<td><?php echo $value['Emailadresse']; ?></td>
-
-			<?php echo "<td>".form_dropdown('user_function', $dropdown_data, '0', $class_dd)."</td>"; ?>
-
-			<?php $js = 'onclick="confirm_modal($(this), e)"'; ?>
-			<?php echo "<td>".form_submit($submit_data, 'LOS!', $js)."</td>"; ?>
-
-			<?php echo form_close(); ?>
-		</tr>
-		<?php } ?>
-	</tbody>
-</table>
-
-
-<!-- Modal -->
-<div id="dialog-confirm" title="Empty the recycle bin?">
-	<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
+<div class="row">
+	<div class="span2">Test</div>
+	<div class="span2">Test</div>
+	<div class="span2">Test</div>
+	<div class="span2">Test</div>
+	<div class="span2">Test</div>
+	<div class="span2">Test</div>
 </div>
+
+
+
+<?php $attrs2 = array('class' => 'form-horizontal', 'id' => 'accept_invitation'); ?>
+	<?php foreach ($user_invitations as $key => $value) { ?>
+	<?php FB::log($value); ?>
+
+<div class="row">
+	<?php echo form_open('admin/create_user_from_invitation/', $attrs2); ?>
+	<?php echo form_hidden('request_id', $value['AnfrageID']); ?>
+
+	<div class="span2">leer</div>
+	<div class="span2"><?php echo $value['Nachname']; ?></div>
+	<div class="span2"><?php echo $value['Vorname']; ?></div>
+	<div class="span2"><?php echo $value['Emailadresse']; ?></div>
+
+	<?php echo "<div class=\"span2\">".form_dropdown('user_function', $dropdown_data, '0', $class_dd)."</div>"; ?>
+
+	<?php echo "<div class=\"span2\">".form_submit($submit_data, 'LOS!')."</div>"; ?>
+
+	<?php echo form_close(); ?>
+</div>
+<?php } ?>
 
 
 <script>
 
 (function() {
 
-	// onchange to radiobuttons 
-	// input[name='radio-button-gruppe']
+	// onchange for radiobuttons 
 	$("input[name='role']").change(function() {
-		toggle_more_info($(this));
+		toggle_studentdata($(this));
 	});
 
 	$("input[name='erstsemestler']").change(function() {
-		toggle_erstsemestler($(this));
+		toggle_erstsemestlerdata($(this));
 	});
 
-	// prevent_submit();
+	var $mydialog = $('<div id="dialog-confirm" title="Einladung löschen"></div>')
+					.html('<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Die Einladungsaufforderung wird endgültig gelöscht. OK?</p>')
+					.dialog({
+						autoOpen: false,
+						resizable: false,
+						height: 200,
+						modal: true,
+						buttons: {
+							"Ja, löschen": function() {
+								$("input[type=submit][clicked=true]").parents("form").submit();
+								$("#accept_invitation input#save").removeAttr("clicked");
+								$( this ).dialog( "close" );
+							},
+							Abbrechen: function() {
+								$("#accept_invitation input#save").removeAttr("clicked");
+								$mydialog.dialog( "close" );
+							}
+						}
+					});
 
-	// $("#accept_invitation").submit(function() {
-	// 	// confirm_modal();
-	// 	// return false;
-	// 	alert("fdas");
-	// 	return false;
-	// });
 
+	$("#accept_invitation input#save").click(function() {
+
+		// determine which function was selected from the dropdown
+		// 0 = erstellen, 1 = löschen
+		var user_function = $("#user_function").val();
+
+		if (user_function === '0') {
+
+			return true;
+
+		} else if (user_function === '1') {
+			// add custom attribute to determine later
+			$(this).attr("clicked", "true");
+
+			$mydialog.dialog("open");
+
+		} else {
+
+		}
+
+		// prevent default submit behaviour
+		return false;
+	});
 })();
 
-function toggle_more_info(c) {
+/* toggles additional student data when user selected 'student' from the dropdown */
+function toggle_studentdata(c) {
 	var additional_student_data = $("div#studentendaten");
 
 	// c jQuery object of toggle button
@@ -260,7 +288,8 @@ function toggle_more_info(c) {
 	}
 }
 
-function toggle_erstsemestler(c) {
+/* toggles additional semester data when user checked 'Erstsemester' */
+function toggle_erstsemestlerdata(c) {
 	var erstsemestler_data = $("div#erstsemestler");
 
 	if (c.attr('checked')) {
@@ -269,37 +298,6 @@ function toggle_erstsemestler(c) {
 	else {
 		erstsemestler_data.fadeIn('slow');
 	}
-}
-
-function test(button) {
-	alert(button);
-	return false;
-}
-
-function prevent_submit() {
-	$("input[type='submit']").click(function(e) {
-		e.preventDefault();
-		// confirm_modal();
-		console.log(e);
-	});
-}
-
-function confirm_modal(button, e) {
-	e.preventDefault();
-	// $( "#dialog-confirm" ).dialog({
-	// 	resizable: false,
-	// 	height:140,
-	// 	modal: true,
-	// 	buttons: {
-	// 		"Delete all items": function() {
-	// 			button.trigger();
-	// 			$( this ).dialog( "close" );
-	// 		},
-	// 		Cancel: function() {
-	// 			$( this ).dialog( "close" );
-	// 		}
-	// 	}
-	// });
 }
 
 </script>

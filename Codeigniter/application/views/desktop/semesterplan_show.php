@@ -91,7 +91,8 @@
 
 				console.log(module_serialisiert);
 
-				$.get("<?php echo site_url();?>studienplan/modulVerschieben", 
+				$.get("<?php echo site_url();?>ajax/schreibe_reihenfolge_in_db/", 
+
 					module_serialisiert, function(response) {
 						// entferne wieder den roten Rahmen wenn request erfolgreich
 						$(ui.item).children(".semestermodul").toggleClass("highlight");

@@ -15,6 +15,30 @@
  */
 class Studienplan extends FHD_Controller
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->model('admin_model');
+
+        // userdata
+        $session_userid = $this->authentication->user_id();
+
+        $loginname = $this->admin_model->get_loginname($session_userid);                ///////////////////////////////
+        $user_permissions = $this->admin_model->get_all_userpermissions($session_userid);
+        $roles = $this->admin_model->get_all_roles();
+        
+        $userdata = array(
+                'userid' => $session_userid,
+                'loginname' => $loginname['LoginName'],
+                'userpermissions' => $user_permissions,
+                'roles' => $roles
+            );
+
+        $this->data->add('userdata', $userdata);
+    }
+
+
+
     /**
      * Index-Method, which loads the Studienplan
      */
@@ -33,6 +57,30 @@ class Studienplan extends FHD_Controller
         //$this->load->view('semesterplan_show', $this->data->load());
         
         $data['global_data'] = $this->data->load();
+        $this->load->view('includes/template', $data);
+    }
+
+
+
+     /**
+     * Show Studienplan, Testmethod!!!
+     *
+     * @author Konstantin Voth
+     */
+    public function studienplan_show()
+    {
+        $this->load->model('Studienplan_Model');
+
+        $data['title'] = 'Semesterplan';
+        $data['main_content'] =  'semesterplan_show';
+
+        //----------------------------------------------------------------------
+        $plan = $this->Studienplan_Model->queryStudyplan();
+        $this->data->add('studienplan', $plan);
+        $data['semesteranzahl'] = 7;         // TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //----------------------------------------------------------------------
+        $data['global_data'] = $this->data->load();
+
         $this->load->view('includes/template', $data);
     }
     
