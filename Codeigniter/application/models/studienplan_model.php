@@ -202,7 +202,7 @@ class Studienplan_Model extends CI_Model
                     'graduateSemester'  => $sq->graduateSemester,
                     'Teilnehmen'        => $sq->KursHoeren,
                     'Pruefen'           => $sq->KursSchreiben,
-                    'Notenpunkte'       => ($sq->Notenpunkte == 101) ? null : $sq->Notenpunkte
+                    'Notenpunkte'       => ($sq->Notenpunkte == 101) ? null : $this->calculateMark($sq->Notenpunkte)
                 );
             }
             // else set regularSemester as key
@@ -216,7 +216,7 @@ class Studienplan_Model extends CI_Model
                     'graduateSemester'  => $sq->graduateSemester,
                     'Teilnehmen'        => $sq->KursHoeren,
                     'Pruefen'           => $sq->KursSchreiben,
-                    'Notenpunkte'       => ($sq->Notenpunkte == 101) ? null : $sq->Notenpunkte
+                    'Notenpunkte'       => ($sq->Notenpunkte == 101) ? null : $this->calculateMark($sq->Notenpunkte)
                 );
             }
         }
@@ -240,9 +240,9 @@ class Studienplan_Model extends CI_Model
             }
         }
         
+        // sort the studyplan by semester
         ksort($data['plan']);
-        $this->getContextForSemesterSelectBox();
-        var_dump($data['plan']);       
+        //var_dump($data['plan']);       
         return $data;
     }
 
@@ -405,62 +405,116 @@ class Studienplan_Model extends CI_Model
     
     
     /**
+     * Shift a module Desktop-Version
+     * 
+     * @param Array $neue_reihenfolge
+     * @param int $semesternr 
+     */
+    public function shiftModuleDesktop($neue_reihenfolge, $semesternr)
+    {
+        // counter für die Reihenfolge
+        $counter = 1;
+        // speichere neue Reihenfolge in die DB
+        foreach ($neue_reihenfolge as $serialized_position) {
+            $data = array(
+               //'Semesterposition' => $counter,
+               'Semester' => $semesternr
+            );
+ 
+            // FB::log($serialized_position);
+ 
+            $this->db->where('SemesterplanID', $this->studyplanID);
+            $this->db->where('KursID', $serialized_position);
+            $this->db->update('Semesterkurs', $data);
+ 
+            $counter++;
+        }
+    }
+    
+    
+    
+    
+    /**
      * Returns the mark 
      * 
-     * @param int|float $markpoints
-     * @return int
+     * @param int $markpoints
+     * @return String
      */
     public function calculateMark($markpoints)
     {   
-        switch($markpoints)
+        // search for a point in the string
+        $mark = strpos($markpoints, '.');
+        //var_dump($markpoints);
+        //var_dump($mark);
+        switch($mark)
         {
-            // if $markpoints are points
-            case is_int($markpoints):
-                if($markpoints >=90 && $markpoints <=100)
+            // if $markpoints are points (no point)
+            case false:
+                if($markpoints >= 90 && $markpoints <= 100)
                 {
-                    return 1;
+                    return '1';
                 }
-                elseif($markpoints >=75 && $markpoints <=90) 
+                elseif($markpoints >= 75 && $markpoints <= 90) 
                 {
-                    return 2;
+                    return '2';
                 }
-                elseif($markpoints >=60 && $markpoints <=75)
+                elseif($markpoints >= 60 && $markpoints <= 75)
                 {
-                    return 3;
+                    return '3';
                 }
-                elseif($markpoints >=50 && $markpoints <=60)
+                elseif($markpoints >= 50 && $markpoints <= 60)
                 {
-                    return 4;
+                    return '4';
                 }
-                elseif($markpoints <50)
+                elseif($markpoints < 50)
                 {
-                    return 5;
+                    return '5';
                 }
             break;
                
-            // if $markpoints is mark
-            case is_float($markpoints):
-                if($markpoints <=1.3 && $markpoints >=1.0)
+            // if $markpoints is mark (point)
+            /*case $mark > 0:
+                if($markpoints == 1.0)
                 {
-                    return 1;
+                    return '1';
                 }
-                elseif($markpoints >=1.7 && $markpoints <=2.3) 
+                elseif($markpoints > 1.0 && $markpoints <= 1.3) 
                 {
-                    return 2;
+                    return '1-';
                 }
-                elseif($markpoints >=2.7 && $markpoints <=3.3)
+                elseif($markpoints > 1.3 && $markpoints <= 1.7)
                 {
-                    return 3;
+                    return '2+';
                 }
-                elseif($markpoints >=3.7 && $markpoints <=4.0)
+                elseif($markpoints > 1.7 && $markpoints <= 2.0)
                 {
-                    return 4;
+                    return '2';
                 }
-                elseif($markpoints >=4.3)
+                elseif($markpoints > 2.0 && $markpoints <= 2.3) 
                 {
-                    return 5;
+                    return '2-';
                 }
-            break;
+                elseif($markpoints > 2.3 && $markpoints <= 2.7)
+                {
+                    return '3+';
+                }
+                elseif($markpoints > 2.7 && $markpoints <= 3.0)
+                {
+                    return '3';
+                }
+                elseif($markpoints > 3.0 && $markpoints <= 3.3) 
+                {
+                    return '3-';
+                }
+                elseif($markpoints > 3.3 && $markpoints <= 4.0)
+                {
+                    return '4';
+                }
+                elseif($markpoints > 4.0)
+                {
+                    return '5';
+                }
+            break;*/
         }
         
     }
@@ -637,10 +691,31 @@ class Studienplan_Model extends CI_Model
     
     
     
-    public function resetAll()
+    /**
+     * Delete all data which reference a studyplan 
+     */
+    public function deleteAll()
     {
+        // delete all entries in semesterkurs
+        $this->db->where('SemesterplanID', $this->studyplanID);
+        $this->db->delete('semesterkurs');
         
+        // delete all entries in semesterplan
+        $this->db->where('SemesterplanID', $this->studyplanID);
+        $this->db->where('BenutzerID', $this->userID);
+        $this->db->delete('semesterplan');
+        
+        // deletes all entries in benutzerkurs
+        $this->db->where('BenutzerID', $this->userID);
+        $this->db->delete('benutzerkurs');
+        
+        // reset the studyplanID
+        $this->studyplanID = 0;
+        
+        // create a new studyplan
+        $this->createStudyplan();
     }
+    
     
     
     
@@ -841,7 +916,7 @@ class Studienplan_Model extends CI_Model
         }
         else
         {
-            echo 'Du kannst diese Pr�fung nicht mehr wiederholen';
+            echo 'Du kannst diese Prüfung nicht mehr wiederholen';
         }
     }
     
@@ -961,7 +1036,7 @@ class Studienplan_Model extends CI_Model
                 'GruppeID'                      => $group->GruppeID
             );
         }
-
+        var_dump($data);
         return $data;
     }
     

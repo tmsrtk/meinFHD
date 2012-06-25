@@ -42,10 +42,6 @@
                     <div class="box_border_1"><?php echo $data['Kurzname']; ?></div>
                     <div class="box_border_2"><?php echo "Notenpunkte :".$data['Notenpunkte']; ?></div>
                 <?php endif; ?>
-                
-                <?php if($data['Kurzname'] == null): ?>
-                    <div></div>
-                <?php endif; ?>
 
                 <?php endforeach; ?>
             </td>
