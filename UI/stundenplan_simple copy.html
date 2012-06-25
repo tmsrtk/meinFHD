@@ -96,10 +96,14 @@ this element is the one that *you* will style the most.
 	<!-- CONTENT -->
 	<div class="container container-fluid">
 		
+		
 		<div style="margin:0 auto; width: 634px; height:120px;">
 		<!-- "previous page" action -->
 		<a class="prev browse left"></a>
 		 
+		<div class="navi pagination pagination-centered">
+			test
+		</div>
 		<!-- root element for scrollable -->
 		<div class="scrollable" id="scrollable">
 		 
@@ -295,14 +299,15 @@ this element is the one that *you* will style the most.
 	<!-- Scripts -->
 	<script src="bootstrap/js/jquery.js" type="text/javascript"></script>		
 	<script src="bootstrap/js/bootstrap.js" type="text/javascript"></script>
-			<!--jquery tools-->
-		<script src="http://cdn.jquerytools.org/1.2.7/full/jquery.tools.min.js"></script>
+	
+	<!--jquery tools-->
+	<script src="http://cdn.jquerytools.org/1.2.7/full/jquery.tools.min.js"></script>
 	
 	<script type="text/javascript">
 		
 		$(function() {
 			// initialize scrollable
-  			$(".scrollable").scrollable();
+  			$(".scrollable").scrollable().navigator();
   		});
 	</script>
 
