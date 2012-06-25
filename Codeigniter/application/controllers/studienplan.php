@@ -74,13 +74,27 @@ class Studienplan extends FHD_Controller
     
     
     /**
-     * Update new position of a module
+     * Mobile Update new position of a module
      */
-    public function modulVerschieben()
+    public function mobile_modulVerschieben()
     {
         // ID's werden hier benötigt
         $this->load->model('Studienplan_Model');
         $this->Studienplan_Model->$this->Studienplan_Model->shiftModule($module_id, $semester);
+    }
+    
+    
+    
+    
+    public function modulVerschieben()
+    {
+        // frage übergebene Daten ab (veränderte Reihenfolge der Module)
+        // serialisiert
+        $neue_reihenfolge = $this->input->get('module');
+        $semesternr = $this->input->get('semester');
+        
+        // speichere die neue Reihenfolge in die Datenbank
+        $this->Studienplan_Model->shiftModuleDesktop($neue_reihenfolge, $semesternr);
     }
     
     
