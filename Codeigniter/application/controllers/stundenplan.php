@@ -47,6 +47,9 @@ class Stundenplan extends FHD_Controller {
 	{
 		$stundenplan = $this->Stundenplan_Model->get_stundenplan(1384);
 
+		//testen von anmelden
+		//$this->Stundenplan_Model->enroll_in_course(1384, 2490);
+
 		$this->data->add('stundenplan', $stundenplan[0]); 
 		$this->data->add('tage', $stundenplan[1]);
 		$this->data->add('zeiten', $stundenplan[2]);

@@ -29,15 +29,16 @@ class Stundenplan_Model extends CI_Model {
 
 	public function enroll_in_course($user_id, $course_id) {
 
-		$this->db->select('*');
-		$this->db->from('gruppenteilnehmer');
-		$this->db->where('BenutzerID', $user_id);
-		$this->db->where('GruppeID', $course_id);
-		
-		$students_in_course = $this->db->count_all_results();
+		//Testing, if there is still the possibility to enroll in that course
 
-		echo $students_in_course;
+		$query_students_enrolled = $this->db->query("Select * From gruppenteilnehmer Where GruppeID = '".$course_id."' ");
+		$students_in_course = $query_students_enrolled->num_rows();
 
+		$query_group = $this->db->query("Select * From gruppe Where GruppeID = '".$course_id."' ");
+		$group = $query_group->row();
+
+		echo $students_in_course . " gegen " . $group->TeilnehmerMax ;
+ 
 		if (false) {
 			# code...
 		}
@@ -294,7 +295,7 @@ class Stundenplan_Model extends CI_Model {
 
 	/**
 	 * Central function, returns various arrays, the most important one is the "stundenplan"-Array (found under index [0])
-	 * The Array is 3-Demnsional.
+	 * The Array is 3-Demensional.
 	 * The first Array in there is indexed by Days, for example $stundenplan['Montag']]), then hours,
 	 * then an Array for all courses in this hour. 
 	 * You would get the name of the first course at hour 1 on a Monday by $stundenplan['Montag'][0][0]['Kursname']])
@@ -335,7 +336,7 @@ class Stundenplan_Model extends CI_Model {
 		$times = $this->create_times_array();
 		array_push($return, $times);
 
-		//[3] : The courses in a list, indexed by Numbers, ordered by day and hour(Not requiered actually)
+		//[3] : The courses in a list, indexed by Numbers, ordered by day and hour
 		array_push($return, $courses);
 
 		$this->krumo->dump($return);
