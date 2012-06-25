@@ -27,7 +27,8 @@ class Studienplan extends FHD_Controller
         
         // add the resultset/array to the data-object
         $this->data->add('studienplan', $plan);
-        $this->load->view('studienplan', $this->data->load());
+        //$this->load->view('studienplan', $this->data->load());
+        $this->load->view('semesterplan_show', $this->data->load());
     }
     
     
