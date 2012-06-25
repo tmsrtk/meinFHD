@@ -45,7 +45,8 @@ class Stundenplan extends FHD_Controller {
 	public function index()
 	
 	{
-		$stundenplan = $this->Stundenplan_Model->get_stundenplan(1384);
+		$this->krumo->dump($this->data->load());
+		$stundenplan = $this->Stundenplan_Model->get_stundenplan($this->authentication->user_id());
 
 		//testen von anmelden
 		//$this->Stundenplan_Model->enroll_in_course(1384, 2490);
