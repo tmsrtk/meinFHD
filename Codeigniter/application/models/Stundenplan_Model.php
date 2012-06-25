@@ -338,7 +338,7 @@ class Stundenplan_Model extends CI_Model {
 		//[3] : The courses in a list, indexed by Numbers, ordered by day and hour
 		array_push($return, $courses);
 
-		$this->krumo->dump($return);
+		//$this->krumo->dump($return);
 		
 		return $return;
 	}
