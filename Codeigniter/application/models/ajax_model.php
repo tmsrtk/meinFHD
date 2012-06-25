@@ -15,10 +15,13 @@
  */
 
 class Ajax_model extends CI_Model {
+    
+        private $semesterplanID;
 
 	public function __construct()
 	{
 		parent::__construct();
+                $this->setSemesterplanID();
 	}
 
 	// public function get_request()
@@ -49,18 +52,25 @@ class Ajax_model extends CI_Model {
 		// speichere neue Reihenfolge in die DB
 		foreach ($neue_reihenfolge as $serialized_position) {
 			$data = array(
-               'Semesterposition' => $counter,
+               //'Semesterposition' => $counter,
                'Semester' => $semesternr
             );
 
             // FB::log($serialized_position);
 
-			$this->db->where('SemesterplanID', 449);     // TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			$this->db->where('SemesterplanID', $this->semesterplanID);     // TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			$this->db->where('KursID', $serialized_position);
 			$this->db->update('Semesterkurs', $data);
 
 			$counter++;
 		}
 	}
+        
+        
+        public function setSemesterplanID()
+        {
+            $this->load->model('Studienplan_Model');
+            $this->semesterplanID = $this->Studienplan_Model->getStudyplanID();
+        }
 
 }
