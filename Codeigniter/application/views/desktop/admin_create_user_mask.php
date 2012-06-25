@@ -11,14 +11,14 @@
 	$attrs = array('class' => 'well', 'id' => 'create_user');
 	echo form_open('admin/validate_create_user_form/', $attrs);
 
-	$class_dd = 'class="rolle_dd" onchange="toggle_studentendaten($(this).val())"';      ///////// I THINK ITS BETTER TO DO IT THIS WAY, THAN IN THE FOOTER!!!!!!!!!!!!!!!!!!!!
-	echo form_dropdown('rolle_dd', $global_data['userdata']['roles'], /*standard value*/'', $class_dd);
+	$class_dd = 'class="role" onchange="toggle_studentendaten($(this).val())"';      ///////// I THINK ITS BETTER TO DO IT THIS WAY, THAN IN THE FOOTER!!!!!!!!!!!!!!!!!!!!
+	echo form_dropdown('role', $global_data['userdata']['roles'], /*standard value*/'0', $class_dd);
 
 	$data = array(
 			'class' => 'span3',
-			'name' => 'username',
+			'name' => 'loginname',
 			'placeholder' => 'Login Name',
-			'value' => set_value('username')
+			'value' => set_value('loginname')
 		);
 	echo form_input($data);
 
@@ -67,9 +67,9 @@
 		);
 	echo form_input($data);
 
-	echo form_radio('semester_def', 'WS', TRUE);
+	echo form_radio('semesteranfang', 'WS', TRUE);
 	echo 'WS';
-	echo form_radio('semester_def', 'SS', FALSE);
+	echo form_radio('semesteranfang', 'SS', FALSE);
 	echo 'SS'; echo '<br />';
 
 	$class_dd = 'class="studiengang_dd"';
@@ -100,8 +100,8 @@
 		toggle_studentendaten();
 
 		// dropdown value change								/// LOOK AT THE TOP OF THE DOC, THERE IS AN OTHER VARIANT!!!!!!!!!!!!!!!!!!!!!!!!
-		// $(".rolle_dd").change(function() {
-		// 	toggle_studentendaten($("select.rolle_dd option:selected").val());
+		// $(".role").change(function() {
+		// 	toggle_studentendaten($("select.role option:selected").val());
 		// });
 
 

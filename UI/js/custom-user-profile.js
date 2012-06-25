@@ -1,3 +1,6 @@
+/*
+  @author Nils Röhrig
+*/
 // run self invoking anonymous function
 (function($) {
 
@@ -8,7 +11,7 @@
     @returns true if label got hid
     @retuns false if label didn't change visibility.
   */
-  function hideIfAppropriate() {    
+  function hideIfAppropriate() {
     if(this.tagName.toUpperCase() === 'LABEL'){
       var $this = $(this),
           formField = $('#' + $this.attr('for'));

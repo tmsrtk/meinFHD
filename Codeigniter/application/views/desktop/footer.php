@@ -6,7 +6,10 @@
 				{jquery: "<?php print base_url(); ?>resources/jquery/jquery.min.js"},
 				{meinfhd: "<?php print base_url(); ?>resources/js/meinfhd.js"},
 				{bootstrap_alert: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-alert.js"},
-				{bootstrap_dropdown: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-dropdown.js"}
+				{bootstrap_dropdown: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-dropdown.js"},	
+				
+				// need to drop down		
+				{bootstrap_collapse: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-collapse.js"}
 			);
 		</script>
 	</body> <!-- /body -->

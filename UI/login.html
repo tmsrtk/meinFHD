@@ -37,8 +37,8 @@
 				<input name="email" type="text" />
 			</div>
 			<div class="modal-footer">
-				<a href="#" data-dismiss="modal" class="btn btn-large">schließen</a>
-				<a href="#" class="btn btn-inverse btn-large">absenden</a>
+				<a href="#" data-dismiss="modal" class="btn">schließen</a>
+				<a href="#" class="btn btn-inverse">absenden</a>
 			</div>
 		</div><!--MODAL OVERLAY ends here-->
 		
@@ -48,64 +48,38 @@
 			</div>
 		</div><!--pseudonav ends here-->
 		
-		<!-- CONTENT -->
-	<div class="container container-fluid">
-		<div class="row">
-			<div class="span8">
-				<div class="well well-small clearfix">
-			
-					<h6>Login</h6>
-			
-					<!--Titel-->
-	    			<h1 class="maintitle">meinFHD<span>mobile</span></h1>
-					<hr />
-					
-					<!--Loginform-->
-					<form class="form-inline">
-						
-						<input name="user" type="text" class="span2" placeholder="Benutzername" /><br />
-		
-						<input name="pw" type="password" class="span2" placeholder="Passwort" /><br />
-						<hr class="hidden-phone" />				
-						
-						<div class="well well-small clearfix">	
-							
-							<!--stay logged in-->													
-							<label class="checkbox">
-								<input name="staylogged" type="checkbox" />
-								&nbsp;eingeloggt bleiben
-							</label>
-							
-							<!--Login btn-->									
-							<a href="dashboard" class="btn btn-inverse pull-right">
-								<i class="icon-arrow-right icon-white"></i>
-								 anmelden
-							</a>
-						</div>
-					</form>
-		    		    	   								  
-				</div>
- 	    		
-			</div><!-- /.span8-->
-			
-			<!--DESKTOP AND TABLET ONLY-->
-			<div class="span4">
-			
-				<div class="well well-small clearfix">
-					<!--Modal trigger Zugang-->
-					<a  class="btn pull-left" data-toggle="modal" href="#accountdata">neuer Zugang</a>
+		<!--login starts here-->
+		<div class="container">
+			<h6>Login</h6>
+			<h1 class="maintitle">meinFHD<span>mobile</span></h1>
+			<hr />
+			<form class="form-inline">
+
+				<input name="user" type="text" class="span2" placeholder="Benutzername" /><br />
+
+				<input name="pw" type="password" class="span2" placeholder="Passwort" /><br />
 				
-					<!--Modal trigger pw-->
-					<a class="btn pull-right" data-toggle="modal" href="#accountdata">Passwort vergessen</a>				
+				
+				<label class="checkbox">
+					<input name="staylogged" type="checkbox" />
+					&nbsp;eingeloggt bleiben
+				</label>
+				
+				<hr />
+				<div class="well clearfix">
+					<!--stay logged in-->
+					
+					
+					<!--Modal trigger-->
+					<a data-toggle="modal" href="#accountdata" class="btn pull-left">Zugang vergessen</a>
+		
+					<!--Login btn-->									
+					<a href="#" class="btn btn-inverse pull-right">anmelden</a>
 				</div>
-			
-			</div><!-- /.span4 -->						
-			
-		</div><!--first row ends here-->
-	</div>
-		
-		
-		
+			</form>
+			<hr />
+			<p>Cupcake ipsum dolor sit amet gingerbread. Icing pudding lollipop toffee I love candy canes soufflé sweet cake. Muffin candy jelly beans donut dessert danish macaroon chocolate cake.</p>								
+		</div><!--login ends here-->
 		
 		<!-- Scripts -->
 		<script src="bootstrap/js/jquery.js" type="text/javascript"></script>		

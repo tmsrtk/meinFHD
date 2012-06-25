@@ -21,7 +21,12 @@
 		<script src="<?php print base_url(); ?>resources/lessjs/less-1.3.0.min.js" type="text/javascript"></script>
 	</head> <!-- /head -->
 	<body>
-		<?php print $messages; ?>
+		<?php 
+		
+			// if I don't comment this statement, will get error on every page. - Rico - 22.06.2012 
+			// print $messages; 
+		
+		?>
 		<?php // if user eingeloggt ?>
 		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
