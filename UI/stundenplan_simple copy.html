@@ -29,38 +29,37 @@
 		
 		<style>
 			/*
-root element for the scrollable.  when scrolling occurs this
-element stays still.
-*/
-.scrollable {
-  /* required settings */
-  position:relative;
-  overflow:hidden;
-  width: 660px;
-  height:90px;
-}
- 
-/*
-root element for scrollable items. Must be absolutely positioned
-and it should have a extremely large width to accommodate scrollable
-items.  it's enough that you set width and height for the root element
-and not for this element.
-*/
-.scrollable .items {
-  /* this cannot be too large */
-  width:20000em;
-  position:absolute;
-}
- 
-/*
-a single item. must be floated in horizontal scrolling.  typically,
-this element is the one that *you* will style the most.
-*/
-.items div {
-  float:left;
-}
-
-			
+			root element for the scrollable.  when scrolling occurs this
+			element stays still.
+			*/
+			.scrollable {
+			  /* required settings */
+			  position:relative;
+			  overflow:hidden;
+			  width: 660px;
+			  height:90px;
+			}
+			 
+			/*
+			root element for scrollable items. Must be absolutely positioned
+			and it should have a extremely large width to accommodate scrollable
+			items.  it's enough that you set width and height for the root element
+			and not for this element.
+			*/
+			.scrollable .items {
+			  /* this cannot be too large */
+			  width:20000em;
+			  position:absolute;
+			}
+			 
+			/*
+			a single item. must be floated in horizontal scrolling.  typically,
+			this element is the one that *you* will style the most.
+			*/
+			.items div {
+			  float:left;
+			}
+	
 		</style>
 		
 	</head> <!-- /head -->
@@ -101,29 +100,7 @@ this element is the one that *you* will style the most.
 		
 		<!-- "previous page" action -->
 		<!--<a class="prev browse left"></a>-->
-		
-		<!--pagination--> 
-		<div class="navi pagination pagination-centered">
-			<div class="row">
-		
-				<!--optionbox at the end of page-->
-				<div class="span12">		
-					<div class="pagination pagination-centered">
-					  <ul>
-					    <li id="Montag">
-					      <a href="#Montag">M</a>
-					    </li>
-					    <li id="Dienstag"><a href="#Dienstag">D</a></li>
-					    <li id="Mittwoch"><a href="#Mittwoch">M</a></li>
-					    <li id="Donnerstagy"><a href="#Donnerstag">D</a></li>
-					    <li id="Freitag"><a href="#Freitag">F</a></li>					    
-					  </ul>
-					</div>						
-				</div><!-- /.span12-->
 				
-			</div><!-- /.row-->
-		
-		</div><!-pagination-->
 		
 		<!-- root element for scrollable -->
 		<div class="scrollable" id="scrollable">
@@ -135,18 +112,7 @@ this element is the one that *you* will style the most.
 		    <div>
 			    hallo1
 		    </div>
-		    
-		    <!-- a sliding element -->
-		    <div>
-			    hallo2
-		    </div>
-		    
-		
-		    <!-- a sliding element -->
-		    <div>
-			    hallo3
-		    </div>
-		 
+		   		 
 		  </div>
 		 
 		</div>
