@@ -52,15 +52,19 @@ class Modul_Model extends CI_Model {
 			$courseinfo[$kind_of_course['VeranstaltungsformName']] = array();
 		}
 
-		$this->krumo->dump($courseinfo);
+
+		return $courseinfo;
 
 	}
 
 
 	/**
-	 * Adds important, User-specific inforamtion to the courselist.
-	 * 1. In a "Praktikum" etc. must be added, if the User is part of the group
-	 * 2. Other courses like "Vorlesung"
+	 * Adds important, User-specific inforamtion to the courselist. A flag "Aktiv" is added
+	 * 1. In a "Praktikum" etc. must be added, if the User is part of the group("Aktiv" is 1 in that case)
+	 * 2. Other courses like "Vorlesung" dont need that, the flag is set in a loop automatically
+	 * 3. If there is no alternative to that course, the aktive flag is also set by default
+	 *
+	 * Courses set active will not have the possibility to enroll for the user(In the mobile view).
 	 *
 	 * @param type name // nicht vorhanden
 	 * @return type // nicht vorhanden
@@ -68,6 +72,41 @@ class Modul_Model extends CI_Model {
 	private function userinfo_to_courselist($courselist, $user_id)
 	{
 
+		foreach ($courselist as $key => $course) {
+			//If it is a Vorlesung, Tutorium or there is no alternative 
+			if ($course['VeranstaltungsformID'] == 1 OR $course['VeranstaltungsformID'] == 6 OR $course['VeranstaltungsformAlternative'] == "")
+			{
+				$courselist[$key]['Aktiv'] = 1;
+				$courselist[$key]['Button'] = 0;
+			} 
+			else 
+			{
+				$query_benutzer = $this->db->query("
+					SELECT 
+						* 
+					FROM 
+						benutzerkurs b 
+					WHERE 
+						b.BenutzerID = ". $user_id . " AND 
+						b.SPKursID = " .$course['SPKursID']. " AND 
+						b.KursID =" .$course['KursID'] ."
+					");
+
+				$result_benutzer = $query_benutzer->result_array();
+
+				$this->krumo->dump($result_benutzer);
+
+				if ($result_benutzer[0]['aktiv'] == 0) {
+					$courselist[$key]['Aktiv'] = 0;
+					$courselist[$key]['Button'] = 1;
+				} else {
+					$courselist[$key]['Aktiv'] = 1;
+					$courselist[$key]['Button'] = 1;
+				}
+			}
+		}
+
+		return $courselist;
 	}
 
 
@@ -95,7 +134,7 @@ class Modul_Model extends CI_Model {
 		$query = $this->db->query("
 		SELECT 
 			sg.Kursname, sg.kurs_kurz,
-			v.VeranstaltungsformName,sp.VeranstaltungsformAlternative,
+			v.VeranstaltungsformName,sp.VeranstaltungsformAlternative, sp.VeranstaltungsformID, sp.KursID, sp.SPKursID,
 			sp.DozentID, sp.StartID, sp.EndeID, (sp.EndeID-sp.StartID)+1 AS 'Dauer', sp.GruppeID,
 			d.Vorname AS 'DozentVorname', d.Nachname AS 'DozentNachname', d.Email AS 'DozentEmail',
 			t.TagName,t.TagID,
@@ -133,11 +172,15 @@ class Modul_Model extends CI_Model {
 	public function get_courseinfo($user_id, $course_id)
 	{	
 
-		$this->create_courseinfo_array();
+		$courseinfo_array = $this->create_courseinfo_array();
 
+		$courselist = $this->get_courselist($course_id);
 
-		return $this->get_courselist($course_id);
+		$courselist = $this->userinfo_to_courselist($courselist, $user_id);
 
+		$this->krumo->dump($courselist);
+
+		return $courselist;
 	}
 
 
