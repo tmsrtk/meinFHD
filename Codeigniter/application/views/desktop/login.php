@@ -96,10 +96,7 @@
 						<?php echo form_fieldset_close(); // close the fieldset ?>
 					<?php echo form_close(); // close the whole login form ?>
 				</div>
-				-<?php 
-					// If I don't comment the statement below, will get "Fatal error: Call to undefined method Message::display()" - Rico - 06.22.2012 
-					// echo $this->message->display(); 
-				?>-
+				-<?php echo $this->message->display(); ?>-
 			</div><!-- /.span4-->
 			<div class="span4"></div>
 		</div><!--first row ends here -->
