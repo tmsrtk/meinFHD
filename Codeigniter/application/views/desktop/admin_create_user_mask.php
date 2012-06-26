@@ -5,7 +5,7 @@
 // needet vars
 
 $form_attrs = array('class' => 'well', 'id' => 'create_user');
-$data_roles = 'class="role"';      ///////// I THINK ITS BETTER TO DO IT THIS WAY, THAN IN THE FOOTER!!!!!!!!!!!!!!!!!!!!
+$data_roles = 'class="role"';
 $data_loginname = array(
 		'class' => 'span3',
 		'name' => 'loginname',
