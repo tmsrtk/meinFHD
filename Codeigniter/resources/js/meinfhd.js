@@ -17,8 +17,11 @@
 	
 	$(function(){
 		
+		//define today
+		//var today = new Date;
+		//alert(today.getDay());
 		//setting the first element
-		//$('.carousel').find('item:eq(1)').addClass('active');
+		//$('.carousel').find('.item:eq(0).addClass('active');
 		
 		
 		
