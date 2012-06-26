@@ -80,10 +80,10 @@
 
 		requestBySearch : function( searchinput ) {
 			var self = this;
-			this.config.dataContent.html("lade Daten...");
 			var url = "<?php echo site_url();?>admin/ajax_show_user/";
 			var data = '';
 
+			// this.config.dataContent.html("lade Daten...");
 			// console.log( this.config.roleDropdown.val() ); return;
 
 			// for calling this method without parameter
@@ -97,6 +97,8 @@
 					self.config.dataContent.html(response);
 				});
 			} else {
+				clearTimeout( self.timer );
+
 				if (searchinput.val().length == 0) { // load all users of selected std
 					data = 'role_id='+this.config.roleDropdown.val();
 
@@ -107,14 +109,17 @@
 						self.config.dataContent.html(response);
 					});
 				} else if (searchinput.val().length >= 2) { // start to search when when two letters were entered
-					data = 'searchletter='+searchinput.val()+'&role_id='+this.config.roleDropdown.val();
+					self.timer = setTimeout(function() {
+						data = 'searchletter='+searchinput.val()+'&role_id='+self.config.roleDropdown.val();
 
-					$.get(
-					url,
-					data,
-					function(response) {
-						self.config.dataContent.html(response);
-					});
+						$.get(
+						url,
+						data,
+						function(response) {
+							self.config.dataContent.html(response);
+						});
+						
+					}, 400);
 				}
 			}
 		}
