@@ -9,7 +9,7 @@
 				<?php //--------------------Loop for one day-------------------- ?>
 				<?php $day_number = 0 //Incermented after a day ?>
 				<?php foreach ($stundenplan as $dayname => $day) : ?>
-					<div class="item">
+					<div class="item <?php if ($tage[$day_number]['IstHeute']) echo "active"; ?>">
 					<!--Tag-->		
 					<div class="row day" id= "<?php echo $dayname ?>">
 						
@@ -27,7 +27,7 @@
 			    		<!--Tagesinhalte-->								
 						<div class="span8">
 					
-							<div class="accordion well well-small" id="accordion">											
+							<div class="accordion well well-small" id="accordion<?php echo $dayname;?>">											
 							<?php //--------------------Loop for one course-------------------- ?>
 							<?php foreach ($day as $hourID => $hour) : ?>
 			
@@ -49,7 +49,7 @@
 																<td width="45%"><?php echo $course['Beginn']; ?> - <?php echo $course['Ende']; ?></td>
 																<td width="55%"><?php echo $course['kurs_kurz']; ?>&nbsp;<?php echo utf8_decode($course['VeranstaltungsformName']); ?></td>
 																<td>
-																	<a class="btn accordion-toggle pull-right" data-toggle="collapse" data-parent="#accordion" href="#<?php echo $course['SPKursID']; ?>">
+																	<a class="btn accordion-toggle pull-right" data-toggle="collapse" data-parent="#accordion<?php echo $dayname;?>" href="#target<?php echo $course['SPKursID']; ?>body">
 																		<i class="icon-plus"></i>
 																	</a>
 																</td>
@@ -57,14 +57,14 @@
 														</tbody>
 													</table>
 												</div>
-												<div id="<?php echo $course['SPKursID']; ?>" class="accordion-body collapse">
+												<div id="target<?php echo $course['SPKursID']; ?>body" class="accordion-body collapse">
 													<hr />
 													<div class="alert alert-info clearfix">
 													<button class="btn pull-left attendant">
 														<i class="icon-ok"></i>
 														anwesend
 													</button>
-													<a href="modul.html" class="btn btn-primary pull-right">
+													<a href="<?php print base_url(); ?>modul/show/<?php echo $course['KursID']; ?>" class="btn btn-primary pull-right">
 														Details
 														<i class="icon-arrow-right icon-white"></i>
 													</a>					
@@ -121,11 +121,11 @@
 	<div class="row">		
 		<div class="span12">
 			<div class="alert alert-info clearfix">
-				<a href="dashboard" class="btn btn-large btn-primary pull-left">
+				<a href="<?php print base_url(); ?>dashboard" class="btn btn-large btn-primary pull-left">
 					<i class="icon-arrow-left icon-white"></i>
 					 Dashboard
 				</a>
-				<a href="stundenplan_table" class="btn btn-large pull-right">Woche</a>
+				<a href="<?php print base_url(); ?>woche" class="btn btn-large pull-right">Woche</a>
 			</div>
 		</div><!-- /.span12-->		
 	</div><!-- /.row-->
