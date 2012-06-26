@@ -60,8 +60,7 @@ var Studienplan = {
 				$(ui.item).children(".semestermodul").toggleClass("highlight");
 
 				// serialisiere die Modulreihenfolge
-				var module_serialisiert = '';
-				module_serialisiert = $(this).sortable("serialize");
+				var module_serialisiert = $(this).sortable("serialize");
 
 				// hänge auch die semesternr an die url
 				var semester = $(this).attr('id');
