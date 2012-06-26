@@ -27,55 +27,44 @@ class Modul_Model extends CI_Model {
 
 	public function get_courseinfo($user_id, $course_id)
 	{	
-		//benutzerkurs: Enthält die aktiven Module
-		//studiengangkurs: Die Namen im Klartext (Nur deswegen in Query)
-		//stundenplankurs: Genauere Informationen zu Kursen(Startzeit, Typ)
-		//veranstaltungsform: Die Namen der Veranstaltungsformen im Klartext
-		//Tag: Um TagIds von timetablekurs in Klartext darzustellen, wichtig 
-		//Stunde: Doppelt verwendet für Startzeitpunkt und Endzeitpunkt des Kurses
-		//Dozent: Für DozentID im Klartext benutzer noch einmal
-		//Gruppe: Enthält maximale Anzahl, ob Anmeldung freigeschaltet ist
-		//Gruppenteilnehmer: mit count(*) als Subquery 
-		//Sollen kein WPF sein! (Feature not supported yet)
+		//wie sollte das array aussehen?
+		//Konzeption: In das Array müssen alle Kurse, welche diese übergebene ID haben.
+		//Dies sind dann verschiedene Veranstaltungsformen. Sortiert nach eventueller Vorlesung, Praktika, Übung,
+		//Seminar, Seminaristischer Unterricht
+
+		 //(Select Aktiv FROM benutzerKurs b WHERE sp.KursID = b.KursID AND sp.SPKursID = b. SPKursID AND b.BenutzerID = ".$user_id.") AS "Angemeldet",
+		$courseinfo = array();
+
+		//Collect the basic Info to all Parts of the Course
 		$query = $this->db->query("
 		SELECT 
-		*
+			sg.Kursname, sg.kurs_kurz,
+			v.VeranstaltungsformName,sp.VeranstaltungsformAlternative,
+			sp.DozentID, sp.StartID, sp.EndeID, (sp.EndeID-sp.StartID)+1 AS 'Dauer', sp.GruppeID,
+			d.Vorname AS 'DozentVorname', d.Nachname AS 'DozentNachname', d.Email AS 'DozentEmail',
+			t.TagName,t.TagID,
+			s_beginn.Beginn, s_ende.Ende,
+			g.TeilnehmerMax, g.Anmeldung_zulassen,
+			(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.GruppeID = sp.GruppeID) AS 'Anzahl Teilnehmer'
 		FROM 
 			stundenplankurs sp,
-			benutzerkurs b,
 			studiengangkurs sg,
+			veranstaltungsform v,
+			tag t,
+			stunde s_beginn, stunde s.ende
 		WHERE 
 			sp.kursID = ".$course_id." AND
-			b.BenutzerID = ".$id." AND 
-			b.kursID = ".$course_id." AND
-			sp.IsWPF = 0
+			sp.IsWPF = 0 AND
+			sg.KursID = ".$course_id." AND
+			sp.VeranstaltungsformID = v.VeranstaltungsformID AND
+			sp.TagID = t.TagID
 
 		");
 
-
-			benutzerkurs b,
-			studiengangkurs sg,
-			stundenplankurs sp,
-			veranstaltungsform v,
-			tag t,
-			stunde s_beginn, stunde s_ende,
-			benutzer d,
-			gruppe g
-		WHERE 
-			b.kursID = sg.kursID AND
-			sp.kursID = b.KursID AND
-			sp.SPKursID = b.SPKursID AND
-			v.veranstaltungsformID = sp.veranstaltungsformID AND
-			s_beginn.StundeID = sp.StartID AND
-			s_ende.StundeID = sp.EndeID AND
-			t.TagID = sp.TagID AND
-			sp.DozentID = d.BenutzerID AND
-			b.BenutzerID = ".$id." AND 
-			b.SemesterID = ".$this->get_Semester($this->user['StudienbeginnSemestertyp'] , $this->user['StudienbeginnJahr'])." AND
-			sp.GruppeID = g.GruppeID AND
-			sp.IsWPF = 0
 		
 		$result = $query->result_array();
+
+		$this->krumo->dump($result);
 
 		return $result;
 
