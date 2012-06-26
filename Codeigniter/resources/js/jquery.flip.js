@@ -9,7 +9,7 @@ $(function(){
 	$('.flipLink').click(function(e){
 		
 		// Flipping the forms
-		flipBox.toggleClass('flipped');
+		$(this).parent().parent().parent().toggleClass('flipped');
 		
 		// If there is no CSS3 3D support, simply
 		// hide the frontSide form (exposing the backSide one)
