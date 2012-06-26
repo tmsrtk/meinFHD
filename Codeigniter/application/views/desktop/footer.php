@@ -1,5 +1,7 @@
 		<!-- only head.js is required, due to asynchronous js file handling -->
 		<script src="<?php print base_url(); ?>resources/jquery/jquery.min.js" type="text/javascript"></script>
+				<script src="<?php print base_url(); ?>resources/jquery/jquery-ui.js" type="text/javascript"></script>
+
 		<script src="<?php print base_url(); ?>resources/js/highcharts.js" type="text/javascript"></script>
 		<script src="<?php print base_url(); ?>resources/js/jquery.countdown.js" type="text/javascript"></script>
 		<script src="<?php print base_url(); ?>resources/js/widget.studienverlauf.js" type="text/javascript"></script>
@@ -32,7 +34,23 @@
 			);
 		</script>
 		-->
+		<script>
 		
+			(function(){
+				$(".row").sortable({
+				connectWith: '.row',
+				cursor: 'pointer',
+				opacity: '0.6',
+				//placeholder:'dashboardmodul_placeholder  ',
+				dropOnEmpty: true
+				
+					});
+				$( ".row" ).disableSelection();
+
+			})();
+	
+			
+		</script>
 	
 
 		
