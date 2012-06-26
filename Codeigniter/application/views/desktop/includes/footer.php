@@ -12,8 +12,5 @@
                 {bootstrap_dropdown: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-dropdown.js"}
             );
         </script>
-        <script>
-            $('.dropdown-toggle').dropdown();
-        </script>
         </body> <!-- /body -->
 </html> <!-- /html -->
