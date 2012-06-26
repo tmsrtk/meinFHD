@@ -111,7 +111,9 @@
 
 		toggleStudentsdata : function(selectbox) {
 			var studentdata_container = this.config.studentdataField;
-			var dropdown_value = (selectbox) ? dropdown_value = selectbox.val() : '0';
+			var dropdown_value = (selectbox) 
+				? dropdown_value = selectbox.val() 
+				: '0';
 			(dropdown_value === '4') ? studentdata_container.fadeIn() : studentdata_container.fadeOut();
 			console.log("Funzt");
 		}
