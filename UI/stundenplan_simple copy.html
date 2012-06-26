@@ -93,184 +93,283 @@
 	</div><!--NAV ENDE-->
 	
 	<!-- CONTENT -->
-	<div class="container container-fluid">
+	<!-- CONTENT -->
+<div class="container container-fluid">
+	<div class="row day" id="monday">
+		<div class="span4">
 		
-		<!--current inline styles for proper view -->
-		<div style="margin:0 auto; width: 634px; height:120px;">
+			<!--title-->
+			<div class="well well-small well-first">
+	    		<h6>Stundenplan</h6>
+	    		<h1>
+	    			Montag&nbsp;<small>12.02.2013</small>	    		
+	    		</h1>
+    		</div>				
+    		
+		</div><!-- /.span4-->								
+		<div class="span8">
 		
-		<!-- "previous page" action -->
-		<!--<a class="prev browse left"></a>-->
+			<div class="accordion well well-small" id="stundenplan_accordion">
+									
+				<!--accordion-group-->	
+				<div class="well-small">
+					<div class="accordion-heading">
+						<table>
+							<tbody>
+								<tr>
+									<td width="45%">8:00 - 9:45</td>
+									<td width="55%">DBS 1 Praktikum</td>
+									<td>
+										<a class="btn accordion-toggle pull-right" data-toggle="collapse" data-parent="#stundenplan_accordion" href="#collapseOne">
+											<i class="icon-plus"></i>
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div id="collapseOne" class="accordion-body collapse">
+						<hr />
+						<div class="alert alert-info clearfix">
+						<button class="btn pull-left attendant">
+							<i class="icon-ok"></i>
+							anwesend
+						</button>
+						<a href="modul.html" class="btn btn-primary pull-right">
+							Details
+							<i class="icon-arrow-right icon-white"></i>
+						</a>					
+					</div>
+					</div>
+				</div><!--/accordion-group-->
 				
-		
-		<!-- root element for scrollable -->
-		<div class="scrollable" id="scrollable">
-		 
-		  <!-- root element for the items -->
-		  <div class="items">
-		 
-		    <!-- a sliding element -->
-		    <div>
-			    hallo1
-		    </div>
-		   		 
-		  </div>
-		 
-		</div>
-		 
-		<!-- "next page" action -->
-		<!--<a class="next browse right"></a>-->
-
-		</div><!--slider ends here-->
-		
-		<div class="row">
-			<div class="span4">
-			
-				<!--title-->
-				<div class="well well-small well-first">
-		    		<h6>Stundenplan</h6>
-		    		<h1>
-		    			Montag&nbsp;<small>12.02.2013</small>	    		
-		    		</h1>
-	    		</div>				
-	    		
-			</div><!-- /.span4-->						
-			<div class="span8">
-			
-				<!--table-->
-				<div class="well well-small">				
-					<table class="table table-condensed centered"> 
-					<!--Tablehead for all lower tables-->
-					<thead>
-						<tr>
-							<td width="45%">Zeit</td>
-							<td width="55%">Veranstaltung</td>
-							<td>&nbsp;</td>
-						</tr>
-					</thead>
-					
-					<!--collapsible-->
-					<tbody>
-						<tr>
-							<td>8:00 - 9:45</td>
-							<td>DBS 1 Praktikum</td>
-							<td>
-								<a class="btn" data-toggle="collapse" data-target="#first-collapse">
-									<i class="icon-plus"></i>
-								</a>
-							</td>
-						</tr>
-					</tbody>
-					</table>
-					<!--collapsible content-->
-					<div id="first-collapse" class="collapse">
+				<!--accordion-group-->	
+				<div class="well-small">
+					<div class="accordion-heading">
+						<table>
+							<tbody>
+								<tr>
+									<td width="45%">10:00 - 11:45</td>
+									<td width="55%">Mathe 2 </td>
+									<td>
+										<a class="btn accordion-toggle pull-right" data-toggle="collapse" data-parent="#stundenplan_accordion" href="#collapseTwo">
+											<i class="icon-plus"></i>
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div id="collapseTwo" class="accordion-body collapse">
+						<hr />
+						<p>Mathematik 2 Vorlesung - H 1.22</p>
 						<div class="alert alert-info clearfix">
-							<a class="btn pull-left">
+							<button class="btn pull-left attendant">
 								<i class="icon-ok"></i>
-								anwesend
-							</a>
+									anwesend
+							</button>
 							<a href="modul.html" class="btn btn-primary pull-right">
 								Details
 								<i class="icon-arrow-right icon-white"></i>
 							</a>					
 						</div>
 					</div>
-					
-					<!--collapsible-->
-					<table class="table table-condensed centered">
-					<tbody>
-						<tr>
-							<td width="45%">10:00 - 12:45</td>
-							<td width="55%">OOP 1 Praktikum</td>
-							<td>
-								<a class="btn" data-toggle="collapse" data-target="#second-collapse">
-									<i class="icon-minus"></i>									
-								</a>
-							</td>
-						</tr>
-					</tbody>
-					</table>
-					<!--collapsible content-->
-					<div id="second-collapse" class="collapse in">
-						<div class="alert alert-info clearfix">
-							<a class="btn pull-left">
-								<i class="icon-ok"></i>
-								anwesend
-							</a>
-							<a href="modul.html" class="btn btn-primary pull-right">
-								Details
-								<i class="icon-arrow-right icon-white"></i>
-							</a>					
-						</div>
+				</div><!--/accordion-group-->
+				
+				<!--accordion-group-->	
+				<div class="well-small">
+					<div class="accordion-heading">
+						<table>
+							<tbody>
+								<tr>
+									<td width="45%">14:00 - 15:45</td>
+									<td width="55%">DBS 1 Vorlesung</td>
+									<td>
+										<a class="btn accordion-toggle pull-right" data-toggle="collapse" data-parent="#stundenplan_accordion" href="#collapseThree">
+											<i class="icon-plus"></i>
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
-					
-					<!--collapsible-->
-					<table class="table table-condensed centered">
-					<tbody>
-						<tr>
-							<td width="45%">14:00 - 16:45</td>
-							<td width="55%">Mathe2 Vorlesung</td>
-							<td>
-								<span class="btn" data-toggle="collapse" data-target="#third-collapse">
-									<i class="icon-plus"></i>
-								</span>
-							</td>
-						</tr>
-					</tbody>
-					</table>
-					<!--collapsible content-->
-					<div id="third-collapse" class="collapse">
+					<div id="collapseThree" class="accordion-body collapse">
+						<hr />
 						<div class="alert alert-info clearfix">
-							<a class="btn btn-small pull-left">
-								<i class="icon-ok"></i>
-								anwesend
-							</a>
-							<a href="modul.html" class="btn btn-large btn-primary pull-right">
-								Details
-								<i class="icon-arrow-right icon-white"></i>
-							</a>					
-						</div>
+						<button class="btn pull-left attendant">
+							<i class="icon-ok"></i>
+							anwesend
+						</button>
+						<a href="modul.html" class="btn btn-primary pull-right">
+							Details
+							<i class="icon-arrow-right icon-white"></i>
+						</a>					
 					</div>
+					</div>
+				</div><!--/accordion-group-->
+				
+			</div><!--/stundenplan-accordion-->
 						
-				</div><!--Element ends here-->
-							
-			</div><!-- /.span8 -->						
-			
-		</div><!--first row ends here-->
-		<div class="row">
+		</div><!-- /.span8 -->								
 		
-			<!--optionbox at the end of page-->
-			<div class="span12">
-
-				<div class="pagination pagination-centered">
-				  <ul>
-				    <li class="active">
-				      <a href="#">M</a>
-				    </li>
-				    <li><a href="#">D</a></li>
-				    <li><a href="#">M</a></li>
-				    <li><a href="#">D</a></li>
-				    <li><a href="#">F</a></li>					    
-				  </ul>
-				</div>
+	</div><!--first row ends here-->		
+	<div class="row day" id="tuesday">
+		<div class="span4">
+		
+			<!--title-->
+			<div class="well well-small well-first">
+	    		<h6>Stundenplan</h6>
+	    		<h1>
+	    			Dienstag&nbsp;<small>13.02.2013</small>	    		
+	    		</h1>
+    		</div>				
+    		
+		</div><!-- /.span4-->						
+		
+		<!--monday-->
+		<div class="span8">
+		
+			<div class="accordion well well-small" id="stundenplan_accordion">
+									
+				<!--accordion-group-->	
+				<div class="well-small">
+					<div class="accordion-heading">
+						<table>
+							<tbody>
+								<tr>
+									<td width="45%">8:00 - 9:45</td>
+									<td width="55%">DBS 1</td>
+									<td>
+										<a class="btn accordion-toggle pull-right" data-toggle="collapse" data-parent="#stundenplan_accordion" href="#collapseOne">
+											<i class="icon-plus"></i>
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div id="collapseOne" class="accordion-body collapse">
+						<hr />
+						<p>DBS1 Praktikum H 1.17</p>
+						<div class="alert alert-info clearfix">
+						<button class="btn pull-left attendant">
+							<i class="icon-ok"></i>
+							anwesend
+						</button>
+						<a href="modul.html" class="btn btn-primary pull-right">
+							Details
+							<i class="icon-arrow-right icon-white"></i>
+						</a>					
+					</div>
+					</div>
+				</div><!--/accordion-group-->
 				
-			</div><!-- /.span12-->
+				<!--accordion-group-->	
+				<div class="well-small">
+					<div class="accordion-heading">
+						<table>
+							<tbody>
+								<tr>
+									<td width="45%">10:00 - 11:45</td>
+									<td width="55%">Mathe 2 </td>
+									<td>
+										<a class="btn accordion-toggle pull-right" data-toggle="collapse" data-parent="#stundenplan_accordion" href="#collapseTwo">
+											<i class="icon-plus"></i>
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div id="collapseTwo" class="accordion-body collapse">
+						<hr />
+						<p>Mathematik 2 Vorlesung - H 1.22</p>
+						<div class="alert alert-info clearfix">
+							<button class="btn pull-left attendant">
+								<i class="icon-ok"></i>
+									anwesend
+							</button>
+							<a href="modul.html" class="btn btn-primary pull-right">
+								Details
+								<i class="icon-arrow-right icon-white"></i>
+							</a>					
+						</div>
+					</div>
+				</div><!--/accordion-group-->
+				
+				<!--accordion-group-->	
+				<div class="well-small">
+					<div class="accordion-heading">
+						<table>
+							<tbody>
+								<tr>
+									<td width="45%">14:00 - 15:45</td>
+									<td width="55%">DBS 1</td>
+									<td>
+										<a class="btn accordion-toggle pull-right" data-toggle="collapse" data-parent="#stundenplan_accordion" href="#collapseThree">
+											<i class="icon-plus"></i>
+										</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div id="collapseThree" class="accordion-body collapse">
+						<hr />
+						<div class="alert alert-info clearfix">
+						<p>DBS1 Vorlesung H 1.5</p>
+						<button class="btn pull-left attendant">
+							<i class="icon-ok"></i>
+							anwesend
+						</button>
+						<a href="modul.html" class="btn btn-primary pull-right">
+							Details
+							<i class="icon-arrow-right icon-white"></i>
+						</a>					
+					</div>
+					</div>
+				</div><!--/accordion-group-->
+				
+			</div><!--/stundenplan-accordion-->
+						
+		</div><!-- /.span8 -->								
 		
-		</div><!-- /.row-->
-		<div class="row">
+	</div><!--first row ends here-->		
+	<div class="row">
+	
+		<!--optionbox at the end of page-->
+		<div class="span12">
+
+			<div class="pagination pagination-centered">
+			  <ul>
+			    <li id="monday">
+			      <a href="#monday">M</a>
+			    </li>
+			    <li id="tuesday"><a href="#tuesday">D</a></li>
+			    <li id="wednesday"><a href="#">M</a></li>
+			    <li id="thursday"><a href="#">D</a></li>
+			    <li id="friday"><a href="#">F</a></li>					    
+			  </ul>
+			</div>
 			
-			<!--optionbox at the end of page-->
-			<div class="span12">
-				<div class="alert alert-info clearfix">
-					<a href="dashboard" class="btn btn-large btn-primary pull-left">
-						<i class="icon-arrow-left icon-white"></i>
-						 Dashboard
-					</a>
-					<a href="stundenplan_table" class="btn btn-large pull-right">Woche</a>
-				</div>
-			</div><!-- /.span12-->
-			
-		</div><!-- /.row-->
-	</div>
+		</div><!-- /.span12-->
+	
+	</div><!-- /.row-->
+	<div class="row">
+		
+		<!--optionbox at the end of page-->
+		<div class="span12">
+			<div class="alert alert-info clearfix">
+				<a href="dashboard" class="btn btn-large btn-primary pull-left">
+					<i class="icon-arrow-left icon-white"></i>
+					 Dashboard
+				</a>
+				<a href="stundenplan_table" class="btn btn-large pull-right">Woche</a>
+			</div>
+		</div><!-- /.span12-->
+		
+	</div><!-- /.row-->
+</div>
 
 		
 		
