@@ -3,7 +3,7 @@
 			        		      			
 	/*icon-switch for accordion-templates*/
 	$(function(){									
-		$('#accordion')
+		$('.accordion')
 			.on('hidden', function(e) {
 				
 				$(e.target).parent().find('.accordion-heading i').removeClass('icon-minus').addClass('icon-plus');						
