@@ -230,7 +230,7 @@ class Stundenplan_Model extends CI_Model {
 			b.Aktiv,
 			b.KursID,b.SPKursID,
 			g.TeilnehmerMax, g.Anmeldung_zulassen,
-			(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.BenutzerID = ".$id." AND gt.GruppeID = sp.GruppeID) AS 'Anzahl Teilnehmer'
+			(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.GruppeID = sp.GruppeID) AS 'Anzahl Teilnehmer'
 		FROM 
 			benutzerkurs b,
 			studiengangkurs sg,
