@@ -25,17 +25,73 @@ class Modul_Model extends CI_Model {
 		$this->user = $query->row_array();
 	}
 
-	public function get_courseinfo($user_id, $course_id)
-	{	
-		//wie sollte das array aussehen?
-		//Konzeption: In das Array müssen alle Kurse, welche diese übergebene ID haben.
-		//Dies sind dann verschiedene Veranstaltungsformen. Sortiert nach eventueller Vorlesung, Praktika, Übung,
-		//Seminar, Seminaristischer Unterricht
-
-		 //(Select Aktiv FROM benutzerKurs b WHERE sp.KursID = b.KursID AND sp.SPKursID = b. SPKursID AND b.BenutzerID = ".$user_id.") AS "Angemeldet",
+	/**
+	 * 
+	 *
+	 * @param type name // nicht vorhanden
+	 * @return type // nicht vorhanden
+	 */	
+	private function create_courseinfo_array()
+	{
 		$courseinfo = array();
 
-		//Collect the basic Info to all Parts of the Course
+		//Things like "Dozent", Name etc.
+		$courseinfo['Modulinfo'] = array();
+		$courseinfo['Modulinfo']['LangName'] = '';
+		$courseinfo['Modulinfo']['KurzName'] = '';
+		$courseinfo['Modulinfo']['Dozent'] = '';
+
+		//Get possible kinds of courses from database
+
+		$query = $this->db->query("SELECT * FROM veranstaltungsform");
+
+		$result = $query->result_array();
+
+		//Insert in Array
+		foreach ($result as $key => $kind_of_course) {
+			$courseinfo[$kind_of_course['VeranstaltungsformName']] = array();
+		}
+
+		$this->krumo->dump($courseinfo);
+
+	}
+
+
+	/**
+	 * Adds important, User-specific inforamtion to the courselist.
+	 * 1. In a "Praktikum" etc. must be added, if the User is part of the group
+	 * 2. Other courses like "Vorlesung"
+	 *
+	 * @param type name // nicht vorhanden
+	 * @return type // nicht vorhanden
+	 */	
+	private function userinfo_to_courselist($courselist, $user_id)
+	{
+
+	}
+
+
+	/**
+	 * 
+	 *
+	 * @param type name // nicht vorhanden
+	 * @return type // nicht vorhanden
+	 */	
+	private function courselist_in_courseinfo()
+	{
+
+	}
+
+	/**
+	 * Collects the basic Info to all courses of the "Modul" in a query, depending on the ID of the "Modul"
+	 *
+	 *
+	 * @param type name // ID of the "Modul", $course_id
+	 * @return result_array // Array of all courses to Modul
+	 */	
+	public function get_courselist($course_id)
+	{
+
 		$query = $this->db->query("
 		SELECT 
 			sg.Kursname, sg.kurs_kurz,
@@ -51,23 +107,36 @@ class Modul_Model extends CI_Model {
 			studiengangkurs sg,
 			veranstaltungsform v,
 			tag t,
-			stunde s_beginn, stunde s.ende
+			stunde s_beginn,
+			stunde s_ende,
+			benutzer d,
+			gruppe g
 		WHERE 
 			sp.kursID = ".$course_id." AND
 			sp.IsWPF = 0 AND
 			sg.KursID = ".$course_id." AND
 			sp.VeranstaltungsformID = v.VeranstaltungsformID AND
-			sp.TagID = t.TagID
-
+			s_beginn.StundeID = sp.StartID AND
+			s_ende.StundeID = sp.EndeID AND
+			sp.TagID = t.TagID AND 
+			sp.GruppeID = g.GruppeID AND
+			d.BenutzerID = sp.DozentID
 		");
+
 
 		
 		$result = $query->result_array();
 
-		$this->krumo->dump($result);
-
 		return $result;
+	}
 
+	public function get_courseinfo($user_id, $course_id)
+	{	
+
+		$this->create_courseinfo_array();
+
+
+		return $this->get_courselist($course_id);
 
 	}
 

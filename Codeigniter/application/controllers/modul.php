@@ -11,6 +11,8 @@
 
 /**
  * Modul-Controller 
+ *
+ * Only used for the mobile version.
  */
 class Modul extends FHD_Controller {
  
@@ -40,6 +42,7 @@ class Modul extends FHD_Controller {
 	{
 
 		//$this->load->view('modul');
+
 	}
 
 	public function show($course_id)
