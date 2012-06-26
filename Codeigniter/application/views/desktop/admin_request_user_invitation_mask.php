@@ -1,4 +1,5 @@
 <?php
+	$data_formopen = array('class' => 'well form-horizontal', 'id' => 'request_invitation');
 	$data_forename = array(
 			'class' => 'span2',
 			'name' => 'forename',
@@ -11,8 +12,6 @@
 			'placeholder' => 'Nachname',
 			'value' => set_value('lastname')
 		);
-
-
 	$data_jahr = array(
 			'class' => 'span2',
 			'name' => 'startjahr',
@@ -20,37 +19,25 @@
 			'value' => set_value('startjahr')
 		);
 	$class_dd = 'class="studiengang_dd"';
-
-
 	$data_email = array(
 		'class' => 'span3',
 		'name' => 'email',
 		'placeholder' => 'E-Mail',
 		'value' => set_value('email')
 	);
-
-
-
 	$data_matrikelnummer = array(
 		'class' => 'span2',
 		'name' => 'matrikelnummer',
 		'placeholder' => 'Matrikelnummer',
 		'value' => set_value('matrikelnummer')
 	);
-
-
-
 	$submit_data = array(
 			'name'			=> 'los',
 			'class'			=> 'btn btn-danger'
 		);
-
-
-
-	$attributes = array(
+	$data_labelattrs = array(
 	    'class' => 'control-label'
 	);
-
 ?>
 
 <h2>Verwaltung der Einladungsanforderungen</h2>
@@ -62,12 +49,11 @@
 <?php echo validation_errors() ?>
 
 <?php
-	$attrs = array('class' => 'well form-horizontal', 'id' => 'request_invitation');
-	echo form_open('admin/validate_request_user_invitation_form/', $attrs);
+	echo form_open('admin/validate_request_user_invitation_form/', $data_formopen);
 ?>
 
 <div class="control-group">
-	<?php echo form_label('Ich bin ein', 'role', $attributes); ?>
+	<?php echo form_label('Ich bin ein', 'role', $data_labelattrs); ?>
 	<div class="controls">
 		<label class="radio">
 			<?php echo form_radio('role', '4', TRUE) ?>
@@ -87,7 +73,7 @@
 
 
 <div class="control-group">
-	<?php echo form_label('Vor &amp; Nachname', 'forename', $attributes); ?>
+	<?php echo form_label('Vor &amp; Nachname', 'forename', $data_labelattrs); ?>
 	<div class="controls docs-input-sizes">
 		<?php echo form_input($data_forename); ?>
 		<?php echo form_input($data_lastname); ?>
@@ -95,7 +81,7 @@
 </div>
 
 <div class="control-group error">
-	<?php echo form_label('E-Mail', 'email', $attributes); ?>
+	<?php echo form_label('E-Mail', 'email', $data_labelattrs); ?>
 	<div class="controls docs-input-sizes">
 		<?php echo form_input($data_email); ?>
 	</div>
@@ -107,7 +93,7 @@
 
 
 	<div class="control-group">
-		<?php echo form_label('Ich bin Erstsemestler!', 'erstsemestler', $attributes); ?>
+		<?php echo form_label('Ich bin Erstsemestler!', 'erstsemestler', $data_labelattrs); ?>
 		<div class="controls docs-input-sizes">
 			<?php echo form_checkbox('erstsemestler', 'accept', FALSE) ?>
 		</div>
@@ -116,14 +102,14 @@
 	<div id="erstsemestler">
 
 		<div class="control-group">
-			<?php echo form_label('Jahr', 'startjahr', $attributes); ?>
+			<?php echo form_label('Jahr', 'startjahr', $data_labelattrs); ?>
 			<div class="controls docs-input-sizes">
 				<?php echo form_input($data_jahr); ?>
 			</div>
 		</div>
 
 		<div class="control-group">
-			<?php echo form_label('Semesteranfang', 'semesteranfang', $attributes); ?>
+			<?php echo form_label('Semesteranfang', 'semesteranfang', $data_labelattrs); ?>
 			<div class="controls">
 				<label class="radio">
 					<?php echo form_radio('semesteranfang', 'WS', TRUE); ?>
@@ -141,14 +127,14 @@
 	</div>
 
 	<div class="control-group">
-		<?php echo form_label('Studiengang', 'semesteranfang', $attributes); ?>
+		<?php echo form_label('Studiengang', 'semesteranfang', $data_labelattrs); ?>
 		<div class="controls docs-input-sizes">
 			<?php echo form_dropdown('studiengang_dd', $studiengaenge, '0', $class_dd); ?>
 		</div>
 	</div>
 
 	<div class="control-group">
-		<?php echo form_label('Matrikelnummer', 'matrikelnummer', $attributes); ?>
+		<?php echo form_label('Matrikelnummer', 'matrikelnummer', $data_labelattrs); ?>
 		<div class="controls docs-input-sizes">
 			<?php echo form_input($data_matrikelnummer) ?>
 		</div>
@@ -167,18 +153,14 @@
 <h3>Uebersicht aller Einladungsaufforderungen</h3>
 
 <?php
-
-$class_dd = 'id="user_function" class="span2"';
-$dropdown_data = array('Erstellen', 'Loeschen');
-
-
-
-$submit_data = array(
-		'id' 			=> 'save',
-		'name'			=> 'los',
-		'class'			=> 'btn btn-mini btn-danger'
-	);
-
+	$attrs_dropdown = 'id="user_function" class="span2"';
+	$data_dropdown = array('Erstellen', 'Loeschen');
+	$data_formopen2 = array('class' => 'form-horizontal', 'id' => 'accept_invitation');
+	$submit_data = array(
+			'id' 			=> 'save',
+			'name'			=> 'los',
+			'class'			=> 'btn btn-mini btn-danger'
+		);
 ?>
 
 
@@ -191,14 +173,11 @@ $submit_data = array(
 	<div class="span2">Test</div>
 </div>
 
-
-
-<?php $attrs2 = array('class' => 'form-horizontal', 'id' => 'accept_invitation'); ?>
-	<?php foreach ($user_invitations as $key => $value) { ?>
+	<?php foreach ($user_invitations as $key => $value) : ?>
 	<?php FB::log($value); ?>
 
 <div class="row">
-	<?php echo form_open('admin/create_user_from_invitation/', $attrs2); ?>
+	<?php echo form_open('admin/create_user_from_invitation/', $data_formopen2); ?>
 	<?php echo form_hidden('request_id', $value['AnfrageID']); ?>
 
 	<div class="span2">leer</div>
@@ -206,13 +185,11 @@ $submit_data = array(
 	<div class="span2"><?php echo $value['Vorname']; ?></div>
 	<div class="span2"><?php echo $value['Emailadresse']; ?></div>
 
-	<?php echo "<div class=\"span2\">".form_dropdown('user_function', $dropdown_data, '0', $class_dd)."</div>"; ?>
-
+	<?php echo "<div class=\"span2\">".form_dropdown('user_function', $data_dropdown, '0', $attrs_dropdown)."</div>"; ?>
 	<?php echo "<div class=\"span2\">".form_submit($submit_data, 'LOS!')."</div>"; ?>
-
 	<?php echo form_close(); ?>
 </div>
-<?php } ?>
+<?php endforeach ?>
 
 
 <script>
@@ -237,8 +214,8 @@ $submit_data = array(
 						modal: true,
 						buttons: {
 							"Ja, löschen": function() {
-								$("input[type=submit][clicked=true]").parents("form").submit();
 								$("#accept_invitation input#save").removeAttr("clicked");
+								$("input[type=submit][clicked=true]").parents("form").submit();
 								$( this ).dialog( "close" );
 							},
 							Abbrechen: function() {
