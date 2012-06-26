@@ -146,12 +146,26 @@ class Stundenplan_Model extends CI_Model {
 		//Add to the row array the specific date counting from Monday to Friday
 		$actual_date = $date_monday;
 
+		//Reset Variable for actual day(Needed to Markup the day in Array)
+		$actual_day = date('w');
+
+		$day_in_loop = 1;
+
 		foreach ($days as $key => $value) {
 
 			$days[$key]["Datum"] = $actual_date;
 			$time_since_monday = $time_since_monday - 86400;
 
 			$actual_date = date('d.m.Y', time() - $time_since_monday);
+
+			$days[$key]["IstHeute"] = 0;
+
+			if ($day_in_loop == $actual_day)
+			{
+				$days[$key]["IstHeute"] = 1;
+			}
+
+			$day_in_loop++;
 
 		}
 
