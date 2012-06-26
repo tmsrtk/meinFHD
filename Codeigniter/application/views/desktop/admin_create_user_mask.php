@@ -2,51 +2,52 @@
 
 
 <?php
-// needet vars
+	// needet vars
 
-$form_attrs = array('class' => 'well', 'id' => 'create_user');
-$data_roles = 'class="role"';
-$data_loginname = array(
-		'class' => 'span3',
-		'name' => 'loginname',
-		'placeholder' => 'Login Name',
-		'value' => set_value('loginname')
-	);
-$data_email = array(
-		'class' => 'span3',
-		'name' => 'email',
-		'placeholder' => 'E-Mail',
-		'value' => set_value('email')
-	);
-$data_forename = array(
+	$data_formopen = array('class' => 'well', 'id' => 'create_user');
+	$data_roles = 'class="role"';
+	$data_loginname = array(
 			'class' => 'span3',
-			'name' => 'forename',
-			'placeholder' => 'Vorname',
-			'value' => set_value('forename')
-	);
-$data_lastname = array(
-		'class' => 'span3',
-		'name' => 'lastname',
-		'placeholder' => 'Nachname',
-		'value' => set_value('lastname')
-	);
-$data_matrikelnummer = array(
-		'class' => 'span2',
-		'name' => 'matrikelnummer',
-		'placeholder' => 'Matrikelnummer',
-		'value' => set_value('matrikelnummer')
-	);
-$data_startjahr = array(
-		'class' => 'span2',
-		'name' => 'startjahr',
-		'placeholder' => 'Startjahr',
-		'value' => set_value('startjahr')
-	);
-$data_studiengang = 'class="studiengang_dd"';
-$submit_data = array(
-		'name'			=> 'submit',
-		'class'			=> 'btn btn-danger'
-	);
+			'name' => 'loginname',
+			'placeholder' => 'Login Name',
+			'value' => set_value('loginname')
+		);
+	$data_email = array(
+			'class' => 'span3',
+			'name' => 'email',
+			'placeholder' => 'E-Mail',
+			'value' => set_value('email')
+		);
+	$data_forename = array(
+				'class' => 'span3',
+				'name' => 'forename',
+				'placeholder' => 'Vorname',
+				'value' => set_value('forename')
+		);
+	$data_lastname = array(
+			'class' => 'span3',
+			'name' => 'lastname',
+			'placeholder' => 'Nachname',
+			'value' => set_value('lastname')
+		);
+	$data_matrikelnummer = array(
+			'class' => 'span2',
+			'name' => 'matrikelnummer',
+			'placeholder' => 'Matrikelnummer',
+			'value' => set_value('matrikelnummer')
+		);
+	$data_startjahr = array(
+			'class' => 'span2',
+			'name' => 'startjahr',
+			'placeholder' => 'Startjahr',
+			'value' => set_value('startjahr')
+		);
+	$data_studiengang = 'class="studiengang_dd"';
+	$submit_data = array(
+			'name'			=> 'submit',
+			'class'			=> 'btn btn-danger'
+		);
+	//--------------------------------------------------------------------------
 ?>
 
 
@@ -60,7 +61,7 @@ $submit_data = array(
 
 <?php
 	// main inputs for all users
-	echo form_open('admin/validate_create_user_form/', $form_attrs);
+	echo form_open('admin/validate_create_user_form/', $data_formopen);
 	echo form_dropdown('role', $global_data['userdata']['roles'], /*standard value*/'0', $data_roles);
 	echo form_input($data_loginname);
 	echo form_input($data_email);
@@ -94,21 +95,21 @@ $submit_data = array(
 
 (function() {
 
-	var Studentdata = {
+	var Studentsdata = {
 		init : function( config ) {
 			this.config = config;
 			this.bindEvents();
-			this.toggleStudentdata();
+			this.toggleStudentsdata();
 		},
 
 		bindEvents : function() {
 			var self = this;
-			this.config.roleDropdown.on( 'change load', function() {
-				self.toggleStudentdata($(this));
+			this.config.roleDropdown.on( 'change', function() {
+				self.toggleStudentsdata($(this));
 			} );
 		},
 
-		toggleStudentdata : function(selectbox) {
+		toggleStudentsdata : function(selectbox) {
 			var studentdata_container = this.config.studentdataField;
 			var dropdown_value = (selectbox) ? dropdown_value = selectbox.val() : '0';
 			(dropdown_value === '4') ? studentdata_container.fadeIn() : studentdata_container.fadeOut();
@@ -117,7 +118,7 @@ $submit_data = array(
 
 	};
 
-	Studentdata.init({
+	Studentsdata.init({
 		studentdataField : $('#studentdata'),
 		roleDropdown : $('select.role')
 	});
