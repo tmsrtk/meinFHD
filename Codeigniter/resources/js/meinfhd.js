@@ -14,6 +14,19 @@
 		});
 	});
 	
+	/*color toggle for attendance-buttons in stundenplan*/
+	$(function(){
+		
+		//disabling already attended courses and painting them green	
+		$('.attendant:disabled').addClass('btn-success').find('i').addClass('icon-white');
+		
+		//painting a button on click
+		$('.attendant').click(function(){
+			
+			$(this).addClass('btn-success').find('i').addClass('icon-white');
+		});
+		
+	});
 	
 	$(function(){
 		

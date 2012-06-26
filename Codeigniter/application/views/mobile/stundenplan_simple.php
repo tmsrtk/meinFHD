@@ -49,7 +49,7 @@
 																<td width="45%"><?php echo $course['Beginn']; ?> - <?php echo $course['Ende']; ?></td>
 																<td width="55%"><?php echo $course['kurs_kurz']; ?>&nbsp;<?php echo utf8_decode($course['VeranstaltungsformName']); ?></td>
 																<td>
-																	<a class="btn accordion-toggle pull-right" data-toggle="collapse" data-parent="#accordion<?php echo $dayname;?>" href="#target<?php echo $course['SPKursID']; ?>body">
+																	<a class="btn accordion-toggle pull-right" data-toggle="collapse" data-parent="#accordion<?php echo $dayname;?>" href="#target<?php echo $course['SPKursID']; ?>">
 																		<i class="icon-plus"></i>
 																	</a>
 																</td>
@@ -57,10 +57,10 @@
 														</tbody>
 													</table>
 												</div>
-												<div id="target<?php echo $course['SPKursID']; ?>body" class="accordion-body collapse">
+												<div id="target<?php echo $course['SPKursID']; ?>" class="accordion-body collapse">
 													<hr />
 													<div class="alert alert-info clearfix">
-													<button class="btn pull-left attendant">
+													<button class="btn pull-left attendant attendant<?php echo $course['SPKursID']; ?>">
 														<i class="icon-ok"></i>
 														anwesend
 													</button>
