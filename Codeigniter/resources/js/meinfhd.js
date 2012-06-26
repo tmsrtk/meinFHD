@@ -17,13 +17,7 @@
 	
 	$(function(){
 		
-		//define today
-		//var today = new Date;
-		//alert(today.getDay());
-		//setting the first element
-		//$('.carousel').find('.item:eq(0).addClass('active');
-		
-		
+		$('.carousel').carousel('pause');
 		
 		//pagination
 		$('.pagination').find('.slide-montag').click(function(){	
