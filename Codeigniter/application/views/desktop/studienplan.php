@@ -13,14 +13,14 @@
         float: left;
     }
     
-    #box_border_1{
+    .box_border_1{
         display: block; 
         border-top: 1px solid black;
         border-left: 1px solid black;
         border-right: 1px solid black;
     }
     
-    #box_border_2{
+    .box_border_2{
         display: block; 
         border-bottom: 1px solid black;
         border-left: 1px solid black;
@@ -35,11 +35,13 @@
     <?php foreach($studienplan as $semester): ?>
         <?php $count = 0;
         foreach($semester as $modul): ?>
-        <td class="coloumnstyle"> <?php echo 'Semester '.$count ;?>
+            <td class="coloumnstyle"> <?php echo 'Semester '.$count; ?>
                 <?php foreach($modul as $data): ?>
 
-                <div id="box_border_1"><?php echo $data['Kurzname']; ?></div>
-                <div id="box_border_2"><?php echo "Notenpunkte :".$data['Notenpunkte']; ?></div>
+                <?php if($data['Kurzname'] != null): ?>
+                    <div class="box_border_1"><?php echo $data['Kurzname']; ?></div>
+                    <div class="box_border_2"><?php echo "Notenpunkte :".$data['Notenpunkte']; ?></div>
+                <?php endif; ?>
 
                 <?php endforeach; ?>
             </td>
@@ -48,6 +50,16 @@
     <?php endforeach; ?>
                     
     </tr>
+    
+    <tr>
+        <?php foreach($swsCp as $scp): ?>
+            <td class="coloumnstyle">
+                <div class="box_border_1"><?php echo 'SWS-Summe: '.$scp['SWS_Summe']; ?></div>
+                <div class="box_border_2"><?php echo 'CP-Summe: '.$scp['CP_Summe']; ?></div>
+            </td>
+        <?php endforeach; ?>
+    </tr>
+    
 </table>
 
 <?php include('footer.php'); ?>
