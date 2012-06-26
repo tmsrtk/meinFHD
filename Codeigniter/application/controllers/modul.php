@@ -12,7 +12,6 @@
 /**
  * Modul-Controller 
  *
- * Only used for the mobile version.
  */
 class Modul extends FHD_Controller {
  
