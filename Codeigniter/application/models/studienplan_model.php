@@ -242,7 +242,7 @@ class Studienplan_Model extends CI_Model
         
         // sort the studyplan by semester
         ksort($data['plan']);
-        //var_dump($data['plan']);       
+        var_dump($data['plan']);       
         return $data;
     }
 
@@ -389,7 +389,7 @@ class Studienplan_Model extends CI_Model
      * @param int $module_id
      * @param int $semester 
      */
-    public function shiftModule($module_id, $semester)
+    public function shiftModuleMobile($module_id, $semester)
     {
         // update the Semester-coloumn 
         $dataarray = array(
@@ -442,81 +442,55 @@ class Studienplan_Model extends CI_Model
      */
     public function calculateMark($markpoints)
     {   
-        // search for a point in the string
-        $mark = strpos($markpoints, '.');
-        //var_dump($markpoints);
-        //var_dump($mark);
-        switch($mark)
-        {
-            // if $markpoints are points (no point)
-            case false:
-                if($markpoints >= 90 && $markpoints <= 100)
-                {
-                    return '1';
-                }
-                elseif($markpoints >= 75 && $markpoints <= 90) 
-                {
-                    return '2';
-                }
-                elseif($markpoints >= 60 && $markpoints <= 75)
-                {
-                    return '3';
-                }
-                elseif($markpoints >= 50 && $markpoints <= 60)
-                {
-                    return '4';
-                }
-                elseif($markpoints < 50)
-                {
-                    return '5';
-                }
-            break;
-               
-            // if $markpoints is mark (point)
-            /*case $mark > 0:
-                if($markpoints == 1.0)
-                {
-                    return '1';
-                }
-                elseif($markpoints > 1.0 && $markpoints <= 1.3) 
-                {
-                    return '1-';
-                }
-                elseif($markpoints > 1.3 && $markpoints <= 1.7)
-                {
-                    return '2+';
-                }
-                elseif($markpoints > 1.7 && $markpoints <= 2.0)
-                {
-                    return '2';
-                }
-                elseif($markpoints > 2.0 && $markpoints <= 2.3) 
-                {
-                    return '2-';
-                }
-                elseif($markpoints > 2.3 && $markpoints <= 2.7)
-                {
-                    return '3+';
-                }
-                elseif($markpoints > 2.7 && $markpoints <= 3.0)
-                {
-                    return '3';
-                }
-                elseif($markpoints > 3.0 && $markpoints <= 3.3) 
-                {
-                    return '3-';
-                }
-                elseif($markpoints > 3.3 && $markpoints <= 4.0)
-                {
-                    return '4';
-                }
-                elseif($markpoints > 4.0)
-                {
-                    return '5';
-                }
-            break;*/
-        }
+        $mark = intval($markpoints);
         
+        if(!is_int($mark))
+        {
+            echo 'Bitte gib eine Punktzahl zwischen 0 und 100 ein.';
+        }
+        else
+        {
+            if($mark == 100)
+            {
+                return '1';
+            }
+            elseif($mark < 100 && $mark <= 95) 
+            {
+                return '1-';
+            }
+            elseif($mark < 95 && $mark <= 90)
+            {
+                return '2+';
+            }
+            elseif($mark < 90 && $mark <= 81)
+            {
+                return '2';
+            }
+            elseif($mark < 81 && $mark <= 75) 
+            {
+                return '2-';
+            }
+            elseif($mark < 75 && $mark <= 70)
+            {
+                return '3+';
+            }
+            elseif($mark < 70 && $mark <= 65)
+            {
+                return '3';
+            }
+            elseif($mark < 65 && $mark <= 60) 
+            {
+                return '3-';
+            }
+            elseif($mark < 60 && $mark <= 50)
+            {
+                return '4';
+            }
+            elseif($mark < 50)
+            {
+                return '5';
+            }
+        }  
     }
     
     

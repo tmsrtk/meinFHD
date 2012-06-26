@@ -132,9 +132,12 @@ class Studienplan extends FHD_Controller
      */
     public function mobile_modulVerschieben()
     {
-        // ID's werden hier benötigt
+        // TODO: Felder verlinken
+        $module_id = $this->input->post();
+        $semester = $this->input->post();
+
         $this->load->model('Studienplan_Model');
-        $this->Studienplan_Model->$this->Studienplan_Model->shiftModule($module_id, $semester);
+        $this->Studienplan_Model->$this->Studienplan_Model->shiftModuleMobile($module_id, $semester);
     }
     
     
@@ -214,7 +217,8 @@ class Studienplan extends FHD_Controller
      */
     public function noteAkzeptieren()
     {
-        // Hier wird noch die Modul-ID benötigt
+        $module_id = $this->input->post();
+
         $this->load->model('Studienplan_Model');
         $this->Studienplan_Model->acceptMarks($module_id);
     }
@@ -252,7 +256,8 @@ class Studienplan extends FHD_Controller
      */
     public function versuchEinesModulsErhoehen()
     {
-        // Hier wird noch die Modul-ID benötigt
+        $module_id = $this->input->post();
+        
         $this->load->model('Studienplan_Model');
         $this->Studienplan_Model->increaseTry($module_id);
     }
@@ -320,7 +325,8 @@ class Studienplan extends FHD_Controller
      */
     public function noteBerechnen()
     {
-        // Note muss  übegeben werden
+        $mark = $this->input->post();
+        
         $this->load->model('Studienplan_Model');
         $this->Studienplan_Model->calculateMark($mark);
     }
