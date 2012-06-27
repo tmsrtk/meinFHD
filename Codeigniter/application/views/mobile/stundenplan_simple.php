@@ -126,11 +126,11 @@
 	<div class="row">		
 		<div class="span12">
 			<div class="alert alert-info clearfix">
-				<a href="<?php print base_url(); ?>dashboard" class="btn btn-large btn-primary pull-left">
+				<a href="<?php print base_url(); ?>" class="btn btn-large btn-primary pull-left">
 					<i class="icon-arrow-left icon-white"></i>
-					 Dashboard
+					zurück
 				</a>
-				<a href="<?php print base_url(); ?>woche" class="btn btn-large pull-right">Woche</a>
+				<a href="<?php print base_url('woche'); ?>" class="btn btn-large pull-right">Woche</a>
 			</div>
 		</div><!-- /.span12-->		
 	</div><!-- /.row-->
