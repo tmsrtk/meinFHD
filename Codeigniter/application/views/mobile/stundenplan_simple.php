@@ -60,7 +60,7 @@
 												</div>
 												<div id="target<?php echo $course['SPKursID']; ?>" class="accordion-body collapse">
 													<hr />
-													<div class="alert alert-info clearfix">
+													<div class="fhd-box clearfix">
 													<button class="btn pull-left attendant attendant<?php echo $course['SPKursID']; ?>">
 														<i class="icon-ok"></i>
 														anwesend
@@ -125,7 +125,7 @@
 	
 	<div class="row">		
 		<div class="span12">
-			<div class="alert alert-info clearfix">
+			<div class="fhd-box clearfix">
 				<a href="<?php print base_url(); ?>" class="btn btn-large btn-primary pull-left">
 					<i class="icon-arrow-left icon-white"></i>
 					zurück
