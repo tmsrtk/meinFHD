@@ -5,7 +5,7 @@
 		<div class="span8">
 			<!--title-->
 			<div class="well well-small well-first">
-	    		<h6>Wilkommen</h6>
+	    		<h6>Willkommen</h6>
 	    		<h1>meinFHDmobile</h1>
     		</div>			
 		</div>
