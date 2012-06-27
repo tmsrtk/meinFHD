@@ -15,6 +15,15 @@
 	<!--	<link rel="stylesheet/less" type="text/css" href="../resources/bootstrap/less/bootstrap.less">
 		<link rel="stylesheet/less" type="text/css" href="../resources/bootstrap/less/responsive.less"> -->
 		<link rel="stylesheet/less" type="text/css" href="<?php print base_url(); ?>resources/less/meinfhd.less">
+		
+		<!--NEEDS TO BE INLINE!	-->
+		<style type="text/css">
+			body {
+				padding-top: 80px;
+				padding-bottom: 40px;
+			}
+		</style>
+		
 		<link rel="stylesheet/less" type="text/css" href="<?php print base_url(); ?>resources/less/meinfhd-responsive.less">
 		
 		<!--LESS compiler-->
@@ -22,7 +31,7 @@
 	</head> <!-- /head -->
 	<body>
 		
-		<?php // if user eingeloggt ?>
+		<?php if ($this->authentication->is_logged_in()) : // if user eingeloggt ?>
 		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
 				<div class="container">
@@ -31,14 +40,14 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</a>
-					<a class="brand" href="#">meinFHD<span>mobile</span></a>
+					<a class="brand" href="<?php print base_url(); ?>">meinFHD<span>mobile</span></a>
 					<div class="nav-collapse">
 						<ul class="nav">
-							<li class="active"><a href="index.html">Dashboard</a></li>
-							<li><a href="#">Studienplanung</a></li>
-							<li><a href="#">Persönlich Daten</a></li>
-							<li><a href="#">Hilfe</a></li>
-							<li><a href="#">Impressum</a></li>
+							<li class="active"><a href="<?php print base_url('dashboard'); ?>">Dashboard</a></li>
+							<li><a href="<?php print base_url('stundenplan'); ?>">Stundenplan</a></li>
+							<li><a href="<?php print base_url('einstellungen'); ?>">Persönlich Daten</a></li>
+							<li><a href="<?php print base_url('hilfe'); ?>">Hilfe</a></li>
+							<li><a href="<?php print base_url('impressum'); ?>">Impressum</a></li>
 							<!--LOGOUT-->
 							<li><a href="#">Logout</a></li>
 						</ul>
@@ -46,12 +55,13 @@
 				</div>
 			</div>
 		</div>
-		<?php // else zeige pseudonav ?>
+		<?php else : // else zeige pseudonav ?>
 		<!--pseudonav-->
-		<!--<div class="navbar navbar-fixed-top">
+		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
+				<a class="brand" href="<?php print base_url(); ?>">meinFHD<span>mobile</span></a>
 			</div>
-		</div>-->
+		</div>
 		<!--pseudonav ends here-->
-		<?php # endif; ?>
+		<?php endif; ?>
 		<?php print $messages; ?>
