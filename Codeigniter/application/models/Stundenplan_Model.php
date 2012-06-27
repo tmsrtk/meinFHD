@@ -302,6 +302,7 @@ class Stundenplan_Model extends CI_Model {
 		}
 
 
+
 		return $timetable;
 	}
 

@@ -59,7 +59,7 @@ class Modul_Model extends CI_Model {
 
 
 	/**
-	 * Adds important, User-specific inforamtion to the courselist. A flag "Aktiv" is added
+	 * Adds important, User-specific inforamtion to the courselist. A flags "Aktiv" and "Button" are added
 	 * 1. In a "Praktikum" etc. must be added, if the User is part of the group("Aktiv" is 1 in that case)
 	 * 2. Other courses like "Vorlesung" dont need that, the flag is set in a loop automatically
 	 * 3. If there is no alternative to that course, the aktive flag is also set by default
@@ -69,18 +69,24 @@ class Modul_Model extends CI_Model {
 	 * @param type name // nicht vorhanden
 	 * @return type // nicht vorhanden
 	 */	
-	private function userinfo_to_courselist($courselist, $user_id)
+	private function courselist_add_userinfo($courselist, $user_id)
 	{
 
 		foreach ($courselist as $key => $course) {
-			//If it is a Vorlesung, Tutorium or there is no alternative 
+
+			//If Vorlesung, Tutorium or there is no alternative 
 			if ($course['VeranstaltungsformID'] == 1 OR $course['VeranstaltungsformID'] == 6 OR $course['VeranstaltungsformAlternative'] == "")
 			{
 				$courselist[$key]['Aktiv'] = 1;
 				$courselist[$key]['Button'] = 0;
 			} 
+			//Otherwise, it must be checked, if already set active by user
 			else 
 			{
+
+				//The course has a button to enroll
+				$courselist[$key]['Button'] = 1;
+
 				$query_benutzer = $this->db->query("
 					SELECT 
 						* 
@@ -94,39 +100,38 @@ class Modul_Model extends CI_Model {
 
 				$result_benutzer = $query_benutzer->result_array();
 
-				$this->krumo->dump($result_benutzer);
-
-				if ($result_benutzer[0]['aktiv'] == 0) {
+				if ($result_benutzer[0]['aktiv'] == 0) 
 					$courselist[$key]['Aktiv'] = 0;
-					$courselist[$key]['Button'] = 1;
-				} else {
+				else 
 					$courselist[$key]['Aktiv'] = 1;
-					$courselist[$key]['Button'] = 1;
-				}
+				
 			}
-		}
+
+		}//End ForEach
 
 		return $courselist;
 	}
 
 
 	/**
-	 * 
+	 * The collected Information in the courselist is added to the Array "courseinfo".
+	 * In this way, the needed Information is easier to access in the view.
+	 * (Optimized for the mobile View! Maybe)
+	 *
 	 *
 	 * @param type name // nicht vorhanden
 	 * @return type // nicht vorhanden
 	 */	
 	private function courselist_in_courseinfo()
 	{
-
 	}
 
 	/**
-	 * Collects the basic Info to all courses of the "Modul" in a query, depending on the ID of the "Modul"
+	 * Collects the basic Info to all courses belonging to the "Modul" in a query, depending on the ID of the "Modul"
 	 *
 	 *
 	 * @param type name // ID of the "Modul", $course_id
-	 * @return result_array // Array of all courses to Modul
+	 * @return result_array // Array of all courses belonging to Modul
 	 */	
 	public function get_courselist($course_id)
 	{
@@ -161,8 +166,6 @@ class Modul_Model extends CI_Model {
 			sp.GruppeID = g.GruppeID AND
 			d.BenutzerID = sp.DozentID
 		");
-
-
 		
 		$result = $query->result_array();
 
@@ -172,11 +175,9 @@ class Modul_Model extends CI_Model {
 	public function get_courseinfo($user_id, $course_id)
 	{	
 
-		$courseinfo_array = $this->create_courseinfo_array();
-
 		$courselist = $this->get_courselist($course_id);
 
-		$courselist = $this->userinfo_to_courselist($courselist, $user_id);
+		$courselist = $this->courselist_add_userinfo($courselist, $user_id);
 
 		$this->krumo->dump($courselist);
 

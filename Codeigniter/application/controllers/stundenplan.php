@@ -14,7 +14,6 @@
  */
 class Stundenplan extends FHD_Controller {
     /*
- 
      * 
      * @var Array
      */
@@ -47,9 +46,6 @@ class Stundenplan extends FHD_Controller {
 	{
 		$this->krumo->dump($this->data->load());
 		$stundenplan = $this->Stundenplan_Model->get_stundenplan($this->authentication->user_id());
-
-		//testen von anmelden
-		//$this->Stundenplan_Model->enroll_in_course(1384, 2490);
 
 		$this->data->add('stundenplan', $stundenplan[0]); 
 		$this->data->add('tage', $stundenplan[1]);

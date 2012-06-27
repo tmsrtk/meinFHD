@@ -50,8 +50,6 @@ class Modul extends FHD_Controller {
 		$courseinfo = $this->Modul_Model->get_courseinfo($user_id, $course_id);
 
 
-		$this->krumo->dump($courseinfo); 
-
 		$this->load->view('modul', $this->data->load());
 	}
 
