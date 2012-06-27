@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
 
     <!-- Dynamic title -->
-	<title><?php echo $title ?></title>
+	<title><?php echo $siteinfo['title'] ?></title>
 
     <!-- Styles -->
     <!--	<link rel="stylesheet/less" type="text/css" href="../resources/bootstrap/less/bootstrap.less">
@@ -27,4 +27,4 @@
 
 <body>
 	<!-- Menu -->
-	<?php // $this->load->view('includes/menu'); ?>
+	<?php $this->load->view('includes/menu'); ?>
