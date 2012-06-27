@@ -151,11 +151,10 @@
 
 
 <h3>Uebersicht aller Einladungsaufforderungen</h3>
-
 <?php
-	$attrs_dropdown = 'id="user_function" class="span2"';
-	$data_dropdown = array('Erstellen', 'Loeschen');
 	$data_formopen2 = array('class' => 'form-horizontal', 'id' => 'accept_invitation');
+	$data_dropdown = array('Erstellen', 'Loeschen');
+	$attrs_dropdown = 'id="user_function" class="span2"';
 	$submit_data = array(
 			'id' 			=> 'save',
 			'name'			=> 'los',
@@ -224,7 +223,6 @@
 							}
 						}
 					});
-
 
 	$("#accept_invitation input#save").click(function() {
 
