@@ -4,9 +4,6 @@
 	<div class="container container-fluid app-login">
 		<div class="row-fluid">
 			<div class="span4">
-				
-			</div>
-			<div class="span4">
 				<div class="well well-small clearfix">
 					<h1 class="maintitle">Login</h1>
 					<hr />
