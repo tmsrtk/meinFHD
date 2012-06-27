@@ -21,7 +21,7 @@
 		<script src="<?php print base_url(); ?>resources/lessjs/less-1.3.0.min.js" type="text/javascript"></script>
 	</head> <!-- /head -->
 	<body>
-		<?php print $messages; ?>
+		
 		<?php // if user eingeloggt ?>
 		<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
@@ -48,9 +48,10 @@
 		</div>
 		<?php // else zeige pseudonav ?>
 		<!--pseudonav-->
-		<!-- <div class="navbar navbar-fixed-top">
+		<!--<div class="navbar navbar-fixed-top">
 			<div class="navbar-inner">
 			</div>
-		</div> -->
+		</div>-->
 		<!--pseudonav ends here-->
 		<?php # endif; ?>
+		<?php print $messages; ?>
