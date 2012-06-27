@@ -3,7 +3,6 @@
 
 <?php
 	// needet vars
-
 	$data_formopen = array('class' => 'well', 'id' => 'create_user');
 	$data_roles = 'class="role"';
 	$data_loginname = array(
@@ -62,7 +61,7 @@
 <?php
 	// main inputs for all users
 	echo form_open('admin/validate_create_user_form/', $data_formopen);
-	echo form_dropdown('role', $global_data['userdata']['roles'], /*standard value*/'0', $data_roles);
+	echo form_dropdown('role', $userdata['roles'], /*standard value*/'0', $data_roles);
 	echo form_input($data_loginname);
 	echo form_input($data_email);
 	echo form_input($data_forename);
@@ -85,6 +84,7 @@
 	echo form_submit($submit_data, 'Neuen Benutzer anlegen');
 	echo form_close();
 ?>
+
 
 
 
@@ -115,10 +115,16 @@
 				? dropdown_value = selectbox.val() 
 				: '0';
 			(dropdown_value === '4') ? studentdata_container.fadeIn() : studentdata_container.fadeOut();
-			console.log("Funzt");
 		}
 
 	};
+
+	// in case of more than one object
+	// var sd1 = Object.create( Studentsdata );
+	// sd1.init({
+	// 	studentdataField : $('#studentdata'),
+	// 	roleDropdown : $('select.role')
+	// });
 
 	Studentsdata.init({
 		studentdataField : $('#studentdata'),

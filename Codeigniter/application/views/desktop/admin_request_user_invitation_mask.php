@@ -173,7 +173,7 @@
 </div>
 
 	<?php foreach ($user_invitations as $key => $value) : ?>
-	<?php FB::log($value); ?>
+	<?php // FB::log($value); ?>
 
 <div class="row">
 	<?php echo form_open('admin/create_user_from_invitation/', $data_formopen2); ?>

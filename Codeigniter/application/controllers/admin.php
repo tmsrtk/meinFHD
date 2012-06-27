@@ -25,20 +25,22 @@ class Admin extends FHD_Controller {
 
 		//// data
 		// userdata
-		$session_userid = 1441;
 
-		$loginname = $this->admin_model->get_loginname($session_userid); 				///////////////////////////////
-		$user_permissions = $this->admin_model->get_all_userpermissions($session_userid);
-		$roles = $this->admin_model->get_all_roles();
-		
-		$userdata = array(
-				'userid' => $session_userid,
-				'loginname' => $loginname['LoginName'],
-				'userpermissions' => $user_permissions,
-				'roles' => $roles
-			);
+		// userdata
+        $session_userid = $this->authentication->user_id();
 
-		$this->data->add('userdata', $userdata);
+        $loginname = $this->admin_model->get_loginname($session_userid);                ///////////////////////////////
+        $user_permissions = $this->admin_model->get_all_userpermissions($session_userid);
+        $roles = $this->admin_model->get_all_roles();
+        
+        $userdata = array(
+                'userid' => $session_userid,
+                'loginname' => $loginname['LoginName'],
+                'userpermissions' => $user_permissions,
+                'roles' => $roles
+            );
+
+        $this->data->add('userdata', $userdata);
 
 
 	}
@@ -102,23 +104,31 @@ class Admin extends FHD_Controller {
 				}
 			}
 		}
+		$this->data->add('tableviewData', $data['tableviewData']);
+
 		
 		// Speichern weiterer Daten die in der View benötigt werden in das Data-Array 
-		$data['roleCounter'] = $this->admin_model->countRoles(); // Zur Anwendung des Modulo
-		$data['roles'] = $this->roles; // Permission-Objekte (ID und Bezeichnung)
-		$data['permissions'] = $this->permissions; // Permission-Objekte (ID und Bezeichnung)  
+		// $data['roleCounter'] = $this->admin_model->countRoles(); // Zur Anwendung des Modulo
+		$this->data->add('roleCounter', $this->admin_model->countRoles());
+		// $data['roles'] = $this->roles; // Permission-Objekte (ID und Bezeichnung)
+		$this->data->add('roles', $this->roles);
+		// $data['permissions'] = $this->permissions; // Permission-Objekte (ID und Bezeichnung)  
+		$this->data->add('permissions', $this->permissions);
 		
 // 		echo '<pre>';
 // 		print_r($data);
 // 		echo '</pre>';
 		
 		// VIEW
-		$data['global_data'] = $this->data->load();
-		$data['title'] = 'Rollenverwaltung';
-		$data['main_content'] = 'admin_rollenverwaltung';
+		// $data['global_data'] = $this->data->load();
+
+		$siteinfo = array(
+			'title'			=> 'Rollenverwaltung',
+			'main_content'	=>	'admin_rollenverwaltung'
+			);
+		$this->data->add('siteinfo', $siteinfo);
 		
-		$this->load->view('includes/template', $data);
-		
+		$this->load->view('includes/template', $this->data->load());
 	}
 	
 	
@@ -167,17 +177,18 @@ class Admin extends FHD_Controller {
 	*/
 	public function create_user_mask()
 	{
-		$data['title'] = 'Benutzer erstellen';
-		$data['main_content'] = 'admin_create_user_mask';
-
-		$data['global_data'] = $this->data->load();
-		//----------------------------------------------------------------------
+		// siteinfo
+		$siteinfo = array(
+			'title'			=> 'Benutzer erstellen',
+			'main_content'	=> 'admin_create_user_mask'
+			);
+		$this->data->add('siteinfo', $siteinfo);
 
 		// all studiengänge
-		$data['studiengaenge'] = $this->admin_model->get_all_studiengaenge();
+		$this->data->add('studiengaenge', $this->admin_model->get_all_studiengaenge());
 
 		//----------------------------------------------------------------------
-		$this->load->view('includes/template', $data);
+		$this->load->view('includes/template', $this->data->load());
 	}
 
 	/*
@@ -185,18 +196,18 @@ class Admin extends FHD_Controller {
 	*/
 	public function edit_user_mask()
 	{
-		$data['title'] = 'Benutzer anzeigen';
-		$data['main_content'] = 'admin_edit_user_mask';
-
-		$data['global_data'] = $this->data->load();
-		//----------------------------------------------------------------------
+		// siteinfo
+		$siteinfo = array(
+			'title'			=> 'Benutzer anzeigen',
+			'main_content'	=> 'admin_edit_user_mask'
+			);
+		$this->data->add('siteinfo', $siteinfo);
 
 		// all users
 		$data['user'] = $this->admin_model->get_all_user();
-		
 
 		//----------------------------------------------------------------------
-		$this->load->view('includes/template', $data);
+		$this->load->view('includes/template', $this->data->load());
 	}
 
 	/*
@@ -204,14 +215,18 @@ class Admin extends FHD_Controller {
 	*/
 	public function delete_user_mask()
 	{
-		$data['title'] = 'Benutzer loeschen';
-		$data['main_content'] =  'admin_delete_user_mask';
+		// siteinfo
+		$siteinfo = array(
+			'title'			=> 'Benutzer loeschen',
+			'main_content'	=> 'admin_delete_user_mask'
+			);
+		$this->data->add('siteinfo', $siteinfo);
 
-		$data['global_data'] = $this->data->load();
+		// all users	
+		$this->data->add('user', $this->admin_model->get_all_user());
+
 		//----------------------------------------------------------------------
-		$data['user'] = $this->admin_model->get_all_user();
-		//----------------------------------------------------------------------
-		$this->load->view('includes/template', $data);
+		$this->load->view('includes/template', $this->data->load());
 	}
 
 	/*
@@ -219,14 +234,15 @@ class Admin extends FHD_Controller {
 	*/
 	public function show_permissions()
 	{
-		$data['title'] = 'Benutzerrechte anzeigen';
-		$data['main_content'] =  'admin_show_permissions';
+		// siteinfo
+		$siteinfo = array(
+			'title'			=> 'Benutzerrechte anzeigen',
+			'main_content'	=> 'admin_show_permissions'
+			);
+		$this->data->add('siteinfo', $siteinfo);
 
-		$data['global_data'] = $this->data->load();
 		//----------------------------------------------------------------------
-		// everything that is needed is in the global_data var
-		//----------------------------------------------------------------------
-		$this->load->view('includes/template', $data);
+		$this->load->view('includes/template', $this->data->load());
 	}
 
 	/*
@@ -234,31 +250,32 @@ class Admin extends FHD_Controller {
 	*/
 	public function request_user_invitation_mask()
 	{
-		$data['title'] = 'Einladungsaufforderungen anzeigen';
-		$data['main_content'] =  'admin_request_user_invitation_mask';
-
-		$data['global_data'] = $this->data->load();
-		//----------------------------------------------------------------------
-
+		// siteinfo
+		$siteinfo = array(
+			'title'			=> 'Einladungsaufforderungen anzeigen',
+			'main_content'	=> 'admin_request_user_invitation_mask'
+			);
+		$this->data->add('siteinfo', $siteinfo);
 		// all studiengänge
-		$data['studiengaenge'] = $this->admin_model->get_all_studiengaenge();
-
+		$this->data->add('studiengaenge', $this->admin_model->get_all_studiengaenge());
 		// user invitations
-		$data['user_invitations'] = $this->admin_model->request_all_invitations();
+		$this->data->add('user_invitations', $this->admin_model->request_all_invitations());
 
 		//----------------------------------------------------------------------
-		$this->load->view('includes/template', $data);
+		$this->load->view('includes/template', $this->data->load());
 	}
 
 	public function show_successful_page()
 	{
-		// load new view with success message
-		$data['title'] = 'Erfolgreich';
-		$data['main_content'] = 'admin_create_user_success';
+		// siteinfo
+		$siteinfo = array(
+			'title'			=> 'Erfolgreich',
+			'main_content'	=> 'admin_create_user_success'
+			);
+		$this->data->add('siteinfo', $siteinfo);
+
 		//----------------------------------------------------------------------
-		$data['global_data'] = $this->data->load();
-		//----------------------------------------------------------------------
-		$this->load->view('includes/template', $data);
+		$this->load->view('includes/template', $this->data->load());
 	}
 
 
