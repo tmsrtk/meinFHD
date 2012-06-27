@@ -11,6 +11,7 @@
 
 /**
  * Modul-Controller 
+ *
  */
 class Modul extends FHD_Controller {
  
@@ -40,6 +41,7 @@ class Modul extends FHD_Controller {
 	{
 
 		//$this->load->view('modul');
+
 	}
 
 	public function show($course_id)
@@ -47,8 +49,6 @@ class Modul extends FHD_Controller {
 		$user_id = $this->authentication->user_id();
 		$courseinfo = $this->Modul_Model->get_courseinfo($user_id, $course_id);
 
-
-		$this->krumo->dump($courseinfo); 
 
 		$this->load->view('modul', $this->data->load());
 	}

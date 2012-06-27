@@ -107,7 +107,6 @@ class Stundenplan_Model extends CI_Model {
 		return $times;
 	}
 
-	//
 	/**
 	 * Constructs and returns an empty array which will contain the days and their date
 	 *
@@ -230,7 +229,7 @@ class Stundenplan_Model extends CI_Model {
 			b.Aktiv,
 			b.KursID,b.SPKursID,
 			g.TeilnehmerMax, g.Anmeldung_zulassen,
-			(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.BenutzerID = ".$id." AND gt.GruppeID = sp.GruppeID) AS 'Anzahl Teilnehmer'
+			(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.GruppeID = sp.GruppeID) AS 'Anzahl Teilnehmer'
 		FROM 
 			benutzerkurs b,
 			studiengangkurs sg,
@@ -303,6 +302,7 @@ class Stundenplan_Model extends CI_Model {
 		}
 
 
+
 		return $timetable;
 	}
 
@@ -341,7 +341,7 @@ class Stundenplan_Model extends CI_Model {
 		//[0] : The actual timetable
 		array_push($return, $stundenplan);
 
-		//[1] : The days, indexed by Numbers (Not requiered actually)
+		//[1] : The days, indexed by Numbers, their actual date
 		$days = $this->create_days_array();
 		array_push($return, $days);
 
