@@ -8,6 +8,7 @@
 			
 				<?php //--------------------Loop for one day-------------------- ?>
 				<?php $day_number = 0 //Incermented after a day ?>
+				<?php $no_courses = 1 //Flag, set 0 if theres at least one course today?>				
 				<?php foreach ($stundenplan as $dayname => $day) : ?>
 					<div class="item <?php if ($tage[$day_number]['IstHeute']) echo "active"; ?>">
 					<!--Tag-->		
@@ -39,7 +40,7 @@
 				
 										<?php //--------------------Only if course is active-------------------- ?>
 										<?php if ($course['Aktiv'] == 1) { ?>
-				
+										<?php $no_courses = 0; //courses!  ?>				
 											<!--accordion-group-->	
 											<div class="well-small">
 												<div class="accordion-heading">
@@ -74,7 +75,8 @@
 				
 				
 										<?php //--------------------End If course is active-------------------- ?>	
-										<?php }  ?>
+										<?php } ?>
+																											
 				
 									<?php //--------------------End Loop for one hour (if many courses)-------------------- ?>	
 									<?php endforeach; ?>	
@@ -83,7 +85,10 @@
 								<?php }   ?>
 			
 							<?php //--------------------End Loop for one course --------------------?>			
-							<?php endforeach; ?>							
+							<?php endforeach; ?>
+							<?php if($no_courses == 1) echo "Heute von zu Hause lernen!"; ?>	
+							<?php $no_courses = 1 //Flag reset ?>		
+												
 							</div><!--/#accordion-->			
 						</div><!-- /.span8,Tagesinhalte -->
 								
