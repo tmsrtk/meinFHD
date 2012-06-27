@@ -242,7 +242,7 @@ class Studienplan_Model extends CI_Model
         
         // sort the studyplan by semester
         ksort($data['plan']);
-        var_dump($data['plan']);       
+        //var_dump($data['plan']);       
         return $data;
     }
 
@@ -613,6 +613,7 @@ class Studienplan_Model extends CI_Model
     
     
     
+    
     /**
      * Save the mark of the module
      * 
@@ -898,7 +899,7 @@ class Studienplan_Model extends CI_Model
     
     
     /**
-     * Saves all made changes
+     * Desktop: Saves all made changes
      * 
      * @param Array $dataarray  Array with changed Module-ID's
      */
@@ -974,7 +975,7 @@ class Studienplan_Model extends CI_Model
     {
         $data = array();
         
-        $this->db->select('stundenplankurs.VeranstaltungsformAlternative,
+        $this->db->select('stundenplankurs.KursID,
                             stundenplankurs.Raum,
                             stundenplankurs.StartID,
                             stundenplankurs.EndeID,
@@ -982,23 +983,25 @@ class Studienplan_Model extends CI_Model
                             studiengangkurs.kurs_kurz,
                             veranstaltungsform.VeranstaltungsformName,
                             tag.TagName,
-                            benutzer.Nachname,
-                            gruppenteilnehmer.GruppeID');
+                            benutzer.Nachname');
         $this->db->from('stundenplankurs');
-        $this->db->join('studiengangkurs', 'stundenplankurs.KursID = studiengangkurs.KursID');
-        $this->db->join('veranstaltungsform', 'stundenplankurs.VeranstaltungsformID = veranstaltungsform.VeranstaltungsformID');
-        $this->db->join('tag', 'stundenplankurs.TagID = tag.TagID');
-        $this->db->join('benutzer', 'stundenplankurs.DozentID = benutzer.BenutzerID');
-        $this->db->join('gruppenteilnehmer', 'benutzer.BenutzerID = gruppenteilnehmer.BenutzerID');
-        $this->db->where('benutzer.BenutzerID', $this->userID);
-        $this->db->where('benutzer.Semester', $this->currentSemester);
+        $this->db->join('studiengangkurs', 'studiengangkurs.KursID = stundenplankurs.KursID');
+        $this->db->join('veranstaltungsform', 'veranstaltungsform.VeranstaltungsformID = stundenplankurs.VeranstaltungsformID');
+        $this->db->join('tag', 'tag.TagID = stundenplankurs.TagID');
+        $this->db->join('benutzer', 'benutzer.BenutzerID = stundenplankurs.DozentID');
+        //$this->db->join('benutzerkurs', 'benutzerkurs.KursID = stundenplankurs.KursID');
+        $this->db->join('gruppenteilnehmer', 'gruppenteilnehmer.GruppeID = stundenplankurs.GruppeID');
+        $this->db->where('gruppenteilnehmer.BenutzerID', $this->userID);
+        //$this->db->where('benutzerkurs.aktiv', 1);
+        $this->db->where('stundenplankurs.VeranstaltungsformAlternative != ""');
+        $this->db->order_by('stundenplankurs.KursID', 'ASC');
         $groups = $this->db->get();
-
-
+        
+        
         foreach($groups->result() as $group)
         {
             $data['groups'][] = array(
-                'VeranstaltungsformAlternative' => $group->VeranstaltungsformAlternative,
+                'KursID'                        => $group->KursID,
                 'Raum'                          => $group->Raum,
                 'StartID'                       => $group->StartID,
                 'EndeId'                        => $group->EndeID,
@@ -1006,13 +1009,14 @@ class Studienplan_Model extends CI_Model
                 'kurs_kurz'                     => $group->kurs_kurz,
                 'VeranstaltungsformName'        => $group->VeranstaltungsformName,
                 'TagName'                       => $group->TagName,
-                'Nachname'                      => $group->Nachname,
-                'GruppeID'                      => $group->GruppeID
+                'Nachname'                      => $group->Nachname
             );
         }
-        var_dump($data);
+        
         return $data;
     }
+    
+    
     
     
     /**
@@ -1044,12 +1048,29 @@ class Studienplan_Model extends CI_Model
     
     
     
+    
+    public function savePruefenTeilnehmen($module_id, $pruefen, $teilnehmen)
+    {
+        $dataarray = array(
+            'KursSchreiben' => $pruefen,
+            'KursHoeren'    => $teilnehmen
+        );
+
+        $this->db->where('SemesterplanID', $this->studyplanID);
+        $this->db->where('KursID', $module_id);
+        $this->db->update('semesterkurs', $dataarray);
+    }
+    
+    
+    
+    
     /**
      * Writes the choosable entries for the selectBox
      * 
      * @return Array 
+     * @deprecated  Because the context will be static
      */
-    public function getContextForSemesterSelectBox()
+    /*public function getContextForSemesterSelectBox()
     {
         $data = array();
         $selectContext = array();
@@ -1080,7 +1101,7 @@ class Studienplan_Model extends CI_Model
         
         //var_dump($selectContext);
         return $data;
-    }
+    }*/
 
 
     

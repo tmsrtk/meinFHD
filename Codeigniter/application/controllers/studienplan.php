@@ -23,7 +23,7 @@ class Studienplan extends FHD_Controller
         // userdata
         $session_userid = $this->authentication->user_id();
 
-        $loginname = $this->admin_model->get_loginname($session_userid);                ///////////////////////////////
+        $loginname = $this->admin_model->get_loginname($session_userid);
         $user_permissions = $this->admin_model->get_all_userpermissions($session_userid);
         $roles = $this->admin_model->get_all_roles();
         
@@ -38,6 +38,7 @@ class Studienplan extends FHD_Controller
     }
 
 
+    
 
     /**
      * Index-Method, which loads the Studienplan
@@ -47,7 +48,13 @@ class Studienplan extends FHD_Controller
         // load model
         $this->load->model('Studienplan_Model');
         $plan = $this->Studienplan_Model->queryStudyplan();
+        
+        // Calculate needed options
         $this->swsUndCpBerechnen();
+        $this->durchschnittsnoteBerechnen();
+        $this->modulinfo();
+        $this->prozentsatzBerechnen();
+        $this->pruefenTeilnehmenHolen();
         
         $data['main_content'] = 'semesterplan_show';
         
@@ -61,6 +68,7 @@ class Studienplan extends FHD_Controller
     }
 
 
+    
 
      /**
      * Show Studienplan, Testmethod!!!
@@ -86,6 +94,7 @@ class Studienplan extends FHD_Controller
     
     
     
+    
     /**
      * Mobile Index-Method, which loads the Studienplan
      */
@@ -103,6 +112,7 @@ class Studienplan extends FHD_Controller
     
     
     
+    
     /**
      * Create a studyplan
      */
@@ -116,6 +126,7 @@ class Studienplan extends FHD_Controller
     
     
     
+    
     /**
      * Add a new coloumn to semesterplan
      */
@@ -124,6 +135,7 @@ class Studienplan extends FHD_Controller
         $this->load->model('Studienplan_Model');
         $this->Studienplan_Model->$this->Studienplan_Model->createNewSemesterColoumn();
     }
+    
     
     
     
@@ -143,6 +155,9 @@ class Studienplan extends FHD_Controller
     
     
     
+    /**
+     * Desktop: Change position of module 
+     */
     public function modulVerschieben()
     {
         // frage übergebene Daten ab (veränderte Reihenfolge der Module)
@@ -156,17 +171,19 @@ class Studienplan extends FHD_Controller
     
     
     
+    
     /**
      * Calculate the average mark 
      */
     public function durchschnittsnoteBerechnen()
     {
         $this->load->model('Studienplan_Model');
-        $average = $this->Studienplan_Model->$this->Studienplan_Model->calculateAverageMark();
+        $average = $this->Studienplan_Model->calculateAverageMark();
         
         $this->data->add('averageMark', $average);
         $this->load->view('studienplan', $this->data->load());
     }
+    
     
     
     
@@ -184,17 +201,19 @@ class Studienplan extends FHD_Controller
     
     
     
+    
     /**
      * Calculate the percentage of current study-status 
      */
     public function prozentsatzBerechnen()
     {
         $this->load->model('Studienplan_Model');
-        $percent = $this->Studienplan_Model->$this->Studienplan_Model->calculatePercentageOfStudy();
+        $percent = $this->Studienplan_Model->calculatePercentageOfStudy();
         
         $this->data->add('percentage', $percent);
         $this->load->view('studienplan', $this->data->load());
     }
+    
     
     
     
@@ -204,11 +223,12 @@ class Studienplan extends FHD_Controller
     public function mobile_prozentsatzBerechnen()
     {
         $this->load->model('Studienplan_Model');
-        $percent = $this->Studienplan_Model->$this->Studienplan_Model->calculatePercentageOfStudy();
+        $percent = $this->Studienplan_Model->calculatePercentageOfStudy();
         
         $this->data->add('percentage', $percent);
         $this->load->view('studienplan', $this->data->load());
     }
+    
     
     
     
@@ -225,6 +245,7 @@ class Studienplan extends FHD_Controller
     
     
     
+    
     /**
      * Reset the whole studyplan 
      */
@@ -235,6 +256,7 @@ class Studienplan extends FHD_Controller
         
         $this->message->set(sprintf('Der Studienplan wurde erfolgreich zurükgesetzt.'));
     }
+    
     
     
     
@@ -251,6 +273,7 @@ class Studienplan extends FHD_Controller
     
     
     
+    
     /**
      * Raise the try of a module
      */
@@ -264,6 +287,7 @@ class Studienplan extends FHD_Controller
 
     
     
+    
     /**
      * Get information about all modules 
      */
@@ -275,6 +299,7 @@ class Studienplan extends FHD_Controller
         $this->data->add('moduleinfo', $info);
         $this->load->view('studienplan', $this->data->load());
     }
+    
     
     
     
@@ -292,6 +317,7 @@ class Studienplan extends FHD_Controller
     
     
     
+    
     /**
      * Show all participated groups
      */
@@ -299,9 +325,8 @@ class Studienplan extends FHD_Controller
     {
         $this->load->model('Studienplan_Model');
         $groups = $this->Studienplan_Model->groups();
-        var_dump($groups);
-        //$this->data->add('groups', $groups);
-        //$this->load->view('studienplan', $this->data->load());
+        
+        $this->data->add('groups', $groups);
     }
     
     
@@ -320,31 +345,81 @@ class Studienplan extends FHD_Controller
     
     
     
+    
     /**
-     * Calculate a mark 
+     * Get an array with information about the status of Prüfen & Teilnehmen of 
+     * each module
      */
-    public function noteBerechnen()
+    public function pruefenTeilnehmenHolen()
     {
-        $mark = $this->input->post();
-        
         $this->load->model('Studienplan_Model');
-        $this->Studienplan_Model->calculateMark($mark);
+        $pruefenTeilnehmen = $this->Studienplan_Model->getPruefenTeilnehmen();
+        
+        $this->data->add('pruefenTeilnehmen', $pruefenTeilnehmen);
     }
     
     
     
     
     /**
-     * Get the Context text 
+     * Save the status of a module 
      */
-    public function kontextFuerSelectboxHolen()
+    public function pruefenTeilnehmenSpeichern()
+    {
+        $module_id = $this->input->post();
+        $pruefen = $this->input->post();
+        $teilnehmen = $this->input->post();
+        
+        $this->load->model('Studienplan_Model');
+        $this->Studienplan_Model->savePruefenTeilnehmen($module_id, $pruefen, $teilnehmen);
+    }
+    
+    
+    
+    
+    /**
+     * Save a mark in the DB
+     */
+    public function noteSpeichern()
+    {
+        $moduleID = $this->input->post();
+        $mark = $this->input->post();
+        
+        $this->load->model('Studienplan_Model');
+        $this->Studienplan_Model->saveMark($moduleID, $mark);
+    }
+    
+    
+    
+    
+    /**
+     * Save a changed semester in the DB
+     */
+    public function semesterSpeichern()
+    {
+        $module_id = $this->input->post();
+        $semester = $this->input->post();
+        
+        $this->load->model('Studienplan_Model');
+        $this->Studienplan_Model->shiftModuleMobile($module_id, $semester);
+    }
+    
+    
+    
+    
+    /**
+     * Get the Context text
+     * 
+     * @deprecated because this context will be static
+     */
+    /*public function kontextFuerSelectboxHolen()
     {
         $this->load->model('Studienplan_Model');
         $context = $this->Studienplan_Model->getContextForSemesterSelectBox;
         
         $this->data->add('context', $context);
         $this->load->view('studienplan', $this->data->load());
-    }
+    }*/
 }
 
 /* End of file studienplan.php */
