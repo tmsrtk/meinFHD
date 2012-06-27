@@ -49,7 +49,7 @@
 							<li><a href="<?php print base_url('hilfe'); ?>">Hilfe</a></li>
 							<li><a href="<?php print base_url('impressum'); ?>">Impressum</a></li>
 							<!--LOGOUT-->
-							<li><a href="#">Logout</a></li>
+							<li><a href="<?php print base_url('logout'); ?>">Logout</a></li>
 						</ul>
 					</div><!--/.nav-collapse -->
 				</div>
