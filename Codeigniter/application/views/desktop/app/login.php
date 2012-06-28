@@ -84,7 +84,7 @@
 											<!--Modal trigger Zugang-->
 											<li><a  class="" data-toggle="modal" href="#accountdata"><i class="icon-user"></i> Zugang anfordern</a></li>
 											<!--Modal trigger pw-->
-											<li><a class="" data-toggle="modal" href="#accountdata"><i class="icon-envelope"></i> Passwort vergessen</a></li>
+											<li><a class="" data-toggle="modal" href="#request-password"><i class="icon-envelope"></i> Passwort vergessen</a></li>
 										</ul>
 									</div>
 								</div>
@@ -96,4 +96,22 @@
 				</div>
 <?php endblock(); ?>
 
+<?php startblock('postCodeFooter'); # use for hidden markup like modals ?>
+		<!-- REQUEST PASSWORD MODAL OVERLAY-->
+		<div class="modal fade" id="request-password">
+			<div class="modal-header">
+				<h3>Passwort vergessen?</h3>
+			</div>
+			<div class="modal-body">
+				<p>Kein Problem! Bitte trage deine E-Mail Adresse ein, das Passwort wird anschließend zugestellt.</p>
+				<label for="email">E-mail-Adresse</label>
+				<input name="email" type="text" />
+			</div>
+			<div class="modal-footer">
+				<a href="#" data-dismiss="modal" class="btn btn-small">schließen</a>
+				<a href="#" class="btn btn-primary btn-small">absenden</a>
+			</div>
+		</div>
+		<!-- REQUEST PASSWORD MODAL OVERLAY ends here-->
+<?php endblock(); ?>
 <?php end_extend(); ?>
