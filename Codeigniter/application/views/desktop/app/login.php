@@ -3,6 +3,7 @@
 
 <?php startblock('title'); # extend the site's title ?><?php get_extended_block(); ?> - Login<?php endblock();?>
 
+				<?php print $global_data['messages']; ?>
 				<div class="well well-small clearfix">
 					<h1 class="maintitle">Login</h1>
 					<hr />
@@ -92,5 +93,4 @@
 						<?php echo form_fieldset_close(); // close the fieldset ?>
 					<?php echo form_close(); // close the whole login form ?>
 				</div>
-				-<?php echo $this->message->display(); ?>-
 <?php end_extend(); ?>
