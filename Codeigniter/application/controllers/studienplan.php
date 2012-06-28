@@ -98,7 +98,7 @@ class Studienplan extends FHD_Controller
     /**
      * Mobile Index-Method, which loads the Studienplan
      */
-    public function mobile_index()
+    /*public function mobile_index()
     {
         // load model
         $this->load->model('Studienplan_Model');
@@ -108,7 +108,7 @@ class Studienplan extends FHD_Controller
         // add the resultset/array to the data-object
         $this->data->add('studienplan', $plan);
         $this->load->view('studienplan', $this->data->load());
-    }
+    }*/
     
     
     
@@ -133,7 +133,7 @@ class Studienplan extends FHD_Controller
     public function spalteEinfuegen()
     {
         $this->load->model('Studienplan_Model');
-        $this->Studienplan_Model->$this->Studienplan_Model->createNewSemesterColoumn();
+        $this->Studienplan_Model->createNewSemesterColoumn();
     }
     
     
@@ -149,7 +149,7 @@ class Studienplan extends FHD_Controller
         $semester = $this->input->post();
 
         $this->load->model('Studienplan_Model');
-        $this->Studienplan_Model->$this->Studienplan_Model->shiftModuleMobile($module_id, $semester);
+        $this->Studienplan_Model->shiftModuleMobile($module_id, $semester);
     }
     
     
@@ -181,7 +181,6 @@ class Studienplan extends FHD_Controller
         $average = $this->Studienplan_Model->calculateAverageMark();
         
         $this->data->add('averageMark', $average);
-        //$this->load->view('studienplan', $this->data->load());
     }
     
     
@@ -190,14 +189,13 @@ class Studienplan extends FHD_Controller
     /**
      * Mobile: Calculate the average mark 
      */
-    public function mobile_durchschnittsnoteBerechnen()
+    /*public function mobile_durchschnittsnoteBerechnen()
     {
         $this->load->model('Studienplan_Model');
         $average = $this->Studienplan_Model->$this->Studienplan_Model->calculateAverageMark();
         
         $this->data->add('averageMark', $average);
-        $this->load->view('studienplan', $this->data->load());
-    }
+    }*/
     
     
     
@@ -211,7 +209,6 @@ class Studienplan extends FHD_Controller
         $percent = $this->Studienplan_Model->calculatePercentageOfStudy();
         
         $this->data->add('percentage', $percent);
-        //$this->load->view('studienplan', $this->data->load());
     }
     
     
@@ -220,14 +217,14 @@ class Studienplan extends FHD_Controller
     /**
      * Mobile: Calculate the percentage of current study-status 
      */
-    public function mobile_prozentsatzBerechnen()
+    /*public function mobile_prozentsatzBerechnen()
     {
         $this->load->model('Studienplan_Model');
         $percent = $this->Studienplan_Model->calculatePercentageOfStudy();
         
         $this->data->add('percentage', $percent);
         $this->load->view('studienplan', $this->data->load());
-    }
+    }*/
     
     
     
@@ -297,7 +294,6 @@ class Studienplan extends FHD_Controller
         $info = $this->Studienplan_Model->moduleInfo();
         
         $this->data->add('moduleinfo', $info);
-        //$this->load->view('studienplan', $this->data->load());
     }
     
     
@@ -306,14 +302,14 @@ class Studienplan extends FHD_Controller
     /**
      * Mobile: Get information about all modules 
      */
-    public function mobile_modulinfo()
+    /*public function mobile_modulinfo()
     {
         $this->load->model('Studienplan_Model');
         $info = $this->Studienplan_Model->moduleInfo();
         
         $this->data->add('moduleinfo', $info);
         $this->load->view('studienplan', $this->data->load());
-    }
+    }*/
     
     
     
@@ -331,17 +327,18 @@ class Studienplan extends FHD_Controller
     
     
     
+    
     /**
      * Mobile: Show all participated groups
      */
-    public function mobile_gruppenAnzeigen()
+    /*public function mobile_gruppenAnzeigen()
     {
         $this->load->model('Studienplan_Model');
         $groups = $this->Studienplan_Model->groups();
         
         $this->data->add('groups', $groups);
         $this->load->view('studienplan', $this->data->load());
-    }
+    }*/
     
     
     
