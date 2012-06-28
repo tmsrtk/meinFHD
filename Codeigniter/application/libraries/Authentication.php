@@ -74,41 +74,11 @@ class Authentication {
 			// Keep the user logged in by initializing the session
 			$this->CI->session->set_userdata('uid', $this->uid);
 
-			// (kv) store userdata in $data
-			$this->CI->load->model('admin_model');
-			$this->_store_user_data();
-
 			// User has logged in successfully
 			return TRUE;
 		}
 
 		return FALSE;
-	}
-
-	/**
-	 * Stores userdata of logged user into global $data
-	 * 
-	 * @author Konstantin Voth (KV), <konstantin.voth@googlemail.com>
-	 */
-	private function _store_user_data()
-	{
-		// userdata
-        $session_userid = $this->uid;
-
-        // FB::log($session_userid);
-        // var_dump($session_userid);
-
-        $loginname = $this->CI->admin_model->get_loginname($session_userid);
-        $roles = $this->CI->admin_model->get_all_roles();
-        $user_permissions = $this->CI->admin_model->get_all_userpermissions($session_userid);
-        
-        $userdata = array(
-                'userid' => $session_userid,
-                'loginname' => $loginname['LoginName'],
-                'userpermissions' => $user_permissions,
-                'roles' => $roles
-            );
-        $this->CI->data->add('userdata', $userdata);
 	}
 		
 	/**
