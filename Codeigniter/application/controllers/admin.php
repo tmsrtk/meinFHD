@@ -1332,7 +1332,8 @@ class Admin extends FHD_Controller {
 	    
 //	    $this->data->add('stdgng_uploads_headlines', $data['stdgng_uploads_headlines']);
 //	    $this->data->add('stdgng_uploads', $data['stdgng_uploads']);
-	    $this->data->add('stdgng_uploads_list_filelist', $this->load->view('admin_stdplan_import_filelist', $data, TRUE));
+	    $this->data->add('stdgng_uploads_list_filelist', $this->load->view(
+		    'admin-subviews/admin_stdplan_import_filelist', $data, TRUE));
 	    
 	    $siteinfo = array(
 		'title' => 'Stundenplan importieren',
