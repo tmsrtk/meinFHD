@@ -1,11 +1,4 @@
 <?php # echo '<pre>'. print_r($this) . '</pre>'; ?>
-<!-- CONTENT -->
-	<div class="container container-fluid app-login">
-		<div class="row-fluid">
-			<div class="span4">
-				
-			</div>
-			<div class="span4">
 <?php extend('app/index.php'); ?>
 				<div class="well well-small clearfix">
 					<h1 class="maintitle">Login</h1>
@@ -97,9 +90,4 @@
 					<?php echo form_close(); // close the whole login form ?>
 				</div>
 				-<?php echo $this->message->display(); ?>-
-			</div><!-- /.span4-->
-			<div class="span4"></div>
-		</div><!--first row ends here -->
-	</div>
-	<!-- CONTENT ENDE-->
 <?php end_extend(); ?>
