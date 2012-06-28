@@ -628,6 +628,9 @@ class Studienplan_Model extends CI_Model
         $this->db->where('SemesterplanID', $this->studyplanID);
         $this->db->where('KursID', $moduleID);
         $this->db->update('semesterkurs', $dataarray);
+        
+        // with every save increase the try of the module
+        $this->increaseTry($moduleID);
     }
     
     
@@ -1011,7 +1014,13 @@ class Studienplan_Model extends CI_Model
     
     
     
-    
+    /**
+     * Save the Status of testing or participating
+     * 
+     * @param int $module_id
+     * @param int $pruefen
+     * @param int $teilnehmen 
+     */
     public function savePruefenTeilnehmen($module_id, $pruefen, $teilnehmen)
     {
         $dataarray = array(
@@ -1024,6 +1033,25 @@ class Studienplan_Model extends CI_Model
         $this->db->update('semesterkurs', $dataarray);
     }
     
+    
+    
+    
+    /**
+     * Save the changed Semester
+     * 
+     * @param int $module_id
+     * @param int $semester 
+     */
+    public function saveSemester($module_id, $semester)
+    {
+        $dataarray = array(
+            'Semester' => $semester,
+        );
+
+        $this->db->where('SemesterplanID', $this->studyplanID);
+        $this->db->where('KursID', $module_id);
+        $this->db->update('semesterkurs', $dataarray);
+    }
     
     
     
