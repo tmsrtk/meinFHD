@@ -1,5 +1,8 @@
 <?php # echo '<pre>'. print_r($this) . '</pre>'; ?>
 <?php extend('app/index.php'); ?>
+
+<?php startblock('title'); # extend the site's title ?><?php get_extended_block(); ?> - Login<?php endblock();?>
+
 				<div class="well well-small clearfix">
 					<h1 class="maintitle">Login</h1>
 					<hr />
