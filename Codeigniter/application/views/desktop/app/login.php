@@ -6,6 +6,7 @@
 				
 			</div>
 			<div class="span4">
+<?php extend('app/index.php'); ?>
 				<div class="well well-small clearfix">
 					<h1 class="maintitle">Login</h1>
 					<hr />
@@ -101,3 +102,4 @@
 		</div><!--first row ends here -->
 	</div>
 	<!-- CONTENT ENDE-->
+<?php end_extend(); ?>
