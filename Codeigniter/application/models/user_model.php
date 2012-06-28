@@ -18,7 +18,7 @@ class User_model extends CI_Model {
 		$user_id = $this->authentication->user_id();
 		if ($user_id)
 		{
-			$this->user_roles = $this->_query_all_roles();
+			$this->user_permissions_all = $this->_query_all_permissions();
 		}
 
 
@@ -26,16 +26,52 @@ class User_model extends CI_Model {
 		$this->data->add('rollentest', $this->user_roles);
 	}
 
-	private function _query_all_roles()
-	{
-		$this->db->select('RolleID, bezeichnung')
-				 ->from('rolle');
-		$q = $this->db->get();
 
-		return $q->result_array();
+	private function _query_all_permissions()
+	{
+		$this->db->select('RolleID')
+					   ->from('benutzer_mm_rolle')
+					   ->where('BenutzerID', $user_id);
+		$user_id_role = $this->db->get()->result();
+
+		// var_dump($user_id_role);
+
+		// return;
+
+		foreach ($user_id_role as $key => $value) {
+			$this->db->select('BerechtigungID')
+					  ->from('rolle_mm_berechtigung')
+					  ->where('RolleID', $value->RolleID);
+			$result_raw[] = $this->db->get()->result_array();
+		}
+
+		// var_dump($result_raw);
+
+		$result_clean = $this->_clean_permissions_array($result_raw);
+
+		return $result_clean;
 	}
 
 
+
+	// checks array for duplicates and deletes these. creates a 1dim array
+	private function _clean_permissions_array($permissions_to_clean)
+	{
+		// var_dump($permissions_to_clean);
+
+		$permissions_cleaned = array();
+		foreach ($permissions_to_clean as $role) 
+		{
+			foreach ($role as $v)
+			{
+				if ( ! in_array($v['BerechtigungID'], $permissions_cleaned))
+				{
+					array_push($permissions_cleaned, $v['BerechtigungID']);
+				}
+			}
+		}
+		return $permissions_cleaned;
+	}
 
 
 

@@ -360,14 +360,26 @@ class Admin_model extends CI_Model {
 		$this->db->select('RolleID')
 					   ->from('benutzer_mm_rolle')
 					   ->where('BenutzerID', $user_id);
-		$user_id_role = $this->db->get()->row();
+		$user_id_role = $this->db->get()->result();
 
 		// var_dump($user_id_role);
 
-		$this->db->select('BerechtigungID')
+		// return;
+
+		foreach ($user_id_role as $key => $value) {
+			$this->db->select('BerechtigungID')
 					  ->from('rolle_mm_berechtigung')
-					  ->where('RolleID', $user_id_role->RolleID);
-		$result_raw = $this->db->get()->result_array();
+					  ->where('RolleID', $value->RolleID);
+			$result_raw[] = $this->db->get()->result_array();
+		}
+
+		// var_dump($result_raw);
+
+		// var_dump(expression)
+
+		// $this->db->select('BerechtigungID')
+		// 			  ->from('rolle_mm_berechtigung')
+		// 			  ->where('RolleID', $user_id_role->RolleID);
 		$result_clean = $this->clean_permissions_array($result_raw);
 
 		return $result_clean;
@@ -376,12 +388,17 @@ class Admin_model extends CI_Model {
 	// checks array for duplicates and deletes these. creates a 1dim array
 	function clean_permissions_array($permissions_to_clean)
 	{
+		// var_dump($permissions_to_clean);
+
 		$permissions_cleaned = array();
-		foreach ($permissions_to_clean as $key => $value) 
+		foreach ($permissions_to_clean as $role) 
 		{
-			if ( ! in_array($value['BerechtigungID'], $permissions_cleaned))
+			foreach ($role as $v)
 			{
-				array_push($permissions_cleaned, $value['BerechtigungID']);
+				if ( ! in_array($v['BerechtigungID'], $permissions_cleaned))
+				{
+					array_push($permissions_cleaned, $v['BerechtigungID']);
+				}
 			}
 		}
 		return $permissions_cleaned;

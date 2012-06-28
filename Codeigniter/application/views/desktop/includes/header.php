@@ -27,4 +27,4 @@
 
 <body>
 	<!-- Menu -->
-	<?php # $this->load->view('includes/menu'); ?>
+	<?php  $this->load->view('includes/menu'); ?>
