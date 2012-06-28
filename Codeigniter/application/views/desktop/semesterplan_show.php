@@ -11,7 +11,7 @@
 
 <tbody>
 	<tr>
-		<?php foreach($global_data['studienplan'] as $semester): ?>
+		<?php foreach($studienplan as $semester): ?>
 			<?php $i = 0; // semester value ?>
 
 			<?php //TODO: Zero semester ausblenden!! ?>

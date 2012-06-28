@@ -25,8 +25,6 @@ class Admin extends FHD_Controller {
 
 		//// data
 		// userdata
-
-		// userdata
         $session_userid = $this->authentication->user_id();
 
         $loginname = $this->admin_model->get_loginname($session_userid);                ///////////////////////////////
@@ -41,8 +39,6 @@ class Admin extends FHD_Controller {
             );
 
         $this->data->add('userdata', $userdata);
-
-
 	}
 	
 	
@@ -409,8 +405,7 @@ class Admin extends FHD_Controller {
 			$this->create_user();
 
 			// flash message
-			$this->message->set('User erfolgreich erstellt!');  //////////////// NOT WORKING
-
+			$this->message->set('User erfolgreich erstellt!', 'error');  //////////////// NOT WORKING
 
 			$this->show_successful_page();
 		}

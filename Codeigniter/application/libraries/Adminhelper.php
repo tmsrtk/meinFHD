@@ -38,7 +38,7 @@ class Adminhelper {
 		return array(
 			'field' => 'role',
 			'label' => 'Rolle',
-			'rules' => 'integer'
+			'rules' => 'required|integer'
 			);
 	}
 
@@ -118,7 +118,7 @@ class Adminhelper {
 		return array(
 			'field' => 'studiengang',
 			'label' => 'Studiengang',
-			'rules' => 'integer'
+			'rules' => 'required|integer'
 			);
 	}
 

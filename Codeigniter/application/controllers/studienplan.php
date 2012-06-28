@@ -71,17 +71,15 @@ class Studienplan extends FHD_Controller
     {
         $this->load->model('Studienplan_Model');
 
-        $data['title'] = 'Semesterplan';
-        $data['main_content'] =  'semesterplan_show';
+        $siteinfo = array(
+            'title'         => 'Semesterplan',
+            'main_content'  => 'semesterplan_show'
+            );
+        $this->data->add('siteinfo', $siteinfo);
 
-        //----------------------------------------------------------------------
-        $plan = $this->Studienplan_Model->queryStudyplan();
-        $this->data->add('studienplan', $plan);
-        $data['semesteranzahl'] = 7;         // TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        //----------------------------------------------------------------------
-        $data['global_data'] = $this->data->load();
+        $this->data->add('studienplan', $this->Studienplan_Model->queryStudyplan());
 
-        $this->load->view('includes/template', $data);
+        $this->load->view('includes/template', $this->data->load());
     }
     
     
