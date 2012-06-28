@@ -1,10 +1,3 @@
-<?php
-	#include('header.php');
-	#$this->load->view('header.php');
-	$this->load->view('includes/header');
-	
-	
-?>
 <?php # echo '<pre>'. print_r($this) . '</pre>'; ?>
 <!-- CONTENT -->
 	<div class="container container-fluid app-login">
@@ -108,4 +101,3 @@
 		</div><!--first row ends here -->
 	</div>
 	<!-- CONTENT ENDE-->
-<?php include('footer.php'); ?>
