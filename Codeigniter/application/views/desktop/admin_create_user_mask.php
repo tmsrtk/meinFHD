@@ -112,7 +112,7 @@
 			var dropdown_value = (selectbox) 
 				? dropdown_value = selectbox.val() 
 				: '0';
-			(dropdown_value === '4') ? studentdata_container.fadeIn() : studentdata_container.fadeOut();
+			(dropdown_value === '4') ? studentdata_container.slideDown() : studentdata_container.slideUp();
 		}
 
 	};

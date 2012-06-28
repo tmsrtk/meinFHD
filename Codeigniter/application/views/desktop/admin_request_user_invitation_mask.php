@@ -256,10 +256,10 @@ function toggle_studentdata(c) {
 	// c jQuery object of toggle button
 	if (c.val() === '4') {
 		// show additional student da
-		additional_student_data.fadeIn('slow');
+		additional_student_data.slideDown('slow');
 	}
 	else {
-		additional_student_data.fadeOut('slow');
+		additional_student_data.slideUp('slow');
 	}
 }
 
@@ -268,10 +268,10 @@ function toggle_erstsemestlerdata(c) {
 	var erstsemestler_data = $("div#erstsemestler");
 
 	if (c.attr('checked')) {
-		erstsemestler_data.fadeOut('slow');
+		erstsemestler_data.slideUp('slow');
 	}
 	else {
-		erstsemestler_data.fadeIn('slow');
+		erstsemestler_data.slideDown('slow');
 	}
 }
 
