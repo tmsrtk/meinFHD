@@ -181,7 +181,7 @@ class Studienplan extends FHD_Controller
         $average = $this->Studienplan_Model->calculateAverageMark();
         
         $this->data->add('averageMark', $average);
-        $this->load->view('studienplan', $this->data->load());
+        //$this->load->view('studienplan', $this->data->load());
     }
     
     
@@ -211,7 +211,7 @@ class Studienplan extends FHD_Controller
         $percent = $this->Studienplan_Model->calculatePercentageOfStudy();
         
         $this->data->add('percentage', $percent);
-        $this->load->view('studienplan', $this->data->load());
+        //$this->load->view('studienplan', $this->data->load());
     }
     
     
@@ -252,7 +252,7 @@ class Studienplan extends FHD_Controller
     public function studienplanZuruecksetzen()
     {
         $this->load->model('Studienplan_Model');
-        $this->Studienplan_Model->reset();
+        $this->Studienplan_Model->resetSemestercourses();
         
         $this->message->set(sprintf('Der Studienplan wurde erfolgreich zurükgesetzt.'));
     }
@@ -297,7 +297,7 @@ class Studienplan extends FHD_Controller
         $info = $this->Studienplan_Model->moduleInfo();
         
         $this->data->add('moduleinfo', $info);
-        $this->load->view('studienplan', $this->data->load());
+        //$this->load->view('studienplan', $this->data->load());
     }
     
     

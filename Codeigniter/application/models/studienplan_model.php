@@ -135,6 +135,7 @@ class Studienplan_Model extends CI_Model
     }
     
 
+    
 
     /**
      * Queries the Db for the Studyplan of the user
@@ -242,7 +243,7 @@ class Studienplan_Model extends CI_Model
         
         // sort the studyplan by semester
         ksort($data['plan']);
-        //var_dump($data['plan']);       
+  
         return $data;
     }
 
@@ -454,35 +455,35 @@ class Studienplan_Model extends CI_Model
             {
                 return '1';
             }
-            elseif($mark < 100 && $mark <= 95) 
+            elseif($mark < 100 && $mark >= 95) 
             {
                 return '1-';
             }
-            elseif($mark < 95 && $mark <= 90)
+            elseif($mark < 95 && $mark >= 90)
             {
                 return '2+';
             }
-            elseif($mark < 90 && $mark <= 81)
+            elseif($mark < 90 && $mark >= 81)
             {
                 return '2';
             }
-            elseif($mark < 81 && $mark <= 75) 
+            elseif($mark < 81 && $mark >= 75) 
             {
                 return '2-';
             }
-            elseif($mark < 75 && $mark <= 70)
+            elseif($mark < 75 && $mark >= 70)
             {
                 return '3+';
             }
-            elseif($mark < 70 && $mark <= 65)
+            elseif($mark < 70 && $mark >= 65)
             {
                 return '3';
             }
-            elseif($mark < 65 && $mark <= 60) 
+            elseif($mark < 65 && $mark >= 60) 
             {
                 return '3-';
             }
-            elseif($mark < 60 && $mark <= 50)
+            elseif($mark < 60 && $mark >= 50)
             {
                 return '4';
             }
@@ -594,7 +595,6 @@ class Studienplan_Model extends CI_Model
     
     
     
-    // TODO: MIT WELCHER NOTE WERDEN DIE MODULE ANERKANNT???????
     /**
      * Set the module with the $moduleID as accepted
      * 
@@ -694,7 +694,6 @@ class Studienplan_Model extends CI_Model
     
     
     
-    // TODO: Irgendwo hierdrin ist ein Bug!!!
     /**
      * Calculates the Sum of the SWS and the CP for each Semester
      * 
@@ -702,12 +701,13 @@ class Studienplan_Model extends CI_Model
      */
     public function calculateSwsAndCp()
     {
+        // locale variables
         $swsSum = 0;
         $cpSum = 0;
-        $counter = 1;
         $data = array();
         $sumArray = array();
         
+        // query DB
         $this->db->select('studiengangkurs.KursID,
                             studiengangkurs.Kursname,
                             studiengangkurs.kurs_kurz,
@@ -729,22 +729,16 @@ class Studienplan_Model extends CI_Model
         $this->db->where('semesterkurs.SemesterplanID', $this->studyplanID);
         $this->db->order_by('semesterkurs.Semester', 'ASC');
         $swsCpResult = $this->db->get();
-
-
-        // order modules by semester in array
-        foreach($swsCpResult->result() as $swsCp)
+        
+        
+        // writes result in array
+        foreach($swsCpResult->result() as $sc)
         {
-            if($swsCp->graduateSemester != $swsCp->regularSemester)
+            // if the graduateSemester unequals the regularSemester
+            if($sc->graduateSemester != $sc->regularSemester)
             {
-                $diff = $swsCp->regularSemester - $swsCp->graduateSemester;
-                
-                if($diff < 0)
-                {
-                    $diff = $diff * (-1);
-                }
-                
-                // input empty array for shifted module
-                $data[$swsCp->regularSemester][] = array(
+                // then put an empty array on the position in regularSemester
+                $data[$sc->regularSemester][] = array(
                     'SWS_Vorlesung'         => null,
                     'SWS_Uebung'            => null,
                     'SWS_Praktikum'         => null,
@@ -752,107 +746,77 @@ class Studienplan_Model extends CI_Model
                     'SWS_Seminar'           => null,
                     'SWS_Seminarunterricht' => null,
                     'Creditpoints'          => null,
-                    'Semester'              => null,
-                    'Differenz'             => null
+                    'Semester'              => $sc->regularSemester,
                 );
                 
-                $data[$swsCp->graduateSemester][] = array(
-                    'SWS_Vorlesung'         => $swsCp->SWS_Vorlesung,
-                    'SWS_Uebung'            => $swsCp->SWS_Uebung,
-                    'SWS_Praktikum'         => $swsCp->SWS_Praktikum,
-                    'SWS_Projekt'           => $swsCp->SWS_Projekt,
-                    'SWS_Seminar'           => $swsCp->SWS_Seminar,
-                    'SWS_Seminarunterricht' => $swsCp->SWS_Seminarunterricht,
-                    'Creditpoints'          => $swsCp->Creditpoints,
-                    'Semester'              => $swsCp->regularSemester,
-                    'Differenz'             => $diff
+                // and the module in the graduateSemester Array
+                $data[$sc->graduateSemester][] = array(
+                    'SWS_Vorlesung'         => $sc->SWS_Vorlesung,
+                    'SWS_Uebung'            => $sc->SWS_Uebung,
+                    'SWS_Praktikum'         => $sc->SWS_Praktikum,
+                    'SWS_Projekt'           => $sc->SWS_Projekt,
+                    'SWS_Seminar'           => $sc->SWS_Seminar,
+                    'SWS_Seminarunterricht' => $sc->SWS_Seminarunterricht,
+                    'Creditpoints'          => $sc->Creditpoints,
+                    'Semester'              => $sc->graduateSemester,
                 );
             }
-            else 
+            // put the regularSemester in the Array
+            else
             {
-                $data[$swsCp->regularSemester][] = array(
-                    'SWS_Vorlesung'         => $swsCp->SWS_Vorlesung,
-                    'SWS_Uebung'            => $swsCp->SWS_Uebung,
-                    'SWS_Praktikum'         => $swsCp->SWS_Praktikum,
-                    'SWS_Projekt'           => $swsCp->SWS_Projekt,
-                    'SWS_Seminar'           => $swsCp->SWS_Seminar,
-                    'SWS_Seminarunterricht' => $swsCp->SWS_Seminarunterricht,
-                    'Creditpoints'          => $swsCp->Creditpoints,
-                    'Semester'              => $swsCp->regularSemester,
-                    'Differenz'             => null
+                $data[$sc->regularSemester][] = array(
+                    'SWS_Vorlesung'         => $sc->SWS_Vorlesung,
+                    'SWS_Uebung'            => $sc->SWS_Uebung,
+                    'SWS_Praktikum'         => $sc->SWS_Praktikum,
+                    'SWS_Projekt'           => $sc->SWS_Projekt,
+                    'SWS_Seminar'           => $sc->SWS_Seminar,
+                    'SWS_Seminarunterricht' => $sc->SWS_Seminarunterricht,
+                    'Creditpoints'          => $sc->Creditpoints,
+                    'Semester'              => $sc->regularSemester,
                 );
             }
         }
         
-        // input empty array for a semester if no module exists
-        if($swsCp->Semesteranzahl > $swsCp->Regelsemester)
-        {
-            $diff = $swsCp->Semesteranzahl - $swsCp->Regelsemester;
-
-            for($i=0; $i<$diff; $i++)
-            {
-                $data[$swsCp->Regelsemester + $i][] = array(
-                    'SWS_Vorlesung'         => null,
-                    'SWS_Uebung'            => null,
-                    'SWS_Praktikum'         => null,
-                    'SWS_Projekt'           => null,
-                    'SWS_Seminar'           => null,
-                    'SWS_Seminarunterricht' => null,
-                    'Creditpoints'          => null,
-                    'Semester'              => null,
-                    'Differenz'             => null
-                );
-            }
-        }
-        
+        // sort the array
         ksort($data);
-        //var_dump($data);
-
-        // initial zero entry
-        $sumArray[0]['SWS_Summe'] = 0;
-        $sumArray[0]['CP_Summe'] = 0;
         
+        //initial zero values
+        $sumArray[0]['SWS_Summe'] = floatval(0);
+        $sumArray[0]['CP_Summe'] = floatval(0);
         
-        // step through the ordered array
+        // step through the ordered array and calculate the SWS & Creditpoints
         foreach($data as $semester)
         {
             foreach($semester as $module)
             {
-                if($module['Semester'] == null)
-                {
-                    //var_dump($semester);
-                    $sumArray[$counter]['SWS_Summe'] = 0;
-                    $sumArray[$counter]['CP_Summe'] = 0;
-                }
-                
                 // Sum of SWS
-                $swsSum += $module['SWS_Vorlesung'] + 
-                            $module['SWS_Uebung'] + 
-                            $module['SWS_Praktikum'] + 
-                            $module['SWS_Projekt'] + 
-                            $module['SWS_Seminar'] + 
-                            $module['SWS_Seminarunterricht'];
+                $swsSum += $module['SWS_Vorlesung'] + $module['SWS_Uebung'] + 
+                            $module['SWS_Praktikum'] + $module['SWS_Projekt'] + 
+                            $module['SWS_Seminar'] + $module['SWS_Seminarunterricht'];
 
                 // Sum of Creditpoints
                 $cpSum += $module['Creditpoints'];
-
-                // write sums in array
-                $sumArray[$module['Semester']]['SWS_Summe'] = intval($swsSum);
-                $sumArray[$module['Semester']]['CP_Summe'] = intval($cpSum);
             }
-
+            
+            // write sums in array
+            if($swsSum == 0 && $cpSum == 0)
+            {
+                $sumArray[$module['Semester']]['SWS_Summe'] = floatval(0);
+                $sumArray[$module['Semester']]['CP_Summe'] = floatval(0);
+            }
+            else
+            {
+                $sumArray[$module['Semester']]['SWS_Summe'] = floatval($swsSum);
+                $sumArray[$module['Semester']]['CP_Summe'] = floatval($cpSum);
+            }
+            
             // reset locale variables
             $swsSum = 0;
             $cpSum = 0;
-            $counter++;
         }
-        
-        // sort the Array by Keys
-        ksort($sumArray);
-     
-        //var_dump($sumArray);
-        return $sumArray; 
-    } 
+
+        return $sumArray;
+    }
     
     
     
@@ -965,7 +929,6 @@ class Studienplan_Model extends CI_Model
     
     
     
-    // TODO: DIESE METHODE LIEFERT KEINE ERGEBNISSE, DA DIE DATEN NICHT PASSEN
     /**
      * Returns an array of all participated groups
      * 
@@ -1012,7 +975,7 @@ class Studienplan_Model extends CI_Model
                 'Nachname'                      => $group->Nachname
             );
         }
-        
+
         return $data;
     }
     
