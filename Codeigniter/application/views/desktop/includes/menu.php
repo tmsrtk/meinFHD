@@ -63,19 +63,19 @@
 					</a>
 					<ul class="dropdown-menu">
 						<?php if (in_array(301, $userdata['userpermissions'])) : ?>
-						<li><a href="<?php echo site_url(); ?>admin/createNewStdgng">Studiengang anlegen</a></li>
+						<li><a href="<?php echo site_url(); ?>admin/create_new_stdgng">Studiengang anlegen</a></li>
 						<?php endif ?>
 						<?php if (in_array(302, $userdata['userpermissions'])) : ?>
 						<li><a href="#">Studiengang importieren</a></li>
 						<?php endif ?>
 						<?php if (in_array(303, $userdata['userpermissions'])) : ?>
-						<li><a href="<?php echo site_url(); ?>admin/showStdgngCourseList">Studiengang bearbeiten</a></li>
+						<li><a href="<?php echo site_url(); ?>admin/show_stdgng_course_list">Studiengang bearbeiten</a></li>
 						<?php endif ?>
 						<?php if (in_array(304, $userdata['userpermissions'])) : ?>
 						<li><a href="#">Studiengang kopieren</a></li>
 						<?php endif ?>
 						<?php if (in_array(305, $userdata['userpermissions'])) : ?>
-						<li><a href="<?php echo site_url(); ?>admin/showStdgngList">Studiengang loeschen</a></li>
+						<li><a href="<?php echo site_url(); ?>admin/delete_stdgng_view">Studiengang loeschen</a></li>
 						<?php endif ?>
 					</ul>
 				</li>
@@ -88,13 +88,13 @@
 					</a>
 					<ul class="dropdown-menu">
 						<?php if (in_array(401, $userdata['userpermissions'])) : ?>
-						<li><a href="#">Stundenplan importieren</a></li>
+						<li><a href="<?php echo site_url(); ?>admin/import_stdplan_view">Stundenplan importieren</a></li>
 						<?php endif ?>
 						<?php if (in_array(402, $userdata['userpermissions'])) : ?>
 						<li><a href="<?php echo site_url(); ?>admin/show_stdplan_list">Stundenplan bearbeiten</a></li>
 						<?php endif ?>
 						<?php if (in_array(403, $userdata['userpermissions'])) : ?>
-						<li><a href="#">Stundenplan loeschen</a></li>
+						<li><a href="<?php echo site_url(); ?>admin/delete_stdplan_view">Stundenplan loeschen</a></li>
 						<?php endif ?>
 					</ul>
 				</li>

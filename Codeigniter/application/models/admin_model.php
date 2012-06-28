@@ -454,7 +454,7 @@ class Admin_model extends CI_Model {
 	 * @param unknown_type $stdgng_id
 	 * @return unknown
 	 */
-	function getStdgngDetails($stdgng_id){
+	function get_stdgng_courses($stdgng_id){
 		$q = $this->db->get_where('studiengangkurs', array('StudiengangID' => $stdgng_id));
 		
 		// first line of stdgng-list-view should give the opportunity to create an own course
@@ -502,12 +502,11 @@ class Admin_model extends CI_Model {
 	}
 	
 	/**
-	 * Returns the Regelsemester from a specified Stdgng
+	 * Returns all details from a specified Stdgng
 	 * @param unknown_type $stdgng_id
 	 * @return unknown
 	 */
 	function get_stdgng_details_asrow($stdgng_id){
-// 		$this->db->select('Regelsemester');
 		$q = $this->db->get_where('studiengang', array('StudiengangID' => $stdgng_id));
 		
 		if($q->num_rows() == 1){
@@ -525,7 +524,7 @@ class Admin_model extends CI_Model {
 	 * @param unknown_type $data
 	 * @param unknown_type $stdgng_id
 	 */
-	function updateStdgngDetails($data, $kurs_id){
+	function update_stdgng_courses($data, $kurs_id){
 		$this->db->where('KursID', $kurs_id);
 		$this->db->update('studiengangkurs', $data);
 	}
@@ -536,35 +535,60 @@ class Admin_model extends CI_Model {
 	 * @param unknown_type $data
 	 * @param unknown_type $stdgng_id
 	 */
-	function updateStdgngDescriptionData($data, $stdgng_id){
+	function update_stdgng_description_data($data, $stdgng_id){
 		$this->db->where('StudiengangID', $stdgng_id);
 		$this->db->update('studiengang', $data);
 	}
 	
 	
-	function createNewStdgng($data){
+	function create_new_stdgng($data){
 		$this->db->insert('studiengang', $data);
 	}
 	
-	function deleteStdgng($id){
+	function delete_stdgng($id){
+		// delete from studiengang-table
 		$this->db->where('StudiengangID', $id);
 		$this->db->delete('studiengang');
 		
+		// delete all courses with this stdgng_id from studiengangkurs
+		$this->db->where('StudiengangID', $id);
+		$this->db->delete('studiengangkurs');		
 		
-		
-		// TODO alles was da noch mit dranhängt
-		// >> ?? wird bisher noch gar nicht gemacht..
 	}
 	
 	
 	/* *****************************************************
-	 * ************** Stundenplanverwaltung Ende ***********
+	 * ************** Stundenplanverwaltung Anfang *********
 	 * *****************************************************/
 
 	
 	function get_stdplan_filterdata(){
 	    $this->db->distinct();
 	    $this->db->select('a.Semester, b.StudiengangAbkuerzung, b.Pruefungsordnung');
+	    $this->db->from('studiengangkurs as a');
+	    $this->db->join('studiengang as b', 'a.StudiengangID = b.StudiengangID');
+	    $this->db->join('stundenplankurs as c', 'a.KursID = c.KursID');
+	    $this->db->order_by('b.StudiengangAbkuerzung asc, a.Semester asc');
+	    
+	    $q = $this->db->get();
+	    
+	    if($q->num_rows() > 0){
+		foreach ($q->result() as $row){
+			$data[] = $row;
+		}
+		return $data;
+	    }
+	}
+	
+	
+	/**
+	 * Returns filter-data with id
+	 * needed, to provide deletion list-view with id-data
+	 * @return type
+	 */
+	function get_stdplan_filterdata_plus_id(){
+	    $this->db->distinct();
+	    $this->db->select('a.StudiengangID, b.StudiengangName, a.Semester, b.StudiengangAbkuerzung, b.Pruefungsordnung');
 	    $this->db->from('studiengangkurs as a');
 	    $this->db->join('studiengang as b', 'a.StudiengangID = b.StudiengangID');
 	    $this->db->join('stundenplankurs as c', 'a.KursID = c.KursID');
@@ -590,7 +614,11 @@ class Admin_model extends CI_Model {
 //on a.`KursID` = c.`KursID`;
 
 	
-	
+	/**
+	 * Returns data for stdplan view
+	 * @param type $ids
+	 * @return type
+	 */
 	function get_stdplan_data($ids){
 	    $this->db->distinct();
 	    $this->db->select('a.SPKursID, b.KursID, b.Semester, c.Pruefungsordnung, c.StudiengangAbkuerzung,
@@ -604,6 +632,32 @@ class Admin_model extends CI_Model {
 	    $this->db->where('b.Semester', $ids[1]);
 	    $this->db->where('c.Pruefungsordnung', $ids[2]);
 	    
+	    
+	    $q = $this->db->get();
+	    	    
+	    if($q->num_rows() > 0){
+		foreach ($q->result() as $row){
+			$data[] = $row;
+		}
+		return $data;
+	    }
+	    
+	}
+	
+	/**
+	 * Returns all SPKursIDs with matching Abkürzung, Semester, PO
+	 * @param type $ids
+	 * @return type
+	 */
+	function get_all_stdplan_spkurs_ids($ids){
+	    $this->db->distinct();
+	    $this->db->select('a.SPKursID');
+	    $this->db->from('stundenplankurs as a');
+	    $this->db->join('studiengangkurs as b', 'a.KursID = b.KursID');
+	    $this->db->join('studiengang as c', 'b.StudiengangID = c.StudiengangID');
+	    $this->db->where('c.StudiengangAbkuerzung', $ids[0]);
+	    $this->db->where('b.Semester', $ids[1]);
+	    $this->db->where('c.Pruefungsordnung', $ids[2]);
 	    
 	    $q = $this->db->get();
 	    	    
@@ -629,6 +683,35 @@ class Admin_model extends CI_Model {
 //on b.`StudiengangID` = c.`StudiengangID`
 //where c.`Pruefungsordnung` = 2010 and b.`Semester` = 1 and c.`StudiengangAbkuerzung` = "BMI";
 // letzte zeile dann mit den einzelnen werten aus dem filter füllen
+
+	
+	/**
+	 * Returns StundenplankursIDs
+	 * @param type $ids
+	 * @return type
+	 */
+	function get_stdplan_course_ids($ids){
+	    $this->db->distinct();
+	    $this->db->select('a.SPKursID');
+	    $this->db->from('stundenplankurs as a');
+	    $this->db->join('studiengangkurs as b', 'a.KursID = b.KursID');
+	    $this->db->join('studiengang as c', 'b.StudiengangID = c.StudiengangID');
+	    $this->db->where('c.StudiengangAbkuerzung', $ids[0]);
+	    $this->db->where('b.Semester', $ids[1]);
+	    $this->db->where('c.Pruefungsordnung', $ids[2]);
+	    
+	    
+	    $q = $this->db->get();
+	    	    
+	    if($q->num_rows() > 0){
+		foreach ($q->result() as $row){
+			$data[] = $row;
+		}
+		return $data;
+	    }
+	    
+	}
+
 
 	/**
 	 * Returns all enventtypes
@@ -736,6 +819,86 @@ class Admin_model extends CI_Model {
 	    $this->db->where('SPKursID', $spkurs_id);
 	    $this->db->update('stundenplankurs', $data);
 	}
+	
+	
+	//######################### methods needed to delete a stdplan
+	
+	/**
+	 * Deleting all records related to a stundenplan
+	 * - getting spkursIDs for this stundenplan
+	 * - getting groupids
+	 * - deleting from group
+	 * - deleting from benutzerkurs
+	 * - deleting from stundenplankurs
+	 * @param type $stdplan_ids
+	 */
+	function delete_stdplan_related_records($stdplan_ids){
+	    // get spkursids to delete
+	    $stdplan_course_ids = $this->get_stdplan_course_ids($stdplan_ids);
+	    
+	    // get groupids
+	    $group_ids = '';
+	    foreach($stdplan_course_ids as $id){
+		$group_ids[] = $this->get_group_id_to_delete($id->SPKursID);
+	    }
+	    
+	    // delete from gruppe (group_ids)
+	    foreach($group_ids as $id){
+		$this->delete_from_group($id);
+	    }
+	    
+	    // delete from benutzerkurs (spkurs_ids)
+	    foreach($stdplan_course_ids as $id){
+		$this->delete_from_benutzerkurs($id->SPKursID);
+	    }
+	    
+	    // delete from stundenplankurs (spkursids)
+	    foreach($stdplan_course_ids as $id){
+		$this->delete_from_stundenplankurs($id->SPKursID);
+	    }
+	    
+//	    echo '<pre>';
+//	    print_r($id);
+//	    echo '<p/re>';
+	}
+	
+	
+	// get group_ids from stundenplankurs (spkurs_id = )
+	function get_group_id_to_delete($spkurs_id){
+	    $this->db->select('GruppeID');
+	    $this->db->where('SPKursID', $spkurs_id);
+	    $q = $this->db->get('stundenplankurs');
+	    
+	    if($q->num_rows() > 0){
+		foreach ($q->result() as $row){
+		    return $row->GruppeID;
+		}
+	    }
+	}
+	
+	
+	function delete_from_group($g_id){
+	    $this->db->where('GruppeID', $g_id);
+	    $this->db->delete('gruppe');
+	}
+	
+	
+	// gruppenteilnehmer zu überlegen
+	// - mehrere pos in einer gruppe?
+	// - dahm: gruppen über das semesterende hinaus behalten
+	// wird das referenzmodul oder ?!?!
+	
+	
+	function delete_from_benutzerkurs($spk_id){
+	    $this->db->where('SPKursID', $spk_id);
+	    $this->db->delete('benutzerkurs');
+	}
+	
+	function delete_from_stundenplankurs($spk_id){
+	    $this->db->where('SPKursID', $spk_id);
+	    $this->db->delete('stundenplankurs');
+	}
+	
 	
 	
 }
