@@ -5,26 +5,39 @@
 
 <?php //FB::log($global_data['studienplan']); ?>
 
-<div id="studienplan">
+<div id="studienplan" class="well">
 
 <table>
+
+	<thead>
+		<tr>
+		<?php foreach($studienplan as $semester): ?>
+			<?php $i = 0; // semester value ?>
+			<?php foreach($semester as $modul): ?>
+			<th>Semester <?php echo $i ?></th>
+			<?php $i++ ?>
+			<?php endforeach ?>
+		<?php endforeach ?>
+		</tr>
+	</thead>
 
 <tbody>
 	<tr>
 		<?php foreach($studienplan as $semester): ?>
 			<?php $i = 0; // semester value ?>
 
+
 			<?php //TODO: Zero semester ausblenden!! ?>
 		    <?php foreach($semester as $modul): ?>
 		    <td>
 				<ul id="<?php echo $i ?>" class="unstyled semesterplanspalte">
-			        <?php foreach($modul as $data): ?>
-			        <?php if ($data['Kurzname'] != NULL): ?>
+			    	<?php foreach($modul as $data): ?>
+			    	<?php if ($data['Kurzname'] != NULL): ?>
 			    	<li id="module_<?php echo $data['KursID']; ?>">
-			    		<div class="semestermodul btn btn-success btn-large">
+						<div class="semestermodul btn btn-success btn-large">
 							<span class="modulfach"><?php echo $data['Kurzname'] ?></span>
 							<span class="modulfachnote">NP:</span>
-							<input id="modulnote" class="input-small" name="modulnote" type="text" value="<?php echo $data['Notenpunkte'] ?>" size="3">
+							<input class="modulnote input-small" name="modulnote" type="text" value="<?php echo $data['Notenpunkte'] ?>" size="3">
 						</div>
 			    	</li>
 			    	<?php endif; ?>
