@@ -1,4 +1,4 @@
-<div>
+<div class="well">
 
 	<!-- build array for Studiengang-Filter -->
 	<?php 

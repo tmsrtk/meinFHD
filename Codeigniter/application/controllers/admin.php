@@ -641,20 +641,21 @@ class Admin extends FHD_Controller {
 	 * Get all data for a selectable (dropdown) list of Studiengänge
 	 * TODO have to be dynamic - right now - static stdgng_id !!!
 	 */
-	function show_stdgng_course_list(){
+	function show_stdgng_course_list($reload = 0){
 		
 		// get all stdgnge for filter-view
-		$data['all_stdgnge'] = $this->admin_model->getAllStdgnge();
+		$this->data->add('all_stdgnge', $this->admin_model->getAllStdgnge());
 		// set stdgng_id to 0 - indicates, that view has been loaded directly from controller
 		// no autoreload without validation
-		$data['stdgng_id_automatic_reload'] = 0;
+		$this->data->add('stdgng_id_automatic_reload', $reload);
 		
-		// VIEW
-		$data['global_data'] = $this->data->load();
-		$data['title'] = 'Studiengangverwaltung';
-		$data['main_content'] = 'admin_stdgng_edit';
+		$siteinfo = array(
+		    'title' => 'Studiengangverwaltung',
+		    'main_content' => 'admin_stdgng_edit'
+		);
+		$this->data->add('siteinfo', $siteinfo);
 		
-		$this->load->view('includes/template', $data);
+		$this->load->view('includes/template', $this->data->load());
 		
 	}
 	
@@ -664,14 +665,15 @@ class Admin extends FHD_Controller {
 	function create_new_stdgng(){
 				
 		// get all stdgnge for the view
-		$data['allStdgnge'] = $this->admin_model->getAllStdgnge();
+		$this->data->add('allStdgnge', $this->admin_model->getAllStdgnge());
 		
-		// VIEW
-		$data['global_data'] = $this->data->load();
-		$data['title'] = 'Neuen Studiengang anlegen';
-		$data['main_content'] = 'admin_stdgng_createnew';
+		$siteinfo = array(
+		    'title' => 'Neuen Studiengang anlegen',
+		    'main_content' => 'admin_stdgng_createnew'
+		);
+		$this->data->add('siteinfo', $siteinfo);
 		
-		$this->load->view('includes/template', $data);
+		$this->load->view('includes/template', $this->data->load());
 		
 	}
 	
@@ -697,7 +699,7 @@ class Admin extends FHD_Controller {
 		// reload view
 		$this->create_new_stdgng();
 	    } else {
-		$this->save_stdgng_details_changes();
+		$this->save_new_created_stdgng();
 	    }
 	}
 	
@@ -730,9 +732,8 @@ class Admin extends FHD_Controller {
 		// save
 		$this->admin_model->create_new_stdgng($insertNewStdgng);
 		
-// 		echo '<pre>';
-// 		print_r($insertNewStdgng);
-// 		echo '</pre>';
+		// load stdgng view with dropdown
+		$this->show_stdgng_course_list();
 		
 		
 	}
@@ -745,14 +746,15 @@ class Admin extends FHD_Controller {
 	 */
 	function delete_stdgng_view(){
 		// get all stdgnge for the view
-		$data['allStdgnge'] = $this->admin_model->getAllStdgnge();
+		$this->data->add('allStdgnge', $this->admin_model->getAllStdgnge());
 		
-		// VIEW
-		$data['global_data'] = $this->data->load();
-		$data['title'] = 'Studiengang löschen';
-		$data['main_content'] = 'admin_stdgng_delete';
+		$siteinfo = array(
+		    'title' => 'Studiengang löschen',
+		    'main_content' => 'admin_stdgng_delete'
+		);
+		$this->data->add('siteinfo', $siteinfo);
 		
-		$this->load->view('includes/template', $data);
+		$this->load->view('includes/template', $this->data->load());
 		
 	}
 	
@@ -883,15 +885,9 @@ class Admin extends FHD_Controller {
 	    $this->form_validation->set_rules(
 		    $stdgng_id.'Beschreibung', 'Beschreibung fehlt', 'required');
 	    
-	    $data['stdgng_id_automatic_reload'] = $stdgng_id;
-	    
 	    if ($this->form_validation->run() == FALSE) {
 		// reload view
-		$data['global_data'] = $this->data->load();
-		$data['title'] = 'Studiengang Kursliste bearbeiten';
-		$data['main_content'] = 'admin_stdgng_edit';
-		
-		$this->load->view('includes/template', $data);
+		$this->show_stdgng_course_list($stdgng_id);
 	    } else {
 		$this->save_stdgng_details_changes();
 	    }
@@ -901,7 +897,7 @@ class Admin extends FHD_Controller {
 	function validate_stdgng_course_changes(){
 	    
 	    // get all stdgnge for filter-view
-	    $data['all_stdgnge'] = $this->admin_model->getAllStdgnge();
+//	    $data['all_stdgnge'] = $this->admin_model->getAllStdgnge();
 	    
 	    // get all course-ids belonging to a specified stdgng
 	    $stdgng_id = $this->input->post('stdgng_id');
@@ -919,15 +915,9 @@ class Admin extends FHD_Controller {
 			$id->KursID.'Semester', 'Wählen Sie ein Semester aus - ID: '.$id->KursID, 'greater_than[0]');
 	    }
 	    
-	    $data['stdgng_id_automatic_reload'] = $stdgng_id;
-	    
 	    if ($this->form_validation->run() == FALSE) {
 		// reload view
-		$data['global_data'] = $this->data->load();
-		$data['title'] = 'Studiengang Kursliste bearbeiten';
-		$data['main_content'] = 'admin_stdgng_edit';
-		
-		$this->load->view('includes/template', $data);
+		$this->show_stdgng_course_list($stdgng_id);
 	    } else {
 		$this->save_stdgng_course_changes();
 	    }
@@ -1022,24 +1012,20 @@ class Admin extends FHD_Controller {
 	 * ************** Stundenplanhandling Start ************
 	 * *****************************************************/
 	
-	function show_stdplan_list(){
-		// get all stdplan-data
-		$data['all_stdplan_filterdata'] = $this->admin_model->get_stdplan_filterdata();
-		
-		// no autoreload without validation
-		$data['stdplan_id_automatic_reload'] = 0;
+	function show_stdplan_list($reload = 0){
+	    // get all stdplan-data
+	    $this->data->add('all_stdplan_filterdata', $this->admin_model->get_stdplan_filterdata());
 
-//		echo '<pre>';
-// 		print_r($a);
-// 		echo '</pre>';
-		
-		// VIEW
-		$data['global_data'] = $this->data->load();
-		$data['title'] = 'Stundenplan anzeigen';
-		$data['main_content'] = 'admin_stdplan_edit';
-		
-		$this->load->view('includes/template', $data);
-		
+	    // no autoreload without validation
+	    $this->data->add('stdplan_id_automatic_reload', $reload);
+
+	    $siteinfo = array(
+		'title' => 'Stundenplan anzeigen',
+		'main_content' => 'admin_stdplan_edit'
+	    );
+	    $this->data->add('siteinfo', $siteinfo);
+
+	    $this->load->view('includes/template', $this->data->load());
 	}
 	
 	
@@ -1155,9 +1141,6 @@ class Admin extends FHD_Controller {
 
 	function validate_stdplan_changes(){
 	    
-	    // get all stdplan-data
-	    $data['all_stdplan_filterdata'] = $this->admin_model->get_stdplan_filterdata();
-	    
 	    // get all course-ids belonging to a specified stdgng
 	    $stdplan_id = array(
 		$this->input->post('stdplan_id_abk'),
@@ -1188,15 +1171,11 @@ class Admin extends FHD_Controller {
 			$id->SPKursID.'_Farbe', 'Fehler', 'greater_than[0]');
 	    }
 	    
-	    $data['stdplan_id_automatic_reload'] = $stdplan_id[0].'_'.$stdplan_id[1].'_'.$stdplan_id[2];
+	    $stdplan_id_automatic_reload = $stdplan_id[0].'_'.$stdplan_id[1].'_'.$stdplan_id[2];
 	    
 	    if ($this->form_validation->run() == FALSE) {
 		// reload view
-		$data['global_data'] = $this->data->load();
-		$data['title'] = 'Stundenplan Kursliste bearbeiten';
-		$data['main_content'] = 'admin_stdplan_edit';
-		
-		$this->load->view('includes/template', $data);
+		$this->show_stdplan_list($stdplan_id_automatic_reload);
 	    } else {
 		$this->save_stdplan_changes();
 	    }
@@ -1258,15 +1237,15 @@ class Admin extends FHD_Controller {
 	
 	
 	function delete_stdplan_view(){
-	    $data['delete_view_data'] = $this->admin_model->get_stdplan_filterdata_plus_id();
+	    $this->data->add('delete_view_data', $this->admin_model->get_stdplan_filterdata_plus_id());
 	    
-	    // VIEW
-	    $data['global_data'] = $this->data->load();
-	    $data['title'] = 'Stundenplan löschen';
-	    $data['main_content'] = 'admin_stdplan_delete';
+	    $siteinfo = array(
+		'title' => 'Stundenplan löschen',
+		'main_content' => 'admin_stdplan_delete'
+	    );
+	    $this->data->add('siteinfo', $siteinfo);
 
-	    $this->load->view('includes/template', $data);
-
+	    $this->load->view('includes/template', $this->data->load());
 	}
 	
 	
@@ -1296,11 +1275,11 @@ class Admin extends FHD_Controller {
 	 * ************** Stundenplan IMPORT *******************
 	 * *****************************************************/
 	
-	function import_stdplan_view(){
+	function import_stdplan_view($error = ''){
 	    
 	    $this->load->helper('directory');
 	    
-	    $data['error'] = '';
+	    $this->data->add('error', $error);
 	    // get files from upload-folder
 	    $upload_dir = directory_map('./resources/uploads');
 	    // get stdgnge
@@ -1351,12 +1330,17 @@ class Admin extends FHD_Controller {
 		}
 	    }
 	    
-	    // VIEW
-	    $data['global_data'] = $this->data->load();
-	    $data['title'] = 'Stundenplan importieren';
-	    $data['main_content'] = 'admin_stdplan_import';
+//	    $this->data->add('stdgng_uploads_headlines', $data['stdgng_uploads_headlines']);
+//	    $this->data->add('stdgng_uploads', $data['stdgng_uploads']);
+	    $this->data->add('stdgng_uploads_list_filelist', $this->load->view('admin_stdplan_import_filelist', $data, TRUE));
+	    
+	    $siteinfo = array(
+		'title' => 'Stundenplan importieren',
+		'main_content' => 'admin_stdplan_import'
+	    );
+	    $this->data->add('siteinfo', $siteinfo);
 
-	    $this->load->view('includes/template', $data);
+	    $this->load->view('includes/template', $this->data->load());
 	}
 	
 	
@@ -1370,32 +1354,30 @@ class Admin extends FHD_Controller {
 	    $this->load->model('admin_model_parsing');
 
 	    if ( ! $this->upload->do_upload()){
-		$data['error'] = $this->upload->display_errors();
-		
 		// VIEW
-		$data['global_data'] = $this->data->load();
-		$data['title'] = 'Stundenplan importieren';
-		$data['main_content'] = 'admin_stdplan_import';
-
+		$this->import_stdplan_view($this->upload->display_errors());
 	    } else {
-		$data = array('upload_data' => $this->upload->data());
+		$upload_data = $this->upload->data();
+		
+		$this->data->add('upload_data', $upload_data);
 		
 		// start parsing stdplan
 //		$returned = $this->stdplan_parser->parse_stdplan($data['upload_data']);
-		$this->admin_model_parsing->parse_stdplan($data['upload_data']);
+		$this->admin_model_parsing->parse_stdplan($upload_data);
 		
 //		echo '<pre>';
 //		print_r($returned);
 //		echo '</pre>';  
 
 		// VIEW
-		$data['global_data'] = $this->data->load();
-		$data['title'] = 'Stundenplan importieren';
-		$data['main_content'] = 'admin_stdplan_import_success';
+		$siteinfo = array(
+		    'title' => 'Stundenplan importieren',
+		    'main_content' => 'admin_stdplan_import_success'
+		);
+		$this->data->add('siteinfo', $siteinfo);
 
+		$this->load->view('includes/template', $this->data->load());
 	    }
-	    $this->load->view('includes/template', $data);
-
 	}
 	
 	

@@ -24,7 +24,8 @@
     <?php
 	if($stdgng_uploads != null){
 	    // load viewlist
-	    $this->load->view('admin_stdplan_import_filelist');
+//	    $this->load->view('admin_stdplan_import_filelist');
+	    echo $stdgng_uploads_list_filelist;
         }
     ?>
     

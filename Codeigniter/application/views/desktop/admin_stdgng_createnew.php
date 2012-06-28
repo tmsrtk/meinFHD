@@ -1,4 +1,4 @@
-<div>
+<div class="well">
 
 <!-- 	<pre> -->
 	<?php //print_r($allStdgnge); ?>

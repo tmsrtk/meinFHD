@@ -323,23 +323,23 @@ class Admin_model_parsing extends CI_Model {
 		    $group_tmp = $this->get_max_group_id_from_gruppe();
 		    $group_id = $group_tmp->GruppeID;
 
-		    // TODO - CHECK!! save data
-		    $this->write_stdplan_data(
-			$course_id,
-			$event_type_id,
-			substr($course[1], 2),
-			($isWPF ? $wpfname : ''),
-			$course[2],
-			$dozent_id,
-			$course[5] + 1,
-			$course[5] + $course_duration,
-			$course[4] + 1,
-			($isWPF ? '1' : '0'),
-			$course[6],
-			$group_id,
-			99
-		    );
-		     
+//		    // TODO - CHECK!! save data
+//		    $this->write_stdplan_data(
+//			$course_id,
+//			$event_type_id,
+//			substr($course[1], 2),
+//			($isWPF ? $wpfname : ''),
+//			$course[2],
+//			$dozent_id,
+//			$course[5] + 1,
+//			$course[5] + $course_duration,
+//			$course[4] + 1,
+//			($isWPF ? '1' : '0'),
+//			$course[6],
+//			$group_id,
+//			99
+//		    );
+//		     
 		    // get max spkurs_id
 		    $spcourse_tmp = $this->get_max_spkurs_id();
 		    $spcourse_id = $spcourse_tmp->SPKursID;
@@ -418,7 +418,7 @@ class Admin_model_parsing extends CI_Model {
 	    'TagID' => $day_id,
 	    'GruppeID' => $group_id,
 	    'Farbe' => $color,
-	    'Editor' => $editor
+	    'EditorID' => $editor
 	);
 
 	$this->db->insert('stundenplankurs', $stdplan_record);
