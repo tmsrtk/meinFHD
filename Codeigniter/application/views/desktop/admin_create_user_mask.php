@@ -85,7 +85,7 @@
 	echo form_close();
 ?>
 
-
+<?php //FB::log($studiengaenge); ?>
 
 <script>
 

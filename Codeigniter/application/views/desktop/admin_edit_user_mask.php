@@ -45,6 +45,8 @@
 	</tbody>
 </table>
 
+<?php FB::log($studiengaenge); ?>
+
 
 
 <script>
