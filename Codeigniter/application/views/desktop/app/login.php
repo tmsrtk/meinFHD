@@ -1,4 +1,3 @@
-<?php # echo '<pre>'. print_r($this) . '</pre>'; ?>
 <?php extend('app/index.php'); ?>
 
 <?php startblock('title'); # extend the site's title ?><?php get_extended_block(); ?> - Login<?php endblock();?>
