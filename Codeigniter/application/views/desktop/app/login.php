@@ -74,15 +74,18 @@
 							<div class="control-group">
 								<div class="controls">
 									<div class="btn-group dropdown pull-left">
-										<button class="btn">Weitere Optionen</button>
+										
+										<button class="btn"><i class="icon-question-sign"></i> Hilfe</button>
 										<button class="btn dropdown-toggle" data-toggle="dropdown">
 											<span class="caret"></span>
 										</button>
 										<ul class="dropdown-menu">
 											<!--Modal trigger Zugang-->
 											<li><a  class="" data-toggle="modal" href="#accountdata">Zugang anfordern</a></li>
+											<li><a  class="" data-toggle="modal" href="#accountdata"><i class="icon-user"></i> Zugang anfordern</a></li>
 											<!--Modal trigger pw-->
 											<li><a class="" data-toggle="modal" href="#accountdata">Passwort vergessen</a></li>
+											<li><a class="" data-toggle="modal" href="#accountdata"><i class="icon-envelope"></i> Passwort vergessen</a></li>
 										</ul>
 									</div>
 								</div>
