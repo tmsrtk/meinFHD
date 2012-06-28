@@ -1058,6 +1058,10 @@ class Admin extends FHD_Controller {
 	    $data['days'] = $days;
 	    $data['colors'] = $colors;
 	    
+//	    echo '<pre>';
+//	    print_r($all_profs[$i]->DozentID);
+//	    echo '</pre>';
+	    
 	    // and prepare for dropdowns
 	    // evenettypes
 	    for($i = 0; $i < count($eventtypes); $i++){
@@ -1111,9 +1115,6 @@ class Admin extends FHD_Controller {
 	    $data['days_dropdown_options'] = $days_dropdown_options;
 	    $data['colors_dropdown_options'] = $colors_dropdown_options;
 	    
-//	    echo '<pre>';
-//	    print_r($data);
-//	    echo '</pre>';
 	    
 	    foreach ($stdplan_events_of_id as $sp_events){
 		$data['spkurs_id'] = $sp_events->SPKursID;

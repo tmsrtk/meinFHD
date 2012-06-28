@@ -49,7 +49,7 @@
     <td><?php print form_dropdown(
 	    $spkurs_id.'_DozentID', 
 	    $profs_dropdown_options,
-	    $all_profs[$dozent_id]->DozentID,
+	    $dozent_id,
 	    $dropdown_attributes); ?>
     </td>
 
