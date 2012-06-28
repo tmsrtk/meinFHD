@@ -5,6 +5,14 @@
 <div>
     
     <div class="well">
+	<pre>
+	    <?php print_r($global_data); ?>
+	</pre>
+	
+    </div>
+ 
+    
+    <div class="well">
 	<!-- Show relevant persons for this course -->
 	<?php echo $persons; ?>
     </div>

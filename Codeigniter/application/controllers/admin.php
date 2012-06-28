@@ -1365,7 +1365,6 @@ class Admin extends FHD_Controller {
 		$data['title'] = 'Stundenplan importieren';
 		$data['main_content'] = 'admin_stdplan_import';
 
-		$this->load->view('includes/template', $data);
 	    } else {
 		$data = array('upload_data' => $this->upload->data());
 		
@@ -1382,8 +1381,8 @@ class Admin extends FHD_Controller {
 		$data['title'] = 'Stundenplan importieren';
 		$data['main_content'] = 'admin_stdplan_import_success';
 
-		$this->load->view('includes/template', $data);
 	    }
+	    $this->load->view('includes/template', $data);
 
 	}
 	

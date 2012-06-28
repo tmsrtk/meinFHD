@@ -40,40 +40,40 @@ class Kursverwaltung extends FHD_Controller {
 	
 	// add views to data corresponding to user_role
 //	if($user_role == $is_prof || $user_role == $is_labing){
-//	    $person_data['tutor'] = '0';
-//	    $data['persons'] = $this->load->view('kursverwaltung-subviews/kursverwaltung_persons', $person_data, TRUE);
-//
-//	    // data for subviews
-//	    $subview_data['lab'] = '0';
-//	    //get person-overview view
-//	    $data['lecture'] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture', $subview_data, TRUE);
-//	    $data['tut'] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture', $subview_data, TRUE);
-//
-//	    // data for subviews
-//	    $subview_data['lab'] = '1';
-//	    // foreach lab - save indexed to data
-//	    $data['lab'][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture', $subview_data, TRUE);
-//	    $data['lab'][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture', $subview_data, TRUE);
-//	    $data['lab'][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture', $subview_data, TRUE);
-//	    $data['lab'][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture', $subview_data, TRUE);
-//	} else {
-	    // user is tutor
-	    $person_data['tutor'] = '1';
+	    $person_data['tutor'] = '0';
 	    $data['persons'] = $this->load->view('kursverwaltung-subviews/kursverwaltung_persons', $person_data, TRUE);
 
 	    // data for subviews
 	    $subview_data['lab'] = '0';
 	    //get person-overview view
-	    $data['lecture'] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture_tut', $subview_data, TRUE);
+	    $data['lecture'] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture', $subview_data, TRUE);
 	    $data['tut'] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture', $subview_data, TRUE);
 
 	    // data for subviews
 	    $subview_data['lab'] = '1';
 	    // foreach lab - save indexed to data
-	    $data['lab'][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture_tut', $subview_data, TRUE);
-	    $data['lab'][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture_tut', $subview_data, TRUE);
-	    $data['lab'][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture_tut', $subview_data, TRUE);
-	    $data['lab'][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture_tut', $subview_data, TRUE);
+	    $data['lab'][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture', $subview_data, TRUE);
+	    $data['lab'][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture', $subview_data, TRUE);
+	    $data['lab'][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture', $subview_data, TRUE);
+	    $data['lab'][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture', $subview_data, TRUE);
+//	} else {
+//	    // user is tutor
+//	    $person_data['tutor'] = '1';
+//	    $data['persons'] = $this->load->view('kursverwaltung-subviews/kursverwaltung_persons', $person_data, TRUE);
+//
+//	    // data for subviews
+//	    $subview_data['lab'] = '0';
+//	    //get person-overview view
+//	    $data['lecture'] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture_tut', $subview_data, TRUE);
+//	    $data['tut'] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture', $subview_data, TRUE);
+//
+//	    // data for subviews
+//	    $subview_data['lab'] = '1';
+//	    // foreach lab - save indexed to data
+//	    $data['lab'][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture_tut', $subview_data, TRUE);
+//	    $data['lab'][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture_tut', $subview_data, TRUE);
+//	    $data['lab'][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture_tut', $subview_data, TRUE);
+//	    $data['lab'][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture_tut', $subview_data, TRUE);
 //	}	
 	
 	$data['global_data'] = $this->data->load();
