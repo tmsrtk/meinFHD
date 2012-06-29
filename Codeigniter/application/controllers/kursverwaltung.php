@@ -46,7 +46,7 @@ class Kursverwaltung extends FHD_Controller {
 	$subview_data['day_options'] = $this->helper_model->get_dropdown_options('days');
 	
 	// add views to data corresponding to user_role
-	$role['role_tutor'] = '0';
+	$role['role_tutor'] = '1';
 	$subview_to_load = '';
 
 	// switch if user is tutor or not
