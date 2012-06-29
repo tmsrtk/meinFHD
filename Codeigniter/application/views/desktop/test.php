@@ -1,1 +1,1 @@
-<?php FB::log($rollentest) ?>
+<?php FB::log($userdata) ?>

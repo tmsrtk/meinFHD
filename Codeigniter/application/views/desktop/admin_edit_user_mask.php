@@ -4,7 +4,7 @@
 	// needet vars
 	$data_formopen = array('class' => 'well form-search', 'id' => 'edit_user');
 	$data_role = array();
-	$data_role = $userdata['roles'];
+	$data_role = $all_roles;
 	// add as first element
 	array_unshift($data_role, 'Bitte auswaehlen');
 	$data_role_ext = 'class="user_change_rolle_dd" id="user_cr_role"';

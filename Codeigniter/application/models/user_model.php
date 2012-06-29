@@ -7,31 +7,54 @@ class User_model extends CI_Model {
 	private $forename = '';
 	private $lastname = '';
 
+	private $user_id = 0;
 	private $user_roles = array();
 	private $user_permissions_all = array();
 
 
+	/**
+	 * 
+	 */
 	public function __construct()
 	{
 		parent::__construct();
 
-		$user_id = $this->authentication->user_id();
-		if ($user_id)
+		$this->_init();
+	}
+
+	/**
+	 * Responsible to get all needed userdata
+	 */
+	private function _init()
+	{
+		$uid = $this->authentication->user_id();
+		if ($uid)
 		{
+			$this->user_id = $uid;
+			$this->user_roles = $this->_query_all_roles();
 			$this->user_permissions_all = $this->_query_all_permissions();
 		}
 
+		$userdata = array(
+                'userid' => $this->user_id,
+                'loginname' => 'Freak',
+                'userpermissions' => $this->user_permissions_all,
+                'roles' => $this->user_roles
+            );
+
+        $this->data->add('userdata', $userdata);
+
 
 		// write userdata in global $data
-		$this->data->add('rollentest', $this->user_roles);
+		$this->data->add('rollentest', $this->user_permissions_all);
 	}
 
-
+	/** */
 	private function _query_all_permissions()
 	{
 		$this->db->select('RolleID')
 					   ->from('benutzer_mm_rolle')
-					   ->where('BenutzerID', $user_id);
+					   ->where('BenutzerID', $this->user_id);
 		$user_id_role = $this->db->get()->result();
 
 		// var_dump($user_id_role);
@@ -53,7 +76,7 @@ class User_model extends CI_Model {
 	}
 
 
-
+	/** */
 	// checks array for duplicates and deletes these. creates a 1dim array
 	private function _clean_permissions_array($permissions_to_clean)
 	{
@@ -73,7 +96,35 @@ class User_model extends CI_Model {
 		return $permissions_cleaned;
 	}
 
+	/** */
+	// checks array for duplicates and deletes these. creates a 1dim array
+	private function _clean_roles_array($permissions_to_clean)
+	{
+		// var_dump($permissions_to_clean);
 
+		$permissions_cleaned = array();
+		foreach ($permissions_to_clean as $role) 
+		{
+			foreach ($role as $v)
+			{
+				if ( ! in_array($v['RolleID'], $permissions_cleaned))
+				{
+					array_push($permissions_cleaned, $v['RolleID']);
+				}
+			}
+		}
+		return $permissions_cleaned;
+	}
+
+
+	private function _query_all_roles()
+	{
+		$this->db->select('RolleID')
+				 ->from('benutzer_mm_rolle')
+				 ->where('BenutzerID', $this->user_id);
+
+		return $this->_clean_roles_array($this->db->get()->result_array());
+	}
 
 
 
