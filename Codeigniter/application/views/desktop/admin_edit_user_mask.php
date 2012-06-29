@@ -1,5 +1,3 @@
-<h2>Benutzer bearbeiten</h2>
-
 <?php
 	// needet vars
 	$data_formopen = array('class' => 'well form-search', 'id' => 'edit_user');
@@ -16,6 +14,8 @@
 	);
 	//--------------------------------------------------------------------------
 ?>
+
+<h2>Benutzer bearbeiten</h2>
 
 <?php
 	// validation errors or empty string otherwise

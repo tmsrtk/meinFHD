@@ -1,5 +1,3 @@
-<h2>Benutzer anlegen</h2>
-
 <?php
 	// needet vars
 	$data_formopen = array('class' => 'well', 'id' => 'create_user');
@@ -48,6 +46,7 @@
 	//--------------------------------------------------------------------------
 ?>
 
+<h2>Benutzer anlegen</h2>
 
 <?php 
 	// form validation
@@ -74,14 +73,12 @@
 	echo form_input($data_startjahr);
 	// echo form_radio('semesteranfang', 'WS', TRUE);
 	// creating the radio manually, to use the set_checkbox() method
-	// echo '<input type="radio" name="semesteranfang" value="WiSe"'.set_radio('semesteranfang', 'WiSe', TRUE).' />';
-	// echo 'WiSe';
-	// // echo form_radio('semesteranfang', 'SS', FALSE);
-	// echo '<input type="radio" name="semesteranfang" value="SoSe"'.set_radio('semesteranfang', 'SoSe', FALSE).' />';
-	// echo 'SoSe'; echo '<br />';
+	echo '<input type="radio" name="semesteranfang" value="WiSe"'.set_radio('semesteranfang', 'WiSe', TRUE).' />';
+	echo 'WiSe';
+	// echo form_radio('semesteranfang', 'SS', FALSE);
+	echo '<input type="radio" name="semesteranfang" value="SoSe"'.set_radio('semesteranfang', 'SoSe', FALSE).' />';
+	echo 'SoSe'; echo '<br />';
 ?>
-<input type="radio" name="semesteranfang" value="WiSe" <?php echo set_radio('semesteranfang', 'WiSe', TRUE); ?> />
-<input type="radio" name="semesteranfang" value="SoSe" <?php echo set_radio('semesteranfang', 'SoSe'); ?> />
 <?php
 	echo form_dropdown('studiengang', $studiengaenge, /*standard value*/'', $data_studiengang);
 ?>

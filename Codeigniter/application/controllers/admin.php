@@ -365,7 +365,7 @@ class Admin extends FHD_Controller {
 
 		// depending on role, different validations
 		// if student
-		if ($role === '4'/*student*/)
+		if ($role === '5'/*student*/)
 		{
 			$rules = array();
 
