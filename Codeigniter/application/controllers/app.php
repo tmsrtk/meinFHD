@@ -29,7 +29,7 @@ class App extends FHD_Controller {
 	 */
 	public function index()
 	{
-		$this->load->view('app', $this->data->load());
+		$this->load->view('app/index', $this->data->load());
 	}
 	
 	/**
@@ -63,7 +63,7 @@ class App extends FHD_Controller {
 		}
 		
 		// if there's no post data, we should show the login screen
-		$this->load->view('login', $this->data->load());
+		$this->load->view('app/login', $this->data->load());
 	}
 	
 	/**
