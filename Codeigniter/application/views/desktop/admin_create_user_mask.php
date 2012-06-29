@@ -1,6 +1,5 @@
 <h2>Benutzer anlegen</h2>
 
-
 <?php
 	// needet vars
 	$data_formopen = array('class' => 'well', 'id' => 'create_user');
@@ -41,7 +40,7 @@
 			'placeholder' => 'Startjahr',
 			'value' => set_value('startjahr')
 		);
-	$data_studiengang = 'class="studiengang_dd"';
+	$data_studiengang = 'class="studiengang"';
 	$submit_data = array(
 			'name'			=> 'submit',
 			'class'			=> 'btn btn-danger'
@@ -61,7 +60,7 @@
 <?php
 	// main inputs for all users
 	echo form_open('admin/validate_create_user_form/', $data_formopen);
-	echo form_dropdown('role', $userdata['roles'], /*standard value*/'0', $data_roles);
+	echo form_dropdown('role', $all_roles, /*standard value*/'0', $data_roles);
 	echo form_input($data_loginname);
 	echo form_input($data_email);
 	echo form_input($data_forename);
@@ -73,11 +72,18 @@
 	// matrnr, startjahr+sem, studiengang
 	echo form_input($data_matrikelnummer);
 	echo form_input($data_startjahr);
-	echo form_radio('semesteranfang', 'WS', TRUE);
-	echo 'WS';
-	echo form_radio('semesteranfang', 'SS', FALSE);
-	echo 'SS'; echo '<br />';
-	echo form_dropdown('studiengang_dd', $studiengaenge, /*standard value*/'', $data_studiengang);
+	// echo form_radio('semesteranfang', 'WS', TRUE);
+	// creating the radio manually, to use the set_checkbox() method
+	// echo '<input type="radio" name="semesteranfang" value="WiSe"'.set_radio('semesteranfang', 'WiSe', TRUE).' />';
+	// echo 'WiSe';
+	// // echo form_radio('semesteranfang', 'SS', FALSE);
+	// echo '<input type="radio" name="semesteranfang" value="SoSe"'.set_radio('semesteranfang', 'SoSe', FALSE).' />';
+	// echo 'SoSe'; echo '<br />';
+?>
+<input type="radio" name="semesteranfang" value="WiSe" <?php echo set_radio('semesteranfang', 'WiSe', TRUE); ?> />
+<input type="radio" name="semesteranfang" value="SoSe" <?php echo set_radio('semesteranfang', 'SoSe'); ?> />
+<?php
+	echo form_dropdown('studiengang', $studiengaenge, /*standard value*/'', $data_studiengang);
 ?>
 	</div>
 <?php
@@ -109,10 +115,10 @@
 
 		toggleStudentsdata : function(selectbox) {
 			var studentdata_container = this.config.studentdataField;
-			var dropdown_value = (selectbox) 
-				? dropdown_value = selectbox.val() 
+			var dropdown_value = (selectbox)
+				? dropdown_value = selectbox.val()
 				: '0';
-			(dropdown_value === '4') ? studentdata_container.slideDown() : studentdata_container.slideUp();
+			(dropdown_value === '5') ? studentdata_container.slideDown() : studentdata_container.slideUp();
 		}
 
 	};

@@ -141,7 +141,7 @@ class Admin_model extends CI_Model {
 				'Matrikelnummer' 			=> $form_data['matrikelnummer'],
 				'StudienbeginnJahr' 		=> $form_data['startjahr'],
 				'StudienbeginnSemestertyp' 	=> $form_data['semesteranfang'],
-				'StudiengangID' 			=> $form_data['studiengang_dd'],
+				'StudiengangID' 			=> $form_data['studiengang'],
 				'Passwort' 					=> md5($password)
 			);
 
@@ -168,7 +168,7 @@ class Admin_model extends CI_Model {
 				'Matrikelnummer' 			=> $form_data['matrikelnummer'],
 				'Emailadresse' 				=> $form_data['email'],
 				'Semester'				 	=> $form_data['semesteranfang'],
-				'Studiengang' 				=> $form_data['studiengang_dd'],
+				'Studiengang' 				=> $form_data['studiengang'],
 				'TypID'						=> $form_data['role']
 			);
 
@@ -221,18 +221,21 @@ class Admin_model extends CI_Model {
 
 
 		// delete requested invitation
-		$this->delete_invitation($invitation_id);
+		$this->_delete_invitation($invitation_id);
 	}
 
-	function delete_invitation($invitation_id)
+	/**
+	 *
+	 */
+	private function _delete_invitation($invitation_id)
 	{
 		$this->db->where('AnfrageID', $invitation_id);
 		$this->db->delete('anfrage'); 
 	}
 	
-	/*
-	*
-	*/
+	/**
+	 *
+	 */
 	public function get_all_roles()
 	{
 		// query raw data
@@ -258,6 +261,9 @@ class Admin_model extends CI_Model {
 		return $my_result;
 	}
 
+	/**
+	 *
+	 */
 	public function get_all_studiengaenge()
 	{
 		// query raw data
@@ -319,7 +325,8 @@ class Admin_model extends CI_Model {
 
 	public function get_user_per_role_searchletter($role_id='', $searchstring='')
 	{
-		$this->db->select('*')
+		$this->db->distinct()
+				 ->select('benutzer.*')
 				 ->from('benutzer')
 				 ->join('benutzer_mm_rolle', 'benutzer_mm_rolle.BenutzerID = benutzer.BenutzerID');
 		// if role_id was set
@@ -366,7 +373,8 @@ class Admin_model extends CI_Model {
 
 		// return;
 
-		foreach ($user_id_role as $key => $value) {
+		foreach ($user_id_role as $key => $value)
+		{
 			$this->db->select('BerechtigungID')
 					  ->from('rolle_mm_berechtigung')
 					  ->where('RolleID', $value->RolleID);

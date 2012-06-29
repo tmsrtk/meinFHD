@@ -27,6 +27,9 @@
 				<?php if (in_array(700, $userdata['userpermissions'])) : ?>
 				<li><a href="#">Mein Stundenplan</a></li>
 				<?php endif ?>
+				<?php if (in_array(800, $userdata['userpermissions'])) : ?>
+				<li><a href="#">Meine Kurse</a></li>
+				<?php endif ?>
 				<?php if (in_array(200, $userdata['userpermissions'])) : ?>
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
