@@ -1,6 +1,5 @@
         <div class="clearfix"></div>
-            <h2>Hier ist der Footer!</h2>
-        </div>
+        <h2>Hier ist der Footer!</h2>
         <!-- only head.js is required, due to asynchronous js file handling -->
         <script src="<?php print base_url(); ?>resources/headjs/head.min.js" type="text/javascript"></script>
         <script type="text/javascript">
