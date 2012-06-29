@@ -16,6 +16,11 @@
  */
 class App extends FHD_Controller {
 	
+	// default constructor to prepare all needed stuff
+	function __construct(){
+		parent::__construct();
+	}
+	
 	/**
 	 * Index
 	 *
