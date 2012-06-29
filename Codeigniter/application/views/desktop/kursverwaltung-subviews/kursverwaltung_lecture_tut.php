@@ -7,21 +7,6 @@
 	'class' => 'span2'
     );
     
-    $starttime_options = array(
-	'1' => '8:00',
-	'2' => '9:00'
-    );
-    
-    $endtime_options = array(
-	'1' => '8:00',
-	'2' => '9:00'
-    );
-    
-    $day_options = array(
-	'1' => 'Montag',
-	'2' => 'Dienstag'
-    );
-       
     $submit_button_attrs = 'id = #stdgng-course-details-save-button class = "btn-warning"';
     
     $dropdown_attrs = 'class = "span2"';
@@ -39,6 +24,11 @@
 	'class' => 'label label-info',
 	'for' => 'kursverwaltung-raum'
     );
+    
+//    echo '<pre>';
+//    print_r($starttime_options);
+//    echo '</pre>';
+    
 ?>
 
 <?php 
@@ -53,11 +43,11 @@
     
     echo form_input($course_name_attrs);
     // starttime
-    echo form_dropdown('starttime', $starttime_options, '1', $dropdown_attrs);// TODO get starttime via data[] $starttime);
+    echo form_dropdown('starttime', $starttime_options, '', $dropdown_attrs);// TODO get starttime via data[] $starttime);
     // endtime
-    echo form_dropdown('endtime', $endtime_options, '2', $dropdown_attrs);// TODO s.o. $endtime);
+    echo form_dropdown('endtime', $endtime_options, '', $dropdown_attrs);// TODO s.o. $endtime);
     // day
-    echo form_dropdown('day', $day_options, '2', $dropdown_attrs);// TODO s.o. $day);
+    echo form_dropdown('day', $day_options, '', $dropdown_attrs);// TODO s.o. $day);
 
     // add another field for number of possible particitpants - for labs view
     if($lab == '1'){

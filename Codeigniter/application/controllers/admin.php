@@ -1045,9 +1045,14 @@ class Admin extends FHD_Controller {
 	    // get dropdown-data: all event-types, profs, times, days
 	    $eventtypes = $this->admin_model->get_eventtypes();
 	    $all_profs = $this->admin_model->get_profs_for_stdplan_list();
-	    $times = $this->admin_model->get_start_end_times();
-	    $days = $this->admin_model->get_days();
+	    $times = $this->admin_model->get_start_end_times(); // also used to select active option
+	    $days = $this->admin_model->get_days(); // also used to select active option
 	    $colors = $this->admin_model->get_colors_from_stdplan();
+	    
+	    // getting data directly from helper_model - not implemented for all dropdowns
+	    $starttimes_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
+	    $endtimes_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
+	    $days_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
 	    
 	    // save dropdown-data into $data
 	    $data['eventtypes'] = $eventtypes;
@@ -1076,24 +1081,6 @@ class Admin extends FHD_Controller {
 				$all_profs[$i]->Nachname.', '.$all_profs[$i]->Vorname;
 		} else {
 			$profs_dropdown_options[$i] = '';
-		}
-	    }
-	    // start/endtimes
-	    for($i = 0; $i < count($times); $i++){
-		if($i != 0){
-			$starttimes_dropdown_options[$i] = $times[$i]->Beginn;
-			$endtimes_dropdown_options[$i] = $times[$i]->Ende;
-		} else {
-			$starttimes_dropdown_options[$i] = '';
-			$endtimes_dropdown_options[$i] = '';
-		}
-	    }
-	    // days
-	    for($i = 0; $i < count($days); $i++){
-		if($i != 0){
-			$days_dropdown_options[$i] = $days[$i]->TagName;
-		} else {
-			$days_dropdown_options[$i] = '';
 		}
 	    }
 	    // colors

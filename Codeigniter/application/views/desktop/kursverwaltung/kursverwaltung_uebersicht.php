@@ -5,9 +5,9 @@
 <div>
     
     <div class="well">
-	<pre>
-	    <?php print_r($global_data); ?>
-	</pre>
+<!--	<pre>
+	    <?php // print_r($global_data); ?>
+	</pre>-->
 	
     </div>
  
