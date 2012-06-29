@@ -141,7 +141,7 @@ class Admin_model extends CI_Model {
 				'Matrikelnummer' 			=> $form_data['matrikelnummer'],
 				'StudienbeginnJahr' 		=> $form_data['startjahr'],
 				'StudienbeginnSemestertyp' 	=> $form_data['semesteranfang'],
-				'StudiengangID' 			=> $form_data['studiengang_dd'],
+				'StudiengangID' 			=> $form_data['studiengang'],
 				'Passwort' 					=> md5($password)
 			);
 
@@ -168,7 +168,7 @@ class Admin_model extends CI_Model {
 				'Matrikelnummer' 			=> $form_data['matrikelnummer'],
 				'Emailadresse' 				=> $form_data['email'],
 				'Semester'				 	=> $form_data['semesteranfang'],
-				'Studiengang' 				=> $form_data['studiengang_dd'],
+				'Studiengang' 				=> $form_data['studiengang'],
 				'TypID'						=> $form_data['role']
 			);
 
@@ -221,18 +221,21 @@ class Admin_model extends CI_Model {
 
 
 		// delete requested invitation
-		$this->delete_invitation($invitation_id);
+		$this->_delete_invitation($invitation_id);
 	}
 
-	function delete_invitation($invitation_id)
+	/**
+	 *
+	 */
+	private function _delete_invitation($invitation_id)
 	{
 		$this->db->where('AnfrageID', $invitation_id);
 		$this->db->delete('anfrage'); 
 	}
 	
-	/*
-	*
-	*/
+	/**
+	 *
+	 */
 	public function get_all_roles()
 	{
 		// query raw data
@@ -258,6 +261,9 @@ class Admin_model extends CI_Model {
 		return $my_result;
 	}
 
+	/**
+	 *
+	 */
 	public function get_all_studiengaenge()
 	{
 		// query raw data
@@ -319,7 +325,8 @@ class Admin_model extends CI_Model {
 
 	public function get_user_per_role_searchletter($role_id='', $searchstring='')
 	{
-		$this->db->select('*')
+		$this->db->distinct()
+				 ->select('benutzer.*')
 				 ->from('benutzer')
 				 ->join('benutzer_mm_rolle', 'benutzer_mm_rolle.BenutzerID = benutzer.BenutzerID');
 		// if role_id was set
@@ -360,14 +367,27 @@ class Admin_model extends CI_Model {
 		$this->db->select('RolleID')
 					   ->from('benutzer_mm_rolle')
 					   ->where('BenutzerID', $user_id);
-		$user_id_role = $this->db->get()->row();
+		$user_id_role = $this->db->get()->result();
 
 		// var_dump($user_id_role);
 
-		$this->db->select('BerechtigungID')
+		// return;
+
+		foreach ($user_id_role as $key => $value)
+		{
+			$this->db->select('BerechtigungID')
 					  ->from('rolle_mm_berechtigung')
-					  ->where('RolleID', $user_id_role->RolleID);
-		$result_raw = $this->db->get()->result_array();
+					  ->where('RolleID', $value->RolleID);
+			$result_raw[] = $this->db->get()->result_array();
+		}
+
+		// var_dump($result_raw);
+
+		// var_dump(expression)
+
+		// $this->db->select('BerechtigungID')
+		// 			  ->from('rolle_mm_berechtigung')
+		// 			  ->where('RolleID', $user_id_role->RolleID);
 		$result_clean = $this->clean_permissions_array($result_raw);
 
 		return $result_clean;
@@ -376,12 +396,17 @@ class Admin_model extends CI_Model {
 	// checks array for duplicates and deletes these. creates a 1dim array
 	function clean_permissions_array($permissions_to_clean)
 	{
+		// var_dump($permissions_to_clean);
+
 		$permissions_cleaned = array();
-		foreach ($permissions_to_clean as $key => $value) 
+		foreach ($permissions_to_clean as $role) 
 		{
-			if ( ! in_array($value['BerechtigungID'], $permissions_cleaned))
+			foreach ($role as $v)
 			{
-				array_push($permissions_cleaned, $value['BerechtigungID']);
+				if ( ! in_array($v['BerechtigungID'], $permissions_cleaned))
+				{
+					array_push($permissions_cleaned, $v['BerechtigungID']);
+				}
 			}
 		}
 		return $permissions_cleaned;

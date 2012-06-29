@@ -22,10 +22,13 @@
 				</li>
 				<?php endif ?>
 				<?php if (in_array(600, $userdata['userpermissions'])) : ?>
-				<li><a href="<?php echo site_url(); ?>semesterplan/">Mein Semesterplan</a></li>
+				<li><a href="<?php echo site_url(); ?>studienplan/studienplan_show">Mein Semesterplan</a></li>
 				<?php endif ?>
 				<?php if (in_array(700, $userdata['userpermissions'])) : ?>
 				<li><a href="#">Mein Stundenplan</a></li>
+				<?php endif ?>
+				<?php if (in_array(800, $userdata['userpermissions'])) : ?>
+				<li><a href="#">Meine Kurse</a></li>
 				<?php endif ?>
 				<?php if (in_array(200, $userdata['userpermissions'])) : ?>
 				<li class="dropdown">

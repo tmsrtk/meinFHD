@@ -18,23 +18,6 @@ class Admin extends FHD_Controller {
 		
 		// get all stdgnge for the views
 		$data['allStdgnge'] = $this->admin_model->getAllStdgnge();
-
-		//// data
-		// userdata
-        $session_userid = $this->authentication->user_id();
-
-        $loginname = $this->admin_model->get_loginname($session_userid);                ///////////////////////////////
-        $user_permissions = $this->admin_model->get_all_userpermissions($session_userid);
-        $roles = $this->admin_model->get_all_roles();
-        
-        $userdata = array(
-                'userid' => $session_userid,
-                'loginname' => $loginname['LoginName'],
-                'userpermissions' => $user_permissions,
-                'roles' => $roles
-            );
-
-        $this->data->add('userdata', $userdata);
 	}
 	
 	
@@ -176,6 +159,8 @@ class Admin extends FHD_Controller {
 			);
 		$this->data->add('siteinfo', $siteinfo);
 
+		// all roles
+		$this->data->add('all_roles', $this->admin_model->get_all_roles());
 		// all studiengänge
 		$this->data->add('studiengaenge', $this->admin_model->get_all_studiengaenge());
 
@@ -196,7 +181,10 @@ class Admin extends FHD_Controller {
 		$this->data->add('siteinfo', $siteinfo);
 
 		// all users
-		$data['user'] = $this->admin_model->get_all_user();
+		// $data['user'] = $this->admin_model->get_all_user();
+
+		// all roles
+		$this->data->add('all_roles', $this->admin_model->get_all_roles());
 
 		//----------------------------------------------------------------------
 		$this->load->view('includes/template', $this->data->load());
@@ -434,7 +422,7 @@ class Admin extends FHD_Controller {
 
 		// depending on role, different validations
 		// if student
-		if ($role === '4'/*student*/)
+		if ($role === '5'/*student*/)
 		{
 			$rules = array();
 
