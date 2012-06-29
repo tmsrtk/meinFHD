@@ -8,7 +8,7 @@
 		<span class="label label-info">Dozent(en)</span>
 	    </td>
 	    <td>
-		<?php if($tutor == '0'){
+		<?php if($role_tutor == '0'){
 		    echo '<a class="btn btn-mini" href="#">+</a>';
 		}
 		?>
@@ -21,7 +21,7 @@
 		<span class="label label-info">Betreuer</span>
 	    </td>
 	    <td>
-		<?php if($tutor == '0'){
+		<?php if($role_tutor == '0'){
 		    echo '<a class="btn btn-mini" href="#">+</a>';
 		}
 		?>
@@ -34,7 +34,7 @@
 		<span class="label label-info">Tutor(en)</span>
 	    </td>
 	    <td>
-		<?php if($tutor == '0'){
+		<?php if($role_tutor == '0'){
 		    echo '<a class="btn btn-mini" href="#">+</a>';
 		}
 		?>

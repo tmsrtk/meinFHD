@@ -11,12 +11,14 @@
     
     $dropdown_attrs = 'class = "span2"';
     
-    $lab_participants_attrs = array(
-	'name' => 'teilnehmer', // TODO $KursID.'kurs_kurz',
-	'id' => 'kursverwaltung-tn',
-	'value' => 'TN', // TODO $kurs_kurz,
-	'class' => 'span1'
-    );
+    if($lab == '1'){
+	$lab_participants_attrs = array(
+	    'name' => 'teilnehmer', // TODO $KursID.'kurs_kurz',
+	    'id' => 'kursverwaltung-tn',
+	    'value' => $lecture_details->TeilnehmerMax, // TODO $kurs_kurz,
+	    'class' => 'span1'
+	);
+    }
     
     $label_attrs = array(
 	'name' => 'group_label',
@@ -26,7 +28,7 @@
     );
     
 //    echo '<pre>';
-//    print_r($starttime_options);
+//    print_r($lecture_details);
 //    echo '</pre>';
     
 ?>
@@ -41,22 +43,22 @@
 	echo form_label('Gruppe 1-4', '', $label_attrs);
     }
     
-    echo form_input($course_name_attrs);
+//    echo form_input($course_name_attrs);
     // starttime
-    echo form_dropdown('starttime', $starttime_options, '', $dropdown_attrs);// TODO get starttime via data[] $starttime);
+    echo $starttime_options[$lecture_details->StartID];
     // endtime
-    echo form_dropdown('endtime', $endtime_options, '', $dropdown_attrs);// TODO s.o. $endtime);
+    echo $endtime_options[$lecture_details->EndeID];
     // day
-    echo form_dropdown('day', $day_options, '', $dropdown_attrs);// TODO s.o. $day);
+    echo $day_options[$lecture_details->TagID];
 
     // add another field for number of possible particitpants - for labs view
     if($lab == '1'){
 	// max participants - only relevant for labs
-	echo form_input($lab_participants_attrs);
+	echo $lecture_details->TeilnehmerMax;
     }
     
     // submit-button
-    echo form_submit('save_course_details', 'Speichern', $submit_button_attrs);
+//    echo form_submit('save_course_details', 'Speichern', $submit_button_attrs);
 
     echo form_close();
 
