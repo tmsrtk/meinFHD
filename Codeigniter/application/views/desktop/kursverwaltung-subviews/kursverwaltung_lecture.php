@@ -32,11 +32,11 @@
 //    echo '</pre>';
     
 ?>
+<!--building table >> header-->
+<div></div>
 
-<?php 
-    // if($this->authentication->role == $is_prof || $this->authentication->role == $is_betreuer)
-    echo form_open();
-
+<?php echo form_open(); ?>
+<?php
     if($lab == '1'){
 	// group-label for better overview
 //	echo '<span class="label label-info">1-4</span>';

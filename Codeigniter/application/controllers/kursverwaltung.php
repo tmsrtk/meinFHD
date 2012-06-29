@@ -2,30 +2,16 @@
 
 class Kursverwaltung extends FHD_Controller {
 
-    
+    private $permissions;
+    private $roles;
+    private $roleIds;
 
     function __construct(){
 	parent::__construct();
-	
 	$this->load->model('kursverwaltung_model');
-	$this->load->model('admin_model'); // TODO: daten müssen aus session kommen
 	
-	//// data
-	// userdata
-	$session_userid = 1357;
-
-	$loginname = $this->admin_model->get_loginname($session_userid); 				///////////////////////////////
-	$user_permissions = $this->admin_model->get_all_userpermissions($session_userid);
-	$roles = $this->admin_model->get_all_roles();
-
-	$userdata = array(
-			'userid' => $session_userid,
-			'loginname' => $loginname['LoginName'],
-			'userpermissions' => $user_permissions,
-			'roles' => $roles
-		);
-
-	$this->data->add('userdata', $userdata);
+	// Daten holen - Alle Rollen mit Bezeichnung, Alle Berechtigungen mit Bezeichnung, gesondert die RoleIds
+	$this->roleIds = $this->user_model->get_all_roles();
 
     }
     
@@ -33,7 +19,7 @@ class Kursverwaltung extends FHD_Controller {
 //	    print_r($subview_data['lecture_details']);
 //	    echo '</pre>';
     
-    function show_kursmgt(){
+    function show_coursemgt(){
 	// get data to show in view
 	// course-details 
 	// time array for dropdown
@@ -45,15 +31,15 @@ class Kursverwaltung extends FHD_Controller {
 	$subview_data['endtime_options'] = $this->helper_model->get_dropdown_options('endtimes');
 	$subview_data['day_options'] = $this->helper_model->get_dropdown_options('days');
 	
-	// add views to data corresponding to user_role
-	$role['role_tutor'] = '1';
+	$role['role_tutor'] = 0;
 	$subview_to_load = '';
-
+	
 	// switch if user is tutor or not
-	if($role['role_tutor'] != 1){
-	    $subview_to_load = 'kursverwaltung-subviews/kursverwaltung_lecture';
-	} else {
+	if(!in_array(2, $this->roleIds) && !in_array(3, $this->roleIds)){
+	    $role['role_tutor'] = '1';
 	    $subview_to_load = 'kursverwaltung-subviews/kursverwaltung_lecture_tut';
+	} else {
+	    $subview_to_load = 'kursverwaltung-subviews/kursverwaltung_lecture';
 	}
 
 	//get person-overview view
