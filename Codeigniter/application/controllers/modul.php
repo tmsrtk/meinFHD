@@ -10,16 +10,11 @@
  */
 
 /**
- * Stundenplan Controller 
+ * Modul-Controller 
+ *
  */
-class Stundenplan extends FHD_Controller {
-    /*
-     * 
-     * @var Array
-     */
-    
-	
-	//2490
+class Modul extends FHD_Controller {
+ 
 
     /**
      * Constructor Method
@@ -31,10 +26,11 @@ class Stundenplan extends FHD_Controller {
 	{
 		parent::__construct();
 		$this->data->add('titel', "Stundenplan");
-		$this->load->model('Stundenplan_Model');
+		$this->load->model('Modul_Model');
 	}
 	
 	
+
     /**
      * Index-method, loads for testing purposes the Stundenplan_view
      * 
@@ -42,18 +38,19 @@ class Stundenplan extends FHD_Controller {
      * @return type // nicht vorhanden
      */
 	public function index()
-	
 	{
-		//$this->krumo->dump($this->data->load());
-		$stundenplan = $this->Stundenplan_Model->get_stundenplan($this->authentication->user_id());
 
-		$this->data->add('stundenplan', $stundenplan[0]); 
-		$this->data->add('tage', $stundenplan[1]);
-		$this->data->add('zeiten', $stundenplan[2]);
-		$this->data->add('aktivekurse', $stundenplan[3]);
+		//$this->load->view('modul');
 
-		//$this->krumo->dump($this->data);
-		$this->load->view('stundenplan_simple', $this->data->load());
+	}
+
+	public function show($course_id)
+	{	
+		$user_id = $this->authentication->user_id();
+		$courseinfo = $this->Modul_Model->get_courseinfo($user_id, $course_id);
+
+
+		$this->load->view('modul', $this->data->load());
 	}
 
 }
