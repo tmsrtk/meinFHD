@@ -20,7 +20,8 @@
 			$permission_id = '';
 			foreach ($tableviewData as $v) :?>
 				<?php
-				if($counter % 5 === 0){
+			//	if($counter % 6 === 0){ // not sure if konstantin's (this line) or frank's version (line 24) is correct
+				if($counter % ($roleCounter+1) === 0){
 					$permission_id = $v;
 					echo '<tr><td style="width:250px";>'.$permission_names[$v];
 				} else {

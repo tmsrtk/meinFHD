@@ -1,6 +1,10 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-
+/**
+* Helper class for admin stuff
+* 
+* @author Konstantin Voth
+*/
 class Adminhelper {
 
 	/**
@@ -11,7 +15,10 @@ class Adminhelper {
 
 	}
 
-	/* creates a random pw with a length of 10 chars - jochens function */
+	/**
+	* creates a random pw with a length of 10 chars - jochens function
+	* @return random password
+	*/
 	function passwort_generator() 
 	{
 		$laenge = 10;
@@ -24,29 +31,14 @@ class Adminhelper {
 		return md5($password);
 	}
 
-	// get standard user from rules
-	function get_standard_userform_rules()
-	{
-		$rules = array(
-			$this->get_formvalidation_forename(),
-			$this->get_formvalidation_lastname(),
-			$this->get_formvalidation_email()
-		);
-
-		return $rules;
-	}
-
 	// modular form validation rules
-
-
-
 	/**/
 	function get_formvalidation_role()
 	{
 		return array(
 			'field' => 'role',
 			'label' => 'Rolle',
-			'rules' => 'integer'
+			'rules' => 'required|integer'
 			);
 	}
 
@@ -114,7 +106,7 @@ class Adminhelper {
 	function get_formvalidation_semesteranfang()
 	{
 		return array(
-			'field' => 'semesteranfang',  // should be named: semesteranfang
+			'field' => 'semesteranfang',
 			'label' => 'Semesteranfang',
 			'rules' => 'alpha'
 			);
@@ -126,7 +118,7 @@ class Adminhelper {
 		return array(
 			'field' => 'studiengang',
 			'label' => 'Studiengang',
-			'rules' => 'integer'
+			'rules' => 'required|integer'
 			);
 	}
 

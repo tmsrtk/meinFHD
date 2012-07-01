@@ -1,7 +1,8 @@
-<div>
+<div class="well">
 
 	<!-- build array for Studiengang-Filter -->
 	<?php 
+		echo validation_errors();
 		$stdplanFilter[0] = 'Bitte auswählen';
 		foreach($all_stdplan_filterdata as $spf){ 
 			$stdplanFilter[
@@ -61,7 +62,25 @@
 			}
 
 		});
-
+		
 	})(); // self envoked anonymous function
+	
+	    
+		
+	// autoreload after submission AND validation-errors
+	var stdplan_ids = "<?php echo $stdplan_id_automatic_reload; ?>"
+	if(stdplan_ids != '0'){
+	    $.ajax({
+		type: "POST",
+		url: "<?php echo site_url();?>admin/ajax_show_events_of_stdplan/",
+		dataType: 'html',
+		data : {stdplan_ids : stdplan_ids},
+		success: function (data){
+		    $('#stdplan-change-view').html(data);
+		}
+	    });
+	    $('#admin_stdplanfilter').val(stdplan_ids);
+	    stdplan_ids = '';
+	}
 
 </script>

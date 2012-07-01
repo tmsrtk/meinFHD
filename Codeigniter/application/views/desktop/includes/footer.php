@@ -6,16 +6,11 @@
         <script type="text/javascript">
             // load scripts and assign labels to them due to better js management
             head.js( <?php # $javascripFilesAlsArray ?>
-                {jquery: "<?php print base_url(); ?>resources/jquery/jquery.min.js"},
-                {jquery_ui: "<?php print base_url(); ?>resources/jquery/jquery-ui.js"},
                 {meinfhd: "<?php print base_url(); ?>resources/js/meinfhd.js"},
                 {bootstrap_alert: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-alert.js"},
                 {bootstrap_modal: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-modal.js"},
                 {bootstrap_dropdown: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-dropdown.js"}
             );
-        </script>
-        <script>
-            $('.dropdown-toggle').dropdown();
         </script>
         </body> <!-- /body -->
 </html> <!-- /html -->

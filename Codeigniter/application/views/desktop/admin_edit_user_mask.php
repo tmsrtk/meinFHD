@@ -1,31 +1,31 @@
 <h2>Benutzer bearbeiten</h2>
 
 <?php
-	
+	// needet vars
+	$data_formopen = array('class' => 'well form-search', 'id' => 'edit_user');
+	$data_role = array();
+	$data_role = $all_roles;
+	// add as first element
+	array_unshift($data_role, 'Bitte auswaehlen');
+	$data_role_ext = 'class="user_change_rolle_dd" id="user_cr_role"';
+	$data_search = array(
+		'id' => 'user_cr_search',
+		'class' => 'search-query',
+		'name' => 'search_user',
+		'placeholder' => 'Benutzer suchen'
+	);
+	//--------------------------------------------------------------------------
+?>
+
+<?php
 	// validation errors or empty string otherwise
 	echo validation_errors();
-	
-	$attrs = array('class' => 'well form-search', 'id' => 'edit_user');
-	echo form_open('', $attrs);
+?>
 
-	//*
-	$class_dd = 'class="user_change_rolle_dd" id="user_cr_role"';
-
-	$dropdown_data = array();
-	$dropdown_data = $global_data['userdata']['roles'];
-	// add as first element
-	array_unshift($dropdown_data, 'Bitte auswaehlen');
-
-	echo form_dropdown('user_change_rolle_dd', $dropdown_data, '0', $class_dd);
-
-	$data = array(
-			'id' => 'user_cr_search',
-			'class' => 'search-query',
-			'name' => 'search_user',
-			'placeholder' => 'Benutzer suchen'
-		);
-	echo form_input($data);
-
+<?php
+	echo form_open('', $data_formopen);
+	echo form_dropdown('user_change_rolle_dd', $data_role, '0', $data_role_ext);
+	echo form_input($data_search);
 	echo form_close();
 ?>
 
@@ -45,106 +45,96 @@
 	</tbody>
 </table>
 
+
 <script>
-	(function() {
 
-		//// edit_user
+(function() {
+	var UsersEditAjax = {
+		init : function( config ) {
+			this.config = config;
+			this.bindEvents();
+			this.requestBySearch();
+		},
 
-		// hide_all_submit_buttons();
-
-		// request for all users
-		ajax_request_user_by_search();
-
-		$('#user_cr_role').change(function() {
-			ajax_request_user_by_stdgang($(this));
-		});
-
-		$('#user_cr_search').keyup(function() {
-			ajax_request_user_by_search($(this));
-		});
-
-		// $("table tbody").on("submit", 'input[name="action_to_perform"]', function(e) {
-		// 	e.preventDefault();
-		// 	alert("asdf");
-		// });
-
-		// $("table tbody").on("submit", "tr", function(e) {
-		// 	e.preventDefault();
-		// 	console.log(this);
-		// 	alert($('input[type="submit"]:focus'));
-		// 	// $('input[name="action_to_perform"]').val()
-		// });
-
-	})(); // self envoked anonymous function
-
-	function ajax_request_user_by_stdgang(parent) {
-		$("table#user_overview tbody").html("<img src=\"<?php echo base_url();?>assets/pics/loadinganim.gif\" />");
-		$.get(
-			"<?php echo site_url();?>admin/ajax_show_user/",
-			'role_id='+parent.val(),
-		function(response) {
-			// 
-			$('table#user_overview tbody').html(response);
-			// hide the submit buttons again
-			// hide_all_submit_buttons();
-		});
-	}
-
-	function ajax_request_user_by_search(parent) {
-		var url = "<?php echo site_url();?>admin/ajax_show_user/";
-		var data = "";
-
-		// for calling this method without parameters
-		if (!parent) {
-			data = 'role_id='+$('#user_cr_role option:selected').val();
-
-			$.get(
-			url,
-			data,
-			function(response) {
-				// 
-				$('table#user_overview tbody').html(response);
-				// hide the submit buttons again
-				// hide_all_submit_buttons();
+		bindEvents : function() {
+			var self = this;
+			this.config.roleDropdown.on( 'change', function() {
+				self.requestByStdGang($(this));
 			});
-		} else {
-			if (parent.val().length == 0) { // load all users of selected std
-				data = 'role_id='+$('#user_cr_role option:selected').val();
+			this.config.searchInput.on( 'keyup', function() {
+				self.requestBySearch($(this));
+			});
+		},
+
+		requestByStdGang : function( studienganginput ) {
+			var self = this;
+			this.config.dataContent.html("lade Daten...");
+			$.get(
+				"<?php echo site_url();?>admin/ajax_show_user/",
+				'role_id='+studienganginput.val(),
+			function(response) {
+				self.config.dataContent.html(response);
+			});
+		},
+
+		requestBySearch : function( searchinput ) {
+			var self = this;
+			var url = "<?php echo site_url();?>admin/ajax_show_user/";
+			var data = '';
+
+			// this.config.dataContent.html("lade Daten...");
+			// console.log( this.config.roleDropdown.val() ); return;
+
+			// for calling this method without parameter
+			if (!searchinput) {
+				data = 'role_id='+this.config.roleDropdown.val();
 
 				$.get(
 				url,
 				data,
 				function(response) {
-					// 
-					$('table#user_overview tbody').html(response);
-					// hide the submit buttons again
-					// hide_all_submit_buttons();
+					self.config.dataContent.html(response);
 				});
-			} else if (parent.val().length >= 2) { // start to search when when two letters were entered
-				data = 'searchletter='+parent.val()+'&role_id='+$('#user_cr_role option:selected').val();
+			} else {
+				clearTimeout( self.timer );
 
-				$.get(
-				url,
-				data,
-				function(response) {
-					// 
-					$('table#user_overview tbody').html(response);
-					// hide the submit buttons again
-					// hide_all_submit_buttons();
-				});
+				if (searchinput.val().length == 0) { // load all users of selected std
+					data = 'role_id='+this.config.roleDropdown.val();
+
+					$.get(
+					url,
+					data,
+					function(response) {
+						self.config.dataContent.html(response);
+					});
+				} else if (searchinput.val().length >= 2) { // start to search when when two letters were entered
+					self.timer = setTimeout(function() {
+						data = 'searchletter='+searchinput.val()+'&role_id='+self.config.roleDropdown.val();
+
+						$.get(
+						url,
+						data,
+						function(response) {
+							self.config.dataContent.html(response);
+						});
+						
+					}, 400);
+				}
 			}
 		}
-	}
+	};
 
-	function hide_all_submit_buttons() {
-		$("input#save, input#pw_reset").hide();
-	}
-	function show_save_button(c) {
-		c.find("#save, #pw_reset").show();
-	}
-	function hide_save_button(c) {
-		c.find("#save, #pw_reset").hide();
-	}
+	UsersEditAjax.init({
+		roleDropdown : $('#user_cr_role'),
+		searchInput : $('#user_cr_search'),
+		dataContent : $('table#user_overview tbody')
+	});
+})();
+
+</script>
+
+
+
 
 </script>
 

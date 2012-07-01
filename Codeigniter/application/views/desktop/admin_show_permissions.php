@@ -1,9 +1,9 @@
 <h2>Benutzerrechte anzeigen</h2>
 
-<h3><?php echo $global_data['userdata']['loginname']; ?></h3>
+<h3><?php echo $userdata['loginname']; ?></h3>
 
 <?php
-foreach ($global_data['userdata']['userpermissions'] as $zeile) {
+foreach ($userdata['userpermissions'] as $zeile) {
 	echo $zeile;
 	echo br();
 }
