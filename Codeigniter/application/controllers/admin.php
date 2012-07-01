@@ -168,7 +168,7 @@ class Admin extends FHD_Controller {
 		//----------------------------------------------------------------------
 		$this->load->view('includes/template', $this->data->load());
 	}
-
+	
 	/*
 	* loads content for the admin_edit_user_mask.php
 	*/
@@ -181,7 +181,7 @@ class Admin extends FHD_Controller {
 			);
 		$this->data->add('siteinfo', $siteinfo);
 		
-		// all users (the following line was uncommented in frank's branch before merge conflict)
+		// all users
 		// $data['user'] = $this->admin_model->get_all_user();
 		
 		// all roles
@@ -423,7 +423,7 @@ class Admin extends FHD_Controller {
 
 		// depending on role, different validations
 		// if student
-		if ($role === '4'/*student*/)
+		if ($role === '5'/*student*/)
 		{
 			$rules = array();
 
@@ -814,7 +814,6 @@ class Admin extends FHD_Controller {
 		    $rows[] = $this->load->view('admin-subviews/admin_stdgng_coursetable_row', $data, TRUE);
 		}
 		
-		
 		// make data available in view
 		$data['stdgng_details'] = $details_of_single_stdgng;
 		$data['stdgng_course_rows'] = $rows;
@@ -1037,11 +1036,11 @@ class Admin extends FHD_Controller {
 		$times = $this->admin_model->get_start_end_times(); // also used to select active option
 	    $days = $this->admin_model->get_days(); // also used to select active option
 	    $colors = $this->admin_model->get_colors_from_stdplan();
-	    
-	    // getting data directly from helper_model - not implemented for all dropdowns
-	    $starttimes_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
-	    $endtimes_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
-	    $days_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
+		
+		// getting data directly from helper_model - not implemented for all dropdowns
+		$starttimes_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
+		$endtimes_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
+		$days_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
 		
 	    // save dropdown-data into $data
 	    $data['eventtypes'] = $eventtypes;
@@ -1329,9 +1328,9 @@ class Admin extends FHD_Controller {
 	    
 //	    $this->data->add('stdgng_uploads_headlines', $data['stdgng_uploads_headlines']);
 //	    $this->data->add('stdgng_uploads', $data['stdgng_uploads']);
-	    $this->data->add('stdgng_uploads_list_filelist', $this->load->view('admin-subviews/admin_stdplan_import_filelist', $data, TRUE));
 
-	    
+		$this->data->add('stdgng_uploads_list_filelist', $this->load->view('admin-subviews/admin_stdplan_import_filelist', $data, TRUE));
+	 	
 	    $siteinfo = array(
 		'title' => 'Stundenplan importieren',
 		'main_content' => 'admin_stdplan_import'
