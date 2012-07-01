@@ -158,12 +158,13 @@ class Admin extends FHD_Controller {
 			'main_content'	=> 'admin_create_user_mask'
 			);
 		$this->data->add('siteinfo', $siteinfo);
-
+		
 		// all roles
 		$this->data->add('all_roles', $this->admin_model->get_all_roles());
+		
 		// all studiengänge
 		$this->data->add('studiengaenge', $this->admin_model->get_all_studiengaenge());
-
+		
 		//----------------------------------------------------------------------
 		$this->load->view('includes/template', $this->data->load());
 	}
@@ -179,13 +180,13 @@ class Admin extends FHD_Controller {
 			'main_content'	=> 'admin_edit_user_mask'
 			);
 		$this->data->add('siteinfo', $siteinfo);
-
-		// all users
+		
+		// all users (the following line was uncommented in frank's branch before merge conflict)
 		// $data['user'] = $this->admin_model->get_all_user();
-
+		
 		// all roles
 		$this->data->add('all_roles', $this->admin_model->get_all_roles());
-
+		
 		//----------------------------------------------------------------------
 		$this->load->view('includes/template', $this->data->load());
 	}
@@ -422,7 +423,7 @@ class Admin extends FHD_Controller {
 
 		// depending on role, different validations
 		// if student
-		if ($role === '5'/*student*/)
+		if ($role === '4'/*student*/)
 		{
 			$rules = array();
 
@@ -1033,10 +1034,15 @@ class Admin extends FHD_Controller {
 	    // get dropdown-data: all event-types, profs, times, days
 	    $eventtypes = $this->admin_model->get_eventtypes();
 	    $all_profs = $this->admin_model->get_profs_for_stdplan_list();
-	    $times = $this->admin_model->get_start_end_times();
-	    $days = $this->admin_model->get_days();
+		$times = $this->admin_model->get_start_end_times(); // also used to select active option
+	    $days = $this->admin_model->get_days(); // also used to select active option
 	    $colors = $this->admin_model->get_colors_from_stdplan();
 	    
+	    // getting data directly from helper_model - not implemented for all dropdowns
+	    $starttimes_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
+	    $endtimes_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
+	    $days_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
+		
 	    // save dropdown-data into $data
 	    $data['eventtypes'] = $eventtypes;
 	    $data['all_profs'] = $all_profs;
@@ -1065,25 +1071,28 @@ class Admin extends FHD_Controller {
 		} else {
 			$profs_dropdown_options[$i] = '';
 		}
-	    }
-	    // start/endtimes
-	    for($i = 0; $i < count($times); $i++){
-		if($i != 0){
-			$starttimes_dropdown_options[$i] = $times[$i]->Beginn;
-			$endtimes_dropdown_options[$i] = $times[$i]->Ende;
-		} else {
-			$starttimes_dropdown_options[$i] = '';
-			$endtimes_dropdown_options[$i] = '';
 		}
-	    }
-	    // days
-	    for($i = 0; $i < count($days); $i++){
-		if($i != 0){
-			$days_dropdown_options[$i] = $days[$i]->TagName;
-		} else {
-			$days_dropdown_options[$i] = '';
+		
+		// start/endtimes
+		for($i = 0; $i < count($times); $i++){
+			if($i != 0){
+				$starttimes_dropdown_options[$i] = $times[$i]->Beginn;
+				$endtimes_dropdown_options[$i] = $times[$i]->Ende;
+			} else {
+				$starttimes_dropdown_options[$i] = '';
+				$endtimes_dropdown_options[$i] = '';
+			}
 		}
-	    }
+		
+		// days
+		for($i = 0; $i < count($days); $i++){
+			if($i != 0){
+				$days_dropdown_options[$i] = $days[$i]->TagName;
+			} else {
+				$days_dropdown_options[$i] = '';
+			}
+		}
+		
 	    // colors
 	    for($i = 0; $i < count($colors); $i++){
 		if($i != 0){
@@ -1320,7 +1329,8 @@ class Admin extends FHD_Controller {
 	    
 //	    $this->data->add('stdgng_uploads_headlines', $data['stdgng_uploads_headlines']);
 //	    $this->data->add('stdgng_uploads', $data['stdgng_uploads']);
-	    $this->data->add('stdgng_uploads_list_filelist', $this->load->view('admin_stdplan_import_filelist', $data, TRUE));
+	    $this->data->add('stdgng_uploads_list_filelist', $this->load->view('admin-subviews/admin_stdplan_import_filelist', $data, TRUE));
+
 	    
 	    $siteinfo = array(
 		'title' => 'Stundenplan importieren',

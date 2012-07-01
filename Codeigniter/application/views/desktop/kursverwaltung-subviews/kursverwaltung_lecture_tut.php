@@ -7,31 +7,18 @@
 	'class' => 'span2'
     );
     
-    $starttime_options = array(
-	'1' => '8:00',
-	'2' => '9:00'
-    );
-    
-    $endtime_options = array(
-	'1' => '8:00',
-	'2' => '9:00'
-    );
-    
-    $day_options = array(
-	'1' => 'Montag',
-	'2' => 'Dienstag'
-    );
-       
     $submit_button_attrs = 'id = #stdgng-course-details-save-button class = "btn-warning"';
     
     $dropdown_attrs = 'class = "span2"';
     
-    $lab_participants_attrs = array(
-	'name' => 'teilnehmer', // TODO $KursID.'kurs_kurz',
-	'id' => 'kursverwaltung-tn',
-	'value' => 'TN', // TODO $kurs_kurz,
-	'class' => 'span1'
-    );
+    if($lab == '1'){
+	$lab_participants_attrs = array(
+	    'name' => 'teilnehmer', // TODO $KursID.'kurs_kurz',
+	    'id' => 'kursverwaltung-tn',
+	    'value' => $lecture_details->TeilnehmerMax, // TODO $kurs_kurz,
+	    'class' => 'span1'
+	);
+    }
     
     $label_attrs = array(
 	'name' => 'group_label',
@@ -39,6 +26,11 @@
 	'class' => 'label label-info',
 	'for' => 'kursverwaltung-raum'
     );
+    
+//    echo '<pre>';
+//    print_r($lecture_details);
+//    echo '</pre>';
+    
 ?>
 
 <?php 
@@ -51,22 +43,22 @@
 	echo form_label('Gruppe 1-4', '', $label_attrs);
     }
     
-    echo form_input($course_name_attrs);
+//    echo form_input($course_name_attrs);
     // starttime
-    echo form_dropdown('starttime', $starttime_options, '1', $dropdown_attrs);// TODO get starttime via data[] $starttime);
+    echo $starttime_options[$lecture_details->StartID];
     // endtime
-    echo form_dropdown('endtime', $endtime_options, '2', $dropdown_attrs);// TODO s.o. $endtime);
+    echo $endtime_options[$lecture_details->EndeID];
     // day
-    echo form_dropdown('day', $day_options, '2', $dropdown_attrs);// TODO s.o. $day);
+    echo $day_options[$lecture_details->TagID];
 
     // add another field for number of possible particitpants - for labs view
     if($lab == '1'){
 	// max participants - only relevant for labs
-	echo form_input($lab_participants_attrs);
+	echo $lecture_details->TeilnehmerMax;
     }
     
     // submit-button
-    echo form_submit('save_course_details', 'Speichern', $submit_button_attrs);
+//    echo form_submit('save_course_details', 'Speichern', $submit_button_attrs);
 
     echo form_close();
 
