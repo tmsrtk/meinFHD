@@ -73,10 +73,11 @@ class Authentication {
 			//$this->_load();
 			// Keep the user logged in by initializing the session
 			$this->CI->session->set_userdata('uid', $this->uid);
+
 			// User has logged in successfully
 			return TRUE;
 		}
-		
+
 		return FALSE;
 	}
 		
