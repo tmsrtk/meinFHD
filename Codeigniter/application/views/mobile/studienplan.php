@@ -1,38 +1,40 @@
 <?php include ('header.php'); ?>
 
+<!-- begin : pop window (one-to-one relation between class and it's pop window) -->
 <?php
 
 	foreach($studienplan as $semester) :
-		$count = 0;
+		$semesterNum = 0;
 		foreach($semester as $modul) :
 			foreach($modul as $data) :
 
 ?>
 
-              <!-- begin : pop window of modification for the class-->
-              <div id="backdroptrue<?php echo $count;?>" class="modal hide" >
+			  <!-- begin : html for pop window -->
+              <?php echo '<div id="popWindow' . $data['KursID'] . '" class="modal hide" >'; ?>
                   
                   <div class="modal-header">
                       <a class="close" data-dismiss="modal">×</a>
-                      <h3><small>bearbeiten zum</small> <?php echo $data['Kurzname']; ?></h3>
+                      <h3><?php echo $data['Kurzname']; ?></h3>
                   </div>
                   
                   <div class="modal-body">
+                  	  <?php echo '<input id="hoeren' . $data['KursID'] . '" name="hoeren' . $data['KursID'] . '" type="hidden" value="" />'; ?>
+                  	  <?php echo '<input id="schreiben' . $data['KursID'] . '" name="hoeren' . $data['KursID'] . '" type="hidden" value="" />'; ?>
                   	  <h4>
-                      	  <span>zum:</span>
+                      	  <span>zum:<?php echo $data['Hoeren']; ?></span>
                       	  <button class="btn btn-mini pull-right" data-toggle="button"><i class="icon-pencil"></i> Prüfen</button>
                       	  <button class="btn btn-mini pull-right" data-toggle="button"><i class="icon-headphones"></i> Teilnehmen</button>
                       </h4>
                       <br />
                       <h4>
                   	  	  <span>Note:</span>
-                  	  	  <?php echo '<input id="note" type="text" class="span1 input-mini pull-right" value="' . $data['Notenpunkte'] . '">';?>
+                  	  	  <?php echo '<input id="note' . $data['KursID'] . '" type="text" class="span1 input-mini pull-right" value="' . $data['Notenpunkte'] . '">';?>
 					  </h4>
 					  <br />
-                      <h4>                                         
-                     
+                      <h4>
                           <span>teilnehmen am:</span>
-                          <select id="studySemester" class="span2">                          
+                          <?php echo '<select id="semester' . $data['KursID'] . '" class="span2">'; ?>                          
                           <?php 
                           
                               for ( $n = 0 ; $n < count($semester); $n++ ) {						
@@ -50,17 +52,18 @@
                       <a href="#" class="btn btn-primary">speichern</a>
                   </div>
               
-              </div><!-- end : pop window of modification for the class -->
+              </div>
+              <!-- end : html for pop window -->
 
 <?php
 
 			endforeach;
-			$count++;
+			$semesterNum++;
 		endforeach;				// end : for "Semester"
 	endforeach;					// end : for "Modul"
 
 ?>
-
+<!-- end : pop window (one-to-one relation between class and it's pop window) -->
 
 <!-- CONTENT -->
 <div class="container container-fluid">
@@ -89,7 +92,7 @@
 		<?php 
 		
 			foreach($studienplan as $semester) :
-				$count = 0;				
+				$semesterNum = 0;				
         		foreach($semester as $modul) :
 
 		?>
@@ -100,19 +103,19 @@
 							
 				<!-- begin : Semester title -->				
 				<div class="accordion-heading">
-					<?php echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse' . $count .'">' . $count . '. Semester  </a>'; ?>
+					<?php echo '<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse' . $semesterNum .'">' . $semesterNum . '. Semester  </a>'; ?>
 				</div>				
 				<!-- end : Semester title -->
 				
 				
 				<!-- begin : Classes title -->				
-				<?php echo '<div id="collapse'.$count.'" class="accordion-body collapse">'; ?>
+				<?php echo '<div id="collapse'.$semesterNum.'" class="accordion-body collapse">'; ?>
 				<?php foreach($modul as $data) : ?>
 				
 					<div class="accordion-inner">
 						<div class="alert alert-info clearfix">										
 							<?php echo $data['Kurzname'];?>				
-							<a class="btn btn-mini pull-right" data-toggle="modal" data-backdrop="static" href="#backdroptrue<?php echo $count;?>" >bearbeiten</a>							
+							<a class="btn btn-mini pull-right" data-toggle="modal" data-backdrop="static" href="#popWindow<?php echo $data['KursID']; ?>" >bearbeiten</a>							
 						</div>
 					</div>
 					
@@ -126,16 +129,15 @@
 		
         <?php
         
-        		$count++;
-        		        	
+        		$semesterNum++;        		        	
 				endforeach;				// end : for "Semester"
 			endforeach;					// end : for "Modul"
 		
 		?>		
 
 	</div><!--first row ends here-->
+	
 	<div class="row">
-
 		<!--optionbox at the end of page-->
 		<div class="span12">
 			<div class="alert alert-info clearfix">
@@ -143,7 +145,6 @@
 				<a href="#" class="btn btn-large pull-right" href="#">speichern</a>
 			</div>
 		</div><!-- /.span12-->
-
 	</div><!-- /.row-->
 
 </div><!-- /.fluid container-->
@@ -151,17 +152,14 @@
 <!-- CONTENT ENDE-->
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="http://twitter.github.com/bootstrap/assets/js/bootstrap-modal.js"></script>
-
 <script type="text/javascript" src="http://www.stevefenton.co.uk/cmsfiles/assets/File/jquery.mobiledragdrop.js"></script>
+
 <script type="text/javascript">
     $(document).ready(function() {
         $(".drag").mobiledraganddrop({
             targets : ".drop"
         });
     });
-
 </script>
 
-<?php
-include ('footer.php');
-?>
+<?php include ('footer.php'); ?>
