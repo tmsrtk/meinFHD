@@ -1,6 +1,6 @@
 <?php $this->load->view('base/header'); ?>
 		<!-- CONTENT -->
-		<div class="container container-fluid app-login">
+		<div class="container container-fluid">
 			<div class="row-fluid">
 <?php start_block_marker('preCodeContent'); # additional markup before content ?>
 				
