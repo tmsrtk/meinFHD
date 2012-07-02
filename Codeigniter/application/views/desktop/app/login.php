@@ -43,7 +43,6 @@
 							'class'			=> 'btn btn-primary pull-right'
 						);
 ?>
-				<?php print $messages; ?>
 				<div class="well well-small clearfix">
 					<h1>Login</h1>
 					<hr />
