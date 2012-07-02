@@ -3,10 +3,8 @@
 <?php startblock('title'); # extend the site's title ?><?php get_extended_block(); ?> - Login<?php endblock();?>
 
 <?php startblock('content'); # content for this view ?>
-				<div class="well well-small clearfix">
-					<h1 class="maintitle">Login</h1>
-					<hr />
-					<?php
+
+<?php
 					#	$this->load->library('message');
 						
 						$loginFormAttributes = array(
@@ -44,8 +42,11 @@
 							'content'			=> 'Anmelden',
 							'class'			=> 'btn btn-primary pull-right'
 						);
-					?>
+?>
 				<?php print $messages; ?>
+				<div class="well well-small clearfix">
+					<h1>Login</h1>
+					<hr />
 					<?php echo form_open('app/login', $loginFormAttributes ); // create opening tag of login form ?>
 						<?php echo form_fieldset(); // wrap elements ina a fieldset due to semantics ?>
 							<div class="control-group">
