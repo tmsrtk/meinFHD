@@ -37,9 +37,6 @@ class Modul_Model extends CI_Model {
 
 		//Things like "Dozent", Name etc.
 		$courseinfo['Modulinfo'] = array();
-		$courseinfo['Modulinfo']['LangName'] = '';
-		$courseinfo['Modulinfo']['KurzName'] = '';
-		$courseinfo['Modulinfo']['Dozent'] = '';
 
 		//Get possible kinds of courses from database
 
@@ -47,9 +44,11 @@ class Modul_Model extends CI_Model {
 
 		$result = $query->result_array();
 
+		$courseinfo['Kurse'] = array();
+
 		//Insert in Array
 		foreach ($result as $key => $kind_of_course) {
-			$courseinfo[$kind_of_course['VeranstaltungsformName']] = array();
+			$courseinfo['Kurse'][$kind_of_course['VeranstaltungsformName']] = array();
 		}
 
 
@@ -77,35 +76,17 @@ class Modul_Model extends CI_Model {
 			//If Vorlesung, Tutorium or there is no alternative 
 			if ($course['VeranstaltungsformID'] == 1 OR $course['VeranstaltungsformID'] == 6 OR $course['VeranstaltungsformAlternative'] == "")
 			{
-				$courselist[$key]['Aktiv'] = 1;
-				$courselist[$key]['Button'] = 0;
+				$courselist[$key]['aktiv'] = 1;
+				$courselist[$key]['button'] = 0;
 			} 
 			//Otherwise, it must be checked, if already set active by user
 			else 
 			{
 
 				//The course has a button to enroll
-				$courselist[$key]['Button'] = 1;
-
-				$query_benutzer = $this->db->query("
-					SELECT 
-						* 
-					FROM 
-						benutzerkurs b 
-					WHERE 
-						b.BenutzerID = ". $user_id . " AND 
-						b.SPKursID = " .$course['SPKursID']. " AND 
-						b.KursID =" .$course['KursID'] ."
-					");
-
-				$result_benutzer = $query_benutzer->result_array();
-
-				if ($result_benutzer[0]['aktiv'] == 0) 
-					$courselist[$key]['Aktiv'] = 0;
-				else 
-					$courselist[$key]['Aktiv'] = 1;
-				
+				$courselist[$key]['button'] = 0;
 			}
+
 
 		}//End ForEach
 
@@ -122,8 +103,29 @@ class Modul_Model extends CI_Model {
 	 * @param type name // nicht vorhanden
 	 * @return type // nicht vorhanden
 	 */	
-	private function courselist_in_courseinfo()
+	private function courselist_in_courseinfo($courselist)
 	{
+
+		$courseinfo = $this->create_courseinfo_array();
+
+		if (!empty($courselist))
+		{
+			$courseinfo['Modulinfo']['Kursname'] = $courselist[0]['Kursname'];
+			$courseinfo['Modulinfo']['kurs_kurz'] = $courselist[0]['kurs_kurz'];
+			$courseinfo['Modulinfo']['DozentVorname'] = $courselist[0]['DozentVorname'];
+			$courseinfo['Modulinfo']['DozentNachname'] = $courselist[0]['DozentNachname'];
+			$courseinfo['Modulinfo']['DozentTitel'] = $courselist[0]['DozentTitel'];
+
+			foreach ($courselist as $key => $course) {
+				array_push($courseinfo['Kurse'][$course['VeranstaltungsformName']], $course);
+			}
+
+		}
+		$this->krumo->dump($courseinfo);
+
+		return $courseinfo;
+
+
 	}
 
 	/**
@@ -133,19 +135,20 @@ class Modul_Model extends CI_Model {
 	 * @param type name // ID of the "Modul", $course_id
 	 * @return result_array // Array of all courses belonging to Modul
 	 */	
-	public function get_courselist($course_id)
+	public function get_courselist($user_id, $course_id)
 	{
 
 		$query = $this->db->query("
 		SELECT 
 			sg.Kursname, sg.kurs_kurz,
-			v.VeranstaltungsformName,sp.VeranstaltungsformAlternative, sp.VeranstaltungsformID, sp.KursID, sp.SPKursID,
+			v.VeranstaltungsformName,sp.VeranstaltungsformAlternative, sp.VeranstaltungsformID, sp.KursID, sp.SPKursID, sp.Raum,
 			sp.DozentID, sp.StartID, sp.EndeID, (sp.EndeID-sp.StartID)+1 AS 'Dauer', sp.GruppeID,
-			d.Vorname AS 'DozentVorname', d.Nachname AS 'DozentNachname', d.Email AS 'DozentEmail',
+			d.Vorname AS 'DozentVorname', d.Nachname AS 'DozentNachname', d.Email AS 'DozentEmail', d.Titel AS 'DozentTitel',
 			t.TagName,t.TagID,
 			s_beginn.Beginn, s_ende.Ende,
 			g.TeilnehmerMax, g.Anmeldung_zulassen,
-			(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.GruppeID = sp.GruppeID) AS 'Anzahl Teilnehmer'
+			(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.GruppeID = sp.GruppeID) AS 'Anzahl Teilnehmer',
+			(SELECT b.aktiv FROM benutzerkurs b WHERE b.BenutzerID = " . $user_id . " AND b.SPKursID = sp.SPKursID AND b.KursID = sp.KursID) AS 'aktiv'
 		FROM 
 			stundenplankurs sp,
 			studiengangkurs sg,
@@ -165,9 +168,14 @@ class Modul_Model extends CI_Model {
 			sp.TagID = t.TagID AND 
 			sp.GruppeID = g.GruppeID AND
 			d.BenutzerID = sp.DozentID
+		ORDER BY 
+			sp.VeranstaltungsformID, aktiv DESC
+
 		");
 		
 		$result = $query->result_array();
+
+		$this->krumo->dump($result);
 
 		return $result;
 	}
@@ -175,13 +183,13 @@ class Modul_Model extends CI_Model {
 	public function get_courseinfo($user_id, $course_id)
 	{	
 
-		$courselist = $this->get_courselist($course_id);
+		$courselist = $this->get_courselist($user_id, $course_id);
 
 		$courselist = $this->courselist_add_userinfo($courselist, $user_id);
 
-		$this->krumo->dump($courselist);
+		$courseinfo = $this->courselist_in_courseinfo($courselist);
 
-		return $courselist;
+		return $courseinfo;
 	}
 
 
