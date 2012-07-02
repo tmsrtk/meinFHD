@@ -5,8 +5,6 @@
 <?php startblock('content'); # content for this view ?>
 
 <?php
-					#	$this->load->library('message');
-						
 						$loginFormAttributes = array(
 							'class' 		=> 'login-form'
 						);
