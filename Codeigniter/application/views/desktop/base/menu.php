@@ -15,7 +15,7 @@
 								<li><a href="#">Hilfe</a></li>
 								<li><a href="#">Impressum</a></li>
 								<!--LOGOUT-->
-								<li><a href="app/logout">Logout</a></li>
+								<li><a href="<?php print base_url('app/logout'); ?>">Logout</a></li>
 							</ul>
 						</div><!--/.nav-collapse -->
 					</div>
