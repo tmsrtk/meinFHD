@@ -24,7 +24,7 @@ class Authentication {
 	private $CI;
 	
 	/**
-	 *
+	 * Initialize the data
 	 */
 	public function __construct()
 	{
@@ -39,7 +39,7 @@ class Authentication {
 		{
 			// Set the user ID.
 			$this->uid = $uid;
-			$this->roles[] = 'user';
+			$this->_load_roles();
 		}
 		// Invoke the firewall to see if the current user has access
 		$this->_invoke_firewall();
@@ -80,6 +80,32 @@ class Authentication {
 
 		return FALSE;
 	}
+	
+	/**
+	 * Loads all roles for the current user.
+	 * 
+	 * There's always the role "user" for authenticated users
+	 * and always the role "guest" for... guests :)
+	 *
+	 * @access private
+	 * @return void
+	 */
+	private function _load_roles()
+	{
+		// Fetch all roles for the current user
+		$query = 'SELECT * FROM rolle NATURAL JOIN benutzer_mm_rolle WHERE BenutzerID = ?';
+		
+		// Perform the query
+		$result = $this->CI->db->query($query, array($this->uid));
+		
+		$this->roles = array('user');
+		
+		// Save all roles to the roles array
+		foreach ($result->result() as $row)
+		{
+			$this->roles[] = $row->bezeichnung;
+		}
+	}
 		
 	/**
 	 * Determines wether the user is logged in or not.
@@ -93,25 +119,46 @@ class Authentication {
 	}
 	
 	/**
-	 * Checks the user's access for the requested page.
-	 * 
-	 * NEEDS TO BE REWRITTEN! -> NOT WORKING AS DESCRIBED
-	 *
-	 * For detailed permission checks a string or an array
-	 * of strings can be passed along. The function will ask
-	 * the database if the user has the permissions an will 
-	 * either do nothing or redirect to a 403 page.
+	 * For detailed permission checks a string can be passed along.
+	 * The function will ask the database if the user has the permissions.
 	 *
 	 * @access public
-	 * @param string/array
-	 * @return void
+	 * @param string
+	 * @return bool
 	 */
-	public function check_access($actions = NULL)
+	public function has_permissions($action = '')
 	{
-		if ( ! $this->is_logged_in())
+		// Do we have an action?
+		if ( ! empty($action) && is_string($action))
 		{
-			redirect('/');
+			// Select all roles that have the permission to
+			// perform the given action.
+			$sql = 'SELECT
+						r.bezeichnung
+					FROM
+						berechtigung b, rolle_mm_berechtigung rb, rolle r
+					WHERE
+						b.BerechtigungID = rb.BerechtigungID AND
+						r.RolleID = rb.RolleID AND
+						b.bezeichnung = ?';
+						
+			// Perform the query
+			$result = $this->CI->db->query($sql, array($action));
+			
+			// This array holds all roles, that have permissions
+			// for the given action.
+			$allowed = array();
+			// Save all roles for lookup
+			foreach ($result->result() as $row)
+			{
+				$allowed[] = $row->bezeichnung;
+			}
+			
+			// Check if the current user has one of the roles
+			return $this->_user_can_access($allowed, $this->roles);
 		}
+		
+		return FALSE;
 	}
 	
 	/**
