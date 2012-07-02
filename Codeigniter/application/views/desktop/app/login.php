@@ -116,7 +116,8 @@
 		<!-- REQUEST PASSWORD MODAL OVERLAY ends here-->
 <?php endblock(); ?>
 
-<?php startblock('headJSfiles'); ?>
-		
-<?php endblock(); ?>
+<?php # startblock('headJSfiles'); ?>
+
+<?php # endblock(); ?>
+
 <?php end_extend(); ?>
