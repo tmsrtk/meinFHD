@@ -16,6 +16,11 @@
  */
 class App extends FHD_Controller {
 	
+	// default constructor to prepare all needed stuff
+	function __construct(){
+		parent::__construct();
+	}
+	
 	/**
 	 * Index
 	 *
@@ -24,7 +29,7 @@ class App extends FHD_Controller {
 	 */
 	public function index()
 	{
-		$this->load->view('app', $this->data->load());
+		$this->load->view('app/index', $this->data->load());
 	}
 	
 	/**
@@ -47,7 +52,7 @@ class App extends FHD_Controller {
 			{
 				// user is logged in -> set message and redirect to frontpage
 				$this->message->set(sprintf('Eingeloggt! (ID: %s)', $this->authentication->user_id()));
-				redirect('/');
+				redirect('dashboard/index');
 			}
 			else
 			{
@@ -58,7 +63,7 @@ class App extends FHD_Controller {
 		}
 		
 		// if there's no post data, we should show the login screen
-		$this->load->view('login', $this->data->load());
+		$this->load->view('app/login', $this->data->load());
 	}
 	
 	/**

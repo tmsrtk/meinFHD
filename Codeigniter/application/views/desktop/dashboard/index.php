@@ -1,8 +1,18 @@
-<?php include('header.php'); ?>
-		
-		<!-- CONTENT -->
-		<div class="container container-fluid" id="sortable">
+<?php extend('base/template.php'); # extend main template ?>
+
+<?php startblock('title'); # extend the site's title ?><?php get_extended_block(); ?> - Dashboard<?php endblock();?>
+
+<?php startblock('preCodeContent'); # additional markup before content ?>
+			<div class="container container-fluid" id="sortable">
 			<div class="row">
+<?php endblock(); ?>
+
+<?php startblock('postCodeContent'); # additional markup after content ?>
+			</div><!--third row ends here-->
+		</div><!-- /.fluid container-->
+<?php endblock(); ?>
+
+<?php startblock('content'); # content for this view ?>
 				<div class="span4 flipBox" style="position: relative;">
 					<div class="well widget frontSide">
 						<div class="widgetHeader">
@@ -157,8 +167,14 @@
 						</div>
 					</div>
 				</div><!-- /.span4-->
-				
-			</div><!--third row ends here-->
-		</div><!-- /.fluid container-->
+<?php endblock(); ?>
 		<!-- CONTENT ENDE-->
-<?php include('footer.php'); ?>
+<?php startblock('headJSfiles'); ?>
+				{jQuery_highcharts: "<?php print base_url(); ?>resources/js/highcharts.js"},
+				{jQuery_countdown: "<?php print base_url(); ?>resources/js/jquery.countdown.js"},
+				{widget_studienverlauf: "<?php print base_url(); ?>resources/js/widget.studienverlauf.js"},
+				{widget_semestercountdown: "<?php print base_url(); ?>resources/js/meinfhd.semestercountdown.js"},
+				{jquery_tooltip: "<?php print base_url(); ?>resources/js/meinfhd.tooltip.js"},
+				{jQuery_flip: "<?php print base_url(); ?>resources/js/jquery.flip.js"},
+<?php endblock(); ?>
+<?php end_extend(); # end extend main template ?>

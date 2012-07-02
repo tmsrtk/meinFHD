@@ -1,18 +1,10 @@
-<?php include('header.php'); ?>
-<?php # echo '<pre>'. print_r($this) . '</pre>'; ?>
-<!-- CONTENT -->
-	<div class="container container-fluid app-login">
-		<div class="row-fluid">
-			<div class="span4">
-				
-			</div>
-			<div class="span4">
-				<div class="well well-small clearfix">
-					<h1 class="maintitle">Login</h1>
-					<hr />
-					<?php
-					#	$this->load->library('message');
-						
+<?php extend('app/index.php'); ?>
+
+<?php startblock('title'); # extend the site's title ?><?php get_extended_block(); ?> - Login<?php endblock();?>
+
+<?php startblock('content'); # content for this view ?>
+
+<?php
 						$loginFormAttributes = array(
 							'class' 		=> 'login-form'
 						);
@@ -48,7 +40,10 @@
 							'content'			=> 'Anmelden',
 							'class'			=> 'btn btn-primary pull-right'
 						);
-					?>
+?>
+				<div class="well well-small clearfix">
+					<h1>Login</h1>
+					<hr />
 					<?php echo form_open('app/login', $loginFormAttributes ); // create opening tag of login form ?>
 						<?php echo form_fieldset(); // wrap elements ina a fieldset due to semantics ?>
 							<div class="control-group">
@@ -78,15 +73,16 @@
 							<div class="control-group">
 								<div class="controls">
 									<div class="btn-group dropdown pull-left">
-										<button class="btn">Weitere Optionen</button>
+										
+										<button class="btn"><i class="icon-question-sign"></i> Hilfe</button>
 										<button class="btn dropdown-toggle" data-toggle="dropdown">
 											<span class="caret"></span>
 										</button>
 										<ul class="dropdown-menu">
 											<!--Modal trigger Zugang-->
-											<li><a  class="" data-toggle="modal" href="#accountdata">Zugang anfordern</a></li>
+											<li><a  class="" data-toggle="modal" href="#accountdata"><i class="icon-user"></i> Zugang anfordern</a></li>
 											<!--Modal trigger pw-->
-											<li><a class="" data-toggle="modal" href="#accountdata">Passwort vergessen</a></li>
+											<li><a class="" data-toggle="modal" href="#request-password"><i class="icon-envelope"></i> Passwort vergessen</a></li>
 										</ul>
 									</div>
 								</div>
@@ -96,10 +92,30 @@
 						<?php echo form_fieldset_close(); // close the fieldset ?>
 					<?php echo form_close(); // close the whole login form ?>
 				</div>
-				-<?php echo $this->message->display(); ?>-
-			</div><!-- /.span4-->
-			<div class="span4"></div>
-		</div><!--first row ends here -->
-	</div>
-	<!-- CONTENT ENDE-->
-<?php include('footer.php'); ?>
+<?php endblock(); ?>
+
+<?php startblock('postCodeFooter'); # use for hidden markup like modals ?>
+		<!-- REQUEST PASSWORD MODAL OVERLAY-->
+		<div class="modal fade" id="request-password">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">×</button>
+				<h3>Passwort vergessen?</h3>
+			</div>
+			<div class="modal-body">
+				<p>Kein Problem! Bitte trage deine E-Mail Adresse ein, das Passwort wird anschließend zugestellt.</p>
+				<label for="email">E-mail-Adresse</label>
+				<input name="email" type="text" />
+			</div>
+			<div class="modal-footer">
+				<a href="#" data-dismiss="modal" class="btn btn-small">schließen</a>
+				<a href="#" class="btn btn-primary btn-small">absenden</a>
+			</div>
+		</div>
+		<!-- REQUEST PASSWORD MODAL OVERLAY ends here-->
+<?php endblock(); ?>
+
+<?php # startblock('headJSfiles'); ?>
+
+<?php # endblock(); ?>
+
+<?php end_extend(); ?>

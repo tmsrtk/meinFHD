@@ -24,7 +24,7 @@ class Dashboard extends FHD_Controller {
 	 */
 	public function index()
 	{
-		$this->load->view('dashboard', $this->data->load());
+		$this->load->view('dashboard/index', $this->data->load());
 	}
 }
 
