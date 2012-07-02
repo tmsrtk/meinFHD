@@ -101,6 +101,7 @@
 		<!-- REQUEST PASSWORD MODAL OVERLAY-->
 		<div class="modal fade" id="request-password">
 			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">×</button>
 				<h3>Passwort vergessen?</h3>
 			</div>
 			<div class="modal-body">
