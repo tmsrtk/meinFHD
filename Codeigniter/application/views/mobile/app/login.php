@@ -3,7 +3,7 @@
 <?php startblock('title'); # extend the site's title ?><?php get_extended_block(); ?> - Login<?php endblock();?>
 
 <?php startblock('content'); # content for this view ?>
-				<?php print $global_data['messages']; ?>
+				<?php //print $global_data['messages']; ?>
 				<div class="well well-small clearfix">
 					<h1 class="maintitle">Login</h1>
 					<hr />
