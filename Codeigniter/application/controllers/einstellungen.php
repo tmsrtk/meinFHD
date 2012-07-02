@@ -19,36 +19,36 @@ class einstellungen extends FHD_Controller{
 	    parent::__construct();	
 	    $this->load->model('persDaten_model');
 	    
-	    $this->userid = 1383;
-	    //$this->userid = $this->authentication->user_id();
+	    //$this->userid = 1383;
+	    $this->userid = $this->authentication->user_id();
 	}
 	
 	
 	function index()
 	{
 	    
-	    //initial database-query to get als required information of the user
-	    $data['info'] = $this->persDaten_model->getUserInfo($this->userid);
-	    $data['stgng'] = $this->persDaten_model->getStudiengang();
-	    
-	    //setting up the rules, to which the user-input of the corresponding form-fields must comply:
-	    //Note: the form_validation-class is automagically loaded in the config/autoload.php, so there's no need to load it here.
-	    $this->form_validation->set_rules('login', 'Loginname', 'callback_validateLoginname['.$data['info']['LoginName'].']');
-	    $this->form_validation->set_rules('pw', 'Passwort', 'callback_validatePassword');
-	    $this->form_validation->set_rules('email', 'Email', 'callback_validateEmail');
-	    
-	    $this->krumo->dump($data);
-	    $this->krumo->dump($_POST);
-	    //print_r($this->authentication->user_id());
-	    //$this->load->view('einstellungen', $data);
-	    if ($this->form_validation->run() == FALSE)
-	    {
-		//echo 'fehler';
-		$this->load->view('einstellungen', $data);
-		//$this->persDaten_model->update();
-	    }
-	    else
-	    {
+		//initial database-query to get als required information of the user
+		$data['info'] = $this->persDaten_model->getUserInfo($this->userid);
+		$data['stgng'] = $this->persDaten_model->getStudiengang();
+
+		//setting up the rules, to which the user-input of the corresponding form-fields must comply:
+		//Note: the form_validation-class is automagically loaded in the config/autoload.php, so there's no need to load it here.
+		$this->form_validation->set_rules('login', 'Loginname', 'callback_validateLoginname['.$data['info']['LoginName'].']');
+		$this->form_validation->set_rules('pw', 'Passwort', 'callback_validatePassword');
+		$this->form_validation->set_rules('email', 'Email', 'callback_validateEmail');
+
+		$this->krumo->dump($data);
+		$this->krumo->dump($_POST);
+		//print_r($this->authentication->user_id());
+		//$this->load->view('einstellungen', $data);
+		if ($this->form_validation->run() == FALSE)
+		{
+			//echo 'fehler';
+			$this->load->view('einstellungen', $data);
+			//$this->persDaten_model->update();
+		}
+		else
+		{
 		
 		//array of all input-fields
 		$fieldarray = array(
