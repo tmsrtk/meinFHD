@@ -1,8 +1,16 @@
 (function($) {
 	// custom js functionality goes here
-			        		      			
+	
+	// autoclosing twitter bootstrap alerts
+	function createAutoClosingAlert(selector, delay) {
+		var alert = $(selector).alert();
+		window.setTimeout(function() { alert.alert('close') }, delay);
+	}
+	
+	createAutoClosingAlert(".alert.in", 3000);
+	
 	/*icon-switch for accordion-templates*/
-	$(function(){									
+	$(function(){
 		$('.accordion')
 			.on('hidden', function(e) {
 				
