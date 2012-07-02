@@ -40,15 +40,49 @@ class Kursverwaltung_model extends CI_Model {
 	if($q->num_rows() > 0){
 	    foreach ($q->result() as $row){
 		$data[] = $row;
-		// if theres only one row >> data from lecture or tut
-		if($q->num_rows == 1){
-		    return $data[0];
-		}
 	    }
 	}
-	// else data is for lab >> alternatives
+	// return all alternatives
 	return $data;
     }
+    
+    
+    /**
+     * Returns all eventtypes for a course
+     * @param int $course_id 
+     * @return array holding all eventtypes a course has
+     */
+    public function get_eventtypes_for_course($course_id){
+	$this->db->distinct();
+	$this->db->select('VeranstaltungsformID');
+	$this->db->order_by('VeranstaltungsformID', 'asc');
+	$q = $this->db->get_where('stundenplankurs', array('KursID'=>$course_id));
+	
+	foreach ($q->result_array() as $row) { 
+	    $data[] = $row;
+	}
+	
+	$data = $this->clean_nested_array($data);
+	
+	return $data;
+    }
+    
+    
+    /**
+    * Runs through nested array and returns simple indexed array with values
+    * @param type $array
+    * @return type
+    */
+    private function clean_nested_array($array){
+	$clean = array();
+	foreach ($array as $a) {
+	    foreach ($a as $key => $value) {
+		$clean[] = $value;
+	    }
+	}
+	return $clean;
+    }
+    
     
     
     

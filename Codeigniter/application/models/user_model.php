@@ -10,6 +10,9 @@ class User_model extends CI_Model {
 	private $user_id = 0;
 	private $user_roles = array();
 	private $user_permissions_all = array();
+	
+	// profs, labings, tuts
+	private $user_course_ids = array();
 
 
 	/**
@@ -33,6 +36,7 @@ class User_model extends CI_Model {
 			$this->user_id = $uid;
 			$this->user_roles = $this->_query_all_roles();
 			$this->user_permissions_all = $this->_query_all_permissions();
+			$this->user_course_ids = $this->_get_all_user_courses();
 		}
 
 		$userdata = array(
@@ -125,6 +129,46 @@ class User_model extends CI_Model {
 
 		return $this->_clean_roles_array($this->db->get()->result_array());
 	}
+	
+	
+	/**
+	 * Returns all course-ids a user has - focus on eventtype 1 !!
+	 * WPFs not covered with this query!!
+	 * @return array
+	 */
+	private function _get_all_user_courses(){
+	    $this->db->distinct();
+	    $this->db->select('KursID');
+	    $this->db->from('stundenplankurs');
+	    $this->db->where('DozentID', $this->user_id);
+	    $this->db->where('isWPF', '0');
+	    
+	    $q = $this->db->get();
+	    
+	    foreach ($q->result_array() as $row) { 
+		$data[] = $row;
+	    }
+
+	    $data = $this->clean_nested_array($data);
+	    
+	    return $data;
+	}
+	
+	
+	/**
+	 * Runs through nested array and returns simple indexed array with values
+	 * @param type $array
+	 * @return type
+	 */
+	private function clean_nested_array($array){
+	    $clean = array();
+	    foreach ($array as $a) {
+		foreach ($a as $key => $value) {
+		    $clean[] = $value;
+		}
+	    }
+	    return $clean;
+	}
 
 
 
@@ -150,6 +194,10 @@ class User_model extends CI_Model {
 	public function get_permission_by_roles($roles)
 	{
 
+	}
+	
+	public function get_user_course_ids(){
+	    return $this->user_course_ids;
 	}
 
 }
