@@ -89,14 +89,12 @@ class EventSort {
 		return $length - 1;
 	}
 	
-	private function _neededCols()
+	private function _maxCols()
 	{
 		$cols = 0;
 		// Check the end for every event
 		foreach ($this->events as $event)
 		{
-			// We saved the latest end ind $length.
-			// If the current event ends later, we save that-
 			if (($col = $event->getColumn()) > $cols)
 			{
 				$cols = $col;
@@ -126,16 +124,16 @@ class EventSort {
 		}
 		
 		// Get the number of needed cols
-		$needed_cols = $this->_neededCols();
+		$max_cols = $this->_maxCols();
 		
 		foreach ($this->marker as $index => $row)
 		{
-			$this->marker[$index] = array_slice($row, 0, $needed_cols);
+			$this->marker[$index] = array_slice($row, 0, $max_cols);
 		}
 		
 		foreach ($this->events as $index => $event)
 		{
-			$event->optimizeWidth($this->marker, $needed_cols);
+			$event->optimizeWidth($this->marker, $max_cols);
 			
 			// Build all information
 			$optimized[$index] = $event->data;
@@ -145,6 +143,7 @@ class EventSort {
 				'column' => $event->getColumn(),
 				'width' => $event->getWidth(),
 				'color' => $event->getColor(),
+				'max_cols' => $max_cols,
 			);
 		}
 		

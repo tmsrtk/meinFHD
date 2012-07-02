@@ -46,13 +46,13 @@ class Event {
 		// Check if we got valid values
 		if (is_integer($start) && $start >= 0 && is_integer($duration) && $duration >= 1)
 		{
+			// Add data
+			$this->data = $data;
+			
 			// Assign parameters to instance variables
 			$this->start = $start;
 			$this->duration = $duration;
 			$this->color = $this->_codeToColor($color);
-			
-			// Add data
-			$this->data = $data;
 		}
 	}
 	
@@ -125,26 +125,26 @@ class Event {
 		}
 	}
 	
-	public function optimizeWidth(&$marker, $needed_cols)
+	public function optimizeWidth(&$marker, $max_cols)
 	{
-		if ($this->getColumn() != $needed_cols)
+		// Don't do anything, if it's the last event in the
+		// column, because it can't be extended to the right.
+		if ($this->getColumn() != ($max_cols - 1))
 		{
-			for ($col = $this->getColumn(); $col < $needed_cols; $col++)
+			for ($col = $this->getColumn() + 1; $col < $max_cols; $col++)
 			{	
 				if ($this->_isFree($marker, $col))
 				{
 					$this->width++;
 				}
-/*
 				else
 				{
-					global $fb;
-					$fb->log($this->width);
 					break;
 				}
-*/
 			}
 		}
+
+		$this->width = $this->width / $max_cols;
 	}
 	
 	/**
@@ -159,7 +159,7 @@ class Event {
 	private function _isFree(&$marker, $col)
 	{
 		// We check every field that we would need for the event.
-		// If it's already blocked - indeicated by not FALSE -
+		// If it's already blocked - indicated by not FALSE -
 		// the function returns FALSE which says, that there's not
 		// enough space. If the event passes all checks, we know
 		// that there's enough room and return TRUE.
@@ -195,6 +195,11 @@ class Event {
 	 */
 	private function _codeToColor($col, $light = FALSE)
 	{
+
+		### SUPER DIRTY HACK ###
+		$light = ($this->data['VeranstaltungsformName'] == 'Übung') ? TRUE : FALSE;
+		### SUPER DIRTY HACK END ###
+		
 		if($light) 
 		{		
 			switch($col)
