@@ -13,36 +13,31 @@
  * Stundenplan Controller 
  */
 class Stundenplan extends FHD_Controller {
-    /*
-     * 
-     * @var Array
-     */
-    
-	
-	//2490
 
     /**
      * Constructor Method
-     * 
-     * @param type name // nicht vorhanden
-     * @return type // nicht vorhanden
+     *
+     * @access public
+     * @return void
      */
 	public function __construct()
 	{
 		parent::__construct();
-		$this->data->add('titel', "Stundenplan");
+		$this->data->add('titel', 'Stundenplan');
 		$this->load->model('Stundenplan_Model');
 	}
 	
 	
     /**
-     * Index-method, loads for testing purposes the Stundenplan_view
+     * Controller for day view
+     *
+     * ../stundenplan
+     * ../stundenplan/index
      * 
-     * @param type name // nicht vorhanden
-     * @return type // nicht vorhanden
+     * @access public
+     * @return void
      */
 	public function index()
-	
 	{
 		//$this->krumo->dump($this->data->load());
 		$stundenplan = $this->Stundenplan_Model->get_stundenplan($this->authentication->user_id());
@@ -55,10 +50,18 @@ class Stundenplan extends FHD_Controller {
 		//$this->krumo->dump($this->data);
 		$this->load->view('stundenplan_simple', $this->data->load());
 	}
+	
+	/**
+	 * Controller for week view
+	 *
+     * ../stundenplan/woche
+     * 
+     * @access public
+     * @return void
+	 */
+	public function woche()
+	{
+		
+	}
 
 }
-	
-	
-	
-	
-	
