@@ -52,7 +52,7 @@ class App extends FHD_Controller {
 			{
 				// user is logged in -> set message and redirect to frontpage
 				$this->message->set(sprintf('Eingeloggt! (ID: %s)', $this->authentication->user_id()));
-				redirect('/');
+				redirect('dashboard/index');
 			}
 			else
 			{
