@@ -52,12 +52,7 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-<<<<<<< HEAD
 $autoload['libraries'] = array('krumo', 'user_agent', 'detection', 'database', 'session', 'data', 'message', 'authentication', 'form_validation', 'adminhelper', 'FirePHPCore/fb');
-=======
-$autoload['libraries'] = array('user_agent', 'detection', 'database', 'session', 'data', 'message', 'authentication', 'form_validation', 'adminhelper');
->>>>>>> origin/jo-work
-
 
 /*
 | -------------------------------------------------------------------
@@ -113,11 +108,7 @@ $autoload['language'] = array();
 |
 */
 
-<<<<<<< HEAD
 $autoload['model'] = array('user_model','helper_model');
-=======
-$autoload['model'] = array();
->>>>>>> origin/jo-work
 
 
 /* End of file autoload.php */
