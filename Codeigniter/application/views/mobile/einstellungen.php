@@ -14,8 +14,8 @@
     <div class="row-fluid">
       <fieldset class="span4" id="login-details">
         <div class="well well-small">
-          <h3 data-toggle="collapse" data-parent=".row-fluid" data-target="#login-details .form-elements">Login-Details</h3>
-          <div class="collapse form-elements">
+          <h3>Login-Details</h3>
+          <div class="form-elements">
               <label for="login-name">Loginname</label>
               <input type="text" class="input-xxlarge" id="login-name" name="login" placeholder="Loginname"<?php if(isset($info['LoginName'])) echo ' value="' . $info['LoginName'] . '"' ?> />
               <label for="password">Passwort</label>
@@ -27,8 +27,8 @@
       </fieldset>
       <fieldset class="span4" id="contact-details">
         <div class="well well-small">
-          <h3 data-toggle="collapse" data-parent=".row-fluid" data-target="#contact-details .form-elements">Kontaktinformationen</h3>
-          <div class="collapse form-elements">
+          <h3>Kontaktinformationen</h3>
+          <div class="form-elements">
             <label for="first-name">Vorname</label>
             <input type="text" class="input-xxlarge" id="first-name" name="firstname" placeholder="Vorname"<?php if ( isset($info['Vorname']) ) echo ' value="' . $info['Vorname'] . '"' ?> />
             <label for="last-name">Nachname</label>
@@ -41,25 +41,21 @@
       </fieldset>
       <fieldset class="span4" id="study-course-details">
         <div class="well well-small">
-          <h3 data-toggle="collapse" data-parent=".row-fluid" data-target="#study-course-details .form-elements">Studiengang</h3>
-          <div class="collapse form-elements">
+          <h3 >Studiengang</h3>
+          <div class="form-elements">
             <label for="study-course">Studiengang</label>
             <select name="stgid" id="study-course" class="input-xxlarge">
               
               <?php
                 $option = '<option value="%s">%s</option>';
-
                 echo sprintf($option, '0', '--Bitte Wählen--');
-
-                $option = '<option value="%s">%s (PO%s)</option>';
-                
+                $option = '<option value="%s">%s (PO%s)</option>';             
                 for( $i = 0; $i < count($stgng); $i++ ) {
                   $s = "";
                   if ( $stgng[$i]['StudiengangID'] == $info['StudiengangID'] ) {$s = '<option selected value="%s">%s (PO%s)</option>';}
                   else {$s = $option;}
                   echo sprintf($s, $stgng[$i]['StudiengangID'], $stgng[$i]['StudiengangName'], $stgng[$i]['Pruefungsordnung']);
                 }
-
               ?>
             </select>
             <label for="year">Startjahr</label>
