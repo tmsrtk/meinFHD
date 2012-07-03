@@ -1,0 +1,117 @@
+
+
+.flipBox {
+	margin:0 auto;
+	position:relative;
+	z-index:1;
+	-moz-perspective: 800px;
+	-webkit-perspective: 800px;
+	perspective: 800px;
+	height: 194px;
+}
+
+.flipBox .frontSide,
+.flipBox .backSide {
+	
+	/* Enabling 3d space for the transforms */
+	-moz-transform-style: preserve-3d;
+	-webkit-transform-style: preserve-3d;
+	transform-style: preserve-3d;
+	
+	/* When the forms are flipped, they will be hidden */
+	-moz-backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+	
+	/* Enabling a smooth animated transition */
+	-moz-transition:0.8s;
+	-webkit-transition:0.8s;
+	transition:0.8s;
+	
+	/* Configure a keyframe animation for Firefox */
+	
+	/* Configure it for Chrome and Safari */
+	-webkit-animation: pulse 2s infinite;
+	height: 100%;
+}
+
+
+/* Firefox Keyframe Animation */
+@-moz-keyframes pulse{
+	0%{		box-shadow:0 0 1px #008aff;}
+	50%{	box-shadow:0 0 8px #008aff;}
+	100%{	box-shadow:0 0 1px #008aff;}
+}
+
+
+.frontSide{
+	z-index:100;
+	overflow: hidden;
+	
+}
+
+.backSide{
+	background: gray;
+	z-index:1;
+	opacity:0;
+	position: absolute;
+	top: 0;
+	left: 0;
+	/* Rotating the backSide  form by default */
+	-moz-transform:rotateY(180deg);
+	-webkit-transform:rotateY(180deg);
+	transform:rotateY(180deg);
+}
+.flipBox.flipped .frontSide {
+	opacity:0;
+	
+	/**
+	 * Rotating the frontSide form when the
+	 * flipped class is added to the container
+	 */
+	
+	-moz-transform:rotateY(-180deg);
+	-webkit-transform:rotateY(-180deg);
+	transform:rotateY(-180deg);
+}
+.flipBox.flipped .backSide {
+	opacity:1;
+	
+	/* Rotating the backSide div into view */
+	-moz-transform:rotateY(0deg);
+	-webkit-transform:rotateY(0deg);
+	transform:rotateY(0deg);
+}
+
+/*----------------------------
+	Inputs, Buttons & Links
+-----------------------------*/
+
+.frontSide .flipLink,
+.backSide .flipLink {
+	/* The blue ribbon links */
+
+	
+	
+	right: 0;
+	bottom: 0;
+
+}
+
+.backSide .flipLink {
+	right:auto;
+	left:0;
+}
+
+.widget-edit {
+	background: #A5A5A5;
+}
+
+.widgetFooter{
+	position:absolute;
+	right:0px;
+	
+	height: auto;
+	bottom:0px;
+
+}
