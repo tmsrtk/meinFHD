@@ -2,6 +2,8 @@
 
 <h3><?php echo $userdata['loginname']; ?></h3>
 
+<?php FB::log($userdata) ?>
+
 <?php
 foreach ($userdata['userpermissions'] as $zeile) {
 	echo $zeile;

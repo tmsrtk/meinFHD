@@ -29,7 +29,7 @@
 	echo form_close();
 ?>
 
-<table id="user_overview" class="table table-striped table-bordered table-condensed">
+<!-- <table id="user_overview" class="table table-striped table-bordered table-condensed">
 	<thead>
 		<tr>
 			<th>Benutzername</th>
@@ -43,7 +43,49 @@
 	<tbody>
 		
 	</tbody>
-</table>
+</table> -->
+
+
+
+
+
+<div class="row">
+	<div class="span2"><strong>Benutzername</strong></div>
+	<div class="span2"><strong>Nachname</strong></div>
+	<div class="span2"><strong>Vorname</strong></div>
+	<div class="span2"><strong>E-Mail</strong></div>
+	<div class="span2"><strong>Funktion</strong></div>
+	<div class="span2"><strong>Los</strong></div>
+</div>
+
+<div class="row" id="content_user">
+	<!-- Userdata -->
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <script>
@@ -124,11 +166,97 @@
 		}
 	};
 
+	// UsersEditAjax.init({
+	// 	roleDropdown : $('#user_cr_role'),
+	// 	searchInput : $('#user_cr_search'),
+	// 	dataContent : $('table#user_overview tbody')
+	// });
+
 	UsersEditAjax.init({
 		roleDropdown : $('#user_cr_role'),
 		searchInput : $('#user_cr_search'),
-		dataContent : $('table#user_overview tbody')
+		dataContent : $('div#content_user')
 	});
+
+
+
+
+
+
+
+
+	// prompt dialogs
+	/**
+	 * 
+	 */
+	function createDialog(title, text) {
+		var $mydialog = $('<div id="dialog-confirm" title="'+title+'"></div>')
+					.html('<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>'+text+'</p>')
+					.dialog({
+						autoOpen: false,
+						resizable: false,
+						height: 200,
+						modal: true,
+						buttons: {
+							OK: function() {
+								$("input[type=submit][clicked=true]").parents("form#edit_user_row").submit();
+								$("#content_user input#save").removeAttr("clicked");
+								$( this ).dialog( "close" );
+							},
+							Abbrechen: function() {
+								$("#content_user input#save").removeAttr("clicked");
+								$( this ).dialog( "close" );
+							}
+						}
+					});
+		return $mydialog;
+	}
+
+
+
+
+	// live click listener (because of ajax an new content) to override default submit button function
+	// to open the prompt dialog
+	$("#content_user").on("click", "input#save", function() {
+		// determine which function was selected from the dropdown
+		// 0 = speichern, 1 = pw resetten, 2 = Stundenplan resetten, 3 = Als..anmelden
+		var user_function =  $(this).parents("form#edit_user_row").find("#user_function").val();
+
+		if (user_function === '0') {
+			$(this).attr("clicked", "true");
+			createDialog('Änderungen speichern', 'Sollen die Änderungen wirklich gespeichert werden?').dialog("open");
+		} else if (user_function === '1') {
+			$(this).attr("clicked", "true");
+			createDialog('Passwort resetten', 'Möchten Sie das Passwort für diesen Benutzer wirklich zurücksetzen?').dialog("open");
+		} else if (user_function === '2') {
+			$(this).attr("clicked", "true");
+			createDialog('Stundenplan resetten', 'Möchten Sie den Stundenplan für diesen Benutzer wirklich zurücksetzen?').dialog("open");
+		} else if (user_function === '3') {
+			$(this).attr("clicked", "true");
+			createDialog('Anmelden als...', 'Möchten Sie sich wirklich als dieser Benutzer anmelden?').dialog("open");
+		} else {
+
+		}
+
+		// prevent default submit behaviour
+		return false;
+	});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 })();
 
 </script>
