@@ -1,5 +1,12 @@
-<h2>Benutzerrechte anzeigen</h2>
+<?php extend('admin/index.php'); # extend main template ?>
 
+<?php startblock('title');?><?php get_extended_block();?> - Benutzerrechte anzeigen<?php endblock(); ?>
+
+<?php startblock('content'); # additional markup before content ?>
+<div class="row-fluid">
+	<h2>Benutzerrechte anzeigen</h2>
+</div>
+<hr>
 <h3><?php echo $userdata['loginname']; ?></h3>
 
 <?php
@@ -23,10 +30,10 @@ foreach ($userdata['userpermissions'] as $zeile) {
 		</div>
 	</div>
 </div>
+<?php endblock(); ?>
 
-<script>
+<?php startblock('customFooterJQueryCode');?>
 
-(function() {
 
 	$("div#toggle_button").click(function() {
 		var menue_button = "div#menuefooter_content";
@@ -49,7 +56,6 @@ foreach ($userdata['userpermissions'] as $zeile) {
 			.addClass("open");
 		}
 	});
+<?php endblock(); ?>
 
-})();
-
-</script>
+<?php end_extend(); ?>
