@@ -44,8 +44,7 @@
           <h3 >Studiengang</h3>
           <div class="form-elements">
             <label for="study-course">Studiengang</label>
-            <select name="stgid" id="study-course" class="input-xxlarge">
-              
+            <select name="stgid" id="study-course" class="input-xxlarge">              
               <?php
                 $option = '<option value="%s">%s</option>';
                 echo sprintf($option, '0', '--Bitte Wählen--');
