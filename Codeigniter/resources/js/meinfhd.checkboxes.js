@@ -71,5 +71,5 @@
   });
 }
 
-cb2cs($('input:checkbox'));
+cb2cs($('input:checkbox'), { on: 'Ja', off: 'Nein' });
 })(jQuery);
