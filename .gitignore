@@ -121,6 +121,7 @@ local.properties
 # Netbeans files
 ######################################################################################################
 nbproject/private/
+nbproject/
 build/
 nbbuild/
 dist/
