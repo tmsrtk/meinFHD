@@ -346,7 +346,7 @@ class Studienplan extends FHD_Controller
         $module_id = 0;
         $semester = 0;
         
-        $post= $this->input->post();
+        $post = $this->input->post();
 
         foreach($post as $key => $value)
         {
@@ -360,6 +360,21 @@ class Studienplan extends FHD_Controller
         
         $this->load->model('Studienplan_Model');
         $this->Studienplan_Model->shiftModuleMobile($module_id, $semester);
+    }
+    
+    
+    
+    /**
+     * Executes all saving methods 
+     */
+    public function speichern()
+    {
+        if($this->input->post() != null)
+        {
+            $this->noteSpeichern();
+            $this->semesterSpeichern();
+            $this->pruefenTeilnehmenSpeichern();
+        }
     }
 }
 
