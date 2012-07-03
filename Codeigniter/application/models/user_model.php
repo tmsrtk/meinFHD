@@ -2,12 +2,13 @@
 
 class User_model extends CI_Model {
 
-	private $user_email = '';
+	private $user_id = 0;
+
+	private $email = '';
 	private $loginname = '';
 	private $forename = '';
 	private $lastname = '';
 
-	private $user_id = 0;
 	private $user_roles = array();
 	private $user_permissions_all = array();
 
@@ -27,26 +28,44 @@ class User_model extends CI_Model {
 	 */
 	private function _init()
 	{
+		$userdata = array();
+
+		// get user_id of current user
 		$uid = $this->authentication->user_id();
+		// if logged in
 		if ($uid)
 		{
 			$this->user_id = $uid;
+
+			$this->lastname = $this->_query_user_singlecolumndata('Vorname');
+			$this->lastname = $this->_query_user_singlecolumndata('Nachname');
+			$this->loginname = $this->_query_user_singlecolumndata('LoginName');
+			$this->email = $this->_query_user_singlecolumndata('Email');
+
 			$this->user_roles = $this->_query_all_roles();
 			$this->user_permissions_all = $this->_query_all_permissions();
+
+			// global data
+			$userdata = array(
+		                'userid' => $this->user_id,
+		                'loginname' => $this->loginname,
+		                'userpermissions' => $this->user_permissions_all,
+		                'roles' => $this->user_roles
+		            );
 		}
 
-		$userdata = array(
-                'userid' => $this->user_id,
-                'loginname' => 'Freak',
-                'userpermissions' => $this->user_permissions_all,
-                'roles' => $this->user_roles
-            );
-
-        $this->data->add('userdata', $userdata);
-
-
 		// write userdata in global $data
-		$this->data->add('rollentest', $this->user_permissions_all);
+        $this->data->add('userdata', $userdata);
+	}
+
+	private function _query_user_singlecolumndata($columnname)
+	{
+		$this->db->select($columnname)
+				 ->from('benutzer')
+				 ->where('BenutzerID', $this->user_id);
+		$q = $this->db->get()->row_array();
+
+		return ($q[$columnname]);
 	}
 
 	/** */
@@ -57,18 +76,12 @@ class User_model extends CI_Model {
 					   ->where('BenutzerID', $this->user_id);
 		$user_id_role = $this->db->get()->result();
 
-		// var_dump($user_id_role);
-
-		// return;
-
 		foreach ($user_id_role as $key => $value) {
 			$this->db->select('BerechtigungID')
 					  ->from('rolle_mm_berechtigung')
 					  ->where('RolleID', $value->RolleID);
 			$result_raw[] = $this->db->get()->result_array();
 		}
-
-		// var_dump($result_raw);
 
 		$result_clean = $this->_clean_permissions_array($result_raw);
 
