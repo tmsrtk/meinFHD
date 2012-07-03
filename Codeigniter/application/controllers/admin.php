@@ -27,118 +27,6 @@ class Admin extends FHD_Controller {
 	}
 	
 	
-	function show_role_permissions(){
-			
-		// Alle RoleIDs durchlaufen und in einem verschachtelten Array speichern
-		// >> je RoleID ein Array aller zugeordneter Permissions (array([roleid] => array([index] => permissions)...)
-		foreach ($this->roleIds as $rid) {
-			// Permissions einer Rolle holen
-			// da es vorkommen kann, dass eine Rolle noch keine Permissions hat, wurde das Array mit null initialisiert (siehe getAllRolePermissions in admin_model.php)
-			// dadurch ist der 0te Index des Arrays leer 
-			$single_role_permissions = $this->admin_model->getAllRolePermissions($rid);
-			// sofern es zu dieser Rolle Berechtigungen gibt
-			if($single_role_permissions){ 
-				foreach ($single_role_permissions as $rp){
-					$all_role_permissions[$rid][]= $rp;
-				}
-			}
-		}
-
-// 			echo '<pre>';
-// 			print_r($this->roles);
-// 			print_r($this->permissions);
-// 			print_r($this->roleIds);
-// 			print_r($all_role_permissions);
-// 			echo '</pre>';
-		
-		// Erzeugen eines Arrays, das für die Ausgabe genutzt werden kann
-		// >> einfaches Array, das der Reihe nach alle genutzten Werte enthält mit: index % 5 == 0 als RoleID
-		
-		// Alle Permissions durchlaufen
-		foreach ($this->permissions as $p) {
-		
-// 			$data['tableviewData'][] = $p->bezeichnung;
-			$data['tableviewData'][] = $p->BerechtigungID; // ID speichern
-			
-			// Je Permission jede Rolle durchlaufen
-			foreach ($this->roles as $r){
-		
-				// wenn im Array Role_permissions[RoleID] Werte enthalten sind (siehe oben - Index 0 ist ein leeres Feld)
-				if(array_key_exists('1', $all_role_permissions[$r->RolleID])){
-					// Wenn das zur Rolle zugehörige Array die RechteID als Wert enthält
-					if(array_search($p->BerechtigungID, $all_role_permissions[$r->RolleID])){
-						// speichern der ID
-						$data['tableviewData'][] = $p->BerechtigungID;
-					} else {
-						// RechteID ist dieser Rolle nicht zugewiesen - x wird gespeichert
-						$data['tableviewData'][] = 'x';
-					}
-				} else {
-					// Rolle hat noch gar keine Rechte - 4 mal x wird gespeichert
-					$data['tableviewData'][] = 'x';
-				}
-			}
-		}
-		$this->data->add('tableviewData', $data['tableviewData']);
-
-		
-		// Speichern weiterer Daten die in der View benötigt werden in das Data-Array 
-		// $data['roleCounter'] = $this->admin_model->countRoles(); // Zur Anwendung des Modulo
-		$this->data->add('roleCounter', $this->admin_model->countRoles());
-		// $data['roles'] = $this->roles; // Permission-Objekte (ID und Bezeichnung)
-		$this->data->add('roles', $this->roles);
-		// $data['permissions'] = $this->permissions; // Permission-Objekte (ID und Bezeichnung)  
-		$this->data->add('permissions', $this->permissions);
-		
-// 		echo '<pre>';
-// 		print_r($data);
-// 		echo '</pre>';
-		
-		// VIEW
-		// $data['global_data'] = $this->data->load();
-
-		$siteinfo = array(
-			'title'			=> 'Rollenverwaltung',
-			'main_content'	=>	'admin_rollenverwaltung'
-			);
-		$this->data->add('siteinfo', $siteinfo);
-		
-		$this->load->view('includes/template', $this->data->load());
-	}
-	
-	
-	function savePermissions(){
-
-// 		echo '<pre>';
-// 		print_r($this->input->post());
-// 		echo '</pre>';
-		
-		$this->admin_model->deleteRolePermissions();
-		
-		// Durchlaufen für jede Berechtigung und Rolle
-		foreach($this->permissions as $p){
-			foreach($this->roleIds as $r){
-				// wenn für diese Rollen-Permission-Kombination ein Eintrag enthalten ist
-				if($this->input->post(($p->BerechtigungID).$r)){
-//					echo $_POST;
-					$rp['RolleID'] = $r;
-					$rp['BerechtigungID'] = $p->BerechtigungID;
-					
-					// speichern
-					$this->admin_model->updateRolePermissions($rp);
-				}
-			}
-		}
-		
-// 		echo '<pre>';
-// 		print_r($rp);
-// 		echo '</pre>';
-
-		// View neu laden
-		$this->show_role_permissions();
-	}
-	
-	
 	/***************************************************************************
 	* User management
 	* 
@@ -318,7 +206,7 @@ class Admin extends FHD_Controller {
 				$this->request_user_invitation_mask();
 				break;
 			case '1':
-				$this->admin_model->delete_invitation($invitation_id);
+				$this->admin_model->_delete_invitation($invitation_id);
 				$this->request_user_invitation_mask();
 				break;
 			default:
@@ -404,7 +292,6 @@ class Admin extends FHD_Controller {
 		$this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
 
 		$rules = array();
-
 		// values, from actual form
 		$form_values = $this->input->post();
 
@@ -426,12 +313,20 @@ class Admin extends FHD_Controller {
 		{
 			$rules = array();
 
-			$rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
-			$rules[] = $this->adminhelper->get_formvalidation_startjahr();
-			$rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
 			$rules[] = $this->adminhelper->get_formvalidation_studiengang();
+			$rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
 
 			$this->form_validation->set_rules($rules);
+
+			// query if erstsemestler checkbox was checked or not
+			if ( empty($form_values['erstsemestler']) )
+			{
+				// if not checked, -> invitation for non erstsemestler, -> more inputs to fill out
+				$rules[] = $this->adminhelper->get_formvalidation_startjahr();
+				$rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
+				
+				$this->form_validation->set_rules($rules);
+			}
 		}
 
 		// check for (in)correctness
@@ -463,16 +358,16 @@ class Admin extends FHD_Controller {
 
 		switch ($user_function) {
 			case '0':
-				$this->validate_edits();
+				$this->_validate_edits();
 				break;
 			case '1':
-				$this->reset_pw();
+				$this->_reset_pw();
 				break;
 			case '2':
-				$this->reset_semesterplan();
+				$this->_reset_semesterplan();
 				break;
 			case '3':
-				$this->login_as();			
+				$this->_login_as();			
 				break;
 
 			default:
@@ -482,7 +377,7 @@ class Admin extends FHD_Controller {
 	}
 
 	/**/
-	function validate_edits()
+	private function _validate_edits()
 	{
 		// set custom delimiter for validation errors
 		$this->form_validation->set_error_delimiters('<div class="val_error">', '</div>');
@@ -568,7 +463,7 @@ class Admin extends FHD_Controller {
 	}
 
 	/**/
-	function reset_pw()
+	private function _reset_pw()
 	{
 		// values, from actual form inputs
 		$new_form_values = $this->input->post();
@@ -597,7 +492,7 @@ class Admin extends FHD_Controller {
 	/*
 	* builds the needed html markup an content (db) from incoming ajax request
 	*/
-	public function ajax_show_user()
+	public function ajax_show_user_backup()
 	{
 		// get value
 		$role_id = $this->input->get('role_id');
@@ -613,12 +508,150 @@ class Admin extends FHD_Controller {
 		echo $result;
 	}
 
+
+	/**
+	 * ajax_show_user for the div table version
+	 */
+	public function ajax_show_user()
+	{
+		// get user with needed html markup and return it
+
+		// get value
+		$role_id = $this->input->get('role_id');
+		$searchletter = $this->input->get('searchletter');
+
+		$q = $this->admin_model->get_user_per_role_searchletter($role_id, $searchletter);  ///////////////////// query if result 0 !!!!!!!!!!!
+
+		$result = '';
+
+		// FB::log($q);
+		// return;
+
+		foreach ($q as $key => $value) {
+			$result .= $this->load->view('admin-subviews/admin_user_single_form', $value, TRUE);
+		}
+		echo $result;
+	}
+
 	/*
 	* User management
 	* 
 	* Konstantin Voth
 	***************************************************************************/
 	
+
+
+	function show_role_permissions(){
+			
+		// Alle RoleIDs durchlaufen und in einem verschachtelten Array speichern
+		// >> je RoleID ein Array aller zugeordneter Permissions (array([roleid] => array([index] => permissions)...)
+		foreach ($this->roleIds as $rid) {
+			// Permissions einer Rolle holen
+			// da es vorkommen kann, dass eine Rolle noch keine Permissions hat, wurde das Array mit null initialisiert (siehe getAllRolePermissions in admin_model.php)
+			// dadurch ist der 0te Index des Arrays leer 
+			$single_role_permissions = $this->admin_model->getAllRolePermissions($rid);
+			// sofern es zu dieser Rolle Berechtigungen gibt
+			if($single_role_permissions){ 
+				foreach ($single_role_permissions as $rp){
+					$all_role_permissions[$rid][]= $rp;
+				}
+			}
+		}
+
+// 			echo '<pre>';
+// 			print_r($this->roles);
+// 			print_r($this->permissions);
+// 			print_r($this->roleIds);
+// 			print_r($all_role_permissions);
+// 			echo '</pre>';
+		
+		// Erzeugen eines Arrays, das für die Ausgabe genutzt werden kann
+		// >> einfaches Array, das der Reihe nach alle genutzten Werte enthält mit: index % 5 == 0 als RoleID
+		
+		// Alle Permissions durchlaufen
+		foreach ($this->permissions as $p) {
+		
+// 			$data['tableviewData'][] = $p->bezeichnung;
+			$data['tableviewData'][] = $p->BerechtigungID; // ID speichern
+			
+			// Je Permission jede Rolle durchlaufen
+			foreach ($this->roles as $r){
+		
+				// wenn im Array Role_permissions[RoleID] Werte enthalten sind (siehe oben - Index 0 ist ein leeres Feld)
+				if(array_key_exists('1', $all_role_permissions[$r->RolleID])){
+					// Wenn das zur Rolle zugehörige Array die RechteID als Wert enthält
+					if(array_search($p->BerechtigungID, $all_role_permissions[$r->RolleID])){
+						// speichern der ID
+						$data['tableviewData'][] = $p->BerechtigungID;
+					} else {
+						// RechteID ist dieser Rolle nicht zugewiesen - x wird gespeichert
+						$data['tableviewData'][] = 'x';
+					}
+				} else {
+					// Rolle hat noch gar keine Rechte - 4 mal x wird gespeichert
+					$data['tableviewData'][] = 'x';
+				}
+			}
+		}
+		$this->data->add('tableviewData', $data['tableviewData']);
+
+		
+		// Speichern weiterer Daten die in der View benötigt werden in das Data-Array 
+		// $data['roleCounter'] = $this->admin_model->countRoles(); // Zur Anwendung des Modulo
+		$this->data->add('roleCounter', $this->admin_model->countRoles());
+		// $data['roles'] = $this->roles; // Permission-Objekte (ID und Bezeichnung)
+		$this->data->add('roles', $this->roles);
+		// $data['permissions'] = $this->permissions; // Permission-Objekte (ID und Bezeichnung)  
+		$this->data->add('permissions', $this->permissions);
+		
+// 		echo '<pre>';
+// 		print_r($data);
+// 		echo '</pre>';
+		
+		// VIEW
+		// $data['global_data'] = $this->data->load();
+
+		$siteinfo = array(
+			'title'			=> 'Rollenverwaltung',
+			'main_content'	=>	'admin_rollenverwaltung'
+			);
+		$this->data->add('siteinfo', $siteinfo);
+		
+		$this->load->view('includes/template', $this->data->load());
+	}
+	
+	
+	function savePermissions(){
+
+// 		echo '<pre>';
+// 		print_r($this->input->post());
+// 		echo '</pre>';
+		
+		$this->admin_model->deleteRolePermissions();
+		
+		// Durchlaufen für jede Berechtigung und Rolle
+		foreach($this->permissions as $p){
+			foreach($this->roleIds as $r){
+				// wenn für diese Rollen-Permission-Kombination ein Eintrag enthalten ist
+				if($this->input->post(($p->BerechtigungID).$r)){
+//					echo $_POST;
+					$rp['RolleID'] = $r;
+					$rp['BerechtigungID'] = $p->BerechtigungID;
+					
+					// speichern
+					$this->admin_model->updateRolePermissions($rp);
+				}
+			}
+		}
+		
+// 		echo '<pre>';
+// 		print_r($rp);
+// 		echo '</pre>';
+
+		// View neu laden
+		$this->show_role_permissions();
+	}
+
 	
 	
 	/* *****************************************************
