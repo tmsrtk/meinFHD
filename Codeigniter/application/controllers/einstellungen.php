@@ -15,70 +15,74 @@ class einstellungen extends FHD_Controller{
     private $userid;
     
     function __construct()
-	{
-	    parent::__construct();	
-	    $this->load->model('persDaten_model');
-	    
-	    $this->userid = 1383;
-	    //$this->userid = $this->authentication->user_id();
-	}
+		{
+			error_reporting(E_ERROR);
+		  parent::__construct();	
+		  $this->load->model('persDaten_model');
+		  
+		  //$this->userid = 1383;
+		  $this->userid = $this->authentication->user_id();
+		}
 	
 	
 	function index()
 	{
 	    
-	    //initial database-query to get als required information of the user
-	    $data['info'] = $this->persDaten_model->getUserInfo($this->userid);
-	    $data['stgng'] = $this->persDaten_model->getStudiengang();
-	    
-	    //setting up the rules, to which the user-input of the corresponding form-fields must comply:
-	    //Note: the form_validation-class is automagically loaded in the config/autoload.php, so there's no need to load it here.
-	    $this->form_validation->set_rules('login', 'Loginname', 'callback_validateLoginname['.$data['info']['LoginName'].']');
-	    $this->form_validation->set_rules('pw', 'Passwort', 'callback_validatePassword');
-	    $this->form_validation->set_rules('email', 'Email', 'callback_validateEmail');
-	    
-	    $this->krumo->dump($data);
-	    $this->krumo->dump($_POST);
-	    //print_r($this->authentication->user_id());
-	    //$this->load->view('einstellungen', $data);
-	    if ($this->form_validation->run() == FALSE)
-	    {
-		//echo 'fehler';
-		$this->load->view('einstellungen', $data);
-		//$this->persDaten_model->update();
-	    }
-	    else
-	    {
-		
-		//array of all input-fields
-		$fieldarray = array(
-		    'Loginname' => $_POST['login'],
-		    'Email' => $_POST['email'],
-		    'Titel' => $_POST['title'],
-		    'Raum' => $_POST['room'],
-		    'Vorname' => $_POST['firstname'],
-		    'Nachname' => $_POST['lastname'],
-		    'StudienbeginnJahr' => $_POST['year'],
-		    'StudienbeginnSemestertyp' => $_POST['semester'] );
-		
-		//set emailflag. required, because a not checked checkbox results in no $_POST-entry
-		$fieldarray['EmailDarfGezeigtWerden'] = isset($_POST['emailflag']) ? 1 : 0;
-		
-		if ($this->hasPasswordChanged())
+		//initial database-query to get als required information of the user
+		$data['info'] = $this->persDaten_model->getUserInfo($this->userid);
+		$data['stgng'] = $this->persDaten_model->getStudiengang();
+
+		//setting up the rules, to which the user-input of the corresponding form-fields must comply:
+		//Note: the form_validation-class is automagically loaded in the config/autoload.php, so there's no need to load it here.
+		$this->form_validation->set_rules('login', 'Loginname', 'callback_validateLoginname['.$data['info']['LoginName'].']');
+		$this->form_validation->set_rules('pw', 'Passwort', 'callback_validatePassword');
+		$this->form_validation->set_rules('email', 'Email', 'callback_validateEmail');
+
+		//$this->krumo->dump($data);
+		//$this->krumo->dump($_POST);
+		//print_r($this->authentication->user_id());
+		//$this->load->view('einstellungen', $data);
+		if ($this->form_validation->run() == FALSE)
 		{
-		    echo 'Password wurde geändert';
-		    //ToDO: Email versenden!
-		    
-		    //add the encrypted passwort
-		    $fieldarray['Passwort'] = md5($_POST['pw']);
+			//echo 'fehler';
+			$this->load->view('einstellungen', $data);
+			//$this->persDaten_model->update();
 		}
-		
-		//update database
-		$this->persDaten_model->update($this->userid, $fieldarray);
-		//create log
-		$this->persDaten_model->log($data['info']['TypID'], $data['info']['FachbereichID']);
-		$this->load->view('einstellungen_update', $data);
-	    }
+		else
+		{		
+			//array of all input-fields
+			$fieldarray = array(
+			    'Loginname' => $_POST['login'],
+			    'Email' => $_POST['email'],
+			    'Titel' => $_POST['title'],
+			    'Raum' => $_POST['room'],
+			    'Vorname' => $_POST['firstname'],
+			    'Nachname' => $_POST['lastname'],
+			    'StudienbeginnJahr' => $_POST['year'],
+			    'StudienbeginnSemestertyp' => $_POST['semester'],
+			    'StudiengangID' => $_POST['stgid'] );
+			
+			//set emailflag. required, because a not checked checkbox results in no $_POST-entry
+			$fieldarray['EmailDarfGezeigtWerden'] = isset($_POST['emailflag']) ? 1 : 0;
+			
+			if ($this->hasPasswordChanged())
+			{
+			    echo 'Password wurde geändert';
+			    //ToDO: Email versenden!
+			    
+			    //add the encrypted passwort
+			    $fieldarray['Passwort'] = md5($_POST['pw']);
+			}
+			
+			//update database
+			$this->persDaten_model->update($this->userid, $fieldarray);
+			//create log
+			$this->persDaten_model->log($data['info']['TypID'], $data['info']['FachbereichID']);
+
+			$data['info'] = $this->persDaten_model->getUserInfo($this->userid);
+
+			$this->load->view('einstellungen', $data);
+	  }
 	}
 	
 	function testlog()
@@ -111,7 +115,7 @@ class einstellungen extends FHD_Controller{
 	 * @param string	password
 	 * @return boolean	TRUE, if password is valid or empty
 	 */
-	function validatePassword($pw){
+	function validatePassword($pw) {
 	    
 	    // min/max length values for the passwort
 	    $min = 6;
@@ -120,7 +124,7 @@ class einstellungen extends FHD_Controller{
 	    //no error if there's no password submitted
 	    if ($this->hasPasswordChanged())
 	    {
-		echo $pw;
+		//echo $pw;
 		//the should actually be checked for whitespaces or other unwanted characters! But its not yet implemented
 //		//check if it contains any suspiscious or probably unwanted characters like spaces, slashes etc.
 //		if (!$this->form_validation->min_length($pw, $min)){
@@ -136,6 +140,7 @@ class einstellungen extends FHD_Controller{
 		    //echo 'too short';
 		    //if yes, return "not valid" and set the error-msg
 		    $this->form_validation->set_message('validatePassword', 'Passwort zu kurz. Benötigt mindestens '.$min.' Zeichen');
+		    $this->message->set('Passwort zu kurz. Benötigt mindestens '.$min.' Zeichen', 'error');
 		    return false;
 		}
 		//or more than the maximum length?
@@ -143,6 +148,7 @@ class einstellungen extends FHD_Controller{
 		    //echo 'too long';
 		    //if yes, return "not valid" and set the error-msg
 		    $this->form_validation->set_message('validatePassword', 'Passwort zu lang. Benötigt höchstens '.$max.' Zeichen');
+		    $this->message->set('Passwort zu lang. Benötigt höchstens '.$max.' Zeichen', 'error');
 		    return false;
 		}
 		
@@ -151,6 +157,7 @@ class einstellungen extends FHD_Controller{
 		if (!$this->form_validation->matches($pw, 'pw2')){
 		    //if yes, return "not valid" and set the error-msg
 		    $this->form_validation->set_message('validatePassword', 'Passwort stimmt nicht mit Wiederholung über ein.');
+		    $this->message->set('Passwort stimmt nicht mit Wiederholung über ein.', 'error');
 		    return false;
 		}
 		
@@ -186,6 +193,7 @@ class einstellungen extends FHD_Controller{
 		    //echo 'too short';
 		    //if yes, return "not valid" and set the error-msg
 		    $this->form_validation->set_message('validateLoginname', 'Loginname zu kurz. Benötigt mindestens 6 Zeichen');
+		    $this->message->set('Loginname zu kurz. Benötigt mindestens 6 Zeichen', 'error');
 		    return false;
 		}
 		//or more than the maximum length?
@@ -193,6 +201,7 @@ class einstellungen extends FHD_Controller{
 		    //echo 'too long';
 		    //if yes, return "not valid" and set the error-msg
 		    $this->form_validation->set_message('validateLoginname', 'Loginname zu lang. Benötigt höchstens 200 Zeichen');
+		    $this->message->set('Loginname zu lang. Benötigt höchstens 200 Zeichen', 'error');
 		    return false;
 		}
 		
@@ -200,6 +209,7 @@ class einstellungen extends FHD_Controller{
 		if (!$this->form_validation->is_unique($login, 'benutzer.LoginName'))
 		{
 		    $this->form_validation->set_message('validateLoginname', 'Loginname schon vorhanden. Bitte einen anderen eingeben.');
+		    $this->message->set('Loginname schon vorhanden. Bitte einen anderen eingeben.', 'error');
 		    return false;
 		}
 		
@@ -219,6 +229,7 @@ class einstellungen extends FHD_Controller{
 	{
 	    if (!$this->form_validation->valid_email($mail)){
 		$this->form_validation->set_message('validateEmail', 'Keine korrekte Emailadresse. Überprüfen sie ihre Eingabe');
+		$this->message->set('Keine korrekte Emailadresse. Überprüfen sie ihre Eingabe', 'error');
 		return FALSE;
 		
 	    }

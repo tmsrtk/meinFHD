@@ -16,7 +16,7 @@
  */
 class Detection {
 	
-	private $prefix = 'desktop';
+	private $prefix = 'mobile';
 	
 	/**
 	 *

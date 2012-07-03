@@ -29,4 +29,5 @@
   // get all labels and hide them if appropriate
   if ( Modernizr.input.placeholder ) {
     $('label').each(hideIfAppropriate);
-  } 
+  }
+})(jQuery);
