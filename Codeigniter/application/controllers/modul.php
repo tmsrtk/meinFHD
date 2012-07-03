@@ -44,10 +44,35 @@ class Modul extends FHD_Controller {
 
 	}
 
+	public function enroll_to_course($modul_id, $course_id, $group_id) {
+
+		$user_id = $this->authentication->user_id();
+
+		$this->Modul_Model->enroll_to_course($user_id, $modul_id, $course_id, $group_id);
+
+		//Message setzen
+
+		redirect('modul/'.$modul_id);
+
+
+	}
+
+	public function withdraw_from_course($modul_id, $course_id, $group_id) {
+
+		$user_id = $this->authentication->user_id();
+
+		$this->Modul_Model->withdraw_from_course($user_id, $modul_id, $course_id, $group_id);
+
+		redirect('modul/'.$modul_id);
+	}
+
 	public function show($course_id)
 	{	
 		$user_id = $this->authentication->user_id();
+
 		$courseinfo = $this->Modul_Model->get_courseinfo($user_id, $course_id);
+
+		$this->data->add('courseinfo', $courseinfo);
 
 
 		$this->load->view('modul', $this->data->load());
