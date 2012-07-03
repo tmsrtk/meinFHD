@@ -100,7 +100,7 @@ class Stundenplan extends FHD_Controller {
 		$this->data->add('zeiten', $plan[2]);
 		$this->data->add('aktivekurse', $plan[3]);
 
-		$this->load->view('stundenplan_week', $this->data->load());
+		$this->load->view('stundenplan/week', $this->data->load());
 	}
 
 }
