@@ -221,7 +221,7 @@ class Stundenplan_Model extends CI_Model {
 		$query = $this->db->query("
 		SELECT 
 			sg.Kursname, sg.kurs_kurz,
-			v.VeranstaltungsformName,sp.VeranstaltungsformAlternative,
+			v.VeranstaltungsformName, v.VeranstaltungsformID, sp.VeranstaltungsformAlternative,
 			sp.DozentID, sp.StartID, sp.EndeID, (sp.EndeID-sp.StartID)+1 AS 'Dauer', sp.GruppeID, sp.Farbe,
 			d.Vorname AS 'DozentVorname', d.Nachname AS 'DozentNachname', d.Email AS 'DozentEmail',
 			t.TagName,t.TagID,
