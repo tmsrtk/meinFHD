@@ -15,13 +15,14 @@ class einstellungen extends FHD_Controller{
     private $userid;
     
     function __construct()
-	{
-	    parent::__construct();	
-	    $this->load->model('persDaten_model');
-	    
-	    //$this->userid = 1383;
-	    $this->userid = $this->authentication->user_id();
-	}
+		{
+				error_reporting(E_ERROR);
+		    parent::__construct();	
+		    $this->load->model('persDaten_model');
+		    
+		    //$this->userid = 1383;
+		    $this->userid = $this->authentication->user_id();
+		}
 	
 	
 	function index()
@@ -37,8 +38,8 @@ class einstellungen extends FHD_Controller{
 		$this->form_validation->set_rules('pw', 'Passwort', 'callback_validatePassword');
 		$this->form_validation->set_rules('email', 'Email', 'callback_validateEmail');
 
-		$this->krumo->dump($data);
-		$this->krumo->dump($_POST);
+		//$this->krumo->dump($data);
+		//$this->krumo->dump($_POST);
 		//print_r($this->authentication->user_id());
 		//$this->load->view('einstellungen', $data);
 		if ($this->form_validation->run() == FALSE)
