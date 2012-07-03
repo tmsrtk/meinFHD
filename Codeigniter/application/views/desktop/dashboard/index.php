@@ -177,4 +177,9 @@
 				{jquery_tooltip: "<?php print base_url(); ?>resources/js/meinfhd.tooltip.js"},
 				{jQuery_flip: "<?php print base_url(); ?>resources/js/jquery.flip.js"},
 <?php endblock(); ?>
+
+<?php startblock('customFooterJQueryCode');?>
+
+<?php endblock(); ?>
+
 <?php end_extend(); # end extend main template ?>

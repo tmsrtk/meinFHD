@@ -103,7 +103,8 @@ class Admin extends FHD_Controller {
 			);
 		$this->data->add('siteinfo', $siteinfo);
 		
-		$this->load->view('includes/template', $this->data->load());
+	#	$this->load->view('includes/template', $this->data->load());
+		$this->load->view('admin/permissions_edit', $this->data->load());
 	}
 	
 	
@@ -153,11 +154,11 @@ class Admin extends FHD_Controller {
 	public function create_user_mask()
 	{
 		// siteinfo
-		$siteinfo = array(
-			'title'			=> 'Benutzer erstellen',
-			'main_content'	=> 'admin_create_user_mask'
-			);
-		$this->data->add('siteinfo', $siteinfo);
+	##	$siteinfo = array(
+	#		'title'			=> 'Benutzer erstellen',
+	#		'main_content'	=> 'admin_create_user_mask'
+	#		);
+	#	$this->data->add('siteinfo', $siteinfo);
 		
 		// all roles
 		$this->data->add('all_roles', $this->admin_model->get_all_roles());
@@ -166,7 +167,7 @@ class Admin extends FHD_Controller {
 		$this->data->add('studiengaenge', $this->admin_model->get_all_studiengaenge());
 		
 		//----------------------------------------------------------------------
-		$this->load->view('includes/template', $this->data->load());
+		$this->load->view('admin/user_add', $this->data->load());
 	}
 	
 	/*
@@ -188,7 +189,7 @@ class Admin extends FHD_Controller {
 		$this->data->add('all_roles', $this->admin_model->get_all_roles());
 		
 		//----------------------------------------------------------------------
-		$this->load->view('includes/template', $this->data->load());
+		$this->load->view('admin/user_edit', $this->data->load());
 	}
 
 	/*
@@ -207,7 +208,7 @@ class Admin extends FHD_Controller {
 		$this->data->add('user', $this->admin_model->get_all_user());
 
 		//----------------------------------------------------------------------
-		$this->load->view('includes/template', $this->data->load());
+		$this->load->view('admin/user_delete', $this->data->load());
 	}
 
 	/*
@@ -223,7 +224,7 @@ class Admin extends FHD_Controller {
 		$this->data->add('siteinfo', $siteinfo);
 
 		//----------------------------------------------------------------------
-		$this->load->view('includes/template', $this->data->load());
+		$this->load->view('admin/permissions_list', $this->data->load());
 	}
 
 	/*
@@ -243,7 +244,7 @@ class Admin extends FHD_Controller {
 		$this->data->add('user_invitations', $this->admin_model->request_all_invitations());
 
 		//----------------------------------------------------------------------
-		$this->load->view('includes/template', $this->data->load());
+		$this->load->view('admin/user_invite', $this->data->load());
 	}
 
 	public function show_successful_page()
@@ -473,7 +474,7 @@ class Admin extends FHD_Controller {
 				$this->reset_semesterplan();
 				break;
 			case '3':
-				$this->login_as();			
+				$this->login_as();
 				break;
 
 			default:
@@ -609,7 +610,7 @@ class Admin extends FHD_Controller {
 		$result = '';
 
 		foreach ($q as $key => $value) {
-			$result .= $this->load->view('admin-subviews/user_tr', $value, TRUE);
+			$result .= $this->load->view('admin/partials/user_tr', $value, TRUE);
 		}
 		echo $result;
 	}
@@ -644,7 +645,7 @@ class Admin extends FHD_Controller {
 		);
 		$this->data->add('siteinfo', $siteinfo);
 		
-		$this->load->view('includes/template', $this->data->load());
+		$this->load->view('admin/studiengang_edit', $this->data->load());
 		
 	}
 	
@@ -662,7 +663,7 @@ class Admin extends FHD_Controller {
 		);
 		$this->data->add('siteinfo', $siteinfo);
 		
-		$this->load->view('includes/template', $this->data->load());
+		$this->load->view('admin/studiengang_add', $this->data->load());
 		
 	}
 	
@@ -821,7 +822,7 @@ class Admin extends FHD_Controller {
 		
 		// return content
 		$result = '';
-		$result .= $this->load->view('admin-subviews/admin_stdgng_description', $data, TRUE);
+		$result .= $this->load->view('admin/partials/studiengang_details', $data, TRUE);
 		$result .= $this->load->view('admin-subviews/admin_stdgng_coursetable_content', $data, TRUE);
 		
 		echo $result;
