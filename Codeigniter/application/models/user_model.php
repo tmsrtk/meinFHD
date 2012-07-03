@@ -60,7 +60,9 @@ class User_model extends CI_Model {
 		// var_dump($user_id_role);
 
 		// return;
-
+		
+		$result_raw = array();
+		
 		foreach ($user_id_role as $key => $value) {
 			$this->db->select('BerechtigungID')
 					  ->from('rolle_mm_berechtigung')
