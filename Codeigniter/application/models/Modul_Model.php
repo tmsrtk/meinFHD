@@ -1,4 +1,3 @@
-
 <?php   if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 class Modul_Model extends CI_Model {
@@ -10,6 +9,55 @@ class Modul_Model extends CI_Model {
 	{
 
 	}
+
+	public function enroll_to_course($user_id, $modul_id, $course_id, $group_id) 
+	{
+
+		$data = array(
+		   'BenutzerID' => $user_id ,
+		   'GruppeID' => $group_id ,
+		);
+
+		$this->db->insert('gruppenteilnehmer', $data); 
+
+
+		$data = array(
+               'aktiv' => 1,
+            );
+
+		$this->db->where('BenutzerID', $user_id);
+		$this->db->where('KursID', $modul_id);
+		$this->db->where('SpKursID', $course_id);
+
+		$this->db->update('benutzerkurs', $data); 
+
+	}
+
+	public function withdraw_from_course($user_id, $modul_id, $course_id, $group_id) 
+	{
+
+		$data = array(
+		   'BenutzerID' => $user_id ,
+		   'GruppeID' => $group_id ,
+		);
+
+		$this->db->delete('gruppenteilnehmer', $data); 
+
+
+		$data = array(
+               'aktiv' => 0,
+            );
+
+		$this->db->where('BenutzerID', $user_id);
+		$this->db->where('KursID', $modul_id);
+		$this->db->where('SpKursID', $course_id);
+		
+		$this->db->update('benutzerkurs', $data); 
+
+		/* echo "Benutzer".$user_id."KursID".$modul_id."SPKursID".$course_id; */
+	}
+
+
 
 	/**
 	 * Defines global record of variables, in case additional information about the User is needed.
@@ -121,7 +169,6 @@ class Modul_Model extends CI_Model {
 			}
 
 		}
-		$this->krumo->dump($courseinfo);
 
 		return $courseinfo;
 
@@ -174,8 +221,6 @@ class Modul_Model extends CI_Model {
 		");
 		
 		$result = $query->result_array();
-
-		$this->krumo->dump($result);
 
 		return $result;
 	}

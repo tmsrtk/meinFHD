@@ -76,12 +76,11 @@
 
 					<div class="well well-small">
 						<h2><?php echo $key; ?>&nbsp;<small></small></h2>
-						<h3><?php echo $courselist[0]['Raum']; ?></h3>
-						<hr class="hidden-phone" />
+						<h3><?php echo $courselist[0]['Raum']; ?>
 
 					<?php //--------------------If there are alternatives --------------------?>
 					<?php if (!$courselist[0]['VeranstaltungsformAlternative'] == '')  { ?>
-
+						</h3>
 						<table class="table centered"> 
 							<thead>
 								<tr>
@@ -98,9 +97,9 @@
 										<!-vom User belegter Termin--->
 										<tr class="alert alert-success">
 											<td><?php echo $courselist[0]['VeranstaltungsformAlternative'] ?></td>
-											<td><?php echo $courselist[0]['Beginn'] ?> - <?php echo $courselist[0]['Ende'] ?></td>
+											<td><?php echo substr($veranstaltung['TagName'],0,2); ?>/ <?php echo $courselist[0]['Beginn'] ?> - <?php echo $courselist[0]['Ende'] ?></td>
 											<td>
-												<a href="#" class="btn btn-large btn-danger pull-right">
+												<a href="<?php echo base_url('modul/withdraw_from_course/'. $courselist[0]['KursID'].'/'. $courselist[0]['SPKursID'].'/'.  $courselist[0]['GruppeID'] ); ?>" class="btn btn-large btn-danger pull-right">
 													<i class="icon-remove icon-white"></i>
 												</a>
 											</td>
@@ -116,12 +115,11 @@
 										<?php //--------------------Loop for all alternatives --------------------?>	
 										<?php foreach ($courselist as $veranstaltung) : ?>
 
-											
 											<tr>
 												<td><?php echo $veranstaltung['VeranstaltungsformAlternative'] ?></td>
 												<td><?php echo substr($veranstaltung['TagName'],0,2); ?>/ <?php echo $veranstaltung['Beginn']; ?> - <?php echo $veranstaltung['Ende']; ?></td>
 												<td>
-													<a href="#" class="btn btn-large pull-right">
+													<a href="<?php echo base_url('modul/enroll_to_course/'. $veranstaltung['KursID'].'/'. $veranstaltung['SPKursID'].'/'.  $veranstaltung['GruppeID'] ); ?>" class="btn btn-large pull-right">
 														<i class="icon-ok"></i>
 													</a>									
 												</td>
@@ -146,7 +144,7 @@
 									<?php //--------------------Loop for Veranstaltung without alternatives--------------------?>			
 									<?php foreach ($courselist as $veranstaltung) : ?>
 	
-											<h3><?php echo $veranstaltung['Beginn']; ?> - <?php echo $veranstaltung['Ende']; ?> <?php  echo $veranstaltung['TagName']; ?>s</h3>
+											/ <?php echo $veranstaltung['Beginn']; ?> - <?php echo $veranstaltung['Ende']; ?> / <?php  echo $veranstaltung['TagName']; ?>s</h3>
 								
 									<?php //--------------------End Loop for Veranstaltung without alternatives--------------------?>			
 									<?php endforeach; ?>
@@ -156,11 +154,16 @@
 
 
 
+							<hr class="hidden-phone" />
 
-					</div>
-					<?php //--------------------EndIF there is any course of that kind  -------------------- ?>
-					<?php } ?>
+							</div>
+							<?php //--------------------EndIF there is any course of that kind  -------------------- ?>
+							<?php } ?>
+
+
+
 				</div><!-- /.span4-->
+
 
 
 			<?php //--------------------End Loop for Veranstaltung --------------------?>			
