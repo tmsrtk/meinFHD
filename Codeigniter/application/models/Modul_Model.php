@@ -21,6 +21,7 @@ class Modul_Model extends CI_Model {
 		$this->db->insert('gruppenteilnehmer', $data); 
 
 
+
 		$data = array(
                'aktiv' => 1,
             );
