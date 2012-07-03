@@ -1,5 +1,10 @@
+<?php extend('admin/index.php'); # extend main template ?>
+
+<?php startblock('title');?><?php get_extended_block();?> - Einladungsverwaltung<?php endblock(); ?>
+
 <?php
-	$data_formopen = array('class' => 'well form-horizontal', 'id' => 'request_invitation');
+	# general form setup
+	$data_formopen = array('class' => 'form-horizontal', 'id' => 'request_invitation');
 	$data_forename = array(
 			'class' => 'span2',
 			'name' => 'forename',
@@ -36,17 +41,20 @@
 			'class'			=> 'btn btn-danger'
 		);
 	$data_labelattrs = array(
-	    'class' => 'control-label'
+		'class' => 'control-label'
 	);
 ?>
 
-<h2>Verwaltung der Einladungsanforderungen</h2>
+<?php startblock('content'); # additional markup before content ?>
+				<div class="row-fluid">
+					<h2>Verwaltung der Einladungsanforderungen</h2>
+				</div>
+				<hr>
+				<?php echo validation_errors() ?>
+				<h3>Einladung anfordern</h3>
+				<p>Sie haben noch keinen Zugang? Dann können Sie hier eine Einladung anfordern:</p>
 
 
-<h3>Einladung anfordern</h3>
-<p>Sie haben noch keinen Zugang? Dann können Sie hier eine Einladung anfordern:</p>
-
-<?php echo validation_errors() ?>
 
 <?php
 	echo form_open('admin/validate_request_user_invitation_form/', $data_formopen);
@@ -189,12 +197,9 @@
 	<?php echo form_close(); ?>
 </div>
 <?php endforeach ?>
+<?php endblock(); ?>
 
-
-<script>
-
-(function() {
-
+<?php startblock('customFooterJQueryCode');?>
 	// onchange for radiobuttons 
 	$("input[name='role']").change(function() {
 		toggle_studentdata($(this));
@@ -274,5 +279,6 @@ function toggle_erstsemestlerdata(c) {
 		erstsemestler_data.slideDown('slow');
 	}
 }
+<?php endblock(); ?>
 
-</script>
+<?php end_extend(); ?>
