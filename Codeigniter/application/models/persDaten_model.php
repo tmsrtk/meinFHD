@@ -181,7 +181,7 @@ class persDaten_model extends CI_Model{
 	    );
 
 	$this->db->insert('logging', $log_array);
-	echo 'debug: Insert Log';
+	//echo 'debug: Insert Log';
 	
     }
 }
