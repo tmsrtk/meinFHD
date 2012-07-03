@@ -463,27 +463,27 @@ class Studienplan_Model extends CI_Model
             {
                 return '2+';
             }
-            elseif($mark < 90 && $mark >= 81)
+            elseif($mark < 90 && $mark >= 85)
             {
                 return '2';
             }
-            elseif($mark < 81 && $mark >= 75) 
+            elseif($mark < 85 && $mark >= 80) 
             {
                 return '2-';
             }
-            elseif($mark < 75 && $mark >= 70)
+            elseif($mark < 80 && $mark >= 75)
             {
                 return '3+';
             }
-            elseif($mark < 70 && $mark >= 65)
+            elseif($mark < 75 && $mark >= 70)
             {
                 return '3';
             }
-            elseif($mark < 65 && $mark >= 60) 
+            elseif($mark < 70 && $mark >= 65) 
             {
                 return '3-';
             }
-            elseif($mark < 60 && $mark >= 50)
+            elseif($mark < 65 && $mark >= 60)
             {
                 return '4';
             }
