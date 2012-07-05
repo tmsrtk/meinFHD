@@ -166,9 +166,12 @@ $submitForgotPasswordButtonAttributes = array(
 				</div>
 <?php endblock(); ?>
 
-<?php startblock('postCodeFooter'); # use for hidden markup like modals ?>
+<?php #startblock('postCodeFooter'); # use for hidden markup like modals ?>
 
-<?php endblock(); ?>
+<?php #endblock(); ?>
 
+<?php # startblock('headJSfiles'); ?>
+
+<?php # endblock(); ?>
 
 <?php end_extend(); ?>
