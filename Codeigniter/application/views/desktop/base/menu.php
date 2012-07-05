@@ -132,4 +132,4 @@
 						</div> <!-- /.nav-collapse -->
 					</div>
 				</div>
-			</div>
+			</nav>
