@@ -157,7 +157,7 @@
 <script type="text/javascript" src="http://twitter.github.com/bootstrap/assets/js/bootstrap-button.js"></script>
 <script type="text/javascript">
 
-    /* icon-switch for accordions*/
+    // icon-switch for accordions
     $(function() {
         $('.collapse').on('shown', function(e) {
             	$(e.target).parent().find('i.icon-plus').removeClass('icon-plus').addClass('icon-minus');
@@ -166,11 +166,12 @@
         	});    
     });
     
+    // set the current semester to be the "Selected" semester
     function sendSemesterNum(semesterNum, classID) {
 		$('#semester_' + classID).val(semesterNum);
     }
     
-    /* if the status of Teilnehmen-Button be changed, change the value of "hidden input"(writeHidden) */
+    // if the status of Teilnehmen-Button be changed, change the value of "hidden input"(writeHidden)
     function changeWriteStatus(classID) {
     	    		alert($('#hoeren_' + classID).val());
     	if ($('#hoeren_' + classID).val() == 1) {
@@ -182,7 +183,7 @@
     	}
     }
     
-    /* if the status of Teilnehmen-Button be changed, change the value of "hidden input"(listenHidden) */
+    // if the status of Teilnehmen-Button be changed, change the value of "hidden input"(listenHidden)
     function changelistenStatus(classID) {
     	if ($('#schreiben_' + classID).val() == 1) {
     		$('#schreiben_' + classID).val(0);
