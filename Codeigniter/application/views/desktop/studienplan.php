@@ -114,12 +114,31 @@
 								<!-- begin : Classes title -->				
 								<div id="collapse_<?php echo $semesterNum; ?>" class="accordion-body collapse">
 									<div class="accordion-inner">
-										<?php foreach($modul as $data) : ?>
-											<div class="alert alert-info clearfix">										
-												<?php echo $data['Kurzname'];?>				
-												<a class="btn btn-mini pull-right" onclick="sendSemesterNum(<?php echo $semesterNum . ', ' . $data['KursID']; ?>);" data-toggle="modal" data-backdrop="static" href="#popWindow<?php echo $data['KursID']; ?>">bearbeiten</a>							
-											</div>
-										<?php endforeach;	// end : for "classes" ?>
+										<?php
+											
+											$classNum = count($modul);
+											foreach($modul as $data) {				
+												
+												$noClassMSG = '';
+												
+												// if current class is null, do not display the info for it. And if there is no class in this semester, display a special info below 
+												if ($data['Kurzname'] == '') {
+													$classNum--;
+													if ($classNum == 0) {
+														echo '
+															<div class="alert alert-info clearfix">														
+																Es gibt kein Kurs am diesen Semester.
+															</div>
+														';
+													}
+													continue;
+												}
+										?>
+												<div class="alert alert-info clearfix">										
+													<?php echo $data['Kurzname'];?>
+													<a class="btn btn-mini pull-right" onclick="sendSemesterNum(<?php echo $semesterNum . ', ' . $data['KursID']; ?>);" data-toggle="modal" data-backdrop="static" href="#popWindow<?php echo $data['KursID']; ?>">bearbeiten</a>							
+												</div>
+										<?php }	// end : for "classes" ?>
 									</div>
 								</div>	
 								<!-- begin : Classes title -->
