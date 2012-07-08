@@ -25,7 +25,7 @@ class Admin extends FHD_Controller {
 
 		//// data
 		// userdata
-		$session_userid = 1357;
+		$session_userid = 1441;
 
 		$loginname = $this->admin_model->get_loginname($session_userid); 				///////////////////////////////
 		$user_permissions = $this->admin_model->get_all_userpermissions($session_userid);

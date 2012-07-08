@@ -88,7 +88,8 @@
 
 		</div><!-- /.span4-->
 
-
+		
+		<div class="well"></div>
 		<?php 
 		
 			foreach($studienplan as $semester) :

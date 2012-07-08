@@ -111,9 +111,9 @@
 	function toggle_studentendaten(c) {
 		// if 'student' was selected show more inputs
 		if(c === '4') {
-			$("#studentendaten").show();
+			$("#studentendaten").fadeIn();
 		} else {
-			$("#studentendaten").hide();
+			$("#studentendaten").fadeOut();
 		}
 	}
 
