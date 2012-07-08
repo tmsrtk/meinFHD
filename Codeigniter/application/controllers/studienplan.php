@@ -54,7 +54,7 @@ class Studienplan extends FHD_Controller
         $this->durchschnittsnoteBerechnen();
         $this->modulinfo();
         $this->prozentsatzBerechnen();
-        $this->pruefenTeilnehmenHolen();
+        //$this->pruefenTeilnehmenHolen();
         
         
         // add the resultset/array to the data-object
@@ -117,6 +117,8 @@ class Studienplan extends FHD_Controller
     {
         $this->load->model('Studienplan_Model');
         $this->Studienplan_Model->createNewSemesterColoumn();
+
+        header('Location: /meinFHD/Codeigniter/studienplan/');
     }
     
     
@@ -252,13 +254,13 @@ class Studienplan extends FHD_Controller
      * Get an array with information about the status of Prüfen & Teilnehmen of 
      * each module
      */
-    public function pruefenTeilnehmenHolen()
+    /*public function pruefenTeilnehmenHolen()
     {
         $this->load->model('Studienplan_Model');
         $pruefenTeilnehmen = $this->Studienplan_Model->getPruefenTeilnehmen();
         
         $this->data->add('pruefenTeilnehmen', $pruefenTeilnehmen);
-    }
+    }*/
     
     
     
@@ -273,11 +275,9 @@ class Studienplan extends FHD_Controller
         $teilnehmen = 0;
         $pruefen = 0;
         
-        
         // get post-data
-        $post= $this->input->post();
+        $post = $this->input->post();
 
-        
         // process post data
         foreach($post as $key => $value)
         {
@@ -328,9 +328,6 @@ class Studienplan extends FHD_Controller
             }
         }
         
-        // increase try
-        $this->versuchEinesModulsErhoehen($module_id);
-        
         $this->load->model('Studienplan_Model');
         $this->Studienplan_Model->saveMark($module_id, $mark);
     }
@@ -359,11 +356,12 @@ class Studienplan extends FHD_Controller
         }
         
         $this->load->model('Studienplan_Model');
-        $this->Studienplan_Model->shiftModuleMobile($module_id, $semester);
+        $this->Studienplan_Model->saveSemester($module_id, $semester);
     }
     
     
     
+
     /**
      * Executes all saving methods 
      */
@@ -374,6 +372,8 @@ class Studienplan extends FHD_Controller
             $this->noteSpeichern();
             $this->semesterSpeichern();
             $this->pruefenTeilnehmenSpeichern();
+
+            header('Location: /meinFHD/Codeigniter/studienplan/');
         }
     }
 }

@@ -390,7 +390,7 @@ class Studienplan_Model extends CI_Model
      * @param int $module_id
      * @param int $semester 
      */
-    public function shiftModuleMobile($module_id, $semester)
+    /*public function shiftModuleMobile($module_id, $semester)
     {
         // update the Semester-coloumn 
         $dataarray = array(
@@ -400,7 +400,7 @@ class Studienplan_Model extends CI_Model
         $this->db->where('SemesterplanID', $this->studyplanID);
         $this->db->where('KursID', $module_id);
         $this->db->update('semesterkurs', $dataarray);
-    }
+    }*/
     
     
     
@@ -451,39 +451,43 @@ class Studienplan_Model extends CI_Model
         }
         else
         {
-            if($mark == 100)
+            if($mark <= 100 && $mark >= 95) 
             {
                 return '1';
             }
-            elseif($mark < 100 && $mark >= 95) 
+            elseif($mark < 95 && $mark >= 90)
             {
                 return '1-';
             }
-            elseif($mark < 95 && $mark >= 90)
+            elseif($mark < 90 && $mark >= 85)
             {
                 return '2+';
             }
-            elseif($mark < 90 && $mark >= 85)
+            elseif($mark < 85 && $mark >= 80) 
             {
                 return '2';
             }
-            elseif($mark < 85 && $mark >= 80) 
+            elseif($mark < 80 && $mark >= 75)
             {
                 return '2-';
             }
-            elseif($mark < 80 && $mark >= 75)
+            elseif($mark < 75 && $mark >= 70)
             {
                 return '3+';
             }
-            elseif($mark < 75 && $mark >= 70)
+            elseif($mark < 70 && $mark >= 65) 
             {
                 return '3';
             }
-            elseif($mark < 70 && $mark >= 65) 
+            elseif($mark < 65 && $mark >= 60)
             {
                 return '3-';
             }
-            elseif($mark < 65 && $mark >= 60)
+            elseif($mark < 60 && $mark >= 55)
+            {
+                return '4+';
+            }
+            elseif($mark < 55 && $mark >= 50)
             {
                 return '4';
             }
@@ -610,6 +614,38 @@ class Studienplan_Model extends CI_Model
         $this->db->where('KursID', $moduleID);
         $this->db->update('semesterkurs', $dataarray);
     }
+
+
+
+
+    /**
+     * Change the Status of the Pruefung
+     * 
+     * @param int $moduleID
+     */
+    public function changeModuleStatus($moduleID, $mark)
+    {
+        if($mark < 5)
+        {
+            $data = array(
+                'PruefungsstatusID' => 4
+            );
+
+            $this->db->where('SemesterplanID', $this->studyplanID);
+            $this->db->where('KursID', $moduleID);
+            $this->db->update('semesterkurs', $data);
+        }
+        else
+        {
+            $data = array(
+                'PruefungsstatusID' => 3
+            );
+
+            $this->db->where('SemesterplanID', $this->studyplanID);
+            $this->db->where('KursID', $moduleID);
+            $this->db->update('semesterkurs', $data);
+        }
+    }
     
     
     
@@ -621,16 +657,36 @@ class Studienplan_Model extends CI_Model
      */
     public function saveMark($moduleID, $mark)
     {
-        $dataarray = array(
-            'Notenpunkte' => $mark
-        );
-
+        // get number of tries
+        $this->db->select('VersucheBislang');
+        $this->db->from('semesterkurs');
         $this->db->where('SemesterplanID', $this->studyplanID);
         $this->db->where('KursID', $moduleID);
-        $this->db->update('semesterkurs', $dataarray);
-        
-        // with every save increase the try of the module
-        $this->increaseTry($moduleID);
+        $try = $this->db->get();
+
+        foreach ($try->result() as $t) 
+        {
+            $tries = $t->VersucheBislang;
+        }
+
+
+        // if tries are greater than 3, the mark could not be saved
+        if($tries < 3 && $mark != '')
+        {
+            $dataarray = array(
+                'Notenpunkte' => $mark
+            );
+
+            $this->db->where('SemesterplanID', $this->studyplanID);
+            $this->db->where('KursID', $moduleID);
+            $this->db->update('semesterkurs', $dataarray);
+            
+            // with every save increase the try of the module
+            $this->increaseTry($moduleID);
+
+            // change Pruefungstatus
+            $this->changeModuleStatus($moduleID, $this->calculateMark($mark));
+        }
     }
     
     
@@ -854,11 +910,12 @@ class Studienplan_Model extends CI_Model
             );
 
             $this->db->where('KursID', $moduleId);
+            $this->db->where('SemesterplanID', $this->studyplanID);
             $this->db->update('semesterkurs', $dataarray);
         }
         else
         {
-            echo 'Du kannst diese Prüfung nicht mehr wiederholen';
+            header('Location: /meinFHD/Codeigniter/studienplan/');
         }
     }
     
@@ -875,6 +932,7 @@ class Studienplan_Model extends CI_Model
         foreach($dataarray as $data)
         {
             $this->db->where('KursID', $data['KursID']);
+            $this->db->where('SemesterplanID', $this->studyplanID);
             $this->db->update('semesterkurs', $data);
         }
     }
@@ -991,7 +1049,7 @@ class Studienplan_Model extends CI_Model
      * 
      * @return Array 
      */
-    public function getPruefenTeilnehmen()
+    /*public function getPruefenTeilnehmen()
     {
         $data = array();
         
@@ -1009,7 +1067,7 @@ class Studienplan_Model extends CI_Model
         }
         
         return $data;
-    }
+    }*/
     
     
     
