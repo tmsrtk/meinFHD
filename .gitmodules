@@ -4,3 +4,6 @@
 [submodule "Codeigniter/application/libraries/firephp"]
 	path = Codeigniter/application/libraries/firephp
 	url = git://github.com/firephp/firephp-core.git
+[submodule "Codeigniter/application/libraries/ci-minify"]
+	path = Codeigniter/application/libraries/ci-minify
+	url = git://github.com/ericbarnes/ci-minify.git
