@@ -687,6 +687,10 @@ class Studienplan_Model extends CI_Model
             // change Pruefungstatus
             $this->changeModuleStatus($moduleID, $this->calculateMark($mark));
         }
+        elseif(tries < 3)
+        {
+            $this->message->set(sprintf('Du kannst dieses Modul nicht mehr bearbeiten.'));
+        }
     }
     
     
