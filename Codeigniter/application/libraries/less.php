@@ -32,37 +32,33 @@ class Less {
 	/*
 	 * Autocompiles given files from LESS to CSS
 	 */
-	public function auto_compile_less($lessFiles, $cssFiles) {
-		// reset array index
-		$i = 0;
-		
+	public function auto_compile_less($files) {
 		// loop through all files in array
-		foreach( $lessFiles as $less_fname ) {
-			
-			// correct path for less_fname
-			$less_fname = FCPATH . $this->lessDir . $less_fname;
+		foreach( $files as $file ) {
+			// generate proper file names & file paths
+			$less_fname = FCPATH . $this->lessDir . $file;
+			$css_fname = FCPATH . $this->cssDir  . basename($file, '.less') . '.css';
 			
 			// load the cache
 			$cache_fname = $less_fname.".cache";
-			
 			if (file_exists($cache_fname)) {
 				$cache = unserialize(file_get_contents($cache_fname));
 			} else {
 				$cache = $less_fname;
+				
+				// log message if cache file is missing
+				log_message('debug', "LESS Compiler: cache file for $file is missing and will be generated" );
 			}
 			
-			// recreate cache
+			// recreate the cache for comparsion
 			$new_cache = lessc::cexecute($cache);
-			if ( !is_array( $cache ) || $new_cache['updated'] > $cache['updated'] ) {
+			if ( !is_array($cache) || $new_cache['updated'] > $cache['updated'] ) {
 				file_put_contents( $cache_fname, serialize( $new_cache ) );
-				file_put_contents( FCPATH . $this->cssDir . $cssFiles[$i], $new_cache['compiled']);
+				file_put_contents( $css_fname, $new_cache['compiled'] );
 				
 				// log message about performed compilation
-				log_message('debug', 'edited LESS files compiled to a new CSS file' );
+				log_message('debug', 'LESS Compiler: edited LESS files compiled to a new CSS file' );
 			}
-			
-			// increment array index
-			$i++;
 		}
 	}
 }
