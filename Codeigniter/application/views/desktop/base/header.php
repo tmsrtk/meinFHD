@@ -16,14 +16,7 @@
 		<link rel="stylesheet/less" type="text/css" href="../resources/bootstrap/less/bootstrap.less">
 		<link rel="stylesheet/less" type="text/css" href="../resources/bootstrap/less/responsive.less">
 		-->
-		<?php
-			// setup files for less2css compilation
-			$lessFiles	=	array('meinfhd.less','meinfhd-responsive.less');
-			$cssFiles	=	array('meinfhd.css','meinfhd-responsive.css');
-			
-			// autocompile files
-			$this->less->auto_compile_less($lessFiles,$cssFiles);
-		?>
+		<?php $this->less->auto_compile_less(array('meinfhd.less','meinfhd-responsive.less')); // autocompile files ?>
 <?php start_block_marker('headerCss'); ?>
 		<link rel="stylesheet" type="text/css" href="<?php print base_url(); ?>resources/css/meinfhd.css">
 		<link rel="stylesheet" type="text/css" href="<?php print base_url(); ?>resources/css/meinfhd-responsive.css">
