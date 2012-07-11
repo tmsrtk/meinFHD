@@ -135,6 +135,7 @@ class Studienplan_Model extends CI_Model
     }
     
 
+    
 
     /**
      * Queries the Db for the Studyplan of the user
@@ -242,7 +243,7 @@ class Studienplan_Model extends CI_Model
         
         // sort the studyplan by semester
         ksort($data['plan']);
-        //var_dump($data['plan']);       
+  
         return $data;
     }
 
@@ -389,7 +390,7 @@ class Studienplan_Model extends CI_Model
      * @param int $module_id
      * @param int $semester 
      */
-    public function shiftModule($module_id, $semester)
+    /*public function shiftModuleMobile($module_id, $semester)
     {
         // update the Semester-coloumn 
         $dataarray = array(
@@ -399,7 +400,7 @@ class Studienplan_Model extends CI_Model
         $this->db->where('SemesterplanID', $this->studyplanID);
         $this->db->where('KursID', $module_id);
         $this->db->update('semesterkurs', $dataarray);
-    }
+    }*/
     
     
     
@@ -442,81 +443,59 @@ class Studienplan_Model extends CI_Model
      */
     public function calculateMark($markpoints)
     {   
-        // search for a point in the string
-        $mark = strpos($markpoints, '.');
-        //var_dump($markpoints);
-        //var_dump($mark);
-        switch($mark)
-        {
-            // if $markpoints are points (no point)
-            case false:
-                if($markpoints >= 90 && $markpoints <= 100)
-                {
-                    return '1';
-                }
-                elseif($markpoints >= 75 && $markpoints <= 90) 
-                {
-                    return '2';
-                }
-                elseif($markpoints >= 60 && $markpoints <= 75)
-                {
-                    return '3';
-                }
-                elseif($markpoints >= 50 && $markpoints <= 60)
-                {
-                    return '4';
-                }
-                elseif($markpoints < 50)
-                {
-                    return '5';
-                }
-            break;
-               
-            // if $markpoints is mark (point)
-            /*case $mark > 0:
-                if($markpoints == 1.0)
-                {
-                    return '1';
-                }
-                elseif($markpoints > 1.0 && $markpoints <= 1.3) 
-                {
-                    return '1-';
-                }
-                elseif($markpoints > 1.3 && $markpoints <= 1.7)
-                {
-                    return '2+';
-                }
-                elseif($markpoints > 1.7 && $markpoints <= 2.0)
-                {
-                    return '2';
-                }
-                elseif($markpoints > 2.0 && $markpoints <= 2.3) 
-                {
-                    return '2-';
-                }
-                elseif($markpoints > 2.3 && $markpoints <= 2.7)
-                {
-                    return '3+';
-                }
-                elseif($markpoints > 2.7 && $markpoints <= 3.0)
-                {
-                    return '3';
-                }
-                elseif($markpoints > 3.0 && $markpoints <= 3.3) 
-                {
-                    return '3-';
-                }
-                elseif($markpoints > 3.3 && $markpoints <= 4.0)
-                {
-                    return '4';
-                }
-                elseif($markpoints > 4.0)
-                {
-                    return '5';
-                }
-            break;*/
-        }
+        $mark = intval($markpoints);
         
+        if(!is_int($mark))
+        {
+            echo 'Bitte gib eine Punktzahl zwischen 0 und 100 ein.';
+        }
+        else
+        {
+            if($mark <= 100 && $mark >= 95) 
+            {
+                return '1';
+            }
+            elseif($mark < 95 && $mark >= 90)
+            {
+                return '1-';
+            }
+            elseif($mark < 90 && $mark >= 85)
+            {
+                return '2+';
+            }
+            elseif($mark < 85 && $mark >= 80) 
+            {
+                return '2';
+            }
+            elseif($mark < 80 && $mark >= 75)
+            {
+                return '2-';
+            }
+            elseif($mark < 75 && $mark >= 70)
+            {
+                return '3+';
+            }
+            elseif($mark < 70 && $mark >= 65) 
+            {
+                return '3';
+            }
+            elseif($mark < 65 && $mark >= 60)
+            {
+                return '3-';
+            }
+            elseif($mark < 60 && $mark >= 55)
+            {
+                return '4+';
+            }
+            elseif($mark < 55 && $mark >= 50)
+            {
+                return '4';
+            }
+            elseif($mark < 50)
+            {
+                return '5';
+            }
+        }  
     }
     
     
@@ -620,7 +599,6 @@ class Studienplan_Model extends CI_Model
     
     
     
-    // TODO: MIT WELCHER NOTE WERDEN DIE MODULE ANERKANNT???????
     /**
      * Set the module with the $moduleID as accepted
      * 
@@ -636,6 +614,39 @@ class Studienplan_Model extends CI_Model
         $this->db->where('KursID', $moduleID);
         $this->db->update('semesterkurs', $dataarray);
     }
+
+
+
+
+    /**
+     * Change the Status of the Pruefung
+     * 
+     * @param int $moduleID
+     */
+    public function changeModuleStatus($moduleID, $mark)
+    {
+        if($mark < 5)
+        {
+            $data = array(
+                'PruefungsstatusID' => 4
+            );
+
+            $this->db->where('SemesterplanID', $this->studyplanID);
+            $this->db->where('KursID', $moduleID);
+            $this->db->update('semesterkurs', $data);
+        }
+        else
+        {
+            $data = array(
+                'PruefungsstatusID' => 3
+            );
+
+            $this->db->where('SemesterplanID', $this->studyplanID);
+            $this->db->where('KursID', $moduleID);
+            $this->db->update('semesterkurs', $data);
+        }
+    }
+    
     
     
     
@@ -646,13 +657,40 @@ class Studienplan_Model extends CI_Model
      */
     public function saveMark($moduleID, $mark)
     {
-        $dataarray = array(
-            'Notenpunkte' => $mark
-        );
-
+        // get number of tries
+        $this->db->select('VersucheBislang');
+        $this->db->from('semesterkurs');
         $this->db->where('SemesterplanID', $this->studyplanID);
         $this->db->where('KursID', $moduleID);
-        $this->db->update('semesterkurs', $dataarray);
+        $try = $this->db->get();
+
+        foreach ($try->result() as $t) 
+        {
+            $tries = $t->VersucheBislang;
+        }
+
+
+        // if tries are greater than 3, the mark could not be saved
+        if($tries < 3 && $mark != '')
+        {
+            $dataarray = array(
+                'Notenpunkte' => $mark
+            );
+
+            $this->db->where('SemesterplanID', $this->studyplanID);
+            $this->db->where('KursID', $moduleID);
+            $this->db->update('semesterkurs', $dataarray);
+            
+            // with every save increase the try of the module
+            $this->increaseTry($moduleID);
+
+            // change Pruefungstatus
+            $this->changeModuleStatus($moduleID, $this->calculateMark($mark));
+        }
+        elseif(tries < 3)
+        {
+            $this->message->set(sprintf('Du kannst dieses Modul nicht mehr bearbeiten.'));
+        }
     }
     
     
@@ -719,7 +757,6 @@ class Studienplan_Model extends CI_Model
     
     
     
-    // TODO: Irgendwo hierdrin ist ein Bug!!!
     /**
      * Calculates the Sum of the SWS and the CP for each Semester
      * 
@@ -727,12 +764,13 @@ class Studienplan_Model extends CI_Model
      */
     public function calculateSwsAndCp()
     {
+        // locale variables
         $swsSum = 0;
         $cpSum = 0;
-        $counter = 1;
         $data = array();
         $sumArray = array();
         
+        // query DB
         $this->db->select('studiengangkurs.KursID,
                             studiengangkurs.Kursname,
                             studiengangkurs.kurs_kurz,
@@ -754,22 +792,16 @@ class Studienplan_Model extends CI_Model
         $this->db->where('semesterkurs.SemesterplanID', $this->studyplanID);
         $this->db->order_by('semesterkurs.Semester', 'ASC');
         $swsCpResult = $this->db->get();
-
-
-        // order modules by semester in array
-        foreach($swsCpResult->result() as $swsCp)
+        
+        
+        // writes result in array
+        foreach($swsCpResult->result() as $sc)
         {
-            if($swsCp->graduateSemester != $swsCp->regularSemester)
+            // if the graduateSemester unequals the regularSemester
+            if($sc->graduateSemester != $sc->regularSemester)
             {
-                $diff = $swsCp->regularSemester - $swsCp->graduateSemester;
-                
-                if($diff < 0)
-                {
-                    $diff = $diff * (-1);
-                }
-                
-                // input empty array for shifted module
-                $data[$swsCp->regularSemester][] = array(
+                // then put an empty array on the position in regularSemester
+                $data[$sc->regularSemester][] = array(
                     'SWS_Vorlesung'         => null,
                     'SWS_Uebung'            => null,
                     'SWS_Praktikum'         => null,
@@ -777,107 +809,77 @@ class Studienplan_Model extends CI_Model
                     'SWS_Seminar'           => null,
                     'SWS_Seminarunterricht' => null,
                     'Creditpoints'          => null,
-                    'Semester'              => null,
-                    'Differenz'             => null
+                    'Semester'              => $sc->regularSemester,
                 );
                 
-                $data[$swsCp->graduateSemester][] = array(
-                    'SWS_Vorlesung'         => $swsCp->SWS_Vorlesung,
-                    'SWS_Uebung'            => $swsCp->SWS_Uebung,
-                    'SWS_Praktikum'         => $swsCp->SWS_Praktikum,
-                    'SWS_Projekt'           => $swsCp->SWS_Projekt,
-                    'SWS_Seminar'           => $swsCp->SWS_Seminar,
-                    'SWS_Seminarunterricht' => $swsCp->SWS_Seminarunterricht,
-                    'Creditpoints'          => $swsCp->Creditpoints,
-                    'Semester'              => $swsCp->regularSemester,
-                    'Differenz'             => $diff
+                // and the module in the graduateSemester Array
+                $data[$sc->graduateSemester][] = array(
+                    'SWS_Vorlesung'         => $sc->SWS_Vorlesung,
+                    'SWS_Uebung'            => $sc->SWS_Uebung,
+                    'SWS_Praktikum'         => $sc->SWS_Praktikum,
+                    'SWS_Projekt'           => $sc->SWS_Projekt,
+                    'SWS_Seminar'           => $sc->SWS_Seminar,
+                    'SWS_Seminarunterricht' => $sc->SWS_Seminarunterricht,
+                    'Creditpoints'          => $sc->Creditpoints,
+                    'Semester'              => $sc->graduateSemester,
                 );
             }
-            else 
+            // put the regularSemester in the Array
+            else
             {
-                $data[$swsCp->regularSemester][] = array(
-                    'SWS_Vorlesung'         => $swsCp->SWS_Vorlesung,
-                    'SWS_Uebung'            => $swsCp->SWS_Uebung,
-                    'SWS_Praktikum'         => $swsCp->SWS_Praktikum,
-                    'SWS_Projekt'           => $swsCp->SWS_Projekt,
-                    'SWS_Seminar'           => $swsCp->SWS_Seminar,
-                    'SWS_Seminarunterricht' => $swsCp->SWS_Seminarunterricht,
-                    'Creditpoints'          => $swsCp->Creditpoints,
-                    'Semester'              => $swsCp->regularSemester,
-                    'Differenz'             => null
+                $data[$sc->regularSemester][] = array(
+                    'SWS_Vorlesung'         => $sc->SWS_Vorlesung,
+                    'SWS_Uebung'            => $sc->SWS_Uebung,
+                    'SWS_Praktikum'         => $sc->SWS_Praktikum,
+                    'SWS_Projekt'           => $sc->SWS_Projekt,
+                    'SWS_Seminar'           => $sc->SWS_Seminar,
+                    'SWS_Seminarunterricht' => $sc->SWS_Seminarunterricht,
+                    'Creditpoints'          => $sc->Creditpoints,
+                    'Semester'              => $sc->regularSemester,
                 );
             }
         }
         
-        // input empty array for a semester if no module exists
-        if($swsCp->Semesteranzahl > $swsCp->Regelsemester)
-        {
-            $diff = $swsCp->Semesteranzahl - $swsCp->Regelsemester;
-
-            for($i=0; $i<$diff; $i++)
-            {
-                $data[$swsCp->Regelsemester + $i][] = array(
-                    'SWS_Vorlesung'         => null,
-                    'SWS_Uebung'            => null,
-                    'SWS_Praktikum'         => null,
-                    'SWS_Projekt'           => null,
-                    'SWS_Seminar'           => null,
-                    'SWS_Seminarunterricht' => null,
-                    'Creditpoints'          => null,
-                    'Semester'              => null,
-                    'Differenz'             => null
-                );
-            }
-        }
-        
+        // sort the array
         ksort($data);
-        //var_dump($data);
-
-        // initial zero entry
-        $sumArray[0]['SWS_Summe'] = 0;
-        $sumArray[0]['CP_Summe'] = 0;
         
+        //initial zero values
+        $sumArray[0]['SWS_Summe'] = floatval(0);
+        $sumArray[0]['CP_Summe'] = floatval(0);
         
-        // step through the ordered array
+        // step through the ordered array and calculate the SWS & Creditpoints
         foreach($data as $semester)
         {
             foreach($semester as $module)
             {
-                if($module['Semester'] == null)
-                {
-                    //var_dump($semester);
-                    $sumArray[$counter]['SWS_Summe'] = 0;
-                    $sumArray[$counter]['CP_Summe'] = 0;
-                }
-                
                 // Sum of SWS
-                $swsSum += $module['SWS_Vorlesung'] + 
-                            $module['SWS_Uebung'] + 
-                            $module['SWS_Praktikum'] + 
-                            $module['SWS_Projekt'] + 
-                            $module['SWS_Seminar'] + 
-                            $module['SWS_Seminarunterricht'];
+                $swsSum += $module['SWS_Vorlesung'] + $module['SWS_Uebung'] + 
+                            $module['SWS_Praktikum'] + $module['SWS_Projekt'] + 
+                            $module['SWS_Seminar'] + $module['SWS_Seminarunterricht'];
 
                 // Sum of Creditpoints
                 $cpSum += $module['Creditpoints'];
-
-                // write sums in array
-                $sumArray[$module['Semester']]['SWS_Summe'] = intval($swsSum);
-                $sumArray[$module['Semester']]['CP_Summe'] = intval($cpSum);
             }
-
+            
+            // write sums in array
+            if($swsSum == 0 && $cpSum == 0)
+            {
+                $sumArray[$module['Semester']]['SWS_Summe'] = floatval(0);
+                $sumArray[$module['Semester']]['CP_Summe'] = floatval(0);
+            }
+            else
+            {
+                $sumArray[$module['Semester']]['SWS_Summe'] = floatval($swsSum);
+                $sumArray[$module['Semester']]['CP_Summe'] = floatval($cpSum);
+            }
+            
             // reset locale variables
             $swsSum = 0;
             $cpSum = 0;
-            $counter++;
         }
-        
-        // sort the Array by Keys
-        ksort($sumArray);
-     
-        //var_dump($sumArray);
-        return $sumArray; 
-    } 
+
+        return $sumArray;
+    }
     
     
     
@@ -912,11 +914,12 @@ class Studienplan_Model extends CI_Model
             );
 
             $this->db->where('KursID', $moduleId);
+            $this->db->where('SemesterplanID', $this->studyplanID);
             $this->db->update('semesterkurs', $dataarray);
         }
         else
         {
-            echo 'Du kannst diese Prüfung nicht mehr wiederholen';
+            header('Location: /meinFHD/Codeigniter/studienplan/');
         }
     }
     
@@ -924,7 +927,7 @@ class Studienplan_Model extends CI_Model
     
     
     /**
-     * Saves all made changes
+     * Desktop: Saves all made changes
      * 
      * @param Array $dataarray  Array with changed Module-ID's
      */
@@ -933,6 +936,7 @@ class Studienplan_Model extends CI_Model
         foreach($dataarray as $data)
         {
             $this->db->where('KursID', $data['KursID']);
+            $this->db->where('SemesterplanID', $this->studyplanID);
             $this->db->update('semesterkurs', $data);
         }
     }
@@ -990,7 +994,6 @@ class Studienplan_Model extends CI_Model
     
     
     
-    // TODO: DIESE METHODE LIEFERT KEINE ERGEBNISSE, DA DIE DATEN NICHT PASSEN
     /**
      * Returns an array of all participated groups
      * 
@@ -1000,7 +1003,7 @@ class Studienplan_Model extends CI_Model
     {
         $data = array();
         
-        $this->db->select('stundenplankurs.VeranstaltungsformAlternative,
+        $this->db->select('stundenplankurs.KursID,
                             stundenplankurs.Raum,
                             stundenplankurs.StartID,
                             stundenplankurs.EndeID,
@@ -1008,23 +1011,25 @@ class Studienplan_Model extends CI_Model
                             studiengangkurs.kurs_kurz,
                             veranstaltungsform.VeranstaltungsformName,
                             tag.TagName,
-                            benutzer.Nachname,
-                            gruppenteilnehmer.GruppeID');
+                            benutzer.Nachname');
         $this->db->from('stundenplankurs');
-        $this->db->join('studiengangkurs', 'stundenplankurs.KursID = studiengangkurs.KursID');
-        $this->db->join('veranstaltungsform', 'stundenplankurs.VeranstaltungsformID = veranstaltungsform.VeranstaltungsformID');
-        $this->db->join('tag', 'stundenplankurs.TagID = tag.TagID');
-        $this->db->join('benutzer', 'stundenplankurs.DozentID = benutzer.BenutzerID');
-        $this->db->join('gruppenteilnehmer', 'benutzer.BenutzerID = gruppenteilnehmer.BenutzerID');
-        $this->db->where('benutzer.BenutzerID', $this->userID);
-        $this->db->where('benutzer.Semester', $this->currentSemester);
+        $this->db->join('studiengangkurs', 'studiengangkurs.KursID = stundenplankurs.KursID');
+        $this->db->join('veranstaltungsform', 'veranstaltungsform.VeranstaltungsformID = stundenplankurs.VeranstaltungsformID');
+        $this->db->join('tag', 'tag.TagID = stundenplankurs.TagID');
+        $this->db->join('benutzer', 'benutzer.BenutzerID = stundenplankurs.DozentID');
+        //$this->db->join('benutzerkurs', 'benutzerkurs.KursID = stundenplankurs.KursID');
+        $this->db->join('gruppenteilnehmer', 'gruppenteilnehmer.GruppeID = stundenplankurs.GruppeID');
+        $this->db->where('gruppenteilnehmer.BenutzerID', $this->userID);
+        //$this->db->where('benutzerkurs.aktiv', 1);
+        $this->db->where('stundenplankurs.VeranstaltungsformAlternative != ""');
+        $this->db->order_by('stundenplankurs.KursID', 'ASC');
         $groups = $this->db->get();
-
-
+        
+        
         foreach($groups->result() as $group)
         {
             $data['groups'][] = array(
-                'VeranstaltungsformAlternative' => $group->VeranstaltungsformAlternative,
+                'KursID'                        => $group->KursID,
                 'Raum'                          => $group->Raum,
                 'StartID'                       => $group->StartID,
                 'EndeId'                        => $group->EndeID,
@@ -1032,13 +1037,14 @@ class Studienplan_Model extends CI_Model
                 'kurs_kurz'                     => $group->kurs_kurz,
                 'VeranstaltungsformName'        => $group->VeranstaltungsformName,
                 'TagName'                       => $group->TagName,
-                'Nachname'                      => $group->Nachname,
-                'GruppeID'                      => $group->GruppeID
+                'Nachname'                      => $group->Nachname
             );
         }
-        var_dump($data);
+
         return $data;
     }
+    
+    
     
     
     /**
@@ -1047,7 +1053,7 @@ class Studienplan_Model extends CI_Model
      * 
      * @return Array 
      */
-    public function getPruefenTeilnehmen()
+    /*public function getPruefenTeilnehmen()
     {
         $data = array();
         
@@ -1065,8 +1071,49 @@ class Studienplan_Model extends CI_Model
         }
         
         return $data;
+    }*/
+    
+    
+    
+    
+    /**
+     * Save the Status of testing or participating
+     * 
+     * @param int $module_id
+     * @param int $pruefen
+     * @param int $teilnehmen 
+     */
+    public function savePruefenTeilnehmen($module_id, $pruefen, $teilnehmen)
+    {
+        $dataarray = array(
+            'KursSchreiben' => $pruefen,
+            'KursHoeren'    => $teilnehmen
+        );
+
+        $this->db->where('SemesterplanID', $this->studyplanID);
+        $this->db->where('KursID', $module_id);
+        $this->db->update('semesterkurs', $dataarray);
     }
     
+    
+    
+    
+    /**
+     * Save the changed Semester
+     * 
+     * @param int $module_id
+     * @param int $semester 
+     */
+    public function saveSemester($module_id, $semester)
+    {
+        $dataarray = array(
+            'Semester' => $semester,
+        );
+
+        $this->db->where('SemesterplanID', $this->studyplanID);
+        $this->db->where('KursID', $module_id);
+        $this->db->update('semesterkurs', $dataarray);
+    }
     
     
     
@@ -1074,8 +1121,9 @@ class Studienplan_Model extends CI_Model
      * Writes the choosable entries for the selectBox
      * 
      * @return Array 
+     * @deprecated  Because the context will be static
      */
-    public function getContextForSemesterSelectBox()
+    /*public function getContextForSemesterSelectBox()
     {
         $data = array();
         $selectContext = array();
@@ -1106,7 +1154,7 @@ class Studienplan_Model extends CI_Model
         
         //var_dump($selectContext);
         return $data;
-    }
+    }*/
 
 
     
