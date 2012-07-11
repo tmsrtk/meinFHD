@@ -24,13 +24,33 @@ class Kursverwaltung_model extends CI_Model {
     
     
     /**
+     * Returns name for given course_id
+     * @param int $course_id
+     * @return String 
+     */
+    public function get_lecture_name($course_id){
+	$this->db->select('kurs_kurz')->where('KursID', $course_id);
+	$q = $this->db->get_where('studiengangkurs');
+	
+	if($q->num_rows() > 0){
+	    foreach ($q->result() as $row){
+		$data[] = $row;
+	    }
+	}
+	
+	return $data[0];
+    }
+    
+    
+    
+    /**
      * Returns course/tut-data.
      * @param int $id
      * @param int $eventtype
      * @return type
      */
     public function get_lab_details($course_id, $eventtype){
-	$this->db->select('SPKursID, Raum, StartID, EndeID, TagID, TeilnehmerMax');
+	$this->db->select('SPKursID, Raum, StartID, EndeID, TagID, VeranstaltungsformAlternative, TeilnehmerMax');
 	$this->db->from('stundenplankurs as a');
 	$this->db->join('gruppe as b', 'a.GruppeID = b.GruppeID');
 	$this->db->where('KursID', $course_id);

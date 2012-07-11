@@ -3,7 +3,7 @@
     $course_name_attrs = array(
 	'name' => 'room', // TODO $KursID.'kurs_kurz',
 	'id' => 'kursverwaltung-raum',
-	'value' => 'Raum', // TODO $kurs_kurz,
+	'value' => $lecture_details->Raum, // TODO $kurs_kurz,
 	'class' => 'span2'
     );
     
@@ -39,9 +39,9 @@
 	    if($lab == '1'){
 		// group-label for better overview
 	//	echo '<span class="label label-info">1-4</span>';
-		echo form_label('Gruppe 1-4', '', $label_attrs);
+		echo form_label('Gruppe '.$lecture_details->VeranstaltungsformAlternative, '', $label_attrs);
 	    } else {
-		echo form_label('Kursname', '', $label_attrs);
+		echo form_label($lecture_name->kurs_kurz, '', $label_attrs);
 	    }
 	?>
     </div>

@@ -10,6 +10,9 @@
 	    <td>
 		<?php if($role_tutor == '0'){
 		    echo '<a class="btn btn-mini" href="#">+</a>';
+		    // TODO while adding labings to courses (at the moment only whole
+		    // course is possible (>> all spkursids for that courseid)
+		    // write in labing-table to save data 
 		}
 		?>
 		<?php // print out all profs ?>

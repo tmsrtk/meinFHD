@@ -6,6 +6,8 @@ class Kursverwaltung extends FHD_Controller {
     private $roles;
     private $roleIds;
     private $course_ids;
+    private $course_ids_labing;
+    private $course_ids_tut;
     
     // eventtype_ids
     const LECTURE = 1;
@@ -21,7 +23,17 @@ class Kursverwaltung extends FHD_Controller {
 	// get all roles the user has
 	$this->roleIds = $this->user_model->get_all_roles();
 	// get courses for that prof
+	// TODO what if that prof is prof for one course and labing for another?!?!?
+	// >> both course-ids has to be stored separatly
+	// or does the system do not pretend a possiblity to be prof and labing at one time?!?!!?!?!?!?!!?!?!?!
+	// if not - no problem - user is either prof or labing or tut - first implementation like said before
+	// REALLY IMPORTANT - AT THE MOMENT A PROF, LABING, TUT CAN ONLY HAVE ONE COURSE-RELEVANT ROLE!!!!
 	$this->course_ids = $this->user_model->get_user_course_ids();
+//	$this->course_ids = 301;
+	
+//	echo '<pre>';
+//	print_r($this->course_ids);
+//	echo '</pre>';
 
     }
     
@@ -32,6 +44,9 @@ class Kursverwaltung extends FHD_Controller {
 	$subview_data['starttime_options'] = $this->helper_model->get_dropdown_options('starttimes');
 	$subview_data['endtime_options'] = $this->helper_model->get_dropdown_options('endtimes');
 	$subview_data['day_options'] = $this->helper_model->get_dropdown_options('days');
+	
+	// additional data
+//	$subview_data['course_name'] = $this->helper_model->get_
 	
 	// role ? static views of forms
 	$role['role_tutor'] = 0;
@@ -94,11 +109,13 @@ class Kursverwaltung extends FHD_Controller {
 	
 	// init
 	$subview_data['lab'] = '';
+	$subview_data['lecture_name'] = $this->kursverwaltung_model->get_lecture_name($course_id);
 	
 	switch($eventtype) {
 	    case Kursverwaltung::LECTURE :
 		// data for subviews
 		$subview_data['lab'] = '0';
+		$subview_data['tut'] = '0';
 		$subview_data['headline'] = 'Vorlesung';
 
 		//get lecture-data - only changable for NO-tuts
@@ -116,6 +133,7 @@ class Kursverwaltung extends FHD_Controller {
 		$subview_data['headline'] = 'Praktikum';
 		return $this->get_lab_view($course_id, $eventtype, $subview_to_load, $subview_data);
 	    case Kursverwaltung::TUT :
+		$subview_data['tut'] = '1';
 		$subview_data['headline'] = 'Tutorium';
 		// get tut data view - always visible to every role
 		$subview_data['lecture_details'] = $this->kursverwaltung_model->get_lecture_details($course_id, $eventtype);
@@ -139,8 +157,11 @@ class Kursverwaltung extends FHD_Controller {
 	// get data from db - array containing lab-data
 	$lab_details = $this->kursverwaltung_model->get_lab_details($course_id, $eventtype);
 	$lab[] = $this->load->view('kursverwaltung-subviews/kursverwaltung_tablehead', $subview_data, TRUE);
-	foreach($lab_details as $l){
-	    $subview_data['lecture_details'] = $l;
+	foreach($lab_details as $details){
+//	    echo '<pre>';
+//	    print_r($l);
+//	    echo '</pre>';
+	    $subview_data['lecture_details'] = $details;
 	    $lab[] = $this->load->view($subview_to_load, $subview_data, TRUE);
 	}
 	return $lab;
