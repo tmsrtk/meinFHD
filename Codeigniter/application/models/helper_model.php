@@ -67,6 +67,18 @@ class Helper_model extends CI_Model {
 	}
     }
     
+    
+    public function get_course_name($course_id){
+	$this->db->select('Kursname');
+	$q = $this->db->get_where('studiengangkurs', $course_id);
+	
+	if($q->num_rows() == 0){
+	    foreach ($q->result() as $row){
+		return $row;
+	    }
+	}
+	
+    }
 }
 
 ?>
