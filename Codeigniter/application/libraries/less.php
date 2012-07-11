@@ -39,6 +39,8 @@ class Less {
 			$less_fname = FCPATH . $this->lessDir . $file;
 			$css_fname = FCPATH . $this->cssDir  . basename($file, '.less') . '.css';
 			
+			$less = new lessc($less_fname);
+			
 			// load the cache
 			$cache_fname = $less_fname.".cache";
 			if (file_exists($cache_fname)) {
@@ -51,7 +53,7 @@ class Less {
 			}
 			
 			// recreate the cache for comparsion
-			$new_cache = lessc::cexecute($cache);
+			$new_cache = $this->meinFHD_cexecute($cache);
 			if ( !is_array($cache) || $new_cache['updated'] > $cache['updated'] ) {
 				file_put_contents( $cache_fname, serialize( $new_cache ) );
 				file_put_contents( $css_fname, $new_cache['compiled'] );
@@ -60,6 +62,59 @@ class Less {
 				log_message('debug', 'LESS Compiler: edited LESS files compiled to a new CSS file' );
 			}
 		}
+	}
+	
+	private function meinFHD_cexecute($in, $force = false) {
+		// assume no root
+		$root = null;
+
+		if (is_string($in)) {
+			$root = $in;
+		} elseif (is_array($in) and isset($in['root'])) {
+			if ($force or ! isset($in['files'])) {
+				// If we are forcing a recompile or if for some reason the
+				// structure does not contain any file information we should
+				// specify the root to trigger a rebuild.
+				$root = $in['root'];
+			} elseif (isset($in['files']) and is_array($in['files'])) {
+				foreach ($in['files'] as $fname => $ftime ) {
+					if (!file_exists($fname) or filemtime($fname) > $ftime) {
+						// One of the files we knew about previously has changed
+						// so we should look at our incoming root again.
+						$root = $in['root'];
+						break;
+					}
+				}
+			}
+		} else {
+			// TODO: Throw an exception? We got neither a string nor something
+			// that looks like a compatible lessphp cache structure.
+			return null;
+		}
+		
+		if ($root !== null) {
+			// custom formatter for minification
+			$tabIndent = new lessc_formatter;
+			$tabIndent->indentChar = "\t";
+			
+			// If we have a root value which means we should rebuild.
+			$less = new lessc($root);
+			
+			// set our custom formatter
+			$less->setFormatter('compressed');
+			
+			$out = array();
+			$out['root'] = $root;
+			$out['compiled'] = $less->parse();
+			$out['files'] = $less->allParsedFiles();
+			$out['updated'] = time();
+			return $out;
+		} else {
+			// No changes, pass back the structure
+			// we were given initially.
+			return $in;
+		}
+		
 	}
 }
 
