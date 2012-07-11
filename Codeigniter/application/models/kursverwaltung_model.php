@@ -106,7 +106,7 @@ class Kursverwaltung_model extends CI_Model {
     
     public function add_person_to_course($profs = '', $labings = '', $tuts = ''){
 	if($profs){
-	    
+	    // still there??
 	}
 	if($labings){
 	    
