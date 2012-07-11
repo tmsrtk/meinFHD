@@ -52,7 +52,7 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = array('krumo', 'user_agent', 'detection', 'database', 'session', 'data', 'message', 'authentication', 'form_validation', 'adminhelper', 'firephp/lib/FirePHPCore/fb', 'less', 'ci-minify/libraries/Minify/Minify');
+$autoload['libraries'] = array('krumo', 'user_agent', 'detection', 'database', 'session', 'data', 'message', 'authentication', 'form_validation', 'adminhelper', 'firephp/lib/FirePHPCore/fb', 'less');
 
 
 
