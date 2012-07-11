@@ -3,13 +3,15 @@
     <?php echo $headline; ?>
 </h2>
 <div class="clearfix">
-    <div class="span2">Kursname</div>
-    <div class="span2">Raum</div>
-    <div class="span2">Startzeit</div>
-    <div class="span2">Endzeit</div>
-    <div class="span2">Tag</div>
-    <div class="span2" id="course-mgt-tn">max. Teilnehmer</div>
-    <div class="span2">Speichern</div>
+    <h5>
+	<div class="span2">Kursname</div>
+	<div class="span1">Raum</div>
+	<div class="span1">Startzeit</div>
+	<div class="span1">Endzeit</div>
+	<div class="span2">Tag</div>
+	<div class="span1" id="course-mgt-tn">max. TN</div>
+	<div class="span2">Speichern</div>
+    </h5>
     <hr />
 </div>
 
