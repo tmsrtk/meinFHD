@@ -1,0 +1,6 @@
+[submodule "Codeigniter/application/libraries/lessphp"]
+	path = Codeigniter/application/libraries/lessphp
+	url = git://github.com/leafo/lessphp.git
+[submodule "Codeigniter/application/libraries/firephp"]
+	path = Codeigniter/application/libraries/firephp
+	url = git://github.com/firephp/firephp-core.git
