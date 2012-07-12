@@ -1,5 +1,8 @@
-<?php include ('header.php'); ?>
+<?php extend('base/template.php'); # extend main template ?>
 
+<?php startblock('title'); # extend the site's title ?><?php get_extended_block(); ?> - Studienplan<?php endblock();?>
+
+<?php startblock('content'); # content for this view ?>
 <!-- begin : pop window (one-to-one relation between class and it's pop window) -->
 <?php foreach ($studienplan as $semester) : ?>
     <?php $semesterNum = 0; ?>
@@ -158,45 +161,38 @@
 
 </div>
 <!-- end : CONTENT-->
+<?php endblock();?>
 
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-<script type="text/javascript" src="http://twitter.github.com/bootstrap/assets/js/bootstrap-modal.js"></script>
-<script type="text/javascript" src="http://twitter.github.com/bootstrap/assets/js/bootstrap-collapse.js"></script>
-<script type="text/javascript" src="http://twitter.github.com/bootstrap/assets/js/bootstrap-button.js"></script>
-<script type="text/javascript">
 
-    /* icon-switch for accordions*/
-    $(function() {
-        $('.collapse').on('shown', function(e) {
-            $(e.target).parent().find('i.icon-plus').removeClass('icon-plus').addClass('icon-minus');
-        }).on('hidden', function(e) {
-            $(e.target).parent().find('i.icon-minus').removeClass('icon-minus').addClass('icon-plus');
-        });
-    });
-    
-    // set the current semester to be the "Selected" semester
-    function sendSemesterNum(semesterNum, classID) {
-        $('#semester_' + classID).val(semesterNum);
-    }
-    
-    // if the status of Teilnehmen-Button be changed, change the value of "hidden input"(writeHidden)
-    function changeWriteStatus(classID) {
-        if ($('#hoeren_' + classID).val() == 1) {
-            $('#hoeren_' + classID).val(0);
-        } else {
-            $('#hoeren_' + classID).val(1);
-        }
-    }
-    
-    // if the status of Teilnehmen-Button be changed, change the value of "hidden input"(listenHidden)
-    function changelistenStatus(classID) {
-        if ($('#schreiben_' + classID).val() == 1) {
-            $('#schreiben_' + classID).val(0);
-        } else {
-            $('#schreiben_' + classID).val(1);
-        }
-    }
+<?php startblock('customFooterJQueryCode');?>
+	$('.collapse').on('shown', function(e) {
+		$(e.target).parent().find('i.icon-plus').removeClass('icon-plus').addClass('icon-minus');
+	}).on('hidden', function(e) {
+		$(e.target).parent().find('i.icon-minus').removeClass('icon-minus').addClass('icon-plus');
+	});
+	
+	// set the current semester to be the "Selected" semester
+	function sendSemesterNum(semesterNum, classID) {
+		$('#semester_' + classID).val(semesterNum);
+	}
+	
+	// if the status of Teilnehmen-Button be changed, change the value of "hidden input"(writeHidden)
+	function changeWriteStatus(classID) {
+		if ($('#hoeren_' + classID).val() == 1) {
+			$('#hoeren_' + classID).val(0);
+		} else {
+			$('#hoeren_' + classID).val(1);
+		}
+	}
+	
+	// if the status of Teilnehmen-Button be changed, change the value of "hidden input"(listenHidden)
+	function changelistenStatus(classID) {
+		if ($('#schreiben_' + classID).val() == 1) {
+			$('#schreiben_' + classID).val(0);
+		} else {
+			$('#schreiben_' + classID).val(1);
+		}
+	}
+<?php endblock(); ?>
 
-</script>
-
-<?php include ('footer.php'); ?>
+<?php end_extend(); # end extend main template ?>
