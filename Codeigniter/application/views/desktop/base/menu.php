@@ -10,23 +10,13 @@
 						<div class="nav-collapse">
 							<ul class="nav level-1"> <!-- .nav.level-1 -->
 								<?php if ( $this->authentication->has_permissions('hat_dashboard') ) : ?>
-								<li class="dropdown">
-									<a href="<?php print base_url('dashboard/index'); ?>" class="dropdown-toggle" data-toggle="dropdown">
-										Dashboard
-										<b class="caret"></b>
-									</a>
-									<ul class="dropdown-menu level-2">
-										<?php if ( $this->authentication->has_permissions('hat_email_verwaltung') ) : ?>
-										<li><a href="<?php print base_url('emailpreferences/index'); ?>">Email Verwaltung</a></li>
-										<?php endif ?>
-									</ul> <!-- /.nav .level-2 -->
-								</li>
+								<li><a href="<?php print base_url('dashboard/index'); ?>">Dashboard</a></li>
 								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_stundenplan') ) : ?>
 								<li><a href="<?php print base_url('stundenplan/index'); ?>">Stundenplan</a></li>
 								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_semesterplan') ) : ?>
-								<li><a href="<?php print base_url('semesterplan/index'); ?>">Semesterplan</a></li>
+								<li><a href="<?php print base_url('studienplan/index'); ?>">Studienplan</a></li>
 								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_meine_kurse') ) : ?>
 								<li><a href="<?php print base_url('#'); ?>">Meine Kurse</a></li>
