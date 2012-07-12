@@ -88,6 +88,29 @@ class Kursverwaltung_model extends CI_Model {
     }
     
     
+    public function get_current_labings_for_course($course_id){
+	
+    }
+    
+    public function get_all_possible_labings(){
+	$this->db->select('a.Vorname, a.Nachname, a.BenutzerID');
+	$this->db->from('benutzer as a');
+	$this->db->join('benutzer_mm_rolle as b', 'a.BenutzerID = b.BenutzerID');
+	$this->db->where('b.RolleID', 2)->or_where('b.RolleID', 3);
+	$q = $this->db->get();
+	
+	if($q->num_rows() > 0){
+	    foreach ($q->result() as $row){
+		$data[] = $row;
+	    }
+	}
+	
+//	$data = $this->clean_nested_array($data);
+	
+	return $data;
+    }
+    
+    
     /**
     * Runs through nested array and returns simple indexed array with values
     * @param type $array
@@ -106,7 +129,8 @@ class Kursverwaltung_model extends CI_Model {
     
     public function add_person_to_course($profs = '', $labings = '', $tuts = ''){
 	if($profs){
-	    // still there??
+	    // when adding profs as labings >> that relation has to be inserted into benutzer_mm_rolle (>> gets betreuer-role)
+	    // when removing persons from course_mgt (OR !!!DELETING courses) the other way round - delete entry from benutzer_mm_rolle
 	}
 	if($labings){
 	    
@@ -115,6 +139,36 @@ class Kursverwaltung_model extends CI_Model {
 	    
 	}
     }
+    
+    /**
+     * used to populate benutzer_mm_rolle-table in database
+     */
+//    public function update_benutzermmrolle(){
+//	$this->db->select('BenutzerID');
+//	$this->db->where('TypID', 6);
+//	$q = $this->db->get('benutzer');
+//	
+//	foreach ($q->result_array() as $row) { 
+//	    $data[] = $row;
+//	}
+//	
+//	$data = $this->clean_nested_array($data);
+//	
+//	
+//	foreach($data as $d){
+//	    $save_data['BenutzerID'] = $d;
+//	    $save_data['RolleID'] = 3;
+//	    
+//	    $this->db->insert('benutzer_mm_rolle', $save_data);
+//	    
+////	    $a[] = $save_data;
+//	}
+//	
+//	echo '<pre>';
+//	print_r($save_data);
+//	echo '</pre>';
+//	
+//    }
     
     
     

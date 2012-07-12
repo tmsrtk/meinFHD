@@ -28,8 +28,9 @@ class Kursverwaltung extends FHD_Controller {
 	// or does the system do not pretend a possiblity to be prof and labing at one time?!?!!?!?!?!?!!?!?!?!
 	// if not - no problem - user is either prof or labing or tut - first implementation like said before
 	// REALLY IMPORTANT - AT THE MOMENT A PROF, LABING, TUT CAN ONLY HAVE ONE COURSE-RELEVANT ROLE!!!!
-	$this->course_ids = $this->user_model->get_user_course_ids();
-//	$this->course_ids = 301;
+//	$this->course_ids = $this->user_model->get_user_course_ids();
+//	$this->user_model->get_user_course_ids();
+	$this->course_ids = array(301);
 	
 //	echo '<pre>';
 //	print_r($this->course_ids);
@@ -49,13 +50,13 @@ class Kursverwaltung extends FHD_Controller {
 //	$subview_data['course_name'] = $this->helper_model->get_
 	
 	// role ? static views of forms
-	$role['role_tutor'] = 0;
+	$person_view_data['role_tutor'] = 0;
 	$subview_to_load = '';
 	
 	// switch if user is tutor or not
 	// TODO? hard coded ints at the moment - perhaps better via function
 	if(!in_array(2, $this->roleIds) && !in_array(3, $this->roleIds)){
-	    $role['role_tutor'] = '1';
+	    $person_view_data['role_tutor'] = '1';
 	    $subview_to_load = 'kursverwaltung-subviews/kursverwaltung_lecture_tut';
 	} else {
 	    $subview_to_load = 'kursverwaltung-subviews/kursverwaltung_lecture';
@@ -70,7 +71,8 @@ class Kursverwaltung extends FHD_Controller {
 		
 		//get person-overview view
 		// TODO get people and hand them into view
-		$course_data[] = $this->load->view('kursverwaltung-subviews/kursverwaltung_persons', $role, TRUE);
+		$person_view_data['possible_labings'] = $this->kursverwaltung_model->get_all_possible_labings();
+		$course_data[] = $this->load->view('kursverwaltung-subviews/kursverwaltung_persons', $person_view_data, TRUE);
 		
 		// get view for each eventtype
 		$eventtypes = $this->kursverwaltung_model->get_eventtypes_for_course($id);	
@@ -183,6 +185,17 @@ class Kursverwaltung extends FHD_Controller {
 		break;
 	}
     }
+    
+    
+    
+    
+    
+    /**
+     * Used to populate benutzer_mm_rolle-table
+     */
+//    function update_benutzermmrolle(){
+//	$this->kursverwaltung_model->update_benutzermmrolle();
+//    }
        
     
 }
