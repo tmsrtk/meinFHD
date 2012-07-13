@@ -191,6 +191,12 @@ if (defined('ENVIRONMENT'))
 
 		define('APPPATH', BASEPATH.$application_folder.'/');
 	}
+	/*
+	 * Fix CodeIgniter > PHP 5.3 timezone bug
+	 */
+	if( ! ini_get('date.timezone') ) {
+		date_default_timezone_set('GMT');
+	}
 
 /*
  * --------------------------------------------------------------------

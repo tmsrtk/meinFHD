@@ -28,7 +28,20 @@
 				<li><a href="#">Mein Stundenplan</a></li>
 				<?php endif ?>
 				<?php if (in_array(800, $userdata['userpermissions'])) : ?>
-				<li><a href="#">Meine Kurse</a></li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+						Kursverwaltung
+						<b class="caret"></b>
+					</a>
+					<ul class="dropdown-menu">
+						<?php // if (in_array(101, $userdata['userpermissions'])) : ?>
+						<li><a href="<?php echo site_url(); ?>kursverwaltung/show_coursemgt">Meine Kurse</a></li>
+						<?php // endif ?>
+						<?php // if (in_array(102, $userdata['userpermissions'])) : ?>
+						<li><a href="#">Praktikumsverwaltung</a></li>
+						<?php // endif ?>
+					</ul>
+				</li>
 				<?php endif ?>
 				<?php if (in_array(200, $userdata['userpermissions'])) : ?>
 				<li class="dropdown">

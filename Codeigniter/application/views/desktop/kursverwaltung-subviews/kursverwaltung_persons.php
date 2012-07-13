@@ -4,12 +4,15 @@
     <tbody>
 	<tr>
 	    <td class="span1 ">
-		<?php // if( TODO ask for role - only profs and labings may add ?>
 		<span class="label label-info">Dozent(en)</span>
 	    </td>
 	    <td>
 		<?php if($role_tutor == '0'){
 		    echo '<a class="btn btn-mini" href="#">+</a>';
+		    // TODO while adding labings to courses (at the moment only whole
+		    // course is possible (>> all spkursids for that courseid)
+		    // write in labing-table to save data - same with tuts
+		    
 		}
 		?>
 		<?php // print out all profs ?>
