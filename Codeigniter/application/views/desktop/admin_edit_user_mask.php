@@ -101,11 +101,16 @@
 		bindEvents : function() {
 			var self = this;
 			this.config.roleDropdown.on( 'change', function() {
+				self.clearSearchbox(self.config.searchInput);
 				self.requestByStdGang($(this));
 			});
 			this.config.searchInput.on( 'keyup', function() {
 				self.requestBySearch($(this));
 			});
+		},
+
+		clearSearchbox : function(sb) {
+			console.log(sb);
 		},
 
 		requestByStdGang : function( studienganginput ) {

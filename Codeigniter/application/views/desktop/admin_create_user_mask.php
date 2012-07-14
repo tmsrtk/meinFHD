@@ -59,7 +59,7 @@
 <?php
 	// main inputs for all users
 	echo form_open('admin/validate_create_user_form/', $data_formopen);
-	echo form_dropdown('role', $all_roles, /*standard value*/'0', $data_roles);
+	echo form_dropdown('role', $all_roles, /*standard value*/'', $data_roles);
 	echo form_input($data_loginname);
 	echo form_input($data_email);
 	echo form_input($data_forename);
@@ -72,7 +72,7 @@
 	echo form_input($data_matrikelnummer);
 	echo form_input($data_startjahr);
 	// echo form_radio('semesteranfang', 'WS', TRUE);
-	// creating the radio manually, to use the set_checkbox() method
+	// creating the radio manually, to use the set_radio() method
 	echo '<input type="radio" name="semesteranfang" value="WiSe"'.set_radio('semesteranfang', 'WiSe', TRUE).' />';
 	echo 'WiSe';
 	// echo form_radio('semesteranfang', 'SS', FALSE);

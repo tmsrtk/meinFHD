@@ -159,7 +159,7 @@ class Admin extends FHD_Controller {
 	{
 		// get values from post
 		$form_data = $this->input->post();
-
+		
 		// generate password
 		$password = $this->adminhelper->passwort_generator();
 
