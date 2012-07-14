@@ -1,1 +1,1 @@
-<?php FB::log($userdata) ?>
+<?php FB::log($userdata); ?>

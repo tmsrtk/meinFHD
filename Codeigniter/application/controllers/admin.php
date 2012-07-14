@@ -27,6 +27,118 @@ class Admin extends FHD_Controller {
 	}
 	
 	
+	function show_role_permissions(){
+			
+		// Alle RoleIDs durchlaufen und in einem verschachtelten Array speichern
+		// >> je RoleID ein Array aller zugeordneter Permissions (array([roleid] => array([index] => permissions)...)
+		foreach ($this->roleIds as $rid) {
+			// Permissions einer Rolle holen
+			// da es vorkommen kann, dass eine Rolle noch keine Permissions hat, wurde das Array mit null initialisiert (siehe getAllRolePermissions in admin_model.php)
+			// dadurch ist der 0te Index des Arrays leer 
+			$single_role_permissions = $this->admin_model->getAllRolePermissions($rid);
+			// sofern es zu dieser Rolle Berechtigungen gibt
+			if($single_role_permissions){ 
+				foreach ($single_role_permissions as $rp){
+					$all_role_permissions[$rid][]= $rp;
+				}
+			}
+		}
+
+// 			echo '<pre>';
+// 			print_r($this->roles);
+// 			print_r($this->permissions);
+// 			print_r($this->roleIds);
+// 			print_r($all_role_permissions);
+// 			echo '</pre>';
+		
+		// Erzeugen eines Arrays, das für die Ausgabe genutzt werden kann
+		// >> einfaches Array, das der Reihe nach alle genutzten Werte enthält mit: index % 5 == 0 als RoleID
+		
+		// Alle Permissions durchlaufen
+		foreach ($this->permissions as $p) {
+		
+// 			$data['tableviewData'][] = $p->bezeichnung;
+			$data['tableviewData'][] = $p->BerechtigungID; // ID speichern
+			
+			// Je Permission jede Rolle durchlaufen
+			foreach ($this->roles as $r){
+		
+				// wenn im Array Role_permissions[RoleID] Werte enthalten sind (siehe oben - Index 0 ist ein leeres Feld)
+				if(array_key_exists('1', $all_role_permissions[$r->RolleID])){
+					// Wenn das zur Rolle zugehörige Array die RechteID als Wert enthält
+					if(array_search($p->BerechtigungID, $all_role_permissions[$r->RolleID])){
+						// speichern der ID
+						$data['tableviewData'][] = $p->BerechtigungID;
+					} else {
+						// RechteID ist dieser Rolle nicht zugewiesen - x wird gespeichert
+						$data['tableviewData'][] = 'x';
+					}
+				} else {
+					// Rolle hat noch gar keine Rechte - 4 mal x wird gespeichert
+					$data['tableviewData'][] = 'x';
+				}
+			}
+		}
+		$this->data->add('tableviewData', $data['tableviewData']);
+
+		
+		// Speichern weiterer Daten die in der View benötigt werden in das Data-Array 
+		// $data['roleCounter'] = $this->admin_model->countRoles(); // Zur Anwendung des Modulo
+		$this->data->add('roleCounter', $this->admin_model->countRoles());
+		// $data['roles'] = $this->roles; // Permission-Objekte (ID und Bezeichnung)
+		$this->data->add('roles', $this->roles);
+		// $data['permissions'] = $this->permissions; // Permission-Objekte (ID und Bezeichnung)  
+		$this->data->add('permissions', $this->permissions);
+		
+// 		echo '<pre>';
+// 		print_r($data);
+// 		echo '</pre>';
+		
+		// VIEW
+		// $data['global_data'] = $this->data->load();
+
+		$siteinfo = array(
+			'title'			=> 'Rollenverwaltung',
+			'main_content'	=>	'admin_rollenverwaltung'
+			);
+		$this->data->add('siteinfo', $siteinfo);
+		
+		$this->load->view('includes/template', $this->data->load());
+	}
+	
+	
+	function savePermissions(){
+
+// 		echo '<pre>';
+// 		print_r($this->input->post());
+// 		echo '</pre>';
+		
+		$this->admin_model->deleteRolePermissions();
+		
+		// Durchlaufen für jede Berechtigung und Rolle
+		foreach($this->permissions as $p){
+			foreach($this->roleIds as $r){
+				// wenn für diese Rollen-Permission-Kombination ein Eintrag enthalten ist
+				if($this->input->post(($p->BerechtigungID).$r)){
+//					echo $_POST;
+					$rp['RolleID'] = $r;
+					$rp['BerechtigungID'] = $p->BerechtigungID;
+					
+					// speichern
+					$this->admin_model->updateRolePermissions($rp);
+				}
+			}
+		}
+		
+// 		echo '<pre>';
+// 		print_r($rp);
+// 		echo '</pre>';
+
+		// View neu laden
+		$this->show_role_permissions();
+	}
+	
+	
 	/***************************************************************************
 	* User management
 	* 
@@ -47,14 +159,24 @@ class Admin extends FHD_Controller {
 			);
 		$this->data->add('siteinfo', $siteinfo);
 
+
+
+
+
+
+
 		// all roles
 		$this->data->add('all_roles', $this->admin_model->get_all_roles());
+
 		// all studiengänge
 		$this->data->add('studiengaenge', $this->admin_model->get_all_studiengaenge());
 
+
 		//----------------------------------------------------------------------
 		$this->load->view('includes/template', $this->data->load());
+
 	}
+
 
 	/*
 	* loads content for the admin_edit_user_mask.php
@@ -68,14 +190,18 @@ class Admin extends FHD_Controller {
 			);
 		$this->data->add('siteinfo', $siteinfo);
 
+
 		// all users
 		// $data['user'] = $this->admin_model->get_all_user();
+
 
 		// all roles
 		$this->data->add('all_roles', $this->admin_model->get_all_roles());
 
+
 		//----------------------------------------------------------------------
 		$this->load->view('includes/template', $this->data->load());
+
 	}
 
 	/*
@@ -95,6 +221,7 @@ class Admin extends FHD_Controller {
 
 		//----------------------------------------------------------------------
 		$this->load->view('includes/template', $this->data->load());
+
 	}
 
 	/*
@@ -111,6 +238,7 @@ class Admin extends FHD_Controller {
 
 		//----------------------------------------------------------------------
 		$this->load->view('includes/template', $this->data->load());
+
 	}
 
 	/*
@@ -131,6 +259,7 @@ class Admin extends FHD_Controller {
 
 		//----------------------------------------------------------------------
 		$this->load->view('includes/template', $this->data->load());
+
 	}
 
 	public function show_successful_page()
@@ -159,6 +288,7 @@ class Admin extends FHD_Controller {
 	{
 		// get values from post
 		$form_data = $this->input->post();
+
 		
 		// generate password
 		$password = $this->adminhelper->passwort_generator();
@@ -206,6 +336,7 @@ class Admin extends FHD_Controller {
 				$this->request_user_invitation_mask();
 				break;
 			case '1':
+				$this->admin_model->delete_invitation($invitation_id);
 				$this->admin_model->_delete_invitation($invitation_id);
 				$this->request_user_invitation_mask();
 				break;
@@ -253,6 +384,7 @@ class Admin extends FHD_Controller {
 
 		// depending on role, different validations
 		// if student
+		if ($role === '4'/*student*/)
 		if ($role === '5'/*student*/)
 		{
 			$rules = array();
@@ -292,6 +424,7 @@ class Admin extends FHD_Controller {
 		$this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
 
 		$rules = array();
+
 		// values, from actual form
 		$form_values = $this->input->post();
 
@@ -315,6 +448,9 @@ class Admin extends FHD_Controller {
 
 			$rules[] = $this->adminhelper->get_formvalidation_studiengang();
 			$rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
+			$rules[] = $this->adminhelper->get_formvalidation_startjahr();
+			$rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
+			$rules[] = $this->adminhelper->get_formvalidation_studiengang();
 
 			$this->form_validation->set_rules($rules);
 
@@ -358,15 +494,19 @@ class Admin extends FHD_Controller {
 
 		switch ($user_function) {
 			case '0':
+				$this->validate_edits();
 				$this->_validate_edits();
 				break;
 			case '1':
+				$this->reset_pw();
 				$this->_reset_pw();
 				break;
 			case '2':
+				$this->reset_semesterplan();
 				$this->_reset_semesterplan();
 				break;
 			case '3':
+				$this->login_as();			
 				$this->_login_as();			
 				break;
 
@@ -377,6 +517,7 @@ class Admin extends FHD_Controller {
 	}
 
 	/**/
+	function validate_edits()
 	private function _validate_edits()
 	{
 		// set custom delimiter for validation errors
@@ -463,6 +604,7 @@ class Admin extends FHD_Controller {
 	}
 
 	/**/
+	function reset_pw()
 	private function _reset_pw()
 	{
 		// values, from actual form inputs
@@ -492,6 +634,7 @@ class Admin extends FHD_Controller {
 	/*
 	* builds the needed html markup an content (db) from incoming ajax request
 	*/
+	public function ajax_show_user()
 	public function ajax_show_user_backup()
 	{
 		// get value
@@ -504,6 +647,7 @@ class Admin extends FHD_Controller {
 
 		foreach ($q as $key => $value) {
 			$result .= $this->load->view('admin-subviews/user_tr', $value, TRUE);
+
 		}
 		echo $result;
 	}
@@ -676,7 +820,7 @@ class Admin extends FHD_Controller {
 		);
 		$this->data->add('siteinfo', $siteinfo);
 		
-		$this->load->view('includes/template', $this->data->load());
+		$this->load->view('admin/studiengang_edit', $this->data->load());
 		
 	}
 	
@@ -694,7 +838,7 @@ class Admin extends FHD_Controller {
 		);
 		$this->data->add('siteinfo', $siteinfo);
 		
-		$this->load->view('includes/template', $this->data->load());
+		$this->load->view('admin/studiengang_add', $this->data->load());
 		
 	}
 	
@@ -846,7 +990,6 @@ class Admin extends FHD_Controller {
 		    $rows[] = $this->load->view('admin-subviews/admin_stdgng_coursetable_row', $data, TRUE);
 		}
 		
-		
 		// make data available in view
 		$data['stdgng_details'] = $details_of_single_stdgng;
 		$data['stdgng_course_rows'] = $rows;
@@ -854,7 +997,7 @@ class Admin extends FHD_Controller {
 		
 		// return content
 		$result = '';
-		$result .= $this->load->view('admin-subviews/admin_stdgng_description', $data, TRUE);
+		$result .= $this->load->view('admin/partials/studiengang_details', $data, TRUE);
 		$result .= $this->load->view('admin-subviews/admin_stdgng_coursetable_content', $data, TRUE);
 		
 		echo $result;
@@ -1066,10 +1209,15 @@ class Admin extends FHD_Controller {
 	    // get dropdown-data: all event-types, profs, times, days
 	    $eventtypes = $this->admin_model->get_eventtypes();
 	    $all_profs = $this->admin_model->get_profs_for_stdplan_list();
-	    $times = $this->admin_model->get_start_end_times();
-	    $days = $this->admin_model->get_days();
+		$times = $this->admin_model->get_start_end_times(); // also used to select active option
+	    $days = $this->admin_model->get_days(); // also used to select active option
 	    $colors = $this->admin_model->get_colors_from_stdplan();
-	    
+		
+		// getting data directly from helper_model - not implemented for all dropdowns
+		$starttimes_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
+		$endtimes_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
+		$days_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
+		
 	    // save dropdown-data into $data
 	    $data['eventtypes'] = $eventtypes;
 	    $data['all_profs'] = $all_profs;
@@ -1098,25 +1246,28 @@ class Admin extends FHD_Controller {
 		} else {
 			$profs_dropdown_options[$i] = '';
 		}
-	    }
-	    // start/endtimes
-	    for($i = 0; $i < count($times); $i++){
-		if($i != 0){
-			$starttimes_dropdown_options[$i] = $times[$i]->Beginn;
-			$endtimes_dropdown_options[$i] = $times[$i]->Ende;
-		} else {
-			$starttimes_dropdown_options[$i] = '';
-			$endtimes_dropdown_options[$i] = '';
 		}
-	    }
-	    // days
-	    for($i = 0; $i < count($days); $i++){
-		if($i != 0){
-			$days_dropdown_options[$i] = $days[$i]->TagName;
-		} else {
-			$days_dropdown_options[$i] = '';
+		
+		// start/endtimes
+		for($i = 0; $i < count($times); $i++){
+			if($i != 0){
+				$starttimes_dropdown_options[$i] = $times[$i]->Beginn;
+				$endtimes_dropdown_options[$i] = $times[$i]->Ende;
+			} else {
+				$starttimes_dropdown_options[$i] = '';
+				$endtimes_dropdown_options[$i] = '';
+			}
 		}
-	    }
+		
+		// days
+		for($i = 0; $i < count($days); $i++){
+			if($i != 0){
+				$days_dropdown_options[$i] = $days[$i]->TagName;
+			} else {
+				$days_dropdown_options[$i] = '';
+			}
+		}
+		
 	    // colors
 	    for($i = 0; $i < count($colors); $i++){
 		if($i != 0){
@@ -1353,7 +1504,8 @@ class Admin extends FHD_Controller {
 	    
 //	    $this->data->add('stdgng_uploads_headlines', $data['stdgng_uploads_headlines']);
 //	    $this->data->add('stdgng_uploads', $data['stdgng_uploads']);
-	    $this->data->add('stdgng_uploads_list_filelist', $this->load->view('admin_stdplan_import_filelist', $data, TRUE));
+	    $this->data->add('stdgng_uploads_list_filelist', $this->load->view(
+		    'admin-subviews/admin_stdplan_import_filelist', $data, TRUE));
 	    
 	    $siteinfo = array(
 		'title' => 'Stundenplan importieren',

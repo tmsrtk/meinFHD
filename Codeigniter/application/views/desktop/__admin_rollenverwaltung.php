@@ -20,7 +20,10 @@
 			$permission_id = '';
 			foreach ($tableviewData as $v) :?>
 				<?php
+<<<<<<< Temporary merge branch 1
 				if($counter % 6 === 0){
+=======
+				if($counter % ($roleCounter+1) === 0){
 					$permission_id = $v;
 					echo '<tr><td style="width:250px";>'.$permission_names[$v];
 				} else {
