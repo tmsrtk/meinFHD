@@ -2,12 +2,13 @@
 
 class User_model extends CI_Model {
 
-	private $user_email = '';
+	private $user_id = 0;
+
+	private $email = '';
 	private $loginname = '';
 	private $forename = '';
 	private $lastname = '';
 
-	private $user_id = 0;
 	private $user_roles = array();
 	private $user_permissions_all = array();
 	
@@ -37,6 +38,12 @@ class User_model extends CI_Model {
 		if ($uid)
 		{
 			$this->user_id = $uid;
+
+			$this->lastname = $this->_query_user_singlecolumndata('Vorname');
+			$this->lastname = $this->_query_user_singlecolumndata('Nachname');
+			$this->loginname = $this->_query_user_singlecolumndata('LoginName');
+			$this->email = $this->_query_user_singlecolumndata('Email');
+
 			$this->user_roles = $this->_query_all_roles();
 			$this->user_permissions_all = $this->_query_all_permissions();
 			
@@ -59,18 +66,28 @@ class User_model extends CI_Model {
 			}
 		}
 
+		// global data
 		$userdata = array(
-                'userid' => $this->user_id,
-                'loginname' => 'Freak',
-                'userpermissions' => $this->user_permissions_all,
-                'roles' => $this->user_roles
-            );
-
-        $this->data->add('userdata', $userdata);
-
+	                'userid' => $this->user_id,
+	                'loginname' => $this->loginname,
+	                'userpermissions' => $this->user_permissions_all,
+	                'roles' => $this->user_roles
+	            );
 
 		// write userdata in global $data
-		$this->data->add('rollentest', $this->user_permissions_all);
+        $this->data->add('userdata', $userdata);
+
+	}
+
+	/** */
+	private function _query_user_singlecolumndata($columnname)
+	{
+		$this->db->select($columnname)
+				 ->from('benutzer')
+				 ->where('BenutzerID', $this->user_id);
+		$q = $this->db->get()->row_array();
+
+		return ($q[$columnname]);
 	}
 
 	/** */
