@@ -227,7 +227,7 @@ class Admin_model extends CI_Model {
 	/**
 	 *
 	 */
-	private function _delete_invitation($invitation_id)
+	public function _delete_invitation($invitation_id)
 	{
 		$this->db->where('AnfrageID', $invitation_id);
 		$this->db->delete('anfrage'); 

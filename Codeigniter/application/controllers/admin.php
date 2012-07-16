@@ -320,7 +320,7 @@ class Admin extends FHD_Controller {
 				$this->request_user_invitation_mask();
 				break;
 			case '1':
-				$this->admin_model->delete_invitation($invitation_id);
+				$this->admin_model->_delete_invitation($invitation_id);
 				$this->request_user_invitation_mask();
 				break;
 			default:
@@ -371,12 +371,20 @@ class Admin extends FHD_Controller {
 		{
 			$rules = array();
 
-			$rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
-			$rules[] = $this->adminhelper->get_formvalidation_startjahr();
-			$rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
 			$rules[] = $this->adminhelper->get_formvalidation_studiengang();
+			$rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
 
 			$this->form_validation->set_rules($rules);
+
+			// query if erstsemestler checkbox was checked or not
+			if ( empty($form_values['erstsemestler']) )
+			{
+				// if not checked, -> invitation for non erstsemestler, -> more inputs to fill out
+				$rules[] = $this->adminhelper->get_formvalidation_startjahr();
+				$rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
+				
+				$this->form_validation->set_rules($rules);
+			}
 		}
 
 		// check for correctness
@@ -465,16 +473,16 @@ class Admin extends FHD_Controller {
 
 		switch ($user_function) {
 			case '0':
-				$this->validate_edits();
+				$this->_validate_edits();
 				break;
 			case '1':
-				$this->reset_pw();
+				$this->_reset_pw();
 				break;
 			case '2':
-				$this->reset_semesterplan();
+				$this->_reset_semesterplan();
 				break;
 			case '3':
-				$this->login_as();
+				$this->_login_as();			
 				break;
 
 			default:
@@ -484,7 +492,7 @@ class Admin extends FHD_Controller {
 	}
 
 	/**/
-	function validate_edits()
+	private function _validate_edits()
 	{
 		// set custom delimiter for validation errors
 		$this->form_validation->set_error_delimiters('<div class="val_error">', '</div>');
@@ -570,7 +578,7 @@ class Admin extends FHD_Controller {
 	}
 
 	/**/
-	function reset_pw()
+	private function _reset_pw()
 	{
 		// values, from actual form inputs
 		$new_form_values = $this->input->post();
@@ -599,7 +607,10 @@ class Admin extends FHD_Controller {
 	/*
 	* builds the needed html markup an content (db) from incoming ajax request
 	*/
-	public function ajax_show_user()
+	/*
+	* builds the needed html markup an content (db) from incoming ajax request
+	*/
+	public function ajax_show_user_backup()
 	{
 		// get value
 		$role_id = $this->input->get('role_id');
@@ -610,7 +621,32 @@ class Admin extends FHD_Controller {
 		$result = '';
 
 		foreach ($q as $key => $value) {
-			$result .= $this->load->view('admin/partials/user_tr', $value, TRUE);
+			$result .= $this->load->view('admin-subviews/user_tr', $value, TRUE);
+		}
+		echo $result;
+	}
+
+
+	/**
+	 * ajax_show_user for the div table version
+	 */
+	public function ajax_show_user()
+	{
+		// get user with needed html markup and return it
+
+		// get value
+		$role_id = $this->input->get('role_id');
+		$searchletter = $this->input->get('searchletter');
+
+		$q = $this->admin_model->get_user_per_role_searchletter($role_id, $searchletter);  ///////////////////// query if result 0 !!!!!!!!!!!
+
+		$result = '';
+
+		// FB::log($q);
+		// return;
+
+		foreach ($q as $key => $value) {
+			$result .= $this->load->view('admin/partials/user_single_form', $value, TRUE);
 		}
 		echo $result;
 	}
