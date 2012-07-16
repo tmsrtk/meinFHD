@@ -50,6 +50,40 @@
 </div>
 -->
 <div class="row-fluid">
+	<table id="user_overview" class="table table-striped">
+		<thead>
+			<tr>
+				<th>
+					<div class="span2">Loginname</div>
+					<div class="span2">Nachname</div>
+					<div class="span2">Vorname</div>
+					<div class="span2">E-Mail</div>
+					<div class="span2">Los</div>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<?php foreach ($user as $zeile) : ?>
+			<tr>
+				<td id="content_userrow">
+					<?php echo form_open('admin/delete_user/', $data_formopen); ?>
+					<?php echo form_hidden('user_id', $zeile['BenutzerID']); ?>
+
+					<div class="span2"><?php echo $zeile['LoginName']; ?></div>
+					<div class="span2"><?php echo $zeile['Nachname']; ?></div>
+					<div class="span2"><?php echo $zeile['Vorname']; ?></div>
+					<div class="span2"><?php echo $zeile['Email']; ?></div>
+
+					<?php echo "<div class=\"span2\">".form_submit($data_submit, 'Loeschen')."</div>"; ?>
+					<div class="clearfix"></div>
+					<?php echo form_close(); ?>
+				<td>
+			<tr>
+			<?php endforeach ?>
+		</tbody>
+	</table>
+
+<!--
 	<div class="row">
 		<div class="span2"><strong>Loginname</strong></div>
 		<div class="span2"><strong>Nachname</strong></div>
@@ -73,6 +107,7 @@
 		<?php echo form_close(); ?>
 	<?php endforeach ?>
 	</div>
+-->
 </div>
 <?php endblock(); ?>
 
@@ -104,7 +139,7 @@
 			return $mydialog;
 		}
 
-		$("#content_userrow").on("click", "input#delete_user_btn", function() {
+		$("td#content_userrow").on("click", "input#delete_user_btn", function() {
 			// console.log(user_function);
 			$(this).attr("clicked", "true");
 			createDialog('User löschen', 'Soll der User wirklich gelöscht werden?').dialog("open");
