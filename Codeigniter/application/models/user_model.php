@@ -11,11 +11,8 @@ class User_model extends CI_Model {
 	private $user_roles = array();
 	private $user_permissions_all = array();
 	
-	// profs, labings, tuts
+	// course_ids (mapped with roles)
 	private $user_course_ids = array();
-	private $user_course_ids_labing = array();
-	private $user_course_ids_tut = array();
-	
 
 
 	/**
@@ -41,22 +38,8 @@ class User_model extends CI_Model {
 			$this->user_permissions_all = $this->_query_all_permissions();
 			
 			// course_ids
-			// profs
-			if(in_array(2, $this->user_roles)){
-			    $this->user_course_ids = $this->_get_all_user_courses();
-			}
-			// labings
-			if(in_array(3, $this->user_roles)){
-			    $sp_course_ids_labing = $this->_get_user_course_ids_labing('laboringenieur');
-			    // necessary at the moment because labing and tut table store sp-course-ids NOT course-ids
-			    $this->user_course_ids_labing = $this->_get_course_ids_from_spcourse_ids($sp_course_ids_labing);
-			}
-			// tuts
-			if(in_array(4, $this->user_roles)){
-			    $sp_course_ids_tut = $this->_get_user_course_ids_labing('tutor');
-			    // necessary at the moment because labing and tut table store sp-course-ids NOT course-ids
-			    $this->user_course_ids_tut = $this->_get_course_ids_from_spcourse_ids($sp_course_ids_tut);
-			}
+			$this->user_course_ids = $this->get_course_ids_with_roles();
+			
 		}
 
 		$userdata = array(
@@ -151,14 +134,44 @@ class User_model extends CI_Model {
 
 		return $this->_clean_roles_array($this->db->get()->result_array());
 	}
+
 	
+	/**
+	 * Returns all ids for this user mapped to containing roles.
+	 * @return array(int => inht) all ids mapped to roles
+	 */
+	private function get_course_ids_with_roles(){
+	    $ids = array();
+	    // profs
+	    if(in_array(2, $this->user_roles)){
+		$course_ids_prof = $this->_get_user_course_ids_from_spkurs();
+		foreach ($course_ids_prof as $cid) {
+		    $ids[$cid] = 2;
+		}
+	    }
+	    // labings
+	    if(in_array(3, $this->user_roles)){
+		$course_ids_labing = $this->_get_user_course_ids_from_labing_tut('laboringenieur');
+		foreach ($course_ids_labing as $cid) {
+		    $ids[$cid] = 3;
+		}
+	    }
+	    // tuts
+	    if(in_array(4, $this->user_roles)){
+		$course_ids_tut = $this->_get_user_course_ids_from_labing_tut('tutor');
+		foreach ($course_ids_tut as $cid) {
+		    $ids[$cid] = 4;
+		}
+	    }
+	    return $ids;
+	}
 	
 	/**
 	 * Returns all course-ids a user has - focus on eventtype 1 !!
 	 * WPFs not covered with this query!!
 	 * @return array
 	 */
-	private function _get_all_user_courses(){
+	private function _get_user_course_ids_from_spkurs(){
 	    $this->db->distinct();
 	    $this->db->select('KursID');
 	    $this->db->from('stundenplankurs');
@@ -179,10 +192,11 @@ class User_model extends CI_Model {
 	
 	/**
 	 * Returns all course-ids for that user (labing or tut)
-	 * @param boolean $is_tutor indicates if user is tutor or not
+	 * @param String $table name of table that should be used
+	 * @return array with all containing course_ids
 	 */
-	private function _get_user_course_ids_labing($table){
-	    $this->db->select('SPKursID');
+	private function _get_user_course_ids_from_labing_tut($table){
+	    $this->db->select('KursID');
 	    $q = $this->db->get_where($table, array('BenutzerID' => $this->user_id));
 	    
 	    foreach ($q->result_array() as $row) { 
@@ -191,31 +205,6 @@ class User_model extends CI_Model {
 	    $data = $this->clean_nested_array($data);
 	    
 	    return $data;
-	}
-	
-	/**
-	 * Runs through an array of spcourse_ids to find the matching course_ids
-	 * Necessary because labings and tuts-table contain sp_course_ids
-	 * @param array $sp_course_ids_tut
-	 * @return array $course_ids
-	 */
-	private function _get_course_ids_from_spcourse_ids($sp_course_ids_tut){
-
-	    $course_ids_duplicates = array(); // init
-	    
-	    foreach($sp_course_ids_tut as $id){
-		$this->db->select('KursID')->from('stundenplankurs')->where('SPKursID', $id);
-		$course_ids_duplicates[] = $this->db->get()->result_array();
-	    }
-	    
-	    // clean that result - 2 times nested oO
-	    $course_ids_duplicates = $this->clean_nested_array(
-				     $this->clean_nested_array($course_ids_duplicates));
-	    
-	    // remove duplicates
-	    $course_ids = array_unique($course_ids_duplicates);
-	    
-	    return $course_ids;
 	}
 	
 	
@@ -261,19 +250,43 @@ class User_model extends CI_Model {
 	}
 	
 	/**
-	 * Returns course-ids for a single user
-	 * !!! right now user can only have one course-relevant role at one moment
-	 * other behaviour could be designated, but not implemented yet
-	 * @return type
+	 * Returns course-ids for a single user mapped to roles
+	 * @return array
 	 */
 	public function get_user_course_ids(){
-	    if(in_array(2, $this->user_roles)){
-		return $this->user_course_ids;
-	    } else if(in_array(3, $this->user_roles)){
-		return $this->user_course_ids_labing;
-	    } else if(in_array(4, $this->user_roles)){
-		return $this->user_course_ids_tut;
-	    }
+	    return $this->user_course_ids;
 	}
 
+	
+	
+	
+	
+	
+	
+//	// HAS BEEN NECESSARY AS LONG AS LAGING- & TUT-TABLE CONTAIN SPKURSID (CHANGED TO KURSID)
+//	/**
+//	 * Runs through an array of spcourse_ids to find the matching course_ids
+//	 * Necessary because labings and tuts-table contain sp_course_ids
+//	 * @param array $sp_course_ids_tut
+//	 * @return array $course_ids
+//	 */
+//	private function _get_course_ids_from_spcourse_ids($sp_course_ids_tut){
+//
+//	    $course_ids_duplicates = array(); // init
+//	    
+//	    foreach($sp_course_ids_tut as $id){
+//		$this->db->select('KursID')->from('stundenplankurs')->where('SPKursID', $id);
+//		$course_ids_duplicates[] = $this->db->get()->result_array();
+//	    }
+//	    
+//	    // clean that result - 2 times nested oO
+//	    $course_ids_duplicates = $this->clean_nested_array(
+//				     $this->clean_nested_array($course_ids_duplicates));
+//	    
+//	    // remove duplicates
+//	    $course_ids = array_unique($course_ids_duplicates);
+//	    
+//	    return $course_ids;
+//	}
+	
 }

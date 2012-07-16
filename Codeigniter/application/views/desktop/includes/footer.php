@@ -8,7 +8,8 @@
                 {meinfhd: "<?php print base_url(); ?>resources/js/meinfhd.js"},
                 {bootstrap_alert: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-alert.js"},
                 {bootstrap_modal: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-modal.js"},
-                {bootstrap_dropdown: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-dropdown.js"}
+                {bootstrap_dropdown: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-dropdown.js"},
+                {bootstrap_tab: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-tab.js"}
             );
         </script>
         </body> <!-- /body -->

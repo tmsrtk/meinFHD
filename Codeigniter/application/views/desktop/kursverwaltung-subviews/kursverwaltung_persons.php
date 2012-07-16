@@ -7,7 +7,7 @@
 		<span class="label label-info">Dozent</span>
 	    </td>
 	    <td>
-		<?php // if($role_tutor == '0'){
+		<?php // if($is_tutor == '0'){
 //		    echo '<a class="btn btn-mini" href="#">+</a>';
 		    // TODO while adding labings to courses (at the moment only whole
 		    // course is possible (>> all spkursids for that courseid)
@@ -25,7 +25,7 @@
 	    </td>
 		<td>
 		    <div id="current-labings">
-			<?php if($role_tutor == '0'){
+			<?php if(!$is_tutor){
 			    echo '<a class="btn btn-mini" id="labings-slider" href="#">+</a>';
 			}
 			?>
@@ -91,7 +91,7 @@
 		<span class="label label-info">Tutor(en)</span>
 	    </td>
 	    <td>
-		<?php if($role_tutor == '0'){
+		<?php if(!$is_tutor){
 		    echo '<a class="btn btn-mini" href="#">+</a>';
 		}
 		?>
@@ -118,6 +118,7 @@
     $('#labings-panel input').change(function () {
 	var self = $(this);
 	var id = self.attr("id");
+	console.log(self);
 	if(self.is(":checked")) {
 	    $('<span></span>', {
 		text: $('#labing-label-'+id).text(),

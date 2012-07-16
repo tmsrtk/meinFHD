@@ -6,8 +6,6 @@ class Kursverwaltung extends FHD_Controller {
     private $roles;
     private $roleIds;
     private $course_ids;
-    private $course_ids_labing;
-    private $course_ids_tut;
     
     // eventtype_ids
     const LECTURE = 1;
@@ -22,84 +20,81 @@ class Kursverwaltung extends FHD_Controller {
 	
 	// get all roles the user has
 	$this->roleIds = $this->user_model->get_all_roles();
-	// get courses for that prof
-	// TODO what if that prof is prof for one course and labing for another?!?!?
-	// >> both course-ids has to be stored separatly
-	// or does the system do not pretend a possiblity to be prof and labing at one time?!?!!?!?!?!?!!?!?!?!
-	// if not - no problem - user is either prof or labing or tut - first implementation like said before
-	// REALLY IMPORTANT - AT THE MOMENT A PROF, LABING, TUT CAN ONLY HAVE ONE COURSE-RELEVANT ROLE!!!!
-//	$this->course_ids = $this->user_model->get_user_course_ids();
-//	$this->user_model->get_user_course_ids();
-	$this->course_ids = array(301);
+	// get course ids for that user
+	$this->course_ids = $this->user_model->get_user_course_ids();
 	
-//	echo '<pre>';
-//	print_r($this->course_ids);
-//	echo '</pre>';
-
     }
     
     
     function show_coursemgt(){
+
+	// getting course_ids
+	$course_ids = $this->course_ids;
+	
+	// getting short-names labeling
+	foreach ($course_ids as $cid => $role) {
+	    $course_names_ids[$cid] = $this->kursverwaltung_model->get_lecture_name($cid)->kurs_kurz;
+	}
+	
+	// add course_names to view
+	$this->data->add('course_names_ids', $course_names_ids);
 	
 	// dropdown data
 	$subview_data['starttime_options'] = $this->helper_model->get_dropdown_options('starttimes');
 	$subview_data['endtime_options'] = $this->helper_model->get_dropdown_options('endtimes');
 	$subview_data['day_options'] = $this->helper_model->get_dropdown_options('days');
 	
-	// additional data
-//	$subview_data['course_name'] = $this->helper_model->get_
-	
-	// role ? static views of forms
-	$person_view_data['role_tutor'] = 0;
+	// init variables
+	$person_view_data['is_tutor'] = false;
 	$subview_to_load = '';
 	
-	// switch if user is tutor or not
-	// TODO? hard coded ints at the moment - perhaps better via function
-	if(!in_array(2, $this->roleIds) && !in_array(3, $this->roleIds)){
-	    $person_view_data['role_tutor'] = '1';
-	    $subview_to_load = 'kursverwaltung-subviews/kursverwaltung_lecture_tut';
-	} else {
+	// switch view - depends on if user is tutor or not
+	// TODO? hard coded ints at the moment - perhaps better via function?
+	if(in_array(2, $this->roleIds) || in_array(3, $this->roleIds)){
 	    $subview_to_load = 'kursverwaltung-subviews/kursverwaltung_lecture';
+	} else {
+	    $person_view_data['is_tutor'] = true;
+	    $subview_to_load = 'kursverwaltung-subviews/kursverwaltung_lecture_tut';
 	}
 
 
 	// if user has courses - run through all of them
 	if($this->course_ids){
-	    // get data foreach course
-	    foreach($this->course_ids as $id){
-		$headlines = array(); // init / clean
-		
+
+	    // get data for each course
+	    foreach($this->course_ids as $id => $role){
 		//get person-overview view
-		// TODO get people and hand them into view
 		$person_view_data['possible_labings'] = $this->kursverwaltung_model->get_all_possible_labings();
-		$course_data[] = $this->load->view('kursverwaltung-subviews/kursverwaltung_persons', $person_view_data, TRUE);
+		$course_data[$id][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_persons', $person_view_data, TRUE);
 		
 		// get view for each eventtype
 		$eventtypes = $this->kursverwaltung_model->get_eventtypes_for_course($id);	
 		foreach($eventtypes as $e){
 		    // must be an array because view runs data in foreach loop 
-		    $course_data[] = $this->get_course_event_view($id, $e, $subview_data, $subview_to_load);
+		    $course_data[$id][] = $this->get_course_event_view($id, $e, $subview_data, $subview_to_load);
 		}
-		$this->data->add('course_data', $course_data);
-		$this->data->add('offset', 0);
+		
 //		echo '<pre>';
-//		print_r($headlines);
-//	        echo '</pre>';
+//		print_r($course_data);
+//		echo '</pre>';
+
+		$this->data->add('course_details', $course_data);
+		$this->data->add('offset', 0);
 	    }
 	    
-	    // show view
 	    $siteinfo = array(
 		'title' => 'Kursverwaltung',
-		'main_content' => 'kursverwaltung/kursverwaltung_uebersicht'
+		'main_content' => 'courses/courses_show'
 	    );
 	    $this->data->add('siteinfo', $siteinfo);
+
 	    $this->load->view('includes/template', $this->data->load());
 	    
 	} else {
 	    // no courses assigned view
 	    $siteinfo = array(
 		'title' => 'Kursverwaltung',
-		'main_content' => 'kursverwaltung/kursverwaltung_no_courses'
+		'main_content' => 'courses/courses_no'
 	    );
 	    $this->data->add('siteinfo', $siteinfo);
 	    $this->load->view('includes/template', $this->data->load());
