@@ -40,7 +40,32 @@ class Kursverwaltung_model extends CI_Model {
 	
 	return $data[0];
     }
-    
+
+    /**
+     * Returns first and last name of prof for given course
+     * @param int $course_id
+     * @return array
+     */
+    public function get_profname_for_course($course_id){
+	$this->db->distinct();
+	$this->db->select('Titel, Vorname, Nachname');
+	$this->db->from('stundenplankurs as a');
+	$this->db->join('benutzer as b', 'a.DozentID = b.BenutzerID');
+	$this->db->where('KursID', $course_id);
+	$this->db->where('VeranstaltungsformID', 1);
+	
+	$q = $this->db->get();
+	
+	if($q->num_rows() > 0){
+	    foreach ($q->result() as $row){
+		foreach($row as $r){
+		    $data[] = $r;
+		}
+	    }
+	}
+	
+	return $data;
+    }
     
     
     /**
@@ -89,10 +114,25 @@ class Kursverwaltung_model extends CI_Model {
     
     
     public function get_current_labings_for_course($course_id){
+	$this->db->distinct();
+	$this->db->select('a.Vorname, a.Nachname, a.BenutzerID');
+	$this->db->from('benutzer as a');
+	$this->db->join('laboringenieur b', 'a.BenutzerID = b.BenutzerID');
+	$this->db->where('b.KursID', $course_id);
+	$q = $this->db->get();
 	
+	$data = array(); // init
+	
+	foreach ($q->result_array() as $row){
+	    $data[$course_id][] = $row;
+	}
+	
+	return $data;
     }
+
     
     public function get_all_possible_labings(){
+	$this->db->distinct();
 	$this->db->select('a.Vorname, a.Nachname, a.BenutzerID');
 	$this->db->from('benutzer as a');
 	$this->db->join('benutzer_mm_rolle as b', 'a.BenutzerID = b.BenutzerID');

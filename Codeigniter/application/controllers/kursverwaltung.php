@@ -63,7 +63,12 @@ class Kursverwaltung extends FHD_Controller {
 
 	    // get data for each course
 	    foreach($this->course_ids as $id => $role){
-		//get person-overview view
+		$person_view_data['course_id'] = $id;
+		// get person-overview view
+		// get active persons
+		$name = $this->kursverwaltung_model->get_profname_for_course($id);
+		$person_view_data['prof'] = $name[0].' '.$name[1].' '.$name[2];
+		$person_view_data['current_labings'] = $this->kursverwaltung_model->get_current_labings_for_course($id);
 		$person_view_data['possible_labings'] = $this->kursverwaltung_model->get_all_possible_labings();
 		$course_data[$id][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_persons', $person_view_data, TRUE);
 		
@@ -75,7 +80,7 @@ class Kursverwaltung extends FHD_Controller {
 		}
 		
 //		echo '<pre>';
-//		print_r($course_data);
+//		print_r($person_view_data['current_labings']);
 //		echo '</pre>';
 
 		$this->data->add('course_details', $course_data);

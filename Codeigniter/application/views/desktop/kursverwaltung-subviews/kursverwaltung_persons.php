@@ -15,8 +15,7 @@
 
 //		}
 		?>
-		<?php // print out all profs ?>
-		Hier stehen die Dozenten - und zwar ziemlich fix einer - aus Stundenplankurs ^^
+		<?php echo $prof; ?>
 	    </td>
 	</tr>
 	<tr>
@@ -24,14 +23,23 @@
 		<span class="label label-info">Betreuer</span>
 	    </td>
 		<td>
-		    <div id="current-labings">
-			<?php if(!$is_tutor){
-			    echo '<a class="btn btn-mini" id="labings-slider" href="#">+</a>';
-			}
+		    <div id="current-labings-<?php echo $course_id; ?>">
+			<?php 
+			    // print button
+			    if(!$is_tutor){
+				echo '<a class="btn btn-mini" id="labings-slider-'.$course_id.'" href="#">+</a>';
+			    }
+			    // if there are already - print
+			    foreach($current_labings as $labings){
+				foreach($labings as $l){
+				    echo '<span
+					id="added-labings-'.$course_id.'-'.$l['BenutzerID'].'">'.$l['Vorname'].' '.$l['Nachname'].', </span>';
+				}
+			    }
 			?>
 		    </div>
 		    
-			<div id="labings-panel" style="display:none;">
+			<div id="labings-panel-<?php echo $course_id; ?>" style="display:none;">
 			    <hr />
 
 			    <?php 
@@ -52,29 +60,45 @@
 					    echo '</div><div style="float:left; width:300px;">';
 					}
 				    }
+				    
+				    $checked = FALSE; // init
+				    
+				    // only if there are labings in variable
+				    if(in_array($course_id, array_keys($current_labings))){
+					// check if labing is one of the current labings
+					foreach($current_labings[$course_id] as $labings){
+					    if($labings['BenutzerID'] == $labing->BenutzerID){
+						$checked = TRUE;
+					    }
+					}
+				    }
+				    
 			    ?>
 
-			    <p><input 
-				    type="checkbox" 
-				    name="labing-cb-name<?php echo $labing->BenutzerID; ?>"
-				    id="<?php echo $labing->BenutzerID; ?>" />
-				<label
-				    id="labing-label-<?php echo $labing->BenutzerID; ?>"
-				    style="display:inline" />
-				    <?php echo $labing->Vorname.' '.$labing->Nachname; ?>
-				</label>
-			    </p>
+			    <p><?php
+				    // print checkbox
+				    $cb_name = 'labing-cb-name'.$labing->BenutzerID;
+				    $cb_id = $course_id.'-'.$labing->BenutzerID;
+				    
+				    // checkbox data
+				    $cb_data = array(
+					'name' => $cb_name,
+					'id' => $cb_id,
+					'checked' => $checked,
+				    );
+				    echo form_checkbox($cb_data);
+				    
+				    // print label
+				    $label_id = 'labing-label-'.$course_id.'-'.$labing->BenutzerID;
+				    $label_text = $labing->Vorname.' '.$labing->Nachname;
+				    $label_attrs = array(
+					'id' => $label_id,
+					'style' => 'display:inline'
+				    );
+				    echo form_label($label_text, '', $label_attrs);
+				?></p>
 
 			    <?php
-    //				$checkbox_attrs = array(
-    //				    'id' => 'choose_cb'.$labing->BenutzerID,
-    //				    'class' => 'inline'
-    //				);
-    //				
-    //				echo form_checkbox($checkbox_attrs);
-    //				$label_text = $labing->Vorname.' '.$labing->Nachname;
-    //				echo form_label($label_text, 'choose_cb'.$labing->BenutzerID);?>
-				<?php
 				    if($counter == $third_labings*3){
 					echo '</div>';
 				    }
@@ -106,24 +130,28 @@
 
 <script>
 
-
-
 (function() {
     
     var labingsForCourse = {
 	
     };
     
+    var courseId = "<?php echo $course_id; ?>";
+    
+    // ids of dom-elements
+    var buttonId = '#labings-slider-'+courseId;
+    var panelId = '#labings-panel-'+courseId;
+    
     // show labings in table when clicked - NOT saved yet!
-    $('#labings-panel input').change(function () {
+    $(panelId + ' input').change(function () {
 	var self = $(this);
 	var id = self.attr("id");
 	console.log(self);
 	if(self.is(":checked")) {
 	    $('<span></span>', {
-		text: $('#labing-label-'+id).text(),
+		text: $('#labing-label-'+id).text()+', ',
 		id: 'added-labings-'+id
-	    }).appendTo('#current-labings');
+	    }).appendTo('#current-labings-'+courseId);
 	};
 	if(!self.is(":checked")){
 	    $('#added-labings-'+id).remove();
@@ -131,14 +159,14 @@
     });
     
     // labings slide-toggle
-    $('#labings-slider').click(function() { 
-	$('#labings-panel').slideToggle('slow', function () {
+    $(buttonId).click(function() { 
+	$(panelId).slideToggle('slow', function () {
 	    // TODO ??
 	});
     });
     
     // converting plus into minus-buttons and back again
-    $('#labings-slider').toggle(
+    $(buttonId).toggle(
 	function() { 
 	    $(this).text('-');
 	},

@@ -42,47 +42,10 @@
 
 (function() {
     
-    // update stdgnge-view according to chosen field in dropdown
-    $('li').click(function() {
-	$('#course-details').html('Daten werden geladen.');
-	
-	var self = $(this);
-	var id = self.attr('id');
-
-	// get data from db
-	$.ajax({
-	    type: "POST",
-	    url: "<?php echo site_url();?>kursverwaltung/ajax_show_course_details/",
-	    dataType: 'html',
-	    data : {course_id : id},
-	    success: function (data){
-		$('#course-details').html(data);
-	    }
-	});
-    });
-
-
     // initialize active tab
     $('.tab-content div:first-child').addClass("active");
     $('#course-details-navi li:first-child').addClass("active");
-    
 
-//	$("#stdgng-list").html('suche...');
-//	// ajax
-//	if($(this).val() != 0) {
-//	    $.get(
-//		"<?php // echo site_url();?>admin/ajax_show_courses_of_stdgng/",
-//		'stdgng_id='+$(this).val(),
-//		function(response) {
-//		    // returns view into div
-//		    $('#stdgng-list').html(response);
-//		});
-//	} else {
-//		$("#stdgng-list").html('');
-//	}
-
-    
-	
 })();
 
 
