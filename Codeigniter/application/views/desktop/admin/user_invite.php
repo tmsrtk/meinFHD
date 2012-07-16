@@ -64,7 +64,7 @@
 	<?php echo form_label('Ich bin ein', 'role', $data_labelattrs); ?>
 	<div class="controls">
 		<label class="radio">
-			<?php echo form_radio('role', '4', TRUE) ?>
+			<?php echo form_radio('role', '5', TRUE) ?>
 			Student
 		</label>
 		<label class="radio">
@@ -88,7 +88,7 @@
 	</div>
 </div>
 
-<div class="control-group error">
+<div class="control-group">
 	<?php echo form_label('E-Mail', 'email', $data_labelattrs); ?>
 	<div class="controls docs-input-sizes">
 		<?php echo form_input($data_email); ?>
@@ -120,14 +120,14 @@
 			<?php echo form_label('Semesteranfang', 'semesteranfang', $data_labelattrs); ?>
 			<div class="controls">
 				<label class="radio">
-					<?php echo form_radio('semesteranfang', 'WS', TRUE); ?>
-					WS
+					<?php echo form_radio('semesteranfang', 'WiSe', TRUE); ?>
+					WiSe
 				</label>
 			</div>
 			<div class="controls">
 				<label class="radio">
-					<?php echo form_radio('semesteranfang', 'SS', FALSE); ?>
-					SS
+					<?php echo form_radio('semesteranfang', 'SoSe', FALSE); ?>
+					SoSe
 				</label>
 			</div>
 		</div>
@@ -135,9 +135,9 @@
 	</div>
 
 	<div class="control-group">
-		<?php echo form_label('Studiengang', 'semesteranfang', $data_labelattrs); ?>
+		<?php echo form_label('Studiengang', 'studiengang', $data_labelattrs); ?>
 		<div class="controls docs-input-sizes">
-			<?php echo form_dropdown('studiengang_dd', $studiengaenge, '0', $class_dd); ?>
+			<?php echo form_dropdown('studiengang', $studiengaenge, '', $class_dd); ?>
 		</div>
 	</div>
 
@@ -173,17 +173,15 @@
 
 <div class="row">
 	<div class="span2">Test</div>
-	<div class="span2">Test</div>
-	<div class="span2">Test</div>
-	<div class="span2">Test</div>
-	<div class="span2">Test</div>
-	<div class="span2">Test</div>
+	<div class="span2"><strong>Nachname</strong></div>
+	<div class="span2"><strong>Vorname</strong></div>
+	<div class="span2"><strong>E-Mail</strong></div>
+	<div class="span2"><strong>Funktion</strong></div>
+	<div class="span2"><strong>Los</strong></div>
 </div>
 
-	<?php foreach ($user_invitations as $key => $value) : ?>
-	<?php // FB::log($value); ?>
-
-<div class="row">
+<div class="row" id="content_invitations">
+<?php foreach ($user_invitations as $key => $value) : ?>
 	<?php echo form_open('admin/create_user_from_invitation/', $data_formopen2); ?>
 	<?php echo form_hidden('request_id', $value['AnfrageID']); ?>
 
@@ -194,57 +192,66 @@
 
 	<?php echo "<div class=\"span2\">".form_dropdown('user_function', $data_dropdown, '0', $attrs_dropdown)."</div>"; ?>
 	<?php echo "<div class=\"span2\">".form_submit($submit_data, 'LOS!')."</div>"; ?>
+	<div class="clearfix"></div>
 	<?php echo form_close(); ?>
-</div>
 <?php endforeach ?>
+</div>
 <?php endblock(); ?>
 
 <?php startblock('customFooterJQueryCode');?>
+
 	// onchange for radiobuttons 
 	$("input[name='role']").change(function() {
 		toggle_studentdata($(this));
 	});
 
+	// onchange for erstsemestler
 	$("input[name='erstsemestler']").change(function() {
 		toggle_erstsemestlerdata($(this));
 	});
 
-	var $mydialog = $('<div id="dialog-confirm" title="Einladung löschen"></div>')
-					.html('<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Die Einladungsaufforderung wird endgültig gelöscht. OK?</p>')
+	// prompt dialogs
+	/**
+	 * 
+	 */
+	function createDialog(title, text) {
+		var $mydialog = $('<div id="dialog-confirm" title="'+title+'"></div>')
+					.html('<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>'+text+'</p>')
 					.dialog({
 						autoOpen: false,
 						resizable: false,
 						height: 200,
 						modal: true,
 						buttons: {
-							"Ja, löschen": function() {
-								$("#accept_invitation input#save").removeAttr("clicked");
-								$("input[type=submit][clicked=true]").parents("form").submit();
+							OK: function() {
+								$("input[type=submit][clicked=true]").parents("form#accept_invitation").submit();
+								$("#content_invitations input#save").removeAttr("clicked");
 								$( this ).dialog( "close" );
 							},
 							Abbrechen: function() {
-								$("#accept_invitation input#save").removeAttr("clicked");
-								$mydialog.dialog( "close" );
+								$("#content_invitations input#save").removeAttr("clicked");
+								$( this ).dialog( "close" );
 							}
 						}
 					});
+		return $mydialog;
+	}
 
-	$("#accept_invitation input#save").click(function() {
-
+	$("#content_invitations").on("click", "input#save", function() {
+		// e.preventDefault();
 		// determine which function was selected from the dropdown
 		// 0 = erstellen, 1 = löschen
-		var user_function = $("#user_function").val();
+		var user_function =  $(this).parents("form#accept_invitation").find("#user_function").val();
+
+		// console.log(user_function);
+		// return false;
 
 		if (user_function === '0') {
-
-			return true;
-
-		} else if (user_function === '1') {
-			// add custom attribute to determine later
 			$(this).attr("clicked", "true");
-
-			$mydialog.dialog("open");
-
+			createDialog('User erstellen', 'Sollen der User wirklich erstellt werden?').dialog("open");
+		} else if (user_function === '1') {
+			$(this).attr("clicked", "true");
+			createDialog('Einladung löschen', 'Soll die Einladung wirklch gelöscht werden?').dialog("open");
 		} else {
 
 		}
@@ -252,14 +259,14 @@
 		// prevent default submit behaviour
 		return false;
 	});
-})();
+
 
 /* toggles additional student data when user selected 'student' from the dropdown */
 function toggle_studentdata(c) {
 	var additional_student_data = $("div#studentendaten");
 
 	// c jQuery object of toggle button
-	if (c.val() === '4') {
+	if (c.val() === '5') {
 		// show additional student da
 		additional_student_data.slideDown('slow');
 	}
