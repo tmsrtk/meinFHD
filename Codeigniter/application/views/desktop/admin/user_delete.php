@@ -18,37 +18,6 @@
 	<h2>Benutzer löschen</h2>
 </div>
 <hr>
-<!-- <div class="row-fluid">
-	<table id="user_overview" class="table table-striped">
-		<thead>
-			<tr>
-				<th>Benutzername</th>
-				<th>Nachname</th>
-				<th>Vorname</th>
-				<th>Email</th>
-				<th>Löschen</th>
-			</tr>
-		</thead>
-		<tbody>
-			<?php foreach ($user as $zeile): ?>
-			<tr>
-				<?php
-				echo form_open('admin/delete_user/', $data_formopen);
-				// hidden field, with user_id, needed to save changes
-				echo form_hidden('user_id', $zeile['BenutzerID']);
-				?>
-				<td><?php echo $zeile['LoginName'] ?></td>
-				<td><?php echo $zeile['Nachname'] ?></td>
-				<td><?php echo $zeile['Vorname'] ?></td>
-				<td><?php echo $zeile['Email'] ?></td>
-				<td><?php echo form_submit($data_submit, 'Loeschen'); ?></td>
-				<?php echo form_close(); ?>
-			</tr>
-			<?php endforeach ?>
-		</tbody>
-	</table>
-</div>
--->
 <div class="row-fluid">
 	<table id="user_overview" class="table table-striped">
 		<thead>
@@ -74,7 +43,7 @@
 					<div class="span2"><?php echo $zeile['Vorname']; ?></div>
 					<div class="span2"><?php echo $zeile['Email']; ?></div>
 
-					<?php echo "<div class=\"span2\">".form_submit($data_submit, 'Loeschen')."</div>"; ?>
+					<?php echo "<div class=\"span2\">".form_submit($data_submit, 'Löschen')."</div>"; ?>
 					<div class="clearfix"></div>
 					<?php echo form_close(); ?>
 				</td>
@@ -83,84 +52,60 @@
 		</tbody>
 	</table>
 
-<!--
-	<div class="row">
-		<div class="span2"><strong>Loginname</strong></div>
-		<div class="span2"><strong>Nachname</strong></div>
-		<div class="span2"><strong>Vorname</strong></div>
-		<div class="span2"><strong>E-Mail</strong></div>
-		<div class="span2"><strong>Los</strong></div>
-	</div>
 
-	<div class="row" id="content_userrow">
-	<?php foreach ($user as $zeile) : ?>
-		<?php echo form_open('admin/delete_user/', $data_formopen); ?>
-		<?php echo form_hidden('user_id', $zeile['BenutzerID']); ?>
 
-		<div class="span2"><?php echo $zeile['LoginName']; ?></div>
-		<div class="span2"><?php echo $zeile['Nachname']; ?></div>
-		<div class="span2"><?php echo $zeile['Vorname']; ?></div>
-		<div class="span2"><?php echo $zeile['Email']; ?></div>
+	<a id="modaltest_btn" class="btn" href="">Modal Test</a>
+	<div id="modalcontent"></div>
 
-		<?php echo "<div class=\"span2\">".form_submit($data_submit, 'Loeschen')."</div>"; ?>
-		<div class="clearfix"></div>
-		<?php echo form_close(); ?>
-	<?php endforeach ?>
-	</div>
--->
 </div>
 <?php endblock(); ?>
 
 <?php startblock('customFooterJQueryCode');?>
-		// prompt dialogs
-		/**
-		 * 
-		 */
-		function createDialog(title, text) {
-			var $mydialog = $('<div id="dialog-confirm" title="'+title+'"></div>')
-						.html('<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>'+text+'</p>')
-						.dialog({
-							autoOpen: false,
-							resizable: false,
-							height: 200,
-							modal: true,
-							buttons: {
-								OK: function() {
-									$("input[type=submit][clicked=true]").parents("form#delete_user_row").submit();
-									$("#content_userrow input#delete_user_btn").removeAttr("clicked");
-									$( this ).dialog( "close" );
-								},
-								Abbrechen: function() {
-									$("#content_userrow input#delete_user_btn").removeAttr("clicked");
-									$( this ).dialog( "close" );
-								}
-							}
-						});
-			return $mydialog;
+
+	// prompt dialogs
+	$("td#content_userrow").on("click", "input#delete_user_btn", function() {
+		$(this).attr("data-clicked", "true");
+
+		var mm = createModalDialog('User löschen', 'Soll der User wirklich gelöscht werden?');
+		$("#modalcontent").html(mm);
+
+		$('#myModal').modal('show');
+		return false;
+	});
+
+	function createModalDialog(title, text) {
+		var $myModalDialog = $('<div class="modal hide" id="myModal"></div>')
+					.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
+					.append('<div class="modal-body"><p>'+text+'</p></div>')
+					.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Abbrechen</a><a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
+		return $myModalDialog;
+	}
+
+	$("#modalcontent").on( 'click', 'a', function() {
+		if ( $(this).attr("data-accept") === 'modal' ) {
+			console.log("accept");
+
+			$("input[type=submit][data-clicked=true]").parents("form#delete_user_row").submit();
+			$("#content_userrow input#delete_user_btn").removeAttr("data-clicked");
+		} else {
+			console.log("cancel");
+			$("#content_userrow input#delete_user_btn").removeAttr("data-clicked");
 		}
 
-		$("td#content_userrow").on("click", "input#delete_user_btn", function() {
-			// console.log(user_function);
-			$(this).attr("clicked", "true");
-			createDialog('User löschen', 'Soll der User wirklich gelöscht werden?').dialog("open");
-
-			// prevent default submit behaviour
-			return false;
-		});
+		return false;
+	});
 
 
+	/* helper functions */
+	function hide_all_submit_buttons() {
+		$("input#delete_user_btn").hide();
+	}
 
-
-		/* helper functions */
-		function hide_all_submit_buttons() {
-			$("input#delete_user_btn").hide();
-		}
-
-		function show_delete_button(c) {
-				c.find("#delete_user_btn").show();
-		}
-			function hide_delete_button(c) {
-				c.find("#delete_user_btn").hide();
-		}
+	function show_delete_button(c) {
+			c.find("#delete_user_btn").show();
+	}
+		function hide_delete_button(c) {
+			c.find("#delete_user_btn").hide();
+	}
 <?php endblock(); ?>
 <?php end_extend(); # end extend main template ?>
