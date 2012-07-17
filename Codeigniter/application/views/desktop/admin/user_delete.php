@@ -69,7 +69,10 @@
 		var mm = createModalDialog('User löschen', 'Soll der User wirklich gelöscht werden?');
 		$("#modalcontent").html(mm);
 
-		$('#myModal').modal('show');
+		$('#myModal').modal({
+			keyboard: false
+		}).modal('show');
+		
 		return false;
 	});
 
@@ -81,7 +84,7 @@
 		return $myModalDialog;
 	}
 
-	$("#modalcontent").on( 'click', 'a', function(event) {
+	$("#modalcontent").on( 'click', 'button, a', function(event) {
 		if ( $(this).attr("data-accept") === 'modal' ) {
 			console.log("accept");
 
