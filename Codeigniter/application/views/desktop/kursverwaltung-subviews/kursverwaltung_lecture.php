@@ -1,23 +1,23 @@
 <?php
     // attributes
     $course_room_attrs = array(
-	'name' => 'room', // TODO $KursID.'kurs_kurz',
+	'name' => $lecture_details->SPKursID.'_Raum', 
 	'id' => 'kursverwaltung-raum',
 	'class' => 'span1',
-	'value' => $lecture_details->Raum, // TODO $kurs_kurz,
+	'value' => $lecture_details->Raum, 
     );
     
-    $submit_button_attrs = 'id = #stdgng-course-details-save-button class = "btn-warning"';
+    $submit_button_attrs = 'id = #stdgng-course-details-save-button class ="btn-warning"';
     
     $dropdown_attrs = 'class = "span1"';
     $dropdown_attrs2 = 'class = "span2"';
     
     if($lab == '1'){
 	$lab_participants_attrs = array(
-	    'name' => 'teilnehmer', // TODO $KursID.'kurs_kurz',
+	    'name' => $lecture_details->SPKursID.'_TeilnehmerMax', 
 	    'id' => 'kursverwaltung-tn',
 	    'class' => 'span1',
-	    'value' => $lecture_details->TeilnehmerMax, // TODO $kurs_kurz,
+	    'value' => $lecture_details->TeilnehmerMax, 
 	);
     }
     
@@ -34,7 +34,10 @@
     
 ?>
 <div class="clearfix">
-    <?php echo form_open(); ?>
+    <?php
+	$form_attributes = array('id' => 'course-details-save-button');
+	print form_open('kursverwaltung/save_course_details', $form_attributes); 
+    ?>
     <div class="span2">
 	<?php
 	    if($lab == '1'){
@@ -49,9 +52,12 @@
 
     <!--building table >> content-->
     <div class="span1"><?php echo form_input($course_room_attrs); ?></div>
-    <div class="span1"><?php echo form_dropdown('starttime', $starttime_options, $lecture_details->StartID, $dropdown_attrs); ?></div>
-    <div class="span1"><?php echo form_dropdown('endtime', $endtime_options, $lecture_details->EndeID, $dropdown_attrs); ?></div>
-    <div class="span2"><?php echo form_dropdown('day', $day_options, $lecture_details->TagID, $dropdown_attrs2); ?></div>
+    <div class="span1"><?php echo form_dropdown(
+	    $lecture_details->SPKursID.'_StartID', $starttime_options, $lecture_details->StartID, $dropdown_attrs); ?></div>
+    <div class="span1"><?php echo form_dropdown(
+	    $lecture_details->SPKursID.'_EndeID', $endtime_options, $lecture_details->EndeID, $dropdown_attrs); ?></div>
+    <div class="span2"><?php echo form_dropdown(
+	    $lecture_details->SPKursID.'_TagID', $day_options, $lecture_details->TagID, $dropdown_attrs2); ?></div>
     <div class="span1">
 	<?php
 	    // add another field for number of possible particitpants - for labs view
@@ -63,6 +69,6 @@
 	    }
 	?>
     </div>
-    <div class="span2"><?php echo form_submit('save_course_details', 'Speichern', $submit_button_attrs); ?></div>
+    <div class="span2"><?php echo form_submit('', 'Speichern', $submit_button_attrs); ?></div>
     <?php echo form_close(); ?>
 </div>

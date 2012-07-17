@@ -1,12 +1,4 @@
 <?php
-    // attributes
-    $course_name_attrs = array(
-	'name' => 'room', // TODO $KursID.'kurs_kurz',
-	'id' => 'kursverwaltung-raum',
-	'value' => $lecture_details->Raum, // TODO $kurs_kurz,
-	'class' => 'span1'
-    );
-    
     $submit_button_attrs = 'id = #stdgng-course-details-save-button class = "btn-warning"';
     
     $dropdown_attrs = 'class = "span1"';
@@ -50,7 +42,7 @@
 	?>
     </div>
     <div class="span1">
-	<?php echo 'room'; ?>
+	<?php echo $lecture_details->Raum; ?>
     </div>
     <div class="span1">
 	<?php   

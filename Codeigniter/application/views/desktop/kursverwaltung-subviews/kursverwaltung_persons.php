@@ -7,14 +7,6 @@
 		<span class="label label-info">Dozent</span>
 	    </td>
 	    <td>
-		<?php // if($is_tutor == '0'){
-//		    echo '<a class="btn btn-mini" href="#">+</a>';
-		    // TODO while adding labings to courses (at the moment only whole
-		    // course is possible (>> all spkursids for that courseid)
-		    // write in labing-table to save data - same with tuts
-
-//		}
-		?>
 		<?php echo $prof; ?>
 	    </td>
 	</tr>
@@ -33,82 +25,83 @@
 			    foreach($current_labings as $labings){
 				foreach($labings as $l){
 				    echo '<span
-					id="added-labings-'.$course_id.'-'.$l['BenutzerID'].'">'.$l['Vorname'].' '.$l['Nachname'].', </span>';
+					id="added-labings-'.$course_id.'-'.$l['BenutzerID'].'"> '.$l['Vorname'].' '.$l['Nachname'].', </span>';
 				}
 			    }
 			?>
 		    </div>
 		    
-			<div id="labings-panel-<?php echo $course_id; ?>" style="display:none;">
-			    <hr />
+		    <div id="labings-panel-<?php echo $course_id; ?>" style="display:none;">
+			<hr />
 
-			    <?php 
-				echo form_open();
-				echo form_submit('', 'Speichern');
+			<?php 
+			    $form_attributes = array('id' => 'course-labings-save-button');
+			    print form_open('kursverwaltung/save_labings_for_course', $form_attributes);
+			    echo form_submit('save_labings_for_course', 'Speichern');
 
-				// counter for creating 3 collumns
-				$counter = 0;
-				$number_labings = count($possible_labings);
-				$third_labings = ceil($number_labings / 3);
-				foreach($possible_labings as $labing){
+			    // counter for creating 3 collumns
+			    $counter = 0;
+			    $number_labings = count($possible_labings);
+			    $third_labings = ceil($number_labings / 3);
+			    foreach($possible_labings as $labing){
 
-				    // building three columns
-				    if($counter % $third_labings == 0){
-					if($counter == 0){
-					    echo '<div style="float:left; width:300px;">';
-					} else {
-					    echo '</div><div style="float:left; width:300px;">';
-					}
+				// building three columns
+				if($counter % $third_labings == 0){
+				    if($counter == 0){
+					echo '<div style="float:left; width:300px;">';
+				    } else {
+					echo '</div><div style="float:left; width:300px;">';
 				    }
-				    
-				    $checked = FALSE; // init
-				    
-				    // only if there are labings in variable
-				    if(in_array($course_id, array_keys($current_labings))){
-					// check if labing is one of the current labings
-					foreach($current_labings[$course_id] as $labings){
-					    if($labings['BenutzerID'] == $labing->BenutzerID){
-						$checked = TRUE;
-					    }
-					}
-				    }
-				    
-			    ?>
-
-			    <p><?php
-				    // print checkbox
-				    $cb_name = 'labing-cb-name'.$labing->BenutzerID;
-				    $cb_id = $course_id.'-'.$labing->BenutzerID;
-				    
-				    // checkbox data
-				    $cb_data = array(
-					'name' => $cb_name,
-					'id' => $cb_id,
-					'checked' => $checked,
-				    );
-				    echo form_checkbox($cb_data);
-				    
-				    // print label
-				    $label_id = 'labing-label-'.$course_id.'-'.$labing->BenutzerID;
-				    $label_text = $labing->Vorname.' '.$labing->Nachname;
-				    $label_attrs = array(
-					'id' => $label_id,
-					'style' => 'display:inline'
-				    );
-				    echo form_label($label_text, '', $label_attrs);
-				?></p>
-
-			    <?php
-				    if($counter == $third_labings*3){
-					echo '</div>';
-				    }
-
-				    $counter++;
 				}
-			    ?>
-			<?php echo form_close(); ?>
-		    </div>
-		</td>
+
+				$checked = FALSE; // init
+
+				// only if there are labings in variable
+				if(in_array($course_id, array_keys($current_labings))){
+				    // check if labing is one of the current labings
+				    foreach($current_labings[$course_id] as $labings){
+					if($labings['BenutzerID'] == $labing->BenutzerID){
+					    $checked = TRUE;
+					}
+				    }
+				}
+
+			?>
+
+			<p><?php
+				// print checkbox
+				$cb_name = 'labing-cb-name'.$labing->BenutzerID;
+				$cb_id = $course_id.'-'.$labing->BenutzerID;
+
+				// checkbox data
+				$cb_data = array(
+				    'name' => $cb_name,
+				    'id' => $cb_id,
+				    'checked' => $checked,
+				);
+				echo form_checkbox($cb_data);
+
+				// print label
+				$label_id = 'labing-label-'.$course_id.'-'.$labing->BenutzerID;
+				$label_text = $labing->Vorname.' '.$labing->Nachname;
+				$label_attrs = array(
+				    'id' => $label_id,
+				    'style' => 'display:inline'
+				);
+				echo form_label($label_text, '', $label_attrs);
+			    ?></p>
+
+			<?php
+				if($counter == $third_labings*3){
+				    echo '</div>';
+				}
+
+				$counter++;
+			    }
+			?>
+		    <?php echo form_close(); ?>
+		</div>
+	    </td>
 	</tr>
 	<tr>
 	    <td>

@@ -113,11 +113,18 @@ class Kursverwaltung_model extends CI_Model {
     }
     
     
-    public function get_current_labings_for_course($course_id){
+    /**
+     * Returns array with all labings/tuts belonging to a single course-id
+     * switch labings/tuts with passed table
+     * @param int $course_id
+     * @param String $table
+     * @return array
+     */
+    public function get_current_labings_tuts_for_course($course_id, $table){
 	$this->db->distinct();
 	$this->db->select('a.Vorname, a.Nachname, a.BenutzerID');
 	$this->db->from('benutzer as a');
-	$this->db->join('laboringenieur b', 'a.BenutzerID = b.BenutzerID');
+	$this->db->join($table.' as b', 'a.BenutzerID = b.BenutzerID');
 	$this->db->where('b.KursID', $course_id);
 	$q = $this->db->get();
 	
@@ -131,12 +138,18 @@ class Kursverwaltung_model extends CI_Model {
     }
 
     
+    /**
+     * Returns array with all possible labings
+     * i.e. Role 2 and Role 3
+     * @return array
+     */
     public function get_all_possible_labings(){
 	$this->db->distinct();
 	$this->db->select('a.Vorname, a.Nachname, a.BenutzerID');
 	$this->db->from('benutzer as a');
 	$this->db->join('benutzer_mm_rolle as b', 'a.BenutzerID = b.BenutzerID');
 	$this->db->where('b.RolleID', 2)->or_where('b.RolleID', 3);
+	$this->db->order_by('a.Nachname', 'ASC');
 	$q = $this->db->get();
 	
 	if($q->num_rows() > 0){
@@ -147,6 +160,29 @@ class Kursverwaltung_model extends CI_Model {
 	
 //	$data = $this->clean_nested_array($data);
 	
+	return $data;
+    }
+    
+    
+    /**
+     * 
+     * @return type
+     */
+    public function get_all_tuts(){
+	$this->db->distinct();
+	$this->db->select('a.Vorname, a.Nachname, a.BenutzerID');
+	$this->db->from('benutzer as a');
+	$this->db->join('benutzer_mm_rolle as b', 'a.BenutzerID = b.BenutzerID');
+	$this->db->where('b.RolleID', 4);
+	$this->db->order_by('a.Nachname', 'ASC');
+	$q = $this->db->get();
+	
+	if($q->num_rows() > 0){
+	    foreach ($q->result() as $row){
+		$data[] = $row;
+	    }
+	}
+//	$data = $this->clean_nested_array($data);
 	return $data;
     }
     
@@ -167,6 +203,16 @@ class Kursverwaltung_model extends CI_Model {
     }
     
     
+    /*
+     * ############################################################# SAVING DATA
+     */
+    
+    /**
+     * 
+     * @param type $profs
+     * @param type $labings
+     * @param type $tuts
+     */
     public function add_person_to_course($profs = '', $labings = '', $tuts = ''){
 	if($profs){
 	    // when adding profs as labings >> that relation has to be inserted into benutzer_mm_rolle (>> gets betreuer-role)
@@ -179,6 +225,53 @@ class Kursverwaltung_model extends CI_Model {
 	    
 	}
     }
+    
+    /**
+     * Saves course and group-data to db.
+     * SPKursID passed separately.
+     * Each data passed in separate arrays, too.
+     * @param int $spkurs_id
+     * @param array $spkurs_data
+     * @param array $group_data
+     */
+    public function save_course_details($spkurs_id, $spkurs_data, $group_data){
+	$this->db->where('SPKursID', $spkurs_id);
+	$this->db->update('stundenplankurs', $spkurs_data);
+	
+	// if spkurs that should be updated is Ü,L.P
+	if($group_data){
+	    $group_id = $this->get_group_id_for_spkursid($spkurs_id)->GruppeID;
+	    
+	    $this->db->where('GruppeID', $group_id);
+	    $this->db->update('gruppe', $group_data);
+	}
+    }
+    
+    
+    /**
+     * Helper to get group_id for given sp_course_id
+     * @param int $spkurs_id
+     * @return object
+     */
+    private function get_group_id_for_spkursid($spkurs_id){
+	$this->db->select('GruppeID');
+	$this->db->from('stundenplankurs');
+	$this->db->where('SPKursID', $spkurs_id);
+	$q = $this->db->get();
+	
+	$data = ''; // init
+	
+	if($q->num_rows() > 0){
+	    foreach ($q->result() as $row){
+		$data = $row;
+	    }
+	}
+	return $data;
+    }
+    
+    
+    
+    
     
     /**
      * used to populate benutzer_mm_rolle-table in database

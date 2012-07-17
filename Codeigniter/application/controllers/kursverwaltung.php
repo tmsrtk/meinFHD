@@ -13,6 +13,11 @@ class Kursverwaltung extends FHD_Controller {
     const LAB_UEB = 3;
     const LAB_PRA = 4;
     const TUT = 6;
+    
+    // tables to switch between data
+    const LABING = 'laboringenieur';
+    const TUTOR = 'tutor';
+    
 
     function __construct(){
 	parent::__construct();
@@ -68,8 +73,14 @@ class Kursverwaltung extends FHD_Controller {
 		// get active persons
 		$name = $this->kursverwaltung_model->get_profname_for_course($id);
 		$person_view_data['prof'] = $name[0].' '.$name[1].' '.$name[2];
-		$person_view_data['current_labings'] = $this->kursverwaltung_model->get_current_labings_for_course($id);
-		$person_view_data['possible_labings'] = $this->kursverwaltung_model->get_all_possible_labings();
+		$person_view_data['current_labings'] = 
+		    $this->kursverwaltung_model->get_current_labings_tuts_for_course($id, Kursverwaltung::LABING);
+		$person_view_data['possible_labings'] = 
+		    $this->kursverwaltung_model->get_all_possible_labings();
+		$person_view_data['current_tuts'] = 
+		    $this->kursverwaltung_model->get_current_labings_tuts_for_course($id, Kursverwaltung::TUTOR);
+		$person_view_data['possible_tuts'] = 
+		    $this->kursverwaltung_model->get_all_tuts();
 		$course_data[$id][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_persons', $person_view_data, TRUE);
 		
 		// get view for each eventtype
@@ -112,6 +123,7 @@ class Kursverwaltung extends FHD_Controller {
 	// init
 	$subview_data['lab'] = '';
 	$subview_data['lecture_name'] = $this->kursverwaltung_model->get_lecture_name($course_id);
+	$subview_data['course_id'] = $course_id;
 	
 	switch($eventtype) {
 	    case Kursverwaltung::LECTURE :
@@ -187,6 +199,61 @@ class Kursverwaltung extends FHD_Controller {
     }
     
     
+    
+    /** 
+     * ################################ SAVING DATA
+     */
+    function save_course_details(){
+	
+	// TODO update database with new data >> number of participants has to be store in gruppe
+	$input_data = $this->input->post();
+	
+	$save_course_details_to_db = array(); // init
+	$save_group_details_to_db = array(); // init
+	$sp_course_id = ''; // init
+	$t = '';
+	
+	// run through input
+	foreach ($input_data as $key => $value) {
+	    // get key and field-name
+	    $split_key = explode('_', $key);
+	    // save spkursid
+	    $sp_course_id = $split_key[0];
+	    if($split_key[1] != 'TeilnehmerMax'){
+		$save_course_details_to_db[$split_key[1]] = $value;
+	    } else {
+		$save_group_details_to_db['TeilnehmerMax'] = $value;
+	    }
+	}
+	
+	// save that data
+	$this->kursverwaltung_model->save_course_details(
+		$sp_course_id, $save_course_details_to_db, $save_group_details_to_db);
+	
+//	echo '<pre>';
+//	print_r($t);
+//	echo '</pre>';
+	
+	$this->show_coursemgt();
+	
+    }
+    
+    
+    
+    /** 
+     * ################################ SAVING DATA
+     */
+    function save_labings_for_course(){
+//	echo '<pre>';
+//	print_r($this->input->post());
+//	echo '</pre>';
+	
+	// TODO update database with new data >> number of participants has to be store in gruppe
+	$data_to_save = $this->input->post();
+	
+	$this->show_coursemgt();
+	
+    }
     
     
     
