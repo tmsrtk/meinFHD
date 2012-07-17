@@ -63,5 +63,15 @@
 		
 	});
 			
+	// hide delete button by default
+	$(".btn.delete").hide();
 	
+	$('tr').hover(
+		function() {
+			$(this).find('.btn.delete').show();
+		},
+		function() {
+			$(this).find('.btn.delete').hide();
+		}
+	);
 })(jQuery);

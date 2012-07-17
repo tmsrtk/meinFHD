@@ -9,7 +9,7 @@
 	$data_formopen = array('id' => 'delete_user_row');
 	$data_submit = array(
 		'name'			=> 'submit',
-		'class'			=> 'btn btn-mini btn-danger delete_user_btn'
+		'class'			=> 'btn btn-mini btn-danger delete'
 	);
 	//--------------------------------------------------------------------------
 ?>
@@ -49,16 +49,6 @@
 </div>
 <?php endblock(); ?>
 
-<?php startblock('customFooterJQueryCode');?>
-				$("input.delete_user_btn").hide();
-				
-				$('tr').hover(
-					function() {
-						$(this).find('.delete_user_btn').show();
-					},
-					function() {
-						$(this).find('.delete_user_btn').hide();
-					}
-				);
-<?php endblock(); ?>
+<?php # startblock('customFooterJQueryCode');?>
+<?php # endblock(); ?>
 <?php end_extend(); # end extend main template ?>
