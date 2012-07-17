@@ -632,21 +632,27 @@ class Admin extends FHD_Controller {
 	 */
 	public function ajax_show_user()
 	{
-		// get user with needed html markup and return it
+		$result = '';
+
 
 		// get value
 		$role_id = $this->input->get('role_id');
 		$searchletter = $this->input->get('searchletter');
 
-		$q = $this->admin_model->get_user_per_role_searchletter($role_id, $searchletter);  ///////////////////// query if result 0 !!!!!!!!!!!
+		// if nothing set, query would response all users, so lets prevent this
+		if ( empty($role_id) && empty($searchletter) )
+		{
+			$result = 'Kein Ergebnis';
+		}
+		else
+		{
+			$q = $this->admin_model->get_user_per_role_searchletter($role_id, $searchletter);
 
-		$result = '';
-
-		// FB::log($q);
-		// return;
-
-		foreach ($q as $key => $value) {
-			$result .= $this->load->view('admin/partials/user_single_form', $value, TRUE);
+			// get user with needed html markup and return it
+			foreach ($q as $key => $value)
+			{
+				$result .= $this->load->view('admin/partials/user_single_form', $value, TRUE);
+			}
 		}
 		echo $result;
 	}

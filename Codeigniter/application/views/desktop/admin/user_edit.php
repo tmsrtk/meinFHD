@@ -57,6 +57,8 @@
 
 <?php startblock('customFooterJQueryCode');?>
 
+	var xhr; 
+
 	var UsersEditAjax = {
 		init : function( config ) {
 			this.config = config;
@@ -67,24 +69,67 @@
 		bindEvents : function() {
 			var self = this;
 			this.config.roleDropdown.on( 'change', function() {
-				// self.clearSearchbox(self.config.searchInput);
-				self.requestByStdGang($(this));
+				// self.requestByStdGang($(this));
+				self.requestSearch( $(this), self.config.searchInput );
 			});
 			this.config.searchInput.on( 'keyup', function() {
-				self.requestBySearch($(this));
+				// self.requestBySearch($(this));
+				self.requestSearch( self.config.roleDropdown, $(this) );
 			});
 		},
 
-		clearSearchbox : function(sb) {
-			// console.log(sb);
+		requestSearch : function( filter, searchbox ) {
+
+			var self = this;
+
+			// console.log(filter);
+			// console.log(searchbox);
+
+
+
+			clearTimeout( self.timer );
+
+			self.timer = setTimeout(function() {
+				self.config.dataContent.html("lade Daten...");
+
+				var data = '';
+
+				( filter.val() !== '0' ) ? data+='role_id='+filter.val()+'&' : data+='role_id=&';
+				( searchbox.val().length > 2 ) ? data+='searchletter='+searchbox.val() : data+='searchletter=';
+					
+				// if the request was already sent, check if its still running
+				// if so, abort it to prevent inserting the requested content, after
+				// another request was sent and responsed/inserted
+				if ( xhr && xhr.readyState != 4 ) {
+					xhr.abort();
+				}
+
+				xhr = $.get(
+					"<?php echo site_url();?>admin/ajax_show_user/",
+					data,
+					function(response) {
+						self.config.dataContent.html(response);
+					});
+				
+			}, 400);
+
+
 		},
 		
 		requestByStdGang : function( studienganginput ) {
 			var self = this;
-			this.config.dataContent.html("lade Daten...");
 			
-			if ( studienganginput.val() !== '0' ) {   // TODO: why not working? -> always true and with == always false..
-				$.get(
+			if ( studienganginput.val() !== '0' ) {
+				this.config.dataContent.html("lade Daten...");
+
+				// if the request was already sent, check if its still running
+				// if so, abort it to prevent inserting the requested content, after
+				// another request was sent and responsed/inserted
+				if ( xhr && xhr.readyState != 4 ) {
+					xhr.abort();
+				}
+
+				xhr = $.get(
 				"<?php echo site_url();?>admin/ajax_show_user/",
 				'role_id='+studienganginput.val(),
 				function(response) {
@@ -107,7 +152,11 @@
 			if (!searchinput) {
 				data = 'role_id='+this.config.roleDropdown.val();
 				
-				$.get(
+				if ( xhr && xhr.readyState != 4 ) {
+					xhr.abort();
+				}
+
+				xhr = $.get(
 				url,
 				data,
 				function(response) {
@@ -119,7 +168,11 @@
 				if (searchinput.val().length == 0) { // load all users of selected std
 					data = 'role_id='+this.config.roleDropdown.val();
 					
-					$.get(
+					if ( xhr && xhr.readyState != 4 ) {
+						xhr.abort();
+					}
+
+					xhr = $.get(
 					url,
 					data,
 					function(response) {
@@ -129,7 +182,11 @@
 					self.timer = setTimeout(function() {
 						data = 'searchletter='+searchinput.val()+'&role_id='+self.config.roleDropdown.val();
 						
-						$.get(
+						if ( xhr && xhr.readyState != 4 ) {
+							xhr.abort();
+						}
+
+						xhr = $.get(
 							url,
 							data,
 							function(response) {
