@@ -67,7 +67,7 @@
 		bindEvents : function() {
 			var self = this;
 			this.config.roleDropdown.on( 'change', function() {
-				self.clearSearchbox(self.config.searchInput);
+				// self.clearSearchbox(self.config.searchInput);
 				self.requestByStdGang($(this));
 			});
 			this.config.searchInput.on( 'keyup', function() {
@@ -83,14 +83,16 @@
 			var self = this;
 			this.config.dataContent.html("lade Daten...");
 			
-			if ( ! studienganginput.val() === 0 ) {   // TODO: why not working? -> always true and with == always false..
+			if ( studienganginput.val() !== '0' ) {   // TODO: why not working? -> always true and with == always false..
 				$.get(
 				"<?php echo site_url();?>admin/ajax_show_user/",
 				'role_id='+studienganginput.val(),
 				function(response) {
 					self.config.dataContent.html(response);
 				});
-			} else { console.log(studienganginput.val()); }
+			} else {
+				console.log(studienganginput.val());
+			}
 		},
 		
 		requestBySearch : function( searchinput ) {
