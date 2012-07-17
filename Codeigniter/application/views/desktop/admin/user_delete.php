@@ -81,15 +81,18 @@
 		return $myModalDialog;
 	}
 
-	$("#modalcontent").on( 'click', 'a', function() {
+	$("#modalcontent").on( 'click', 'a', function(event) {
 		if ( $(this).attr("data-accept") === 'modal' ) {
 			console.log("accept");
 
+			$(event.target).parent().parent().find("div.modal-body").html("Bitte warten, der Befehl wird ausgeführt");
+
 			$("input[type=submit][data-clicked=true]").parents("form#delete_user_row").submit();
-			$("#content_userrow input#delete_user_btn").removeAttr("data-clicked");
+			$("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
 		} else {
 			console.log("cancel");
-			$("#content_userrow input#delete_user_btn").removeAttr("data-clicked");
+
+			$("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
 		}
 
 		return false;
