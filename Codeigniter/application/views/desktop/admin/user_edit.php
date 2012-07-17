@@ -76,18 +76,21 @@
 		},
 
 		clearSearchbox : function(sb) {
-			console.log(sb);
+			// console.log(sb);
 		},
 		
 		requestByStdGang : function( studienganginput ) {
 			var self = this;
 			this.config.dataContent.html("lade Daten...");
-			$.get(
+			
+			if ( ! studienganginput.val() === 0 ) {   // TODO: why not working? -> always true and with == always false..
+				$.get(
 				"<?php echo site_url();?>admin/ajax_show_user/",
 				'role_id='+studienganginput.val(),
-			function(response) {
-				self.config.dataContent.html(response);
-			});
+				function(response) {
+					self.config.dataContent.html(response);
+				});
+			} else { console.log(studienganginput.val()); }
 		},
 		
 		requestBySearch : function( searchinput ) {
