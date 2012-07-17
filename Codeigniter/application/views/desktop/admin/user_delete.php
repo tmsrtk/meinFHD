@@ -77,8 +77,8 @@
 					<?php echo "<div class=\"span2\">".form_submit($data_submit, 'Loeschen')."</div>"; ?>
 					<div class="clearfix"></div>
 					<?php echo form_close(); ?>
-				<td>
-			<tr>
+				</td>
+			</tr>
 			<?php endforeach ?>
 		</tbody>
 	</table>

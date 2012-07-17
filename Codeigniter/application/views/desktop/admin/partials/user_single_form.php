@@ -5,7 +5,7 @@ $data_formopen = array(
 	);
 
 $data_dropdown = array('Speichern', 'Passwort resetten', 'Stundenplan resetten', 'Als ... anmelden');
-$data_dropdown_attrs = 'id="user_function" class="span2"';
+$data_dropdown_attrs = 'id="user_function" class="input-xxlarge"';
 
 $submit_data = array(
 		'id' 			=> 'save',
@@ -14,6 +14,8 @@ $submit_data = array(
 	);
 
 ?>
+<tr>
+	<td class="content_user_row">
 
 <?php echo form_open('admin/validate_edit_user_form/', $data_formopen); ?>
 <?php echo form_hidden('user_id', $BenutzerID); ?>
@@ -37,6 +39,9 @@ $submit_data = array(
 ?>
 
 <?php echo '<div class="span2">'.form_dropdown('user_function', $data_dropdown, '0', $data_dropdown_attrs).'</div>'; ?>
-<?php echo '<div class="span2">'.form_submit($submit_data, 'LOS!').'</div>'; ?>
+<?php echo '<div class="span1">'.form_submit($submit_data, 'LOS!').'</div>'; ?>
 <div class="clearfix"></div>
 <?php echo form_close(); ?>
+
+	</td>
+</tr>

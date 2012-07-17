@@ -1,7 +1,7 @@
 <?php
 
 $formdata = array(
-    'class' => 'span2',
+    'class' => 'input-xxlarge',
     'name' => $name,
     'placeholder' => 'kein Eintrag',
     'value' => $value
