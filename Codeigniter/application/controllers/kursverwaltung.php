@@ -51,15 +51,15 @@ class Kursverwaltung extends FHD_Controller {
 	
 	// init variables
 	$person_view_data['is_tutor'] = false;
-	$subview_to_load = '';
+	$subview_lecture_to_load = '';
 	
 	// switch view - depends on if user is tutor or not
 	// TODO? hard coded ints at the moment - perhaps better via function?
 	if(in_array(2, $this->roleIds) || in_array(3, $this->roleIds)){
-	    $subview_to_load = 'kursverwaltung-subviews/kursverwaltung_lecture';
+	    $subview_lecture_to_load = 'courses/partials/courses_lecture';
 	} else {
 	    $person_view_data['is_tutor'] = true;
-	    $subview_to_load = 'kursverwaltung-subviews/kursverwaltung_lecture_tut';
+	    $subview_lecture_to_load = 'courses/partials/courses_lecture_tut';
 	}
 
 
@@ -81,13 +81,13 @@ class Kursverwaltung extends FHD_Controller {
 		    $this->kursverwaltung_model->get_current_labings_tuts_for_course($id, Kursverwaltung::TUTOR);
 		$person_view_data['possible_tuts'] = 
 		    $this->kursverwaltung_model->get_all_tuts();
-		$course_data[$id][] = $this->load->view('kursverwaltung-subviews/kursverwaltung_persons', $person_view_data, TRUE);
+		$course_data[$id][] = $this->load->view('courses/partials/courses_persons', $person_view_data, TRUE);
 		
 		// get view for each eventtype
 		$eventtypes = $this->kursverwaltung_model->get_eventtypes_for_course($id);	
 		foreach($eventtypes as $e){
 		    // must be an array because view runs data in foreach loop 
-		    $course_data[$id][] = $this->get_course_event_view($id, $e, $subview_data, $subview_to_load);
+		    $course_data[$id][] = $this->get_course_event_view($id, $e, $subview_data, $subview_lecture_to_load);
 		}
 		
 //		echo '<pre>';
@@ -134,7 +134,7 @@ class Kursverwaltung extends FHD_Controller {
 
 		//get lecture-data - only changable for NO-tuts
 		$subview_data['lecture_details'] = $this->kursverwaltung_model->get_lecture_details($course_id, $eventtype);
-		$lecture = $this->load->view('kursverwaltung-subviews/kursverwaltung_tablehead', $subview_data, TRUE);
+		$lecture = $this->load->view('courses/partials/courses_tablehead', $subview_data, TRUE);
 		$lecture .= $this->load->view($subview_to_load, $subview_data, TRUE);
 		return $lecture;
 	    case Kursverwaltung::LAB_SEM :
@@ -151,8 +151,8 @@ class Kursverwaltung extends FHD_Controller {
 		$subview_data['headline'] = 'Tutorium';
 		// get tut data view - always visible to every role
 		$subview_data['lecture_details'] = $this->kursverwaltung_model->get_lecture_details($course_id, $eventtype);
-		$tut = $this->load->view('kursverwaltung-subviews/kursverwaltung_tablehead', $subview_data, TRUE);
-		$tut .= $this->load->view('kursverwaltung-subviews/kursverwaltung_lecture', $subview_data, TRUE);
+		$tut = $this->load->view('courses/partials/courses_tablehead', $subview_data, TRUE);
+		$tut .= $this->load->view('courses/partials/courses_lecture', $subview_data, TRUE);
 		return $tut;
 	}
 	
@@ -170,7 +170,7 @@ class Kursverwaltung extends FHD_Controller {
 	//get lab-data-view (
 	// get data from db - array containing lab-data
 	$lab_details = $this->kursverwaltung_model->get_lab_details($course_id, $eventtype);
-	$lab[] = $this->load->view('kursverwaltung-subviews/kursverwaltung_tablehead', $subview_data, TRUE);
+	$lab[] = $this->load->view('courses/partials/courses_tablehead', $subview_data, TRUE);
 	foreach($lab_details as $details){
 //	    echo '<pre>';
 //	    print_r($l);

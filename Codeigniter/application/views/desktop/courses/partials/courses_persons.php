@@ -34,70 +34,70 @@
 		    <div id="labings-panel-<?php echo $course_id; ?>" style="display:none;">
 			<hr />
 
-			<?php 
-			    $form_attributes = array('id' => 'course-labings-save-button');
-			    print form_open('kursverwaltung/save_labings_for_course', $form_attributes);
-			    echo form_submit('save_labings_for_course', 'Speichern');
+			<?php
+			    // building checkbox panel with all possible labings for a course
+			    if(!$is_tutor){
+				$form_attributes = array('id' => 'course-labings-save-button');
+				print form_open('kursverwaltung/save_labings_for_course', $form_attributes);
+				echo form_submit('save_labings_for_course', 'Speichern');
 
-			    // counter for creating 3 collumns
-			    $counter = 0;
-			    $number_labings = count($possible_labings);
-			    $third_labings = ceil($number_labings / 3);
-			    foreach($possible_labings as $labing){
+				// counter for creating 3 collumns
+				$counter = 0;
+				$number_labings = count($possible_labings);
+				$third_labings = ceil($number_labings / 3);
+				foreach($possible_labings as $labing){
 
-				// building three columns
-				if($counter % $third_labings == 0){
-				    if($counter == 0){
-					echo '<div style="float:left; width:300px;">';
-				    } else {
-					echo '</div><div style="float:left; width:300px;">';
-				    }
-				}
-
-				$checked = FALSE; // init
-
-				// only if there are labings in variable
-				if(in_array($course_id, array_keys($current_labings))){
-				    // check if labing is one of the current labings
-				    foreach($current_labings[$course_id] as $labings){
-					if($labings['BenutzerID'] == $labing->BenutzerID){
-					    $checked = TRUE;
+				    // building three columns
+				    if($counter % $third_labings == 0){
+					if($counter == 0){
+					    echo '<div style="float:left; width:300px;">';
+					} else {
+					    echo '</div><div style="float:left; width:300px;">';
 					}
 				    }
-				}
 
-			?>
+				    $checked = FALSE; // init
 
-			<p><?php
-				// print checkbox
-				$cb_name = 'labing-cb-name'.$labing->BenutzerID;
-				$cb_id = $course_id.'-'.$labing->BenutzerID;
+				    // only if there are labings in variable
+				    if(in_array($course_id, array_keys($current_labings))){
+					// check if labing is one of the current labings
+					foreach($current_labings[$course_id] as $labings){
+					    if($labings['BenutzerID'] == $labing->BenutzerID){
+						$checked = TRUE;
+					    }
+					}
+				    }
 
-				// checkbox data
-				$cb_data = array(
-				    'name' => $cb_name,
-				    'id' => $cb_id,
-				    'checked' => $checked,
-				);
-				echo form_checkbox($cb_data);
+				    echo '<p>';
+					// print checkbox
+					$cb_name = 'labing-cb-name'.$labing->BenutzerID;
+					$cb_id = $course_id.'-'.$labing->BenutzerID;
 
-				// print label
-				$label_id = 'labing-label-'.$course_id.'-'.$labing->BenutzerID;
-				$label_text = $labing->Vorname.' '.$labing->Nachname;
-				$label_attrs = array(
-				    'id' => $label_id,
-				    'style' => 'display:inline'
-				);
-				echo form_label($label_text, '', $label_attrs);
-			    ?></p>
+					// checkbox data
+					$cb_data = array(
+					    'name' => $cb_name,
+					    'id' => $cb_id,
+					    'checked' => $checked,
+					);
+					echo form_checkbox($cb_data);
 
-			<?php
-				if($counter == $third_labings*3){
-				    echo '</div>';
-				}
+					// print label
+					$label_id = 'labing-label-'.$course_id.'-'.$labing->BenutzerID;
+					$label_text = $labing->Vorname.' '.$labing->Nachname;
+					$label_attrs = array(
+					    'id' => $label_id,
+					    'style' => 'display:inline'
+					);
+					echo form_label($label_text, '', $label_attrs);
+				    echo '</p>';
 
-				$counter++;
-			    }
+				    if($counter == $third_labings*3){
+					echo '</div>';
+				    }
+
+				    $counter++;
+				} // endforeach
+			    } // endif
 			?>
 		    <?php echo form_close(); ?>
 		</div>
@@ -109,11 +109,16 @@
 	    </td>
 	    <td>
 		<?php if(!$is_tutor){
-		    echo '<a class="btn btn-mini" href="#">+</a>';
+		    echo '<a class="btn btn-mini" id="tuts-slider-'.$course_id.'" href="#">+</a>';
+		}
+		// if there are already - print
+		foreach($current_tuts as $tuts){
+		    foreach($tuts as $t){
+			echo '<span
+			    id="added-labings-'.$course_id.'-'.$t['BenutzerID'].'"> '.$t['Vorname'].' '.$t['Nachname'].', </span>';
+		    }
 		}
 		?>
-		<?php // print out all tuts ?>
-		Hier stehen die Tutoren
 	    </td>
 	</tr>
     </tbody>
