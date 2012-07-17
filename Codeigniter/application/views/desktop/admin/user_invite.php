@@ -74,7 +74,7 @@
 	</div>
 </div>
 
-<div class="alert">
+<div id="additional-info" class="alert">
 	Gib bitte die folgenden Daten an, damit wir feststellen können, dass Du ein Student an diesem Fachbereich bist. 
 	Die Emailadresse wird für die Kommunikation mit meinFHD, den Dozenten und Studierenden verwendet.
 </div>
@@ -200,6 +200,26 @@
 
 <?php startblock('customFooterJQueryCode');?>
 
+	var AdditionalInfo = {
+		init : function(config) {
+			this.config = config;
+			this.changeToStudent();
+		},
+		changeToStudent : function() {
+			// this.config.additionalInfoContent = this.studentenInfo;
+			this.config.additionalInfoContent.html(this.studentenInfo);
+		},
+		changeToDozent : function() {
+			this.config.additionalInfoContent.html(this.dozentenInfo);
+		},
+		studentenInfo : "Gib bitte die folgenden Daten an, damit wir feststellen können, dass Du ein Student an diesem Fachbereich bist. Die Emailadresse wird für die Kommunikation mit meinFHD, den Dozenten und Studierenden verwendet.",
+		dozentenInfo : "Geben Sie bitte hier Ihren vollen Namen an, da dieser für die Kommunikation mit den Studierenden gebraucht wird. Die Emailadresse wird für die Kommunikation mit meinFHD und den Studierenden verwendet. "
+	};
+
+	AdditionalInfo.init({
+		additionalInfoContent : $("div#additional-info")
+	});
+
 	// onchange for radiobuttons 
 	$("input[name='role']").change(function() {
 		toggle_studentdata($(this));
@@ -269,9 +289,11 @@ function toggle_studentdata(c) {
 	if (c.val() === '5') {
 		// show additional student da
 		additional_student_data.slideDown('slow');
+		AdditionalInfo.changeToStudent();
 	}
 	else {
 		additional_student_data.slideUp('slow');
+		AdditionalInfo.changeToDozent();
 	}
 }
 
