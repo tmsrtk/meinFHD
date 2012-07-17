@@ -103,40 +103,40 @@
 <?php endblock(); ?>
 
 <?php startblock('customFooterJQueryCode');?>
-				var Studentsdata = {
-					init : function( config ) {
-						this.config = config;
-						this.bindEvents();
-						this.toggleStudentsdata();
-					},
-					
-					bindEvents : function() {
-						var self = this;
-						this.config.roleDropdown.on( 'change', function() {
-							self.toggleStudentsdata($(this));
-						} );
-					},
-					
-					toggleStudentsdata : function(selectbox) {
-						var studentdata_container = this.config.studentdataField;
-						var dropdown_value = (selectbox)
-							? dropdown_value = selectbox.val()
-							: '0';
-						(dropdown_value === '4') ? studentdata_container.slideDown() : studentdata_container.slideUp();
-					}
-				};
-				
-				// in case of more than one object
-				// var sd1 = Object.create( Studentsdata );
-				// sd1.init({
-				// 	studentdataField : $('#studentdata'),
-				// 	roleDropdown : $('select.role')
-				// });
-				
-				Studentsdata.init({
-					studentdataField : $('#studentdata'),
-					roleDropdown : $('select.role')
-				});
+	var Studentsdata = {
+		init : function( config ) {
+			this.config = config;
+			this.bindEvents();
+			this.toggleStudentsdata();
+		},
+		
+		bindEvents : function() {
+			var self = this;
+			this.config.roleDropdown.on( 'change', function() {
+				self.toggleStudentsdata($(this));
+			} );
+		},
+		
+		toggleStudentsdata : function(selectbox) {
+			var studentdata_container = this.config.studentdataField;
+			var dropdown_value = (selectbox)
+				? dropdown_value = selectbox.val()
+				: '0';
+			(dropdown_value === '5') ? studentdata_container.slideDown() : studentdata_container.slideUp();
+		}
+	};
+	
+	// in case of more than one object
+	// var sd1 = Object.create( Studentsdata );
+	// sd1.init({
+	// 	studentdataField : $('#studentdata'),
+	// 	roleDropdown : $('select.role')
+	// });
+	
+	Studentsdata.init({
+		studentdataField : $('#studentdata'),
+		roleDropdown : $('select.role')
+	});
 <?php endblock(); ?>
 
 <?php end_extend(); ?>
