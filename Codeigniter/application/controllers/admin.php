@@ -744,7 +744,7 @@ class Admin extends FHD_Controller {
 		);
 		$this->data->add('siteinfo', $siteinfo);
 		
-		$this->load->view('includes/template', $this->data->load());
+		$this->load->view('admin/studiengang_delete', $this->data->load());
 		
 	}
 	
