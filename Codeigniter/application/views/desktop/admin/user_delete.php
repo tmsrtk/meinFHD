@@ -51,10 +51,7 @@
 			<?php endforeach ?>
 		</tbody>
 	</table>
-
-
-
-	<a id="modaltest_btn" class="btn" href="">Modal Test</a>
+	
 	<div id="modalcontent"></div>
 
 </div>
