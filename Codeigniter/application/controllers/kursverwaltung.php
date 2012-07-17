@@ -50,7 +50,7 @@ class Kursverwaltung extends FHD_Controller {
 	$subview_data['day_options'] = $this->helper_model->get_dropdown_options('days');
 	
 	// init variables
-	$person_view_data['is_tutor'] = false;
+	$staff_view_data['is_tutor'] = false;
 	$subview_lecture_to_load = '';
 	
 	// switch view - depends on if user is tutor or not
@@ -58,7 +58,7 @@ class Kursverwaltung extends FHD_Controller {
 	if(in_array(2, $this->roleIds) || in_array(3, $this->roleIds)){
 	    $subview_lecture_to_load = 'courses/partials/courses_lecture';
 	} else {
-	    $person_view_data['is_tutor'] = true;
+	    $staff_view_data['is_tutor'] = true;
 	    $subview_lecture_to_load = 'courses/partials/courses_lecture_tut';
 	}
 
@@ -68,20 +68,31 @@ class Kursverwaltung extends FHD_Controller {
 
 	    // get data for each course
 	    foreach($this->course_ids as $id => $role){
-		$person_view_data['course_id'] = $id;
-		// get person-overview view
-		// get active persons
+		$staff_view_data['course_id'] = $id;
+		// get staff-overview view
+		
+		// get active staff
 		$name = $this->kursverwaltung_model->get_profname_for_course($id);
-		$person_view_data['prof'] = $name[0].' '.$name[1].' '.$name[2];
-		$person_view_data['current_labings'] = 
+		$staff_view_data['prof'] = $name[0].' '.$name[1].' '.$name[2];
+		$staff_view_data['current_labings'] = 
 		    $this->kursverwaltung_model->get_current_labings_tuts_for_course($id, Kursverwaltung::LABING);
-		$person_view_data['possible_labings'] = 
+		$staff_view_data['possible_labings'] = 
 		    $this->kursverwaltung_model->get_all_possible_labings();
-		$person_view_data['current_tuts'] = 
+		$staff_view_data['current_tuts'] = 
 		    $this->kursverwaltung_model->get_current_labings_tuts_for_course($id, Kursverwaltung::TUTOR);
-		$person_view_data['possible_tuts'] = 
+		$staff_view_data['possible_tuts'] = 
 		    $this->kursverwaltung_model->get_all_tuts();
-		$course_data[$id][] = $this->load->view('courses/partials/courses_persons', $person_view_data, TRUE);
+		
+		// get labing/tut partials for printing checkbox-panels
+		$staff_view_data['print_tuts'] = false;
+		$staff_view_data['labing_panel'] =
+		    $this->load->view('courses/partials/courses_staff_cb_panel', $staff_view_data, TRUE);
+		$staff_view_data['print_tuts'] = true;
+		$staff_view_data['tut_panel'] =
+		    $this->load->view('courses/partials/courses_staff_cb_panel', $staff_view_data, TRUE);
+		
+		// get staff-view
+		$course_data[$id][] = $this->load->view('courses/partials/courses_staff', $staff_view_data, TRUE);
 		
 		// get view for each eventtype
 		$eventtypes = $this->kursverwaltung_model->get_eventtypes_for_course($id);	
@@ -91,7 +102,7 @@ class Kursverwaltung extends FHD_Controller {
 		}
 		
 //		echo '<pre>';
-//		print_r($person_view_data['current_labings']);
+//		print_r($staff_view_data['current_labings']);
 //		echo '</pre>';
 
 		$this->data->add('course_details', $course_data);

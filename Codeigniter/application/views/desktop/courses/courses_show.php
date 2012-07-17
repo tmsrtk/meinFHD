@@ -35,10 +35,7 @@
 </div>
 
 
-
 <script>
-
-
 
 (function() {
     
@@ -47,8 +44,6 @@
     $('#course-details-navi li:first-child').addClass("active");
 
 })();
-
-
 
 	
 </script>

@@ -28,11 +28,8 @@
 	'for' => 'kursverwaltung-raum'
     );
     
-//    echo '<pre>';
-//    print_r($lecture_details);
-//    echo '</pre>';
-    
 ?>
+
 <div class="clearfix">
     <?php
 	$form_attributes = array('id' => 'course-details-save-button');
@@ -42,15 +39,13 @@
 	<?php
 	    if($lab == '1'){
 		// group-label for better overview
-	//	echo '<span class="label label-info">1-4</span>';
 		echo form_label('Gruppe '.$lecture_details->VeranstaltungsformAlternative, '', $label_attrs);
 	    } else {
 		echo form_label($lecture_name->kurs_kurz, '', $label_attrs);
 	    }
 	?>
     </div>
-
-    <!--building table >> content-->
+    <!-- building table >> content-->
     <div class="span1"><?php echo form_input($course_room_attrs); ?></div>
     <div class="span1"><?php echo form_dropdown(
 	    $lecture_details->SPKursID.'_StartID', $starttime_options, $lecture_details->StartID, $dropdown_attrs); ?></div>
