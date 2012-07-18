@@ -51,7 +51,7 @@
 			<?php endforeach ?>
 		</tbody>
 	</table>
-	
+
 	<div id="modalcontent"></div>
 
 </div>
@@ -86,6 +86,7 @@
 			console.log("accept");
 
 			$(event.target).parent().parent().find("div.modal-body").html("Bitte warten, der Befehl wird ausgeführt");
+			$(event.target).parent().parent().find("div.modal-footer").hide();
 
 			$("input[type=submit][data-clicked=true]").parents("form#delete_user_row").submit();
 			$("input[type=submit][data-clicked=true]").removeAttr("data-clicked");

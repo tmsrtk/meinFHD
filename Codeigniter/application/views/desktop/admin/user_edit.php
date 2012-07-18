@@ -85,8 +85,6 @@
 			// console.log(filter);
 			// console.log(searchbox);
 
-
-
 			clearTimeout( self.timer );
 
 			// fire the command after 400 ms, so when the user types a name in the searchbox
