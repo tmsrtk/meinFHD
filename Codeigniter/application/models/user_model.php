@@ -199,10 +199,14 @@ class User_model extends CI_Model {
 	    $this->db->select('KursID');
 	    $q = $this->db->get_where($table, array('BenutzerID' => $this->user_id));
 	    
+	    $data = ''; // init
+	    
 	    foreach ($q->result_array() as $row) { 
 		$data[] = $row;
 	    }
-	    $data = $this->clean_nested_array($data);
+	    if($data){
+		$data = $this->clean_nested_array($data);
+	    }
 	    
 	    return $data;
 	}

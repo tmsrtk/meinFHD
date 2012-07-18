@@ -211,8 +211,10 @@ class Kursverwaltung extends FHD_Controller {
     
     
     
-    /** 
-     * ################################ SAVING DATA
+//    ############################################################## SAVING DATA
+    
+    /**
+     * 
      */
     function save_course_details(){
 	
@@ -241,9 +243,6 @@ class Kursverwaltung extends FHD_Controller {
 	$this->kursverwaltung_model->save_course_details(
 		$sp_course_id, $save_course_details_to_db, $save_group_details_to_db);
 	
-//	echo '<pre>';
-//	print_r($t);
-//	echo '</pre>';
 	
 	$this->show_coursemgt();
 	
@@ -251,19 +250,61 @@ class Kursverwaltung extends FHD_Controller {
     
     
     
-    /** 
-     * ################################ SAVING DATA
-     */
     function save_labings_for_course(){
+	// get incoming data
+	$staff_to_save = $this->input->post();
+	$this->save_staff_to_db('laboringenieur', $staff_to_save);
 //	echo '<pre>';
-//	print_r($this->input->post());
+//	echo '<div>staff to save</div>';
+//	print_r($staff_to_save);
+//	echo '</pre>';
+    }
+    
+    
+    function save_tuts_for_course(){
+	// get incoming data
+	$staff_to_save = $this->input->post();
+	$this->save_staff_to_db('tutor', $staff_to_save);
+    }
+
+    /**
+     * Passes data to db to save it.
+     * @param String $table indicates table to which staff should be saved
+     */
+    function save_staff_to_db($table, $staff){
+	$current_labings_tuts = array(); // init
+	$course_id = ''; // init
+	
+	// if theres only one item - all labings/tuts has been removed
+	if(count($staff) === 1){
+//	    echo 'if'; // DEBUG
+	    // get course_id i.e. first element key
+	    reset($staff); // setting pointer to first element - necessary?!?!
+	    $course_id = key($staff);
+	    // delete staff for that course_id
+	    // >> model - passed array is empty
+	} else {
+//	    echo 'else'; // DEBUG
+	    // run through all incoming data
+	    foreach ($staff as $key => $value) {
+		// ignore first element
+		if($value != 'Speichern'){
+		    $course_id = $value;
+		    $current_labings_tuts[] = $key;
+		}
+	    }
+	}	
+	
+	$this->kursverwaltung_model->save_staff_to_db($course_id, $current_labings_tuts, $table);
+	
+	
+//	echo '<pre>';
+//	echo '<div>current_labings</div>';
+//	print_r($current_labings);
 //	echo '</pre>';
 	
-	// TODO update database with new data >> number of participants has to be store in gruppe
-	$data_to_save = $this->input->post();
-	
+	// back to view
 	$this->show_coursemgt();
-	
     }
     
     

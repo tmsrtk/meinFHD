@@ -66,10 +66,11 @@
     // get courseId once
     var courseId = "<?php echo $course_id; ?>";
     
-    // ids of dom-elements
+    // ids of sliders
     var buttonId = ['#labings-slider-'+courseId, '#tuts-slider-'+courseId];
     var panelId = ['#labings-panel-'+courseId, '#tuts-panel-'+courseId];
     
+    // ids/texts of name-spans and cells
     var spanText = ['#labing-label-', '#tut-label-'];
     var spanIdText = ['added-labings-', 'added-tuts-'];
     var spanId = ['#added-labings-', '#added-tuts-'];

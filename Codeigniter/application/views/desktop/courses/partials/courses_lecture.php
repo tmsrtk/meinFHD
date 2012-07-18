@@ -7,7 +7,7 @@
 	'value' => $lecture_details->Raum, 
     );
     
-    $submit_button_attrs = 'id = #stdgng-course-details-save-button class ="btn-warning"';
+    $submit_button_attrs = 'id=lecture-details-save-button class ="btn-warning"';
     
     $dropdown_attrs = 'class = "span1"';
     $dropdown_attrs2 = 'class = "span2"';

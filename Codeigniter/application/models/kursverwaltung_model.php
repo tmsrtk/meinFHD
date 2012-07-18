@@ -203,9 +203,7 @@ class Kursverwaltung_model extends CI_Model {
     }
     
     
-    /*
-     * ############################################################# SAVING DATA
-     */
+//  ################################################################ SAVING DATA
     
     /**
      * 
@@ -270,6 +268,86 @@ class Kursverwaltung_model extends CI_Model {
     }
     
     
+    public function save_staff_to_db($course_id, $new_staff_ids, $table){
+	// get old staff for that course
+	$former_labings_tuts = $this->get_ids_of_labings_tuts_for_course($course_id, $table);
+	
+//	echo '<pre>';
+//	echo '<div>former_labings</div>';
+//	print_r($former_labings);
+//	echo '</pre>';
+	
+	// only if there are former labings
+	if($former_labings_tuts){
+	    // run through OLD and check if in NEW >> delete if not
+	    foreach($former_labings_tuts as $fl){
+
+		// TODO ?? ggf. hier wenn keine neuen personen hinzugefügt werden ALLE löschen?!?!?!?!?!?!!?
+
+		if(!in_array($fl, $new_staff_ids)){
+		    // delete from table
+		    $this->db->delete($table, array('BenutzerID' => $fl, 'KursID' => $course_id));
+		}
+	    }
+	}
+	
+	// if there is new staff - add to db
+	if($new_staff_ids){
+	    // run through NEW and check if in OLD >> add if not
+	    foreach($new_staff_ids as $nsi){
+		if(!in_array($nsi, $former_labings_tuts)){
+		    // add to table
+		    $data = array(
+			'BenutzerID' => $nsi,
+			'KursID' => $course_id
+		    );
+		    $this->db->insert($table, $data);
+		}
+	    }
+	}
+	
+//	echo '<pre>';
+//	print_r($former_labings_tuts);
+//	echo '</pre>';
+	
+	// get profs with role_id 3 >> i.e. labings
+	
+	// get profs from laboringenieur
+	
+	
+	// run through old profs check if in profs from labing >> delete if not
+	
+	// runt through NEW profs (from labing) check if in OLD >> add if not
+	
+    }
+    
+    
+    /**
+     * Helper to get labing-/tut-ids for given course
+     * @param type $course_id
+     * @param type $table
+     * @return type
+     */
+    private function get_ids_of_labings_tuts_for_course($course_id, $table){
+	$this->db->select('BenutzerID');
+	$this->db->from($table);
+	$this->db->where('KursID', $course_id);
+	$q = $this->db->get();
+	
+	$ids = array(); // init
+	$data = array(); // init
+	
+	if($q->num_rows() > 0){
+	    foreach ($q->result() as $row){
+		$data[] = $row;
+	    }
+	}
+	
+	foreach($data as $d){
+	    $ids[] = $d->BenutzerID;
+	}
+	return $ids;
+    }
     
     
     

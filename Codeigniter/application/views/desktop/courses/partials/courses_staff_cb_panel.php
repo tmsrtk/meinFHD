@@ -5,8 +5,8 @@
     $form_id = 'course-labings-save-button';
     $possible_staff = $possible_labings;
     $current_staff = $current_labings;
-    $cb_name_prefix = 'labing-cb-name';
     $label_id_prefix = 'labing-label-';
+    $save_data = 'kursverwaltung/save_labings_for_course';
 
     // switch if it is tut-view
     if($print_tuts){
@@ -14,10 +14,12 @@
 	$form_id = 'course-tut-save-button';
 	$possible_staff = $possible_tuts;
 	$current_staff = $current_tuts;
-	$cb_name_prefix = 'tut-cb-name';
 	$label_id_prefix = 'tut-label-';
-	
+	$save_data = 'kursverwaltung/save_tuts_for_course';
     }
+    
+    $form_attributes = array('id' => $form_id);
+    $submit_attributes = 'id=course-staff-save-button class ="btn-warning"';
     
 ?>
 
@@ -27,9 +29,8 @@
     <?php
 	// building checkbox panel with all possible staff for a course
 	if(!$is_tutor){
-	    $form_attributes = array('id' => $form_id);
-	    print form_open('kursverwaltung/save_labings_for_course', $form_attributes);
-	    echo form_submit('save_course_details', 'Speichern');
+	    print form_open($save_data, $form_attributes);
+	    echo form_submit($course_id, 'Speichern', $submit_attributes);
 
 	    // counter for creating 3 collumns
 	    $counter = 0;
@@ -61,13 +62,14 @@
 
 		echo '<p>';
 		    // print checkbox
-		    $cb_name = $cb_name_prefix.$p_staff->BenutzerID;
+		    $cb_name = $p_staff->BenutzerID;
 		    $cb_id = $course_id.'-'.$p_staff->BenutzerID;
 
 		    // checkbox data
 		    $cb_data = array(
 			'name' => $cb_name,
 			'id' => $cb_id,
+			'value' => $course_id,
 			'checked' => $checked,
 		    );
 		    echo form_checkbox($cb_data);
