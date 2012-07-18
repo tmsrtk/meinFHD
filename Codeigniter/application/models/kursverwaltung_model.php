@@ -12,6 +12,8 @@ class Kursverwaltung_model extends CI_Model {
 	$this->db->where('KursID', $course_id);
 	$this->db->where('VeranstaltungsformID', $eventtype);
 	$q = $this->db->get('stundenplankurs');
+	
+	$data = array(); // init
 
 	if($q->num_rows() > 0){
 	    foreach ($q->result() as $row){
@@ -31,6 +33,8 @@ class Kursverwaltung_model extends CI_Model {
     public function get_lecture_name($course_id){
 	$this->db->select('kurs_kurz')->where('KursID', $course_id);
 	$q = $this->db->get_where('studiengangkurs');
+	
+	$data = array(); // init
 	
 	if($q->num_rows() > 0){
 	    foreach ($q->result() as $row){
@@ -55,6 +59,8 @@ class Kursverwaltung_model extends CI_Model {
 	$this->db->where('VeranstaltungsformID', 1);
 	
 	$q = $this->db->get();
+	
+	$data = array(); // init
 	
 	if($q->num_rows() > 0){
 	    foreach ($q->result() as $row){
@@ -81,6 +87,8 @@ class Kursverwaltung_model extends CI_Model {
 	$this->db->where('KursID', $course_id);
 	$this->db->where('VeranstaltungsformID', $eventtype);
 	$q = $this->db->get();
+	
+	$data = array(); // init
 
 	if($q->num_rows() > 0){
 	    foreach ($q->result() as $row){
@@ -102,6 +110,8 @@ class Kursverwaltung_model extends CI_Model {
 	$this->db->select('VeranstaltungsformID');
 	$this->db->order_by('VeranstaltungsformID', 'asc');
 	$q = $this->db->get_where('stundenplankurs', array('KursID'=>$course_id));
+	
+	$data = array(); // init
 	
 	foreach ($q->result_array() as $row) { 
 	    $data[] = $row;
@@ -151,6 +161,8 @@ class Kursverwaltung_model extends CI_Model {
 	$this->db->where('b.RolleID', 2)->or_where('b.RolleID', 3);
 	$this->db->order_by('a.Nachname', 'ASC');
 	$q = $this->db->get();
+	
+	$data = array(); // init
 	
 	if($q->num_rows() > 0){
 	    foreach ($q->result() as $row){
@@ -270,6 +282,7 @@ class Kursverwaltung_model extends CI_Model {
     
     public function save_staff_to_db($course_id, $new_staff_ids, $table){
 	// get old staff for that course
+	$former_labings_tuts = array();
 	$former_labings_tuts = $this->get_ids_of_labings_tuts_for_course($course_id, $table);
 	
 //	echo '<pre>';
@@ -310,15 +323,56 @@ class Kursverwaltung_model extends CI_Model {
 //	print_r($former_labings_tuts);
 //	echo '</pre>';
 	
+	// role-modifications only relevant for labings - roles set/revoked implicitly
+	// note: tut-roles has to be set by admin
+	if($table == 'laboringenieur'){
+	    $this->update_roles();	    
+	}
+	
+    }
+    
+    /**
+     * Helper just to split method
+     */
+    private function update_roles(){
+	$former_prof_ids = array();
+	$current_prof_ids = array();
+
+//	    $this->update_roles();
 	// get profs with role_id 3 >> i.e. labings
-	
+	$former_prof_ids = $this->get_ids_of_profs_who_have_labing_role();
+
 	// get profs from laboringenieur
-	
-	
-	// run through old profs check if in profs from labing >> delete if not
-	
-	// runt through NEW profs (from labing) check if in OLD >> add if not
-	
+	$current_prof_ids = $this->get_ids_of_profs_from_labing_table();
+
+
+	// if there are former profs
+	if($former_prof_ids){
+	    // run through old profs check if in profs from labing >> delete if not
+	    foreach ($former_prof_ids as $fp) {
+		// if id is no longer in labing-table
+		if(!in_array($fp, $current_prof_ids)){
+		    // delete
+		    $this->db->delete('benutzer_mm_rolle', array('BenutzerID' => $fp, 'RolleID' => 3));
+		}
+	    }
+	} // endif former_prof_ids
+
+	// if there are any profs assigned to courses
+	if($current_prof_ids){
+	    // run through NEW profs (from labing) check if in OLD >> add if not
+	    foreach ($current_prof_ids as $cp_id) {
+		// if there is a new prof in labing-table
+		if(!in_array($cp_id, $former_prof_ids)){
+		    // add to benutzer_mm_rolle
+		    $data = array(
+			'BenutzerID' => $cp_id,
+			'RolleID' => 3
+		    );
+		    $this->db->insert('benutzer_mm_rolle', $data);
+		}
+	    }
+	} // endif current_prof_ids
     }
     
     
@@ -332,6 +386,61 @@ class Kursverwaltung_model extends CI_Model {
 	$this->db->select('BenutzerID');
 	$this->db->from($table);
 	$this->db->where('KursID', $course_id);
+	$q = $this->db->get();
+	
+	$ids = array(); // init
+	$data = array(); // init
+	
+	if($q->num_rows() > 0){
+	    foreach ($q->result() as $row){
+		$data[] = $row;
+	    }
+	}
+	
+	foreach($data as $d){
+	    $ids[] = $d->BenutzerID;
+	}
+	return $ids;
+    }
+    
+    /**
+     * Helper to get profs with labing-role
+     * @return type
+     */
+    private function get_ids_of_profs_who_have_labing_role(){
+	$this->db->select('a.BenutzerID, a.RolleID, b.RolleID as RolleID2');
+	$this->db->from('benutzer_mm_rolle as a');
+	$this->db->join('benutzer_mm_rolle as b', 'a.BenutzerID = b.BenutzerID');
+	$this->db->where('a.RolleID = 2');
+	$this->db->where('b.RolleID = 3');
+	$q = $this->db->get();
+	
+	$ids = array(); // init
+	$data = array(); // init
+	
+	if($q->num_rows() > 0){
+	    foreach ($q->result() as $row){
+		$data[] = $row;
+	    }
+	}
+	
+	foreach($data as $d){
+	    $ids[] = $d->BenutzerID;
+	}
+	return $ids;
+	
+    }
+    
+    /**
+     * Helper to get profs that are currently in labing-table for a course
+     * @return type
+     */
+    private function get_ids_of_profs_from_labing_table(){
+	$this->db->distinct();
+	$this->db->select('a.BenutzerID');
+	$this->db->from('laboringenieur as a');
+	$this->db->join('benutzer_mm_rolle as b', 'a.BenutzerID = b.BenutzerID');
+	$this->db->where('b.RolleID', 2);
 	$q = $this->db->get();
 	
 	$ids = array(); // init

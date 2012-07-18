@@ -254,9 +254,10 @@ class Kursverwaltung extends FHD_Controller {
 	// get incoming data
 	$staff_to_save = $this->input->post();
 	$this->save_staff_to_db('laboringenieur', $staff_to_save);
+	
 //	echo '<pre>';
-//	echo '<div>staff to save</div>';
-//	print_r($staff_to_save);
+//	echo '<div>profs</div>';
+//	print_r($debug);
 //	echo '</pre>';
     }
     
