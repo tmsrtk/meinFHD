@@ -27,10 +27,10 @@
 								<?php foreach($modul as $data): ?>
 									<?php if ($data['Kurzname'] != NULL): ?>
 										<li id="module_<?php echo $data['KursID']; ?>">
-											<div class="semestermodul btn btn-success btn-large">
+											<div class="semestermodul btn btn-success">
 												<span class="modulfach"><?php echo $data['Kurzname'] ?></span>
 												<span class="modulfachnote">NP:</span>
-												<input class="modulnote input-small" name="modulnote" type="text" value="<?php echo $data['Notenpunkte'] ?>" size="3">
+												<input class="modulnote input-mini" name="modulnote" type="text" value="<?php echo $data['Notenpunkte'] ?>" size="3">
 											</div>
 										</li>
 									<?php endif; ?>
