@@ -77,7 +77,7 @@ $RECYCLE.BIN/
 # Sublime Text files
 ######################################################################################################
 # SublimeText project files
-/*.sublime-project
+*.sublime-project
 *.sublime-workspace
 
 # st2 sftp plugin conf
