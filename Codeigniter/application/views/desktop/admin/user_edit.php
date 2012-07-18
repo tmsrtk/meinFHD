@@ -89,12 +89,17 @@
 
 			clearTimeout( self.timer );
 
+			// fire the command after 400 ms, so when the user types a name in the searchbox
+			// not for every letter a ajax request will be fired, but for the last chain
 			self.timer = setTimeout(function() {
+
 				self.config.dataContent.html("lade Daten...");
 
 				var data = '';
 
+				// if filter not 0 = "Bitte auswählen" -> no role_id var
 				( filter.val() !== '0' ) ? data+='role_id='+filter.val()+'&' : data+='role_id=&';
+				// more than two letters, typed in the searchbox
 				( searchbox.val().length > 2 ) ? data+='searchletter='+searchbox.val() : data+='searchletter=';
 					
 				// if the request was already sent, check if its still running
