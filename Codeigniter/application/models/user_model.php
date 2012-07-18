@@ -142,25 +142,34 @@ class User_model extends CI_Model {
 	 */
 	private function get_course_ids_with_roles(){
 	    $ids = array();
+	    $course_ids_prof = array();
+	    $course_ids_labing = array();
+	    $course_ids_tut = array();
 	    // profs
 	    if(in_array(2, $this->user_roles)){
 		$course_ids_prof = $this->_get_user_course_ids_from_spkurs();
-		foreach ($course_ids_prof as $cid) {
-		    $ids[$cid] = 2;
+		if($course_ids_prof){
+		    foreach ($course_ids_prof as $cid) {
+			$ids[$cid] = 2;
+		    }
 		}
 	    }
 	    // labings
 	    if(in_array(3, $this->user_roles)){
 		$course_ids_labing = $this->_get_user_course_ids_from_labing_tut('laboringenieur');
-		foreach ($course_ids_labing as $cid) {
-		    $ids[$cid] = 3;
+		if($course_ids_labing){
+		    foreach ($course_ids_labing as $cid) {
+			$ids[$cid] = 3;
+		    }
 		}
 	    }
 	    // tuts
 	    if(in_array(4, $this->user_roles)){
 		$course_ids_tut = $this->_get_user_course_ids_from_labing_tut('tutor');
-		foreach ($course_ids_tut as $cid) {
-		    $ids[$cid] = 4;
+		if($course_ids_tut){
+		    foreach ($course_ids_tut as $cid) {
+			$ids[$cid] = 4;
+		    }
 		}
 	    }
 	    return $ids;

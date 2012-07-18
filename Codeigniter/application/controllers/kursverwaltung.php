@@ -32,40 +32,41 @@ class Kursverwaltung extends FHD_Controller {
     
     
     function show_coursemgt(){
-
-	// getting course_ids
-	$course_ids = $this->course_ids;
-	
-	// getting short-names labeling
-	foreach ($course_ids as $cid => $role) {
-	    // comes from studiengangkurs
-	    $course_names_ids[$cid] = $this->kursverwaltung_model->get_lecture_name($cid)->kurs_kurz;
-	}
-	
-	// add course_names to view
-	$this->data->add('course_names_ids', $course_names_ids);
-	
-	// dropdown data
-	$subview_data['starttime_options'] = $this->helper_model->get_dropdown_options('starttimes');
-	$subview_data['endtime_options'] = $this->helper_model->get_dropdown_options('endtimes');
-	$subview_data['day_options'] = $this->helper_model->get_dropdown_options('days');
-	
-	// init variables
-	$staff_view_data['is_tutor'] = false;
-	$subview_lecture_to_load = '';
-	
-	// switch view - depends on if user is tutor or not
-	// TODO? hard coded ints at the moment - perhaps better via function?
-	if(in_array(2, $this->roleIds) || in_array(3, $this->roleIds)){
-	    $subview_lecture_to_load = 'courses/partials/courses_lecture';
-	} else {
-	    $staff_view_data['is_tutor'] = true;
-	    $subview_lecture_to_load = 'courses/partials/courses_lecture_tut';
-	}
-
-
 	// if user has courses - run through all of them
 	if($this->course_ids){
+	
+	    $course_names_ids = array();
+
+	    // getting course_ids
+	    $course_ids = $this->course_ids;
+	
+	    
+	    // getting short-names labeling
+	    foreach ($course_ids as $cid => $role) {
+		// comes from studiengangkurs
+		$course_names_ids[$cid] = $this->kursverwaltung_model->get_lecture_name($cid)->kurs_kurz;
+	    }
+
+	    // add course_names to view
+	    $this->data->add('course_names_ids', $course_names_ids);
+
+	    // dropdown data
+	    $subview_data['starttime_options'] = $this->helper_model->get_dropdown_options('starttimes');
+	    $subview_data['endtime_options'] = $this->helper_model->get_dropdown_options('endtimes');
+	    $subview_data['day_options'] = $this->helper_model->get_dropdown_options('days');
+
+	    // init variables
+	    $staff_view_data['is_tutor'] = false;
+	    $subview_lecture_to_load = '';
+
+	    // switch view - depends on if user is tutor or not
+	    // TODO? hard coded ints at the moment - perhaps better via function?
+	    if(in_array(2, $this->roleIds) || in_array(3, $this->roleIds)){
+		$subview_lecture_to_load = 'courses/partials/courses_lecture';
+	    } else {
+		$staff_view_data['is_tutor'] = true;
+		$subview_lecture_to_load = 'courses/partials/courses_lecture_tut';
+	    }
 
 	    // get data for each course
 	    foreach($this->course_ids as $id => $role){
@@ -76,7 +77,7 @@ class Kursverwaltung extends FHD_Controller {
 		
 		// get active staff
 		$name = $this->kursverwaltung_model->get_profname_for_course($id);
-		if(!$name){
+		if($name){
 		    $staff_view_data['prof'] = $name[0].' '.$name[1].' '.$name[2];
 		} else {
 		    $staff_view_data['prof'] = 'keine Angabe';
@@ -133,7 +134,7 @@ class Kursverwaltung extends FHD_Controller {
     }
     
     
-    function get_course_event_view($course_id, $eventtype, $subview_data, $subview_to_load){
+    private function get_course_event_view($course_id, $eventtype, $subview_data, $subview_to_load){
 	
 	// init
 	$subview_data['lab'] = '';
@@ -178,7 +179,7 @@ class Kursverwaltung extends FHD_Controller {
      * @param int $course_id
      * @param int $eventtype
      */
-    function get_lab_view($course_id, $eventtype, $subview_to_load, $subview_data){
+    private function get_lab_view($course_id, $eventtype, $subview_to_load, $subview_data){
 	$lab = array(); // init/clean
 	// data for subviews
 	$subview_data['lab'] = '1';
@@ -197,7 +198,7 @@ class Kursverwaltung extends FHD_Controller {
     }
     
     
-    function get_headlines_for_view($eventtype){
+    private function get_headlines_for_view($eventtype){
 	switch($eventtype){
 	    case Kursverwaltung::LECTURE : 
 		return 'Vorlesung';
@@ -220,7 +221,7 @@ class Kursverwaltung extends FHD_Controller {
     /**
      * 
      */
-    function save_course_details(){
+    public function save_course_details(){
 	
 	// TODO update database with new data >> number of participants has to be store in gruppe
 	$input_data = $this->input->post();
@@ -254,19 +255,14 @@ class Kursverwaltung extends FHD_Controller {
     
     
     
-    function save_labings_for_course(){
+    public function save_labings_for_course(){
 	// get incoming data
 	$staff_to_save = $this->input->post();
 	$this->save_staff_to_db('laboringenieur', $staff_to_save);
-	
-//	echo '<pre>';
-//	echo '<div>profs</div>';
-//	print_r($debug);
-//	echo '</pre>';
     }
     
     
-    function save_tuts_for_course(){
+    public function save_tuts_for_course(){
 	// get incoming data
 	$staff_to_save = $this->input->post();
 	$this->save_staff_to_db('tutor', $staff_to_save);
@@ -276,7 +272,7 @@ class Kursverwaltung extends FHD_Controller {
      * Passes data to db to save it.
      * @param String $table indicates table to which staff should be saved
      */
-    function save_staff_to_db($table, $staff){
+    private function save_staff_to_db($table, $staff){
 	$current_labings_tuts = array(); // init
 	$course_id = ''; // init
 	
@@ -301,7 +297,6 @@ class Kursverwaltung extends FHD_Controller {
 	}	
 	
 	$this->kursverwaltung_model->save_staff_to_db($course_id, $current_labings_tuts, $table);
-	
 	
 //	echo '<pre>';
 //	echo '<div>current_labings</div>';
