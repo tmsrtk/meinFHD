@@ -44,6 +44,65 @@ class Kursverwaltung_model extends CI_Model {
 	
 	return $data[0];
     }
+    
+    
+    public function check_names(){
+	$data = array();
+	
+	$lecture_ids = $this->get_lecture_ids();
+	$non_lecture_ids = $this->get_non_lecture_ids();
+	
+	foreach($non_lecture_ids as $nl_id){
+	    if(!in_array($nl_id, $lecture_ids)){
+		$data[] = $nl_id;
+	    }
+	}
+	
+	return $data;
+    }
+    
+    private function get_lecture_ids(){
+	$this->db->distinct();
+	$this->db->select('KursID');
+	$this->db->where('VeranstaltungsformID', 1);
+	$q = $this->db->get('stundenplankurs');
+	
+	$ids = array(); // init
+	$data = array(); // init
+	
+	if($q->num_rows() > 0){
+	    foreach ($q->result() as $row){
+		$data[] = $row;
+	    }
+	}
+	
+	foreach($data as $d){
+	    $ids[] = $d->KursID;
+	}
+	return $ids;
+    }
+    
+    private function get_non_lecture_ids(){
+	$this->db->distinct();
+	$this->db->select('KursID');
+	$this->db->where('VeranstaltungsformID !=', 1);
+	$q = $this->db->get('stundenplankurs');
+	
+	$ids = array(); // init
+	$data = array(); // init
+	
+	if($q->num_rows() > 0){
+	    foreach ($q->result() as $row){
+		$data[] = $row;
+	    }
+	}
+	
+	foreach($data as $d){
+	    $ids[] = $d->KursID;
+	}
+	return $ids;
+    }
+    
 
     /**
      * Returns first and last name of prof for given course
@@ -56,7 +115,6 @@ class Kursverwaltung_model extends CI_Model {
 	$this->db->from('stundenplankurs as a');
 	$this->db->join('benutzer as b', 'a.DozentID = b.BenutzerID');
 	$this->db->where('KursID', $course_id);
-	$this->db->where('VeranstaltungsformID', 1);
 	
 	$q = $this->db->get();
 	

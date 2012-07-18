@@ -38,6 +38,7 @@ class Kursverwaltung extends FHD_Controller {
 	
 	// getting short-names labeling
 	foreach ($course_ids as $cid => $role) {
+	    // comes from studiengangkurs
 	    $course_names_ids[$cid] = $this->kursverwaltung_model->get_lecture_name($cid)->kurs_kurz;
 	}
 	
@@ -68,12 +69,18 @@ class Kursverwaltung extends FHD_Controller {
 
 	    // get data for each course
 	    foreach($this->course_ids as $id => $role){
+		$name = array(); // init
+		
 		$staff_view_data['course_id'] = $id;
 		// get staff-overview view
 		
 		// get active staff
 		$name = $this->kursverwaltung_model->get_profname_for_course($id);
-		$staff_view_data['prof'] = $name[0].' '.$name[1].' '.$name[2];
+		if(!$name){
+		    $staff_view_data['prof'] = $name[0].' '.$name[1].' '.$name[2];
+		} else {
+		    $staff_view_data['prof'] = 'keine Angabe';
+		}
 		$staff_view_data['current_labings'] = 
 		    $this->kursverwaltung_model->get_current_labings_tuts_for_course($id, Kursverwaltung::LABING);
 		$staff_view_data['possible_labings'] = 
@@ -101,9 +108,6 @@ class Kursverwaltung extends FHD_Controller {
 		    $course_data[$id][] = $this->get_course_event_view($id, $e, $subview_data, $subview_lecture_to_load);
 		}
 		
-//		echo '<pre>';
-//		print_r($staff_view_data['current_labings']);
-//		echo '</pre>';
 
 		$this->data->add('course_details', $course_data);
 		$this->data->add('offset', 0);
