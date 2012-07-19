@@ -84,12 +84,13 @@
 		    echo form_label($label_text, '', $label_attrs);
 		echo '</p>';
 
-		if($counter == $third_staff*3){
-		    echo '</div>';
-		}
+//		if($counter == $third_staff*3){
+//		    echo '</div>';
+//		}
 
 		$counter++;
 	    } // endforeach
+	    echo '</div>';
 	    echo form_close();
 	} // endif
     ?>

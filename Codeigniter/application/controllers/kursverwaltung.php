@@ -44,7 +44,8 @@ class Kursverwaltung extends FHD_Controller {
 	    // getting short-names labeling
 	    foreach ($course_ids as $cid => $role) {
 		// comes from studiengangkurs
-		$course_names_ids[$cid] = $this->kursverwaltung_model->get_lecture_name($cid)->kurs_kurz;
+//		$course_names_ids[$cid] = $this->kursverwaltung_model->get_lecture_name($cid)->kurs_kurz;
+		$course_names_ids[$cid] = $this->kursverwaltung_model->get_lecture_name($cid);
 	    }
 
 	    // add course_names to view
@@ -100,7 +101,8 @@ class Kursverwaltung extends FHD_Controller {
 		    $this->load->view('courses/partials/courses_staff_cb_panel', $staff_view_data, TRUE);
 		
 		// get staff-view
-		$course_data[$id][] = $this->load->view('courses/partials/courses_staff', $staff_view_data, TRUE);
+//		$course_data[$id][] = $this->load->view('courses/partials/courses_staff', $staff_view_data, TRUE);
+		$staff[$id] = $this->load->view('courses/partials/courses_staff', $staff_view_data, TRUE);
 		
 		// get view for each eventtype
 		$eventtypes = $this->kursverwaltung_model->get_eventtypes_for_course($id);	
@@ -110,6 +112,7 @@ class Kursverwaltung extends FHD_Controller {
 		}
 		
 
+		$this->data->add('staff', $staff);
 		$this->data->add('course_details', $course_data);
 		$this->data->add('offset', 0);
 	    }
@@ -233,8 +236,13 @@ class Kursverwaltung extends FHD_Controller {
      */
     public function save_course_details(){
 	
-	// TODO update database with new data >> number of participants has to be store in gruppe
+	// update database with new data
+	// !! >> number of participants has to be store in gruppe
 	$input_data = $this->input->post();
+//	echo '<pre>';
+//	echo '<div>POST</div>';
+//	print_r($input_data);
+//	echo '</pre>';
 	
 	$save_course_details_to_db = array(); // init
 	$save_group_details_to_db = array(); // init
@@ -263,8 +271,100 @@ class Kursverwaltung extends FHD_Controller {
 	
     }
     
+    /**
+     * Alternative function to save all details at once.
+     * 
+     */
+    public function save_course_details_all_at_once(){
+	$input_data = $this->input->post();
+	
+	// init
+	$input_data_filtered = array();
+	$sp_course_id = 0; // init to detect changes
+	$sp_course_id_temp = 0;
+	$save_course_details_to_db = array();
+	$save_group_details_to_db = array();
+	$desc_split = array();
+	$course_id = '';
+	$description = '';
+	
+	// first filter
+	// - remove empty fields from email-checkboxes
+	// - get description
+	foreach ($input_data as $key => $value) {
+	    // empty fields
+	    if($value !== ''){
+		// description
+		if(!strstr($key, 'description')){
+		    $input_data_filtered[$key] = $value;
+		} else {
+		    $desc_split = explode('_', $key);
+		    $course_id = $desc_split[0];
+		    $description = $desc_split[1];
+		}
+	    }
+	}
+	
+	// run through input
+	foreach ($input_data_filtered as $key => $value) {
+	    // get key and field-name
+	    $split_key = explode('_', $key);
+	    // save spkursid
+	    $sp_course_id = $split_key[0];
+	    // if sp_course_id changed >> buidl arrays to save in db
+	    if($sp_course_id !== $sp_course_id_temp){
+		// if old spkursid is not initial value 0 - there are data to save
+		if($sp_course_id_temp !== 0){
+		    // save that data each time course_id changes
+		    $this->kursverwaltung_model->save_course_details(
+			    $sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
+//		    echo '<pre>';
+//		    echo '<div>course</div>';
+//		    print_r($save_course_details_to_db);
+//		    echo '<div>group</div>';
+//		    print_r($save_group_details_to_db);
+//		    echo '</pre>';
+//		    
+		    $save_course_details_to_db = array();
+		    $save_group_details_to_db = array();
+		    
+		}
+		$sp_course_id_temp = $sp_course_id;
+	    }
+	    if($split_key[1] != 'TeilnehmerMax'){
+		$save_course_details_to_db[$split_key[1]] = $value;
+	    } else {
+		$save_group_details_to_db['TeilnehmerMax'] = $value;
+	    }
+	}
+	
+	// save that data - one last time
+	// >> last data won't be detected by change of course_id (there is no new course-id)
+	$this->kursverwaltung_model->save_course_details(
+		$sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
+//	TODO save description
+//	echo '<pre>';
+//	echo '<div>course</div>';
+//	print_r($save_course_details_to_db);
+//	echo '<div>group</div>';
+//	print_r($save_group_details_to_db);
+//	echo '<div>id+desc</div>';
+//	print_r($course_id.' '.$description);
+//	echo '</pre>';
+	
+	
+//	echo '<pre>';
+//	echo '<div>POST</div>';
+//	print_r($input_data_filtered);
+//	echo '</pre>';
+	
+	$this->show_coursemgt();
+    }
     
     
+    /**
+     * Switch: calls correct method to save to LABORINGENIEUR-table
+     */
     public function save_labings_for_course(){
 	// get incoming data
 	$staff_to_save = $this->input->post();
@@ -272,6 +372,9 @@ class Kursverwaltung extends FHD_Controller {
     }
     
     
+    /**
+     * Switch: calls correct method to save to TUTOR-table
+     */
     public function save_tuts_for_course(){
 	// get incoming data
 	$staff_to_save = $this->input->post();
@@ -308,17 +411,16 @@ class Kursverwaltung extends FHD_Controller {
 	
 	$this->kursverwaltung_model->save_staff_to_db($course_id, $current_labings_tuts, $table);
 	
-//	echo '<pre>';
-//	echo '<div>current_labings</div>';
-//	print_r($current_labings);
-//	echo '</pre>';
 	
 	// back to view
 	$this->show_coursemgt();
     }
     
     
-    
+
+
+
+
     /**
      * Used to populate benutzer_mm_rolle-table
      */

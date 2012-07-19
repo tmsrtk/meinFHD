@@ -31,7 +31,7 @@ class Kursverwaltung_model extends CI_Model {
      * @return String 
      */
     public function get_lecture_name($course_id){
-	$this->db->select('kurs_kurz')->where('KursID', $course_id);
+	$this->db->select('kurs_kurz, Beschreibung')->where('KursID', $course_id);
 	$q = $this->db->get_where('studiengangkurs');
 	
 	$data = array(); // init

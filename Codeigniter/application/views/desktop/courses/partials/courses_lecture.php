@@ -40,15 +40,13 @@
 
 <div class="clearfix">
     <div class="span1">
-	<?php 
-	    echo form_open(''); 
-	    echo form_checkbox($cb_data); 
-	    echo form_close(''); 
-	?>
+	<!-- email-checkbox-->
+	<?php echo form_checkbox($cb_data); ?>
     </div>
     <?php
-	$form_attributes = array('id' => 'course-details-save-button');
-	echo form_open('kursverwaltung/save_course_details', $form_attributes); 
+	// to save each course seperately enable this and disable form in course_show.php
+//	$form_attributes = array('id' => 'course-details-save-button');
+//	echo form_open('kursverwaltung/save_course_details', $form_attributes); 
     ?>
     <div class="span2">
 	<?php
@@ -79,6 +77,6 @@
 	    }
 	?>
     </div>
-    <div class="span2"><?php echo form_submit('', 'Speichern', $submit_button_attrs); ?></div>
-    <?php echo form_close(); ?>
+<!--    <div class="span2"><?php // echo form_submit('', 'Speichern', $submit_button_attrs); ?></div>-->
+    <?php // echo form_close(); ?>
 </div>

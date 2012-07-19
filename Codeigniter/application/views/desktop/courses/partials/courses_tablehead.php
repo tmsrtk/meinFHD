@@ -3,30 +3,13 @@
     <?php echo $headline; ?>
 </h3>
 <div class="clearfix">
-    <h5>
-	<div class="span1">Email</div>
-	<div class="span2">Kursname</div>
-	<div class="span1">Raum</div>
-	<div class="span1">Startzeit</div>
-	<div class="span1">Endzeit</div>
-	<div class="span2">Tag</div>
-	<div class="span1" id="course-mgt-tn">max. TN</div>
-	<div class="span2">Speichern</div>
-    </h5>
+    <div class="span1 bold">Email</div>
+    <div class="span2 bold">Kursname</div>
+    <div class="span1 bold">Raum</div>
+    <div class="span1 bold">Startzeit</div>
+    <div class="span1 bold">Endzeit</div>
+    <div class="span2 bold">Tag</div>
+    <div class="span1 bold" id="course-mgt-tn">max. TN</div>
+<!--    <div class="span2 bold">Speichern</div>-->
     <hr />
 </div>
-
-<script>    
-    
-//	(function() {
-//	    
-//	    var lab_flag = "<?php echo $lab; ?>";
-//	    if(lab_flag === '0'){
-//		$('#course-mgt-tn').hide();
-//		console.log('test');
-//	    }
-//	    
-//	    
-//	})(); // self envoked anonymous function
-
-</script>

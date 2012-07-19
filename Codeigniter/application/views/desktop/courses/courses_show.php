@@ -14,9 +14,9 @@
     <ul class="nav nav-tabs" id="course-details-navi">
 	<?php 
 	    // print navigation depending on courses this user has
-	    foreach ($course_names_ids as $key=> $value) {
+	    foreach ($course_names_ids as $key => $value) {
 		echo '<li id="course-tab-'.$key.'">';
-		echo '<a href="#'.$value.'-'.$key.'" data-toggle="tab">'.$value.'</a>';
+		echo '<a href="#'.$value->kurs_kurz.'-'.$key.'" data-toggle="tab">'.$value->kurs_kurz.'</a>';
 		echo '</li>';
 	    }
 	?>
@@ -28,11 +28,9 @@
     <div class="tab-content">
 	<?php 
 	    // print div for each course
-	    foreach($course_names_ids as $c_id => $c_name){
-		echo '<div class="tab-pane" id="'.$c_name.'-'.$c_id.'"> ';
+	    foreach($course_names_ids as $c_id => $value){
+		echo '<div class="tab-pane" id="'.$value->kurs_kurz.'-'.$c_id.'"> ';
 
-		// print email-checkbox
-		
 		// checkbox data - has to be generate each time because of course_id!
 		$cb_data = array(
 		    'name' => '',
@@ -42,20 +40,37 @@
 		    'checked' => 'checked',
 		);
 		
-		$submit_data = array(
+		$submit_data_send_email = array(
 		    'name' => $c_id,
 		    'value' => 'Email senden',
-		    'id' => 'send-email-to-cb-'.$c_id
+		    'id' => 'send-email-to-cb-'.$c_id,
+		    'class' => 'btn btn-danger'
 		);
 		
+		$submit_data_save_all = array(
+//		    'name' => $c_id,
+		    'value' => 'Kursinformationen speichern',
+		    'id' => 'save-all'.$c_id,
+		    'class' => 'btn btn-warning'
+		);
+		
+		// print email-checkbox
 		echo '<div id="staff-send-email">';
-		echo form_open(); 
+		echo form_open(''); 
 		echo '<div class="span1">';
 		echo form_checkbox($cb_data);
 		echo '</div>';
-		echo form_submit($submit_data);
+		echo form_submit($submit_data_send_email);
 		echo form_close();
 		echo '</div>';
+		
+		// print staff-table
+		print $staff[$c_id];
+		
+		// place for general information
+		echo form_open('kursverwaltung/save_course_details_all_at_once'); 
+		echo form_submit($submit_data_save_all);
+		
 		
 		// $course_details contains mapped details on course_ids
 		foreach ($course_details[$c_id] as $c_details) {
@@ -68,7 +83,26 @@
 			}
 		    }
 		}
+		
+		
+		// course-description
+		$course_description_textarea_data = array(
+		    'name' => $c_id.'_description',
+		    'id' => 'input-course-description',
+		    'class' => 'input-xlarge',
+		    'value' => $value->Beschreibung,
+		    'rows' => 7,
+		    'cols' => 40
+		);
+		
+		echo '<h3>Beschreibung </h3>';
+		echo '<div>';
+		echo form_textarea($course_description_textarea_data);
 		echo '</div>';
+		
+		echo form_close(); // end of form
+		
+		echo '</div>'; // end of tab
 	    }
 	?>    
     </div>

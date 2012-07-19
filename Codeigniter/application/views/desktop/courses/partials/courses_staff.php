@@ -15,7 +15,7 @@
 		<?php
 		    $cb_data['name'] = $course_id.'-1';
 		    $cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-1';
-		    echo form_open();
+		    echo form_open('');
 		    echo form_checkbox($cb_data);
 		    echo form_close();
 		?>
@@ -28,16 +28,16 @@
 	    </td>
 	</tr>
 	<tr>
-	    <td>
+	    <td class="span1">
 		<?php
 		    $cb_data['name'] = $course_id.'-2';
 		    $cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-2';
-		    echo form_open();
+		    echo form_open('');
 		    echo form_checkbox($cb_data);
 		    echo form_close();
 		?>
 	    </td>
-	    <td>
+	    <td class="span1">
 		<span class="label label-info">Betreuer</span>
 	    </td>
 	    <td>
@@ -64,12 +64,12 @@
 		<?php
 		    $cb_data['name'] = $course_id.'-3';
 		    $cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-3';
-		    echo form_open();
+		    echo form_open('');
 		    echo form_checkbox($cb_data);
 		    echo form_close();
 		?>
 	    </td>
-	    <td>
+	    <td class="span1">
 		<span class="label label-info">Tutor(en)</span>
 	    </td>
 	    <td>
