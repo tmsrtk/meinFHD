@@ -1,8 +1,7 @@
 <?php 
     // checkbox data
     $cb_data = array(
-	'class' => 'email-checkbox-'.$course_id,
-//	'class' => 'email-checkbox-staff email-checkbox-staff-courseid-'.$course_id,
+	'class' => 'email-checkbox-staff-'.$course_id.' email-checkbox-'.$course_id,
 	'value' => '',
 	'checked' => 'checked',
     );
@@ -14,7 +13,7 @@
 	<tr>
 	    <td class="span1">
 		<?php
-		    $cb_data['name'] = 'email-checkbox-'.$course_id.'-1';
+		    $cb_data['name'] = $course_id.'-1';
 		    $cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-1';
 		    echo form_open();
 		    echo form_checkbox($cb_data);
@@ -31,7 +30,7 @@
 	<tr>
 	    <td>
 		<?php
-		    $cb_data['name'] = 'email-checkbox-'.$course_id.'-2';
+		    $cb_data['name'] = $course_id.'-2';
 		    $cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-2';
 		    echo form_open();
 		    echo form_checkbox($cb_data);
@@ -63,7 +62,7 @@
 	<tr>
 	    <td class="span1">
 		<?php
-		    $cb_data['name'] = 'email-checkbox-'.$course_id.'-3';
+		    $cb_data['name'] = $course_id.'-3';
 		    $cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-3';
 		    echo form_open();
 		    echo form_checkbox($cb_data);

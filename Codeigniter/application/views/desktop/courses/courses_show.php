@@ -90,11 +90,14 @@
     // - un/check all boxes if overall cb changes
     // - uncheck overall cb if ONE or more of the single cb is NOT checked
     // - check overall cb if all single cb are checked
+    // - click on email-button
     $.each(courseIdsInView, function(indexAll, courseId){
 
 	// save checkboxes for that course to array
 	var checkboxesOnSite = $('.email-checkbox-'+courseId);
 	var overallCbId = '#email-checkbox-all-id-'+courseId;
+	// save id for email-button
+	var sendEmailButtonId = '#send-email-to-cb-'+courseId;
 	
 	// find out how many checkboxes there are on course-site
 	var numberCbs = 0;
@@ -142,9 +145,44 @@
 		    $(overallCbId).attr('checked', false);
 		}
 	    }); // end checkbox-change
+	}); // end run through checkboxes
+	
+	// get staff and course checkboxes separatly
+	// and put into array to run through easier
+	var staffCbElements = $('.email-checkbox-staff-'+courseId);
+	var courseCbElements = $('.email-checkbox-courses-'+courseId);
+	var bothCbElements = [staffCbElements, courseCbElements];
+	
+	// init arrays to save recipients
+	var staffRecipients = new Array();
+	var courseRecipients = new Array();
+	
+	// click on email-button
+	$(sendEmailButtonId).click(function(){
+	    // detect chosen checkboxes - 
+	    $.each(bothCbElements, function(index, checkboxes){
+		$.each(checkboxes, function(i, v){
+		    var self = $(this);
+		    var cbName = self.attr('name');
+		    if(self.is(':checked')){
+			// differ between staff and courses
+			if(index == 0){
+			    staffRecipients.push(cbName);
+			} else if(index == 1) {
+			    courseRecipients.push(cbName);
+			}
+		    }
+		});
+	    });
+	    alert(
+		'TODO \n\
+		Emailversand an Personen: ' + staffRecipients + '\n\
+		Emailversand an Teilnehmer: ' + courseRecipients
+	    );
 	});
 	
-    });
+	
+    }); // end 
 
 })();
 
