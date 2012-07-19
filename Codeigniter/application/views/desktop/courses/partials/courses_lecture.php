@@ -31,7 +31,9 @@
     // checkbox data
     $cb_data = array(
 	'name' => $lecture_details->SPKursID,
-	'id' => 'email-checkbox email-checkbox-course',
+//	'class' => 'email-checkbox-courses email-checkbox-courses-courseid-'.$course_id,
+	'class' => 'email-checkbox-'.$course_id,
+	'id' => 'email-checkbox-course-id-'.$lecture_details->SPKursID,
 	'value' => '',
 	'checked' => 'checked',
     );

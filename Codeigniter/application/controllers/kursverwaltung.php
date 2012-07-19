@@ -39,12 +39,6 @@ class Kursverwaltung extends FHD_Controller {
 
 	    // getting course_ids
 	    $course_ids = $this->course_ids;
-	    
-//	    // prepare ids for jquery
-//	    $course_ids_jq = array();
-//	    foreach ($course_ids as $id) {
-//		$course_ids_jq[] 
-//	    }
 	
 	    
 	    // getting short-names labeling
@@ -111,19 +105,14 @@ class Kursverwaltung extends FHD_Controller {
 		// get view for each eventtype
 		$eventtypes = $this->kursverwaltung_model->get_eventtypes_for_course($id);	
 		foreach($eventtypes as $e){
-		    // must be an array because view runs data in foreach loop 
+		    // must be an array because (final) view runs data in foreach loop 
 		    $course_data[$id][] = $this->get_course_event_view($id, $e, $subview_data, $subview_lecture_to_load);
 		}
 		
 
 		$this->data->add('course_details', $course_data);
 		$this->data->add('offset', 0);
-		
 	    }
-	    
-//		echo '<pre>';
-//		print_r($course_data);
-//		echo '</pre>';
 	    
 	    $siteinfo = array(
 		'title' => 'Kursverwaltung',
@@ -145,6 +134,15 @@ class Kursverwaltung extends FHD_Controller {
     }
     
     
+    /**
+     * Returns part of the course view for ONE lecture, lab, tut
+     * Depending on eventtype that was passed.
+     * @param type $course_id
+     * @param type $eventtype
+     * @param type $subview_data
+     * @param type $subview_to_load
+     * @return type
+     */
     private function get_course_event_view($course_id, $eventtype, $subview_data, $subview_to_load){
 	
 	// init
@@ -179,14 +177,15 @@ class Kursverwaltung extends FHD_Controller {
 		// get tut data view - always visible to every role
 		$subview_data['lecture_details'] = $this->kursverwaltung_model->get_lecture_details($course_id, $eventtype);
 		$tut = $this->load->view('courses/partials/courses_tablehead', $subview_data, TRUE);
-		$tut .= $this->load->view('courses/partials/courses_lecture', $subview_data, TRUE);
+		$tut .= $this->load->view($subview_to_load, $subview_data, TRUE);
 		return $tut;
 	}
 	
     }
     
     /**
-     * Returns lab-part of course-view - necessary because of headlines
+     * Returns lab-part of course-view
+     * Necessary because of headlines >> tablehead
      * @param int $course_id
      * @param int $eventtype
      */
@@ -208,24 +207,24 @@ class Kursverwaltung extends FHD_Controller {
 	return $lab;
     }
     
-    
-    private function get_headlines_for_view($eventtype){
-	switch($eventtype){
-	    case Kursverwaltung::LECTURE : 
-		return 'Vorlesung';
-	    case Kursverwaltung::LAB_SEM : 
-		return 'Seminar';
-	    case Kursverwaltung::LAB_UEB : 
-		return 'Uebung';
-	    case Kursverwaltung::LAB_PRA : 
-		return 'Praktikum';
-	    case Kursverwaltung::TUT : 
-		return 'Tutorium';
-		break;
-	}
-    }
-    
-    
+//    
+//    private function get_headlines_for_view($eventtype){
+//	switch($eventtype){
+//	    case Kursverwaltung::LECTURE : 
+//		return 'Vorlesung';
+//	    case Kursverwaltung::LAB_SEM : 
+//		return 'Seminar';
+//	    case Kursverwaltung::LAB_UEB : 
+//		return 'Uebung';
+//	    case Kursverwaltung::LAB_PRA : 
+//		return 'Praktikum';
+//	    case Kursverwaltung::TUT : 
+//		return 'Tutorium';
+//		break;
+//	}
+//    }
+//    
+//    
     
 //    ############################################################## SAVING DATA
     

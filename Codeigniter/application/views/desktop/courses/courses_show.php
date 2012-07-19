@@ -29,6 +29,8 @@
 	<?php 
 	    // print div for each course
 	    foreach($course_names_ids as $c_id => $c_name){
+		echo '<div class="tab-pane" id="'.$c_name.'-'.$c_id.'"> ';
+
 		// print email-checkbox
 		
 		// checkbox data - has to be generate each time because of course_id!
@@ -40,17 +42,21 @@
 		    'checked' => 'checked',
 		);
 		
+		$submit_data = array(
+		    'name' => $c_id,
+		    'value' => 'Email senden',
+		    'id' => 'send-email-to-cb-'.$c_id
+		);
+		
 		echo '<div id="staff-send-email">';
 		echo form_open(); 
 		echo '<div class="span1">';
 		echo form_checkbox($cb_data);
 		echo '</div>';
-		echo form_submit('', 'Email senden');
+		echo form_submit($submit_data);
 		echo form_close();
 		echo '</div>';
-		echo '</div>';
-
-		echo '<div class="tab-pane" id="'.$c_name.'-'.$c_id.'"> ';
+		
 		// $course_details contains mapped details on course_ids
 		foreach ($course_details[$c_id] as $c_details) {
 		    // necessary because pr, übung, sem come withing nested array
@@ -80,47 +86,65 @@
     
     var courseIdsInView = <?php echo json_encode($course_ids_jq); ?>;
     
-    // get first checkbox
-    var mailCheckboxAll = 'email-checkbox-all-id-';
-    var mailCheckboxStaffIds = 'email-checkbox-staff-id-';
-    
-    // get all staff-checkboxes
-    var mailCheckboxStaffElements = $('.email-checkbox-staff');
-    // get all course-checkboxes
-    var mailCheckboxCourse = $('#email-checkbox-course');
-    
-    console.log(mailCheckboxStaffElements);
-    
-    // run through all ids and assign function
+    // run through all ids and assign functions
+    // - un/check all boxes if overall cb changes
+    // - uncheck overall cb if ONE or more of the single cb is NOT checked
+    // - check overall cb if all single cb are checked
     $.each(courseIdsInView, function(indexAll, courseId){
-	$('#'+mailCheckboxAll+courseId).change(function(){
-	    var cbAll = $(this);
-	    var cbsToChange = mailCheckboxStaffIds+courseId;
-	    // run through all
-	    $.each(mailCheckboxStaffElements, function(indexCb, valueCb){
-		var cbStaff = $(this);
-		var idStaffCb = cbStaff.attr('id');
-		// get only checkboxes for that course
-		if(idStaffCb == cbsToChange){
-		    // set un/checked
-		    if(cbAll.is(':checked')){
-			console.log(idStaffCb);
-			$('#'+idStaffCb).attr('checked', true);
-		    } else {
-			$('#'+idStaffCb).attr('checked', false);
-		    }
-		}
-	    });
-	    
+
+	// save checkboxes for that course to array
+	var checkboxesOnSite = $('.email-checkbox-'+courseId);
+	var overallCbId = '#email-checkbox-all-id-'+courseId;
+	
+	// find out how many checkboxes there are on course-site
+	var numberCbs = 0;
+	$.each(checkboxesOnSite, function(index, value){
+	    numberCbs++;
 	});
+	
+	// change of overall cb - uncheck >> uncheck all | check >> check all
+	$(overallCbId).change(function(){
+	    var cbAll = $(this);
+	    // run through all elements and set un/checked
+	    $.each(checkboxesOnSite, function(i, v){
+		var cbSelf = $(this);
+		var cbId = cbSelf.attr('id');
+		if(cbAll.is(':checked')){
+		    $('#'+cbId).attr('checked', true);
+		} else {
+		    $('#'+cbId).attr('checked', false);
+		}
+		console.log(cbId);
+	    });
+	});
+	
+	// change of any of the single checkboxes - uncheck one >> uncheck overall | check all >> check overall
+	$.each(checkboxesOnSite, function(index, value){
+	    // init counter to detect if there are un/checked checkboxes
+	    var self = $(this);
+	    var cbId = self.attr('id');
+
+	    // if checkbox changes
+	    $('#'+cbId).change(function(){
+		var counter = 0;
+		
+		// count unchecked checkboxes
+		$.each(checkboxesOnSite, function(i, v){
+		    if($(this).is(':checked')){
+			counter++;
+		    }
+		});
+		// if all checkboxes are checked >> check overall checkbox
+		if(counter == numberCbs){
+		    $(overallCbId).attr('checked', true);
+		// otherwise uncheck overall checkbox
+		} else {
+		    $(overallCbId).attr('checked', false);
+		}
+	    }); // end checkbox-change
+	});
+	
     });
-    
-    // run through both and combine with first checkbox
-//    mailCheckboxStaff.
-//	if(mailCheckboxAll.is(":checked")){
-//	    
-//	}
-//    });
 
 })();
 
