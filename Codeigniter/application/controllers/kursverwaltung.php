@@ -39,6 +39,12 @@ class Kursverwaltung extends FHD_Controller {
 
 	    // getting course_ids
 	    $course_ids = $this->course_ids;
+	    
+//	    // prepare ids for jquery
+//	    $course_ids_jq = array();
+//	    foreach ($course_ids as $id) {
+//		$course_ids_jq[] 
+//	    }
 	
 	    
 	    // getting short-names labeling
@@ -112,7 +118,12 @@ class Kursverwaltung extends FHD_Controller {
 
 		$this->data->add('course_details', $course_data);
 		$this->data->add('offset', 0);
+		
 	    }
+	    
+//		echo '<pre>';
+//		print_r($course_data);
+//		echo '</pre>';
 	    
 	    $siteinfo = array(
 		'title' => 'Kursverwaltung',

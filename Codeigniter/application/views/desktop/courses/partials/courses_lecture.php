@@ -28,12 +28,26 @@
 	'for' => 'kursverwaltung-raum'
     );
     
+    // checkbox data
+    $cb_data = array(
+	'name' => $lecture_details->SPKursID,
+	'id' => 'email-checkbox email-checkbox-course',
+	'value' => '',
+	'checked' => 'checked',
+    );
 ?>
 
 <div class="clearfix">
+    <div class="span1">
+	<?php 
+	    echo form_open(''); 
+	    echo form_checkbox($cb_data); 
+	    echo form_close(''); 
+	?>
+    </div>
     <?php
 	$form_attributes = array('id' => 'course-details-save-button');
-	print form_open('kursverwaltung/save_course_details', $form_attributes); 
+	echo form_open('kursverwaltung/save_course_details', $form_attributes); 
     ?>
     <div class="span2">
 	<?php

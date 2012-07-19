@@ -1,9 +1,10 @@
 <!--building custom table >> header-->
-<h2>
+<h3>
     <?php echo $headline; ?>
-</h2>
+</h3>
 <div class="clearfix">
     <h5>
+	<div class="span1">Email</div>
 	<div class="span2">Kursname</div>
 	<div class="span1">Raum</div>
 	<div class="span1">Startzeit</div>

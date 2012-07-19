@@ -1,8 +1,25 @@
+<?php 
+    // checkbox data
+    $cb_data = array(
+	'name' => '',
+	'class' => 'email-checkbox email-checkbox-staff',
+	'id' => 'email-checkbox-staff-id-'.$course_id,
+	'value' => '',
+	'checked' => 'checked',
+    );
+?>
 <!-- overview over relevant staff for this course -->
 <h3>Personen:</h3>
 <table class="table table-striped table-bordered table-condensed">
     <tbody>
 	<tr>
+	    <td class="span1">
+		<?php
+		    echo form_open();
+		    echo form_checkbox($cb_data);
+		    echo form_close();
+		?>
+	    </td>
 	    <td class="span1 ">
 		<span class="label label-info">Dozent</span>
 	    </td>
@@ -11,6 +28,13 @@
 	    </td>
 	</tr>
 	<tr>
+	    <td>
+		<?php
+		    echo form_open();
+		    echo form_checkbox($cb_data);
+		    echo form_close();
+		?>
+	    </td>
 	    <td>
 		<span class="label label-info">Betreuer</span>
 	    </td>
@@ -34,6 +58,13 @@
 	    </td>
 	</tr>
 	<tr>
+	    <td class="span1">
+		<?php
+		    echo form_open();
+		    echo form_checkbox($cb_data);
+		    echo form_close();
+		?>
+	    </td>
 	    <td>
 		<span class="label label-info">Tutor(en)</span>
 	    </td>
@@ -75,6 +106,11 @@
     var spanIdText = ['added-labings-', 'added-tuts-'];
     var spanId = ['#added-labings-', '#added-tuts-'];
     var cellId = ['#current-labings-', '#current-tuts-'];
+    
+    // saving checkboxes into var
+    var cb = $('#labings-panel-'+courseId).children('input');
+    
+    console.log(cb);
 
     // activate each panel
     $.each(panelId, function(index, value){

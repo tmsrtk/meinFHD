@@ -21,8 +21,12 @@
     
 ?>
 
-<?php echo form_open(); ?>
 <div class="clearfix">
+    <div class="span1">
+	<?php echo 'cb'; ?>
+    </div>
+    
+    <?php echo form_open(); ?>
     <div class="span2">
 	<?php
 	    if($lab == '1'){
