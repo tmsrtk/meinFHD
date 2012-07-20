@@ -14,14 +14,13 @@
  *
  */
 class Modul extends FHD_Controller {
- 
 
-    /**
-     * Constructor Method
-     * 
-     * @param type name // nicht vorhanden
-     * @return type // nicht vorhanden
-     */
+	/**
+	 * Constructor Method
+	 * 
+	 * @param type name // nicht vorhanden
+	 * @return type // nicht vorhanden
+	 */
 	public function __construct()
 	{
 		parent::__construct();
@@ -29,33 +28,22 @@ class Modul extends FHD_Controller {
 		$this->load->model('Modul_Model');
 	}
 	
-	
-
-    /**
-     * Index-method, loads for testing purposes the Stundenplan_view
-     * 
-     * @param type name // nicht vorhanden
-     * @return type // nicht vorhanden
-     */
+	/**
+	 * Index-method, loads for testing purposes the Stundenplan_view
+	 * 
+	 * @param type name // nicht vorhanden
+	 * @return type // nicht vorhanden
+	 */
 	public function index()
 	{
-
 		//$this->load->view('modul');
-
 	}
-
+	
 	public function show($course_id)
-	{	
+	{
 		$user_id = $this->authentication->user_id();
 		$courseinfo = $this->Modul_Model->get_courseinfo($user_id, $course_id);
-
-
-		$this->load->view('modul', $this->data->load());
+		
+		$this->load->view('modul/index', $this->data->load());
 	}
-
 }
-	
-	
-	
-	
-	
