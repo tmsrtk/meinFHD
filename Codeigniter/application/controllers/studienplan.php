@@ -21,20 +21,20 @@ class Studienplan extends FHD_Controller
         $this->load->model('admin_model');
 
         // userdata
-        $session_userid = $this->authentication->user_id();
+        // $session_userid = $this->authentication->user_id();
 
-        $loginname = $this->admin_model->get_loginname($session_userid);
-        $user_permissions = $this->admin_model->get_all_userpermissions($session_userid);
-        $roles = $this->admin_model->get_all_roles();
+        // $loginname = $this->admin_model->get_loginname($session_userid);
+        // $user_permissions = $this->admin_model->get_all_userpermissions($session_userid);
+        // $roles = $this->admin_model->get_all_roles();
         
-        $userdata = array(
-                'userid' => $session_userid,
-                'loginname' => $loginname['LoginName'],
-                'userpermissions' => $user_permissions,
-                'roles' => $roles
-            );
+        // $userdata = array(
+        //         'userid' => $session_userid,
+        //         'loginname' => $loginname['LoginName'],
+        //         'userpermissions' => $user_permissions,
+        //         'roles' => $roles
+        //     );
 
-        $this->data->add('userdata', $userdata);
+        // $this->data->add('userdata', $userdata);
     }
 
 
