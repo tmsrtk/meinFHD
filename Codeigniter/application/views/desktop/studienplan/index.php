@@ -8,7 +8,10 @@
 	$data_formopen = array('id' => 'studienplan-form');
 ?>
 
-
+<div class="row-fluid">
+	<h2>Studienplan</h2>
+</div>
+<hr>
 
 <div id="studienplan" class="well">
 	<?php echo form_open('studienplan/save_changes', $data_formopen); ?>
@@ -18,7 +21,7 @@
 				<?php foreach($studienplan as $semester): ?>
 					<?php $i = 0; // semester nr ?>
 					<?php foreach($semester as $modul): ?>
-						<?php if($i != 0) : ?>
+						<?php if($i != 0) : # Anerkennungssemester ?> 
 							<th>Semester <?php echo $i ?></th>
 						<?php endif; ?>
 						<?php $i++ ?>
@@ -31,17 +34,18 @@
 					<?php foreach($studienplan as $semester): ?>
 						<?php $i = 0; // semester nr ?>
 						<?php foreach($semester as $modul): ?>
-							<?php if($i != 0) : ?>
+							<?php if($i != 0) : # Anerkennungssemester ?>
 								<td>
-									<ul id="<?php echo $i ?>" class="unstyled semesterplanspalte">
+									<ul id="semester_<?php echo $i ?>" class="unstyled semesterplanspalte">
 										<?php foreach($modul as $data): ?>
 											<?php if ($data['KursID'] != NULL): ?>
 												<li id="module_<?php echo $data['KursID']; ?>">
-													<div class="semestermodul dropup">
-														<span class="arrw" data-toggle="dropdown">+</span>
+													<div class="semestermodul dropup" data-kursid="<?php echo $data['KursID']; ?>">
+														<!-- <span class="arrw" data-toggle="dropdown">+</span> -->
+														<i class="arrw icon-chevron-up" data-toggle="dropdown"></i>
 														<ul class="dropdown-menu">
-														      <li><a href="#">Action</a></li>
-														      <li><a href="#">Another action</a></li>
+														      <li class="kursinfo"><a href="#">Info</a></li>
+														      <li><a href="#"><?php echo $data['KursID']; ?></a></li>
 														      <li><a href="#">Something else here</a></li>
 														      <li class="divider"></li>
 														      <li><a href="#">Separated link</a></li>
@@ -65,6 +69,8 @@
 	<?php echo form_close(); ?>
 </div>
 
+<div id="modalcontent"></div>
+
 <?php endblock();?>
 
 <?php startblock('customFooterJQueryCode');?>
@@ -73,6 +79,105 @@
 	<?php $test = "test"; ?>
 	var testjs = "<?php echo $test; ?>";
 	console.log( testjs );
+
+
+	// -------------------------------------------------------------------------
+
+	// prompt dialogs
+	$("ul.dropdown-menu").on("click", "li.kursinfo", function() {
+
+		// console.log();
+		// return;
+
+		kursId = $(this).parent().parent().attr('data-kursid');
+
+		var mm = createModalDialog(getTitleFromModule(kursId), getTextFromModule(kursId));
+		$("#modalcontent").html(mm);
+
+		$('#myModal').modal({
+			keyboard: false
+		}).modal('show');
+		
+	});
+
+	function createModalDialog(title, text) {
+		var $myModalDialog = $('<div class="modal hide" id="myModal"></div>')
+					.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
+					.append('<div class="modal-body"><p>'+text+'</p></div>')
+					.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Abbrechen</a><a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
+		return $myModalDialog;
+	}
+
+	/** */
+	function getTitleFromModule(moduleId) {
+		// console.log(moduleId);
+
+		ajaxData = 'moduleid='+moduleId;
+
+		// ajax request to get the full title from server
+		$.ajax({
+			type: 'GET',
+			url: "<?php echo site_url();?>ajax/get_module_title/", 
+			data: ajaxData, 
+			success: function(response) {
+				setModuleTitle(response);
+			}
+		});
+
+		// while the ajax request is responsing, show some placeholder text
+		return 'Wird geladen...';
+	}
+
+	/** */
+	function setModuleTitle(response) {
+		$('div.modal-header h3').html(response);
+	}
+
+	/** */
+	function getTextFromModule(moduleId) {
+		ajaxData = 'moduleid='+moduleId;
+
+		// ajax request to get the full text from server
+		$.ajax({
+			type: 'GET',
+			url: "<?php echo site_url();?>ajax/get_module_text/", 
+			data: ajaxData, 
+			success: function(response) {
+				setModuleText(response);
+			}
+		});
+
+		// while the ajax request is responsing, show some placeholder text
+		return 'Wird geladen...';
+	}
+
+	/** */
+	function setModuleText(response) {
+		$('div.modal-body p').html(response);
+	}
+
+
+
+
+	$("#modalcontent").on( 'click', 'button, a', function(event) {
+		if ( $(this).attr("data-accept") === 'modal' ) {
+			console.log("accept");
+
+			// $(event.target).parent().parent().find("div.modal-body").html("Bitte warten, der Befehl wird ausgeführt");
+			// $(event.target).parent().parent().find("div.modal-footer").hide();
+
+			// $("input[type=submit][data-clicked=true]").parents("form#delete_user_row").submit();
+			// $("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
+		} else {
+			console.log("cancel");
+
+			// $("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
+		}
+
+		return false;
+	});
+
+	// -------------------------------------------------------------------------
 
 	var Studienplan = {
 			init: function( config ) {
