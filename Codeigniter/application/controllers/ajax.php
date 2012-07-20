@@ -78,4 +78,22 @@ class Ajax extends CI_Controller {
 		$this->ajax_model->set_reihenfolge($neue_reihenfolge, $semesternr);
 	}
 
+
+	public function get_module_title()
+	{
+		$mid = $this->input->get('moduleid');
+		$res = $this->ajax_model->query_module_title($mid);
+		echo $res['Kursname'];
+	}
+
+	public function get_module_text()
+	{
+		// $mid = $this->input->get('moduleid');
+		// $res = $this->ajax_model->query_module_text($mid);
+		// echo $res;
+		echo 'Hier könnte sich der Beschreibungstext für das jeweilige Modul befinden. Ich weiss nicht was man so alles über ein Modul sagen kann.'.br(2).
+		'Lernziele/ Kompetenzen: Verständnis von objektorientierten Konzepten, Implementierung objektorientierter Software in Java'.br(1).
+		'Inhalt: Programmiersprachen und Konzepte.'.br().'Einführung in die OOP mit Java.'.br().' Datenstrukturen und Algorithmen'.br().'Arbeiten mit einer IDE';
+	}
+
 }

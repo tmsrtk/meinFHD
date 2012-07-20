@@ -21,7 +21,17 @@ class Ajax_model extends CI_Model {
 	public function __construct()
 	{
 		parent::__construct();
-                $this->setSemesterplanID();
+        $this->setSemesterplanID();
+	}
+
+	public function query_module_title($mid)
+	{
+		$this->db->select('Kursname')
+				 ->from('studiengangkurs')
+				 ->where('KursID', $mid)
+				 ;
+		$q = $this->db->get();
+		return $q->row_array();
 	}
 
 	// public function get_request()
@@ -67,10 +77,10 @@ class Ajax_model extends CI_Model {
 	}
         
         
-        public function setSemesterplanID()
-        {
-            $this->load->model('Studienplan_Model');
-            $this->semesterplanID = $this->Studienplan_Model->getStudyplanID();
-        }
+    public function setSemesterplanID()
+    {
+        $this->load->model('Studienplan_Model');
+        $this->semesterplanID = $this->Studienplan_Model->getStudyplanID();
+    }
 
 }
