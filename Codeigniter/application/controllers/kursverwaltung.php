@@ -103,6 +103,7 @@ class Kursverwaltung extends FHD_Controller {
 		// get staff-view
 //		$course_data[$id][] = $this->load->view('courses/partials/courses_staff', $staff_view_data, TRUE);
 		$staff[$id] = $this->load->view('courses/partials/courses_staff', $staff_view_data, TRUE);
+//		$staff[$id] = $this->load->view('courses/partials/courses_staff_dummy', '', TRUE); // DEBUG VIEW
 		
 		// get view for each eventtype
 		$eventtypes = $this->kursverwaltung_model->get_eventtypes_for_course($id);	

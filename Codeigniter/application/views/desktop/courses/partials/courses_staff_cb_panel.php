@@ -42,9 +42,9 @@
 		// building three columns
 		if($counter % $third_staff == 0){
 		    if($counter == 0){
-			echo '<div style="float:left; width:300px;">';
+			echo '<div class="span3" style="float:left;">';
 		    } else {
-			echo '</div><div style="float:left; width:300px;">';
+			echo '</div><div class="span3" style="float:left;">';
 		    }
 		}
 

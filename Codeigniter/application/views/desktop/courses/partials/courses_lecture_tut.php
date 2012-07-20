@@ -26,7 +26,7 @@
 	<?php echo 'cb'; ?>
     </div>
     
-    <?php echo form_open(); ?>
+    <?php // echo form_open(); ?>
     <div class="span2">
 	<?php
 	    if($lab == '1'){
@@ -67,7 +67,7 @@
 	    } else {
 		echo 'kein Limit';
 	    }
-	    echo form_close();
+//	    echo form_close();
 	?>
     </div>
     <!-- placeholder for submitbutton-->

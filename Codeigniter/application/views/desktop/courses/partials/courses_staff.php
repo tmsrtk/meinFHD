@@ -8,10 +8,13 @@
 ?>
 <!-- overview over relevant staff for this course -->
 <h3>Personen:</h3>
-<table class="table table-striped table-bordered table-condensed">
+<!--<table class="table table-striped table-bordered table-condensed">
     <tbody>
 	<tr>
-	    <td class="span1">
+	    <td class="span1">-->
+<div> <!-- staff part starts here -->
+    <div class="clearfix"> <!-- FIRST line -->
+	<div class="span1"> <!-- checkbox FIRST line -->
 		<?php
 		    $cb_data['name'] = $course_id.'-1';
 		    $cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-1';
@@ -19,16 +22,24 @@
 		    echo form_checkbox($cb_data);
 		    echo form_close();
 		?>
-	    </td>
-	    <td class="span1 ">
-		<span class="label label-info">Dozent</span>
-	    </td>
-	    <td>
+	</div> <!-- checkbox FIRST line ends here -->
+<!--	    </td>
+	    <td class="span1 ">-->
+	<div class="span2"> <!-- label FIRST line -->
+		<label class="label label-info">Dozent</label>
+	</div> <!-- label ends here -->
+<!--	    </td>
+	    <td>-->
+	<div class="span6"> <!-- staff FIRST line -->
 		<?php echo $prof; ?>
-	    </td>
+	</div> <!-- staff FIRST line ends here -->
+    </div> <!-- FIRST line ends here -->
+    <div class="clearfix"> <!-- SECOND line -->
+<!--	    </td>
 	</tr>
 	<tr>
-	    <td class="span1">
+	    <td class="span1">-->
+	<div class="span1"> <!-- checkbox SECOND line -->
 		<?php
 		    $cb_data['name'] = $course_id.'-2';
 		    $cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-2';
@@ -36,12 +47,15 @@
 		    echo form_checkbox($cb_data);
 		    echo form_close();
 		?>
-	    </td>
-	    <td class="span1">
-		<span class="label label-info">Betreuer</span>
-	    </td>
-	    <td>
-		<div id="current-labings-<?php echo $course_id; ?>">
+	</div> <!-- checkbox SECOND line ends here -->
+<!--	    </td>
+	    <td class="span1">-->
+	<div class="span2"> <!-- label SECOND line -->
+		<label class="label label-info">Betreuer</label>
+	</div> <!-- label ends here -->
+<!--	    </td>
+	    <td>-->
+		<div class="span6" id="current-labings-<?php echo $course_id; ?>"><!-- staff SECOND line -->
 		    <?php 
 			// print button
 			if(!$is_tutor){
@@ -55,12 +69,17 @@
 			    }
 			}
 		    ?>
-		</div>
-		<?php echo $labing_panel; ?>
-	    </td>
-	</tr>
-	<tr>
-	    <td class="span1">
+<!--		    <div> hidden panel -->
+<!--		    </div>-->
+		</div> <!-- staff SECOND line ends here -->
+    </div> <!-- SECOND line ends here -->
+    <div class="clearfix"><?php echo $labing_panel; ?></div>
+<!--	    </td>
+	</tr>-->
+    <div class="clearfix"> <!-- THIRD line -->
+	<div class="span1"> <!-- checkbox THIRD line -->
+<!--	<tr>
+	    <td class="span1">-->
 		<?php
 		    $cb_data['name'] = $course_id.'-3';
 		    $cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-3';
@@ -68,12 +87,15 @@
 		    echo form_checkbox($cb_data);
 		    echo form_close();
 		?>
-	    </td>
-	    <td class="span1">
-		<span class="label label-info">Tutor(en)</span>
-	    </td>
-	    <td>
-		<div id="current-tuts-<?php echo $course_id; ?>">
+	</div> <!-- checkbox ends here -->
+<!--	    </td>
+	    <td class="span1">-->
+	<div class="span2"> <!-- label THIRD line -->
+		<label class="label label-info">Tutor(en)</label>
+	</div><!-- label ends here -->
+<!--	    </td>
+	    <td>-->
+		<div class="span6" id="current-tuts-<?php echo $course_id; ?>"><!-- staff THIRD line -->
 		    <?php if(!$is_tutor){
 			echo '<a class="btn btn-mini" id="tuts-slider-'.$course_id.'" href="#">+</a>';
 		    }
@@ -85,20 +107,22 @@
 			}
 		    }
 		    ?>
-		</div>
-		<?php echo $tut_panel; ?>
-	    </td>
+<!--		    <div> hidden panel -->
+<!--		    </div>-->
+		</div><!-- staff ends here -->
+<!--	    </td>
 	</tr>
     </tbody>
-</table>
-
-
+</table>-->
+    </div> <!-- THIRD line ends here -->
+    <div class="clearfix"><?php echo $tut_panel; ?></div>
+</div> <!-- staff part ends here -->
 
 <script>
 
-(function() {
-    
-    // get courseId once
+(function(){
+   
+   // get courseId once
     var courseId = "<?php echo $course_id; ?>";
     
     // ids of sliders
@@ -141,6 +165,7 @@
     $.each(buttonId, function(index, value){
 	// slide-toggle
 	$(value).click(function() { 
+	    console.log($(this).attr('id'));
 	    // !!usage of index: first buttonId >> first Panel || second buttonId >> second Panel
 	    $(panelId[index]).slideToggle('slow', function () {
 		// 
@@ -159,12 +184,8 @@
 
 	);
     });
-	
-	
-	
+   
 })();
 
 
-
-	
 </script>

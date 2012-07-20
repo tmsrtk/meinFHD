@@ -114,6 +114,9 @@
 
 (function() {
     
+    ////////////////////// main view
+    
+    
     // initialize active tab
     $('.tab-content div:first-child').addClass("active");
     $('#course-details-navi li:first-child').addClass("active");
@@ -217,7 +220,9 @@
 	
 	
     }); // end 
-
+    
+    
+	
 })();
 
 	
