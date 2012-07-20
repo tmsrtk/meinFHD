@@ -1,10 +1,9 @@
 
-<?php   if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 class Modul_Model extends CI_Model {
 
 	private $user;//Debug
-
 	
 	public function __construct()
 	{
@@ -35,28 +34,23 @@ class Modul_Model extends CI_Model {
 	{
 		$courseinfo = array();
 
-		//Things like "Dozent", Name etc.
+		// Things like "Dozent", Name etc.
 		$courseinfo['Modulinfo'] = array();
 		$courseinfo['Modulinfo']['LangName'] = '';
 		$courseinfo['Modulinfo']['KurzName'] = '';
 		$courseinfo['Modulinfo']['Dozent'] = '';
 
-		//Get possible kinds of courses from database
-
+		// Get possible kinds of courses from database
 		$query = $this->db->query("SELECT * FROM veranstaltungsform");
-
 		$result = $query->result_array();
 
-		//Insert in Array
+		// Insert in Array
 		foreach ($result as $key => $kind_of_course) {
 			$courseinfo[$kind_of_course['VeranstaltungsformName']] = array();
 		}
 
-
 		return $courseinfo;
-
 	}
-
 
 	/**
 	 * Adds important, User-specific inforamtion to the courselist. A flags "Aktiv" and "Button" are added
@@ -74,17 +68,17 @@ class Modul_Model extends CI_Model {
 
 		foreach ($courselist as $key => $course) {
 
-			//If Vorlesung, Tutorium or there is no alternative 
+			// If Vorlesung, Tutorium or there is no alternative 
 			if ($course['VeranstaltungsformID'] == 1 OR $course['VeranstaltungsformID'] == 6 OR $course['VeranstaltungsformAlternative'] == "")
 			{
 				$courselist[$key]['Aktiv'] = 1;
 				$courselist[$key]['Button'] = 0;
 			} 
-			//Otherwise, it must be checked, if already set active by user
+			// Otherwise, it must be checked, if already set active by user
 			else 
 			{
 
-				//The course has a button to enroll
+				// The course has a button to enroll
 				$courselist[$key]['Button'] = 1;
 
 				$query_benutzer = $this->db->query("
@@ -96,7 +90,7 @@ class Modul_Model extends CI_Model {
 						b.BenutzerID = ". $user_id . " AND 
 						b.SPKursID = " .$course['SPKursID']. " AND 
 						b.KursID =" .$course['KursID'] ."
-					");
+				");
 
 				$result_benutzer = $query_benutzer->result_array();
 
@@ -104,15 +98,12 @@ class Modul_Model extends CI_Model {
 					$courselist[$key]['Aktiv'] = 0;
 				else 
 					$courselist[$key]['Aktiv'] = 1;
-				
 			}
-
-		}//End ForEach
+		} // End ForEach
 
 		return $courselist;
 	}
-
-
+	
 	/**
 	 * The collected Information in the courselist is added to the Array "courseinfo".
 	 * In this way, the needed Information is easier to access in the view.
@@ -124,6 +115,7 @@ class Modul_Model extends CI_Model {
 	 */	
 	private function courselist_in_courseinfo()
 	{
+
 	}
 
 	/**
@@ -137,34 +129,34 @@ class Modul_Model extends CI_Model {
 	{
 
 		$query = $this->db->query("
-		SELECT 
-			sg.Kursname, sg.kurs_kurz,
-			v.VeranstaltungsformName,sp.VeranstaltungsformAlternative, sp.VeranstaltungsformID, sp.KursID, sp.SPKursID,
-			sp.DozentID, sp.StartID, sp.EndeID, (sp.EndeID-sp.StartID)+1 AS 'Dauer', sp.GruppeID,
-			d.Vorname AS 'DozentVorname', d.Nachname AS 'DozentNachname', d.Email AS 'DozentEmail',
-			t.TagName,t.TagID,
-			s_beginn.Beginn, s_ende.Ende,
-			g.TeilnehmerMax, g.Anmeldung_zulassen,
-			(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.GruppeID = sp.GruppeID) AS 'Anzahl Teilnehmer'
-		FROM 
-			stundenplankurs sp,
-			studiengangkurs sg,
-			veranstaltungsform v,
-			tag t,
-			stunde s_beginn,
-			stunde s_ende,
-			benutzer d,
-			gruppe g
-		WHERE 
-			sp.kursID = ".$course_id." AND
-			sp.IsWPF = 0 AND
-			sg.KursID = ".$course_id." AND
-			sp.VeranstaltungsformID = v.VeranstaltungsformID AND
-			s_beginn.StundeID = sp.StartID AND
-			s_ende.StundeID = sp.EndeID AND
-			sp.TagID = t.TagID AND 
-			sp.GruppeID = g.GruppeID AND
-			d.BenutzerID = sp.DozentID
+			SELECT 
+				sg.Kursname, sg.kurs_kurz,
+				v.VeranstaltungsformName,sp.VeranstaltungsformAlternative, sp.VeranstaltungsformID, sp.KursID, sp.SPKursID,
+				sp.DozentID, sp.StartID, sp.EndeID, (sp.EndeID-sp.StartID)+1 AS 'Dauer', sp.GruppeID,
+				d.Vorname AS 'DozentVorname', d.Nachname AS 'DozentNachname', d.Email AS 'DozentEmail',
+				t.TagName,t.TagID,
+				s_beginn.Beginn, s_ende.Ende,
+				g.TeilnehmerMax, g.Anmeldung_zulassen,
+				(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.GruppeID = sp.GruppeID) AS 'Anzahl Teilnehmer'
+			FROM 
+				stundenplankurs sp,
+				studiengangkurs sg,
+				veranstaltungsform v,
+				tag t,
+				stunde s_beginn,
+				stunde s_ende,
+				benutzer d,
+				gruppe g
+			WHERE 
+				sp.kursID = ".$course_id." AND
+				sp.IsWPF = 0 AND
+				sg.KursID = ".$course_id." AND
+				sp.VeranstaltungsformID = v.VeranstaltungsformID AND
+				s_beginn.StundeID = sp.StartID AND
+				s_ende.StundeID = sp.EndeID AND
+				sp.TagID = t.TagID AND 
+				sp.GruppeID = g.GruppeID AND
+				d.BenutzerID = sp.DozentID
 		");
 		
 		$result = $query->result_array();
@@ -173,16 +165,13 @@ class Modul_Model extends CI_Model {
 	}
 
 	public function get_courseinfo($user_id, $course_id)
-	{	
-
+	{
 		$courselist = $this->get_courselist($course_id);
 
 		$courselist = $this->courselist_add_userinfo($courselist, $user_id);
 
-		$this->krumo->dump($courselist);
+		//krumo($courselist);
 
 		return $courselist;
 	}
-
-
 }
