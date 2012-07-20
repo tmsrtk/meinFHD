@@ -247,6 +247,23 @@ class Admin extends FHD_Controller {
 		$this->load->view('admin/user_invite', $this->data->load());
 	}
 
+	public function edit_roles_mask()
+	{
+		$siteinfo = array(
+			'title' => 'Rollen bearbeiten'
+			);
+		$this->data->add('siteinfo', $siteinfo);
+
+		// all users
+		$this->data->add('all_user', $this->admin_model->get_all_user_with_roles());
+
+		// all roles
+		$this->data->add('all_roles', $this->admin_model->get_all_roles());
+
+		//----------------------------------------------------------------------
+		$this->load->view('admin/user_edit_roles', $this->data->load());
+	}
+
 	public function show_successful_page()
 	{
 		// siteinfo
@@ -655,6 +672,22 @@ class Admin extends FHD_Controller {
 			}
 		}
 		echo $result;
+	}
+
+	public function changeroles_user()
+	{
+		$formdata = $this->input->post();
+
+		// clear saves for the actual user
+		$this->admin_model->clear_userroles($formdata['user_id']);
+
+		// set new settings
+		foreach ($formdata['cb_userroles'] as $role)
+		{
+			$this->admin_model->save_userrole($formdata['user_id'], $role);
+		}
+
+		redirect('/admin/edit_roles_mask/', 'refresh');
 	}
 
 	/*

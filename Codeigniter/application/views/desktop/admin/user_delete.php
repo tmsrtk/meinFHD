@@ -99,7 +99,6 @@
 		return false;
 	});
 
-
 	/* helper functions */
 	function hide_all_submit_buttons() {
 		$("input#delete_user_btn").hide();
