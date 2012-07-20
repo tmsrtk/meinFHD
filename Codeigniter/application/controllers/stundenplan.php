@@ -14,32 +14,32 @@
  */
 class Stundenplan extends FHD_Controller {
 
-    /**
-     * Constructor Method
-     *
-     * @access public
-     * @return void
-     */
+	/**
+	 * Constructor Method
+	 *
+	 * @access public
+	 * @return void
+	 */
 	public function __construct()
 	{
 		parent::__construct();
-		$this->data->add('titel', 'Stundenplan');
+		$this->data->add('title', 'Stundenplan');
 		$this->load->model('Stundenplan_Model');
 	}
 	
 	
-    /**
-     * Controller for day view
-     *
-     * ../stundenplan
-     * ../stundenplan/index
-     * 
-     * @access public
-     * @return void
-     */
+	/**
+	 * Controller for day view
+	 *
+	 * ../stundenplan
+	 * ../stundenplan/index
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function index()
 	{
-		//$this->krumo->dump($this->data->load());
+		//krumo($this->data->load());
 		$stundenplan = $this->Stundenplan_Model->get_stundenplan($this->authentication->user_id());
 		
 		$this->data->add('stundenplan', $stundenplan[0]); 
@@ -54,15 +54,16 @@ class Stundenplan extends FHD_Controller {
 	/**
 	 * Controller for week view
 	 *
-     * ../stundenplan/woche
-     * 
-     * @access public
-     * @return void
+	 * ../stundenplan/woche
+	 * 
+	 * @access public
+	 * @return void
 	 */
-	public function woche()
+	public function week()
 	{
 		// Load all necessary data for "Stundenplan" :)
 		$plan = $this->Stundenplan_Model->get_stundenplan($this->authentication->user_id());
+		
 		// Save the days in a seperate variable
 		$days = $plan[0];
 		
@@ -70,11 +71,11 @@ class Stundenplan extends FHD_Controller {
 		include(APPPATH . 'libraries/events/Event.php');
 		include(APPPATH . 'libraries/events/EventSort.php');
 		
-
 		foreach ($days as $dayname => $day)
 		{
 			// Events get stored here
 			$events = array();
+
 			// Create an event object for every event
 			foreach ($day as $row)
 			{
@@ -89,6 +90,7 @@ class Stundenplan extends FHD_Controller {
 					$events[] = new Event($start, $duration, $color, $event);
 				}
 			}
+
 			// Create a sortable list of events
 			$sort = new EventSort($events);
 			// Optimize the display data for the events
