@@ -48,7 +48,7 @@ $submit_data = array(
 						<tr>
 							<td><?php echo $sg->StudiengangName; ?></td>
 							<td><?php echo $sg->Pruefungsordnung; ?></td>
-							<td><?php echo form_submit($data_submit, 'löschen'); ?></td>
+							<td><?php echo form_submit($submit_data, 'löschen'); ?></td>
 						</tr>
 						<?php
 							// put some static data into post - CreditpointsMin (actually not needed) and FachbereichID (final = 5)
