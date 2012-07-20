@@ -41,15 +41,15 @@
 				<h6>Stundenplan</h6>
 		
 				<!--Titel-->
-    			<h1>Wochenplan</h1>
+				<h1>Wochenplan</h1>
 				<hr />
 				<!--Optionen-->
-	    		<h4>Legende</h4>
-	    		<span class="label btn-info">Vorlesung</span>
+				<h4>Legende</h4>
+				<span class="label btn-info">Vorlesung</span>
 				<span class="label btn-primary">Übung</span>
 				<span class="label btn-warning">Tutorium</span>
 				<span class="label btn-success">Pratikum</span>
-				<span class="label btn-inverse">Seminar</span>											    		    	   									  
+				<span class="label btn-inverse">Seminar</span>																   									  
 			</div>
 			
 			<div class="well well-small clearfix hidden-phone">
