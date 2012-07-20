@@ -121,7 +121,7 @@
 					<i class="icon-arrow-left icon-white"></i>
 					zurück
 				</a>
-				<a href="<?php print base_url('stundenplan/woche'); ?>" class="btn btn-large pull-right">Woche</a>
+				<a href="<?php print base_url('stundenplan/week'); ?>" class="btn btn-large pull-right">Woche</a>
 			</div>
 		</div><!-- /.span12-->
 	</div><!-- /.row-fluid -->
