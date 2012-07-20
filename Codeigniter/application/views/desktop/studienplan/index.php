@@ -1,53 +1,79 @@
 <?php extend('base/template.php'); # extend main template ?>
 
-<?php startblock('title'); # extend the site's title ?><?php get_extended_block(); ?> - Studienplan<?php endblock();?>
+<?php startblock('title'); # extend the sites title ?><?php get_extended_block(); ?> - Studienplan<?php endblock();?>
 
 <?php startblock('content'); # content for this view ?>
+
+<?php
+	$data_formopen = array('id' => 'studienplan-form');
+?>
+
+
+
 <div id="studienplan" class="well">
-	<table>
-		<thead>
-			<tr>
-			<?php foreach($studienplan as $semester): ?>
-				<?php $i = 0; // semester value ?>
-				<?php foreach($semester as $modul): ?>
-					<th>Semester <?php echo $i ?></th>
-					<?php $i++ ?>
-				<?php endforeach ?>
-			<?php endforeach ?>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
+	<?php echo form_open('studienplan/save_changes', $data_formopen); ?>
+		<table>
+			<thead>
+				<tr>
 				<?php foreach($studienplan as $semester): ?>
-					<?php $i = 0; // semester value ?>
-					<?php //TODO: Zero semester ausblenden!! ?>
+					<?php $i = 0; // semester nr ?>
 					<?php foreach($semester as $modul): ?>
-						<td>
-							<ul id="<?php echo $i ?>" class="unstyled semesterplanspalte">
-								<?php foreach($modul as $data): ?>
-									<?php if ($data['Kurzname'] != NULL): ?>
-										<li id="module_<?php echo $data['KursID']; ?>">
-											<div class="semestermodul btn btn-success">
-												<span class="modulfach"><?php echo $data['Kurzname'] ?></span>
-												<span class="modulfachnote">NP:</span>
-												<input class="modulnote input-mini" name="modulnote" type="text" value="<?php echo $data['Notenpunkte'] ?>" size="3">
-											</div>
-										</li>
-									<?php endif; ?>
-								<?php endforeach; ?>
-							</ul>
-						</td>
+						<?php if($i != 0) : ?>
+							<th>Semester <?php echo $i ?></th>
+						<?php endif; ?>
 						<?php $i++ ?>
-					<?php endforeach; ?>
-				<?php endforeach; ?>
-			</tr>
-		</tbody>
-	</table>
+					<?php endforeach // $semester ?>
+				<?php endforeach // $studienplan ?>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<?php foreach($studienplan as $semester): ?>
+						<?php $i = 0; // semester nr ?>
+						<?php foreach($semester as $modul): ?>
+							<?php if($i != 0) : ?>
+								<td>
+									<ul id="<?php echo $i ?>" class="unstyled semesterplanspalte">
+										<?php foreach($modul as $data): ?>
+											<?php if ($data['KursID'] != NULL): ?>
+												<li id="module_<?php echo $data['KursID']; ?>">
+													<div class="semestermodul dropup">
+														<span class="arrw" data-toggle="dropdown">+</span>
+														<ul class="dropdown-menu">
+														      <li><a href="#">Action</a></li>
+														      <li><a href="#">Another action</a></li>
+														      <li><a href="#">Something else here</a></li>
+														      <li class="divider"></li>
+														      <li><a href="#">Separated link</a></li>
+														</ul>
+
+														<span class="modulfach"><?php echo $data['Kurzname'] ?></span>
+														<input class="modulnote input-mini" name="modulnote" type="text" value="<?php echo $data['Notenpunkte'] ?>" size="3">
+													</div>
+												</li>
+											<?php endif; ?>
+										<?php endforeach; // $modul ?>
+									</ul>
+								</td>
+							<?php endif; ?>
+							<?php $i++ ?>
+						<?php endforeach; // $semester ?>
+					<?php endforeach; // $studienplan ?>
+				</tr>
+			</tbody>
+		</table>
+	<?php echo form_close(); ?>
 </div>
 
 <?php endblock();?>
 
 <?php startblock('customFooterJQueryCode');?>
+
+	// save php vars in js vars
+	<?php $test = "test"; ?>
+	var testjs = "<?php echo $test; ?>";
+	console.log( testjs );
+
 	var Studienplan = {
 			init: function( config ) {
 				this.config = config; 
@@ -60,13 +86,17 @@
 					connectWith: self.config.connectWithColumns,
 					cursor: 'pointer',
 					opacity: '0.6',
-					placeholder: 'semestermodul btn btn-warning btn-large',
+					placeholder: 'semestermodul_placeholder',
 					dropOnEmpty: true,
 	
 					// hier findet das Schreiben in die Datenbank statt
 					// jedes Mal wenn das Draggen aufgehört hat UND es eine Veränderung
 					// in der Reihenfolge gibt
 					update: function(event, ui) {
+
+						// kein ajax!
+						return;
+
 						// Färbe das Modul mit einem roten Rahmen ein um zu zeigen
 						// das ein Request ausgeführt wird
 						$(ui.item).children(".semestermodul").toggleClass("highlight");
@@ -115,6 +145,7 @@
 			sortableColumns: $(".semesterplanspalte"),
 			connectWithColumns: '.semesterplanspalte'
 		});
+
 <?php endblock(); ?>
 
 <?php end_extend(); # end extend main template ?>

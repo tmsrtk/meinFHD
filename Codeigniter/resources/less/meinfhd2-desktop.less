@@ -1,6 +1,5 @@
 /*
  * meinFHD 2.0
- * http://www..de/
  *
  * Konstantin Voth
  * Copyright 2012
@@ -9,66 +8,8 @@
 
 /* 
  * CSS Style
- * Tweaks/Anpassungen der Bootstrap Library/Framework
+ * Tweaks/Anpassungen der Bootstrap Library/Framework für meinFHD2
  */
-
-@semestermodul_breite: 110px;
-@semestermodul_hoehe: 40px;
-
-.semestermodul {
-	position: relative;
-
-	span {
-		display: block;
-		text-align: left;
-	}
-
-	span.modulfach {
-		font-weight: bold;
-	}
-
-	span.modulfachnote {
-		display: inline;
-		float: left;
-	}
-
-	width: @semestermodul_breite;
-	height: @semestermodul_hoehe;
-
-	margin-bottom: 5px;
-	margin-top: 5px;
-}
-
-input.modulnote {
-	width: 20px;
-	// float: right;
-	position: absolute;
-		bottom: 0;
-		right: 5px;
-
-}
-
-.highlight {
-	border: 3px solid red;
-}
-
-.semesterplanspalte {
-	width: @semestermodul_breite + 30;
-	float: left;
-}
-
-.semester_ueberschrift {
-	display: block;
-}
-
-form#create_user input {
-	display: block;
-}
-
-#user_cr_search {
-	float: right;
-}
-
 
 
 #studienplan {
@@ -89,55 +30,103 @@ form#create_user input {
 	
 }
 
+// --------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-div#studentdata {
-	display: none;
+/* ul for every semester */
+.semesterplanspalte {
+	width: @stupla-modul_width + 30;
+	float: left;
 }
 
+// --------------------------------------------------------
+
+@stupla-modul_color-grey: #AAAAAA;
+@stupla-modul_color-placeholder: #99CC99;
+
+@stupla-modul_width: 110px;
+@stupla-modul_height: 40px;
+
+.semestermodul {
+	position: relative;
+
+	cursor: pointer;
+
+	// width: @stupla-modul_width;
+	height: @stupla-modul_height;
+
+	background-color: @stupla-modul_color-grey;
+
+	margin-top: 5px;
+	margin-bottom: 5px;
+
+	span {
+		display: block;
+		text-align: left;
+	}
+
+	.arrw {
+		position: absolute;
+			left: 0;
+			top: 0;
+	}
+
+	span.modulfach {
+		position: absolute;
+			bottom: 0;
+			left: 0;
+		font-weight: bold;
+	}
+
+	input.modulnote {
+		width: 20px;
+		// float: right;
+		position: absolute;
+			bottom: 0;
+			right: 0;
+		margin: 0;
+	}
+}
+
+.semestermodul_placeholder {
+	position: relative;
+	height: @stupla-modul_height;
+	background-color: @stupla-modul_color-placeholder;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+// --------------------------------------------------------
 
 
 
 
 
+// .semester_ueberschrift {
+// 	display: block;
+// }
+
+
+
+// form#create_user input {
+// 	display: block;
+// }
+
+// #user_cr_search {
+// 	float: right;
+// }
+
+
+
+
+// div#studentdata {
+// 	display: none;
+// }
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// --------------------------------------------------------
 
 /* footer menu */
 div#menuefooter {
@@ -185,6 +174,8 @@ div#menuefooter {
 	}
 }
 
+// --------------------------------------------------------
+
 div.val_error {
 	color: red;
 }
@@ -206,6 +197,3 @@ div.val_error {
 
 
 
-input.modul-grade-width {
-	width: 20px;
-}
