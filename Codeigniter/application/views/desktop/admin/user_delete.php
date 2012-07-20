@@ -14,10 +14,7 @@
 	);
 	//--------------------------------------------------------------------------
 ?>
-<div class="row-fluid">
-	<h2>Benutzer löschen</h2>
-</div>
-<hr>
+
 <div class="row-fluid">
 	<table id="user_overview" class="table table-striped">
 		<thead>
@@ -68,6 +65,8 @@
 
 		$('#myModal').modal({
 			keyboard: false
+		}).on('hide', function () {
+			$("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
 		}).modal('show');
 		
 		return false;
@@ -89,11 +88,11 @@
 			$(event.target).parent().parent().find("div.modal-footer").hide();
 
 			$("input[type=submit][data-clicked=true]").parents("form#delete_user_row").submit();
-			$("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
+			// $("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
 		} else {
 			console.log("cancel");
 
-			$("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
+			// $("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
 		}
 
 		return false;
