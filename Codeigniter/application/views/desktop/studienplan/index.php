@@ -41,8 +41,9 @@
 											<?php if ($data['KursID'] != NULL): ?>
 												<li id="module_<?php echo $data['KursID']; ?>">
 													<div class="semestermodul dropup" data-kursid="<?php echo $data['KursID']; ?>">
-														<!-- <span class="arrw" data-toggle="dropdown">+</span> -->
 														<i class="arrw icon-chevron-up" data-toggle="dropdown"></i>
+														<a class="b_pruefen" href="">P</a>
+														<a class="b_hoeren" href="">H</a>
 														<ul class="dropdown-menu">
 														      <li class="kursinfo"><a href="#">Info</a></li>
 														      <li><a href="#"><?php echo $data['KursID']; ?></a></li>
@@ -96,10 +97,13 @@
 
 		$('#myModal').modal({
 			keyboard: false
+		}).on('hide', function () {
+
 		}).modal('show');
 		
 	});
 
+	/**  */
 	function createModalDialog(title, text) {
 		var $myModalDialog = $('<div class="modal hide" id="myModal"></div>')
 					.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
@@ -157,24 +161,9 @@
 	}
 
 
-
-
+	/**  */
 	$("#modalcontent").on( 'click', 'button, a', function(event) {
-		if ( $(this).attr("data-accept") === 'modal' ) {
-			console.log("accept");
 
-			// $(event.target).parent().parent().find("div.modal-body").html("Bitte warten, der Befehl wird ausgeführt");
-			// $(event.target).parent().parent().find("div.modal-footer").hide();
-
-			// $("input[type=submit][data-clicked=true]").parents("form#delete_user_row").submit();
-			// $("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
-		} else {
-			console.log("cancel");
-
-			// $("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
-		}
-
-		return false;
 	});
 
 	// -------------------------------------------------------------------------

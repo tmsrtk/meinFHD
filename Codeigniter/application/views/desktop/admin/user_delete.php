@@ -80,6 +80,7 @@
 		return $myModalDialog;
 	}
 
+	/** */
 	$("#modalcontent").on( 'click', 'button, a', function(event) {
 		if ( $(this).attr("data-accept") === 'modal' ) {
 			console.log("accept");
@@ -91,7 +92,6 @@
 			// $("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
 		} else {
 			console.log("cancel");
-
 			// $("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
 		}
 
