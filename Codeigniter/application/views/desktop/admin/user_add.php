@@ -29,6 +29,8 @@
 				'placeholder' => 'Vorname',
 				'value' => set_value('forename')
 		);
+		'name'				=> 'firstname',
+		'value'				=> set_value('firstname')
 	$data_lastname = array(
 			'class' => 'input-xxxlarge',
 			'name' => 'lastname',

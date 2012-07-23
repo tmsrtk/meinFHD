@@ -136,7 +136,7 @@ class Admin_model extends CI_Model {
 		$data = array(
 				'LoginName' 				=> $form_data['loginname'],
 				'Email' 					=> $form_data['email'],
-				'Vorname'					=> $form_data['forename'],
+				'Vorname'					=> $form_data['firstname'],
 				'Nachname' 					=> $form_data['lastname'],
 				'Matrikelnummer' 			=> $form_data['matrikelnummer'],
 				'StudienbeginnJahr' 		=> $form_data['startjahr'],
@@ -162,7 +162,7 @@ class Admin_model extends CI_Model {
 	{
 		// prepare data for insert
 		$data = array(
-				'Vorname'					=> $form_data['forename'],
+				'Vorname'					=> $form_data['firstname'],
 				'Nachname' 					=> $form_data['lastname'],
 				'Startjahr'			 		=> $form_data['startjahr'],
 				'Matrikelnummer' 			=> $form_data['matrikelnummer'],

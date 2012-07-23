@@ -11,6 +11,8 @@
 			'placeholder' => 'Vorname',
 			'value' => set_value('forename')
 		);
+		'name'				=> 'firstname',
+		'value'				=> set_value('firstname')
 	$data_lastname = array(
 			'class' => 'span2',
 			'name' => 'lastname',
@@ -81,7 +83,7 @@
 
 
 <div class="control-group">
-	<?php echo form_label('Vor &amp; Nachname', 'forename', $data_labelattrs); ?>
+	<?php echo form_label('Vor &amp; Nachname', 'firstname', $data_labelattrs); ?>
 	<div class="controls docs-input-sizes">
 		<?php echo form_input($data_forename); ?>
 		<?php echo form_input($data_lastname); ?>
