@@ -6,7 +6,7 @@ class Test extends FHD_Controller {
 	{
 		parent::__constructor();
 
-		// $this->load->model('user_model');
+		$this->load->model('test_model');
 
 		// get userdata
 		//// data
@@ -35,7 +35,7 @@ class Test extends FHD_Controller {
 			);
 		$this->data->add('siteinfo', $siteinfo);
 
-		$this->load->view('includes/template', $this->data->load());
+		$this->load->view('test/index', $this->data->load());
 	}
 
 }
