@@ -1,12 +1,15 @@
 			<nav class="navbar navbar-fixed-top">
 				<div class="navbar-inner">
 					<div class="container">
+						<?php if ( $this->authentication->is_logged_in() ) : ?>
 						<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</a>
+						<?php endif; ?>
 						<a class="brand" href="#">meinFHD<span>mobile</span></a>
+						<?php if ( $this->authentication->is_logged_in() ) : ?>
 						<div class="nav-collapse">
 							<ul class="nav level-1"> <!-- .nav.level-1 -->
 								<?php if ( $this->authentication->has_permissions('hat_dashboard') ) : ?>
@@ -120,6 +123,7 @@
 								<?php endif; ?>
 							</ul> <!-- /.nav.level-1 -->
 						</div> <!-- /.nav-collapse -->
+						<?php endif; ?>
 					</div>
 				</div>
 			</nav>
