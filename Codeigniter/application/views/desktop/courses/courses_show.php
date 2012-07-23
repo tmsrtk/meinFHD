@@ -56,7 +56,7 @@
 		);
 		
 		$overall_label_attrs = array(
-		    'id' => 'course-mgt-label-overall',
+		    'id' => 'course-mgt-label-overall-'.$c_id,
 		    'class' => 'label label-info',
 		);
 		
@@ -108,9 +108,7 @@
 		);
 		
 		echo '<h3>Beschreibung </h3>';
-		echo '<div>';
-		echo form_textarea($course_description_textarea_data);
-		echo '</div>';
+		echo '<div>'.form_textarea($course_description_textarea_data).'</div>';
 		
 		echo form_close(); // end of form
 		
@@ -150,7 +148,7 @@
 	var sendEmailButtonId = '#send-email-to-cb-'+courseId;
 	// base of label-id
 	var labelIdBase = '#course-mgt-label-';
-	var labelIdOverall = $('#course-mgt-label-overall');
+	var labelIdOverall = $('#course-mgt-label-overall-'+courseId);
 	
 	// find out how many checkboxes there are on course-site
 	var numberCbs = 0;
@@ -216,17 +214,26 @@
 		    }
 		});
 		// if all checkboxes are checked >> check overall checkbox
-		if(counter == numberCbs){
+		if(counter >= 1){
 		    $(overallCbId).attr('checked', true);
 		    labelIdOverall.addClass('label-info');
 		    labelIdOverall.removeClass('label-default');
-		    labelIdOverall.text('Email senden an alle Personen und Kursteilnehmer');
+//		    labelIdOverall.text('Email senden an alle Personen und Kursteilnehmer');
+		    labelIdOverall.text('Email senden an Auswahl');
 		// otherwise uncheck overall checkbox
-		} else {
+		} else if(counter == 0) {
 		    $(overallCbId).attr('checked', false);
+		    labelIdOverall.text('keine Auswahl für Email-Versand');
 		    labelIdOverall.addClass('label-default');
 		    labelIdOverall.removeClass('label-info');
-		    labelIdOverall.text('Email senden an Auswahl');
+		}
+//		} else {
+		if(counter == numberCbs){
+		    $(overallCbId).attr('checked', true);
+//		    labelIdOverall.addClass('label-info');
+//		    labelIdOverall.removeClass('label-default');
+//		    labelIdOverall.text('Email senden an Auswahl');
+		    labelIdOverall.text('Email senden an alle Personen und Kursteilnehmer');
 		}
 	    }); // end checkbox-change
 	}); // end run through checkboxes
@@ -270,6 +277,9 @@
     
     
     // handle button to add tuts to benutzer_mm_rolle
+    $('#tutor-button').click(function(){
+	
+    });
     
     
     
