@@ -26,7 +26,7 @@
 <!--	    </td>
 	    <td class="span1 ">-->
 	<div class="span2"> <!-- label FIRST line -->
-		<label class="label label-info">Dozent</label>
+		<label class="label label-info" id="course-mgt-label-<?php echo $course_id.'-1'; ?>">Dozent</label>
 	</div> <!-- label ends here -->
 <!--	    </td>
 	    <td>-->
@@ -51,7 +51,7 @@
 <!--	    </td>
 	    <td class="span1">-->
 	<div class="span2"> <!-- label SECOND line -->
-		<label class="label label-info">Betreuer</label>
+		<label class="label label-info" id="course-mgt-label-<?php echo $course_id.'-2'; ?>">Betreuer</label>
 	</div> <!-- label ends here -->
 <!--	    </td>
 	    <td>-->
@@ -91,7 +91,7 @@
 <!--	    </td>
 	    <td class="span1">-->
 	<div class="span2"> <!-- label THIRD line -->
-		<label class="label label-info">Tutor(en)</label>
+		<label class="label label-info" id="course-mgt-label-<?php echo $course_id.'-3'; ?>">Tutor(en)</label>
 	</div><!-- label ends here -->
 <!--	    </td>
 	    <td>-->

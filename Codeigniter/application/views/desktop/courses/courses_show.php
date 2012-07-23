@@ -4,6 +4,7 @@
     $course_ids_jq = array();
     // associative arrays can be handled easier in jquery
     $course_ids = array_keys($course_details);
+    // contains both kursids and spkursids
     foreach ($course_ids as $id) {
 	$course_ids_jq['KursID'.$id] = $id;
     }
@@ -44,7 +45,7 @@
 		    'name' => $c_id,
 		    'value' => 'Email senden',
 		    'id' => 'send-email-to-cb-'.$c_id,
-		    'class' => 'btn btn-danger'
+		    'class' => 'btn btn-warning'
 		);
 		
 		$submit_data_save_all = array(
@@ -54,14 +55,25 @@
 		    'class' => 'btn btn-warning'
 		);
 		
+		$overall_label_attrs = array(
+		    'id' => 'course-mgt-label-overall',
+		    'class' => 'label label-info',
+		);
+		
 		// print email-checkbox
-		echo '<div id="staff-send-email">';
+		echo '<div id="staff-send-email" class="clearfix">';
 		echo form_open(''); 
+		echo '<h3>Emailversand:</h3>';
 		echo '<div class="span1">';
 		echo form_checkbox($cb_data);
 		echo '</div>';
+		echo '<div class="span4">';
+		echo form_label('Email senden an alle Personen und Kursteilnehmer', '', $overall_label_attrs);
+		echo '</div>';
+		echo '<div class="span2">';
 		echo form_submit($submit_data_send_email);
 		echo form_close();
+		echo '</div>';
 		echo '</div>';
 		
 		// print staff-table
@@ -121,6 +133,7 @@
     $('.tab-content div:first-child').addClass("active");
     $('#course-details-navi li:first-child').addClass("active");
     
+    // contains all sp_course_ids in that view
     var courseIdsInView = <?php echo json_encode($course_ids_jq); ?>;
     
     // run through all ids and assign functions
@@ -135,6 +148,9 @@
 	var overallCbId = '#email-checkbox-all-id-'+courseId;
 	// save id for email-button
 	var sendEmailButtonId = '#send-email-to-cb-'+courseId;
+	// base of label-id
+	var labelIdBase = '#course-mgt-label-';
+	var labelIdOverall = $('#course-mgt-label-overall');
 	
 	// find out how many checkboxes there are on course-site
 	var numberCbs = 0;
@@ -149,12 +165,24 @@
 	    $.each(checkboxesOnSite, function(i, v){
 		var cbSelf = $(this);
 		var cbId = cbSelf.attr('id');
+		var cbName = cbSelf.attr('name');
+		var labelId = labelIdBase+cbName;
+		
+		// toggle checked/unchecked
 		if(cbAll.is(':checked')){
 		    $('#'+cbId).attr('checked', true);
+		    labelIdOverall.text('Email senden an alle Personen und Kursteilnehmer');
+		    $(labelId).addClass('label-info');
+		    $(labelId).removeClass('label-default');
 		} else {
 		    $('#'+cbId).attr('checked', false);
+		    labelIdOverall.text('keine Auswahl für Email-Versand');
+		    $(labelId).addClass('label-default');
+		    $(labelId).removeClass('label-info');
 		}
-		console.log(cbId);
+		// set label-color
+		labelIdOverall.toggleClass('label-info');
+		labelIdOverall.toggleClass('label-default');
 	    });
 	});
 	
@@ -163,10 +191,23 @@
 	    // init counter to detect if there are un/checked checkboxes
 	    var self = $(this);
 	    var cbId = self.attr('id');
+	    var cbName = self.attr('name');
+	    
+	    // build correct label-id
+	    var labelId = labelIdBase+cbName;
 
 	    // if checkbox changes
 	    $('#'+cbId).change(function(){
 		var counter = 0;
+		
+		// affect label-color
+		if($(this).is(':checked')){
+		    $(labelId).addClass('label-info');
+		    $(labelId).removeClass('label-default');
+		} else {
+		    $(labelId).addClass('label-default');
+		    $(labelId).removeClass('label-info');
+		}
 		
 		// count unchecked checkboxes
 		$.each(checkboxesOnSite, function(i, v){
@@ -177,9 +218,15 @@
 		// if all checkboxes are checked >> check overall checkbox
 		if(counter == numberCbs){
 		    $(overallCbId).attr('checked', true);
+		    labelIdOverall.addClass('label-info');
+		    labelIdOverall.removeClass('label-default');
+		    labelIdOverall.text('Email senden an alle Personen und Kursteilnehmer');
 		// otherwise uncheck overall checkbox
 		} else {
 		    $(overallCbId).attr('checked', false);
+		    labelIdOverall.addClass('label-default');
+		    labelIdOverall.removeClass('label-info');
+		    labelIdOverall.text('Email senden an Auswahl');
 		}
 	    }); // end checkbox-change
 	}); // end run through checkboxes
@@ -219,7 +266,11 @@
 	});
 	
 	
-    }); // end 
+    }); // end checkbox-handling
+    
+    
+    // handle button to add tuts to benutzer_mm_rolle
+    
     
     
 	

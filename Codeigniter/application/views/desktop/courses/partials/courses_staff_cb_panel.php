@@ -1,4 +1,10 @@
-<?php 
+<?php
+
+    $add_tutor_button_data = array(
+	'name' => 'add-tutor-button',
+	'id' => 'tutor-button',
+	'content' => 'Tutor hinzufügen'
+    );
 
     // init needed variables
     $panel_id_prefix = 'labings-panel-';
@@ -7,6 +13,7 @@
     $current_staff = $current_labings;
     $label_id_prefix = 'labing-label-';
     $save_data = 'kursverwaltung/save_labings_for_course';
+    $tut_button = '';
 
     // switch if it is tut-view
     if($print_tuts){
@@ -16,10 +23,12 @@
 	$current_staff = $current_tuts;
 	$label_id_prefix = 'tut-label-';
 	$save_data = 'kursverwaltung/save_tuts_for_course';
+	$tut_button = form_button($add_tutor_button_data);
     }
     
     $form_attributes = array('id' => $form_id);
-    $submit_attributes = 'id=course-staff-save-button class ="btn-warning"';
+    $submit_attributes = 'id=course-staff-save-button class="btn-warning"';
+    
     
 ?>
 
@@ -31,6 +40,9 @@
 	if(!$is_tutor){
 	    print form_open($save_data, $form_attributes);
 	    echo form_submit($course_id, 'Speichern', $submit_attributes);
+	    
+	    // print add-tut-button
+	    echo $tut_button;
 
 	    // counter for creating 3 collumns
 	    $counter = 0;

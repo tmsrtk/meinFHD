@@ -23,7 +23,7 @@
     
     $label_attrs = array(
 	'name' => 'group_label',
-	'id' => 'kursverwaltung-tn',
+	'id' => 'course-mgt-label-'.$lecture_details->SPKursID,
 	'class' => 'label label-info',
 	'for' => 'kursverwaltung-raum'
     );

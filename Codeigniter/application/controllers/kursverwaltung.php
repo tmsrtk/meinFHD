@@ -101,12 +101,12 @@ class Kursverwaltung extends FHD_Controller {
 		    $this->load->view('courses/partials/courses_staff_cb_panel', $staff_view_data, TRUE);
 		
 		// get staff-view
-//		$course_data[$id][] = $this->load->view('courses/partials/courses_staff', $staff_view_data, TRUE);
+//		$course_data[$id][] = $this->load->view('courses/partials/courses_staff', $staff_view_data, TRUE); // old version - bound to array
 		$staff[$id] = $this->load->view('courses/partials/courses_staff', $staff_view_data, TRUE);
 //		$staff[$id] = $this->load->view('courses/partials/courses_staff_dummy', '', TRUE); // DEBUG VIEW
 		
 		// get view for each eventtype
-		$eventtypes = $this->kursverwaltung_model->get_eventtypes_for_course($id);	
+		$eventtypes = $this->kursverwaltung_model->get_eventtypes_for_course($id);
 		foreach($eventtypes as $e){
 		    // must be an array because (final) view runs data in foreach loop 
 		    $course_data[$id][] = $this->get_course_event_view($id, $e, $subview_data, $subview_lecture_to_load);
@@ -181,7 +181,8 @@ class Kursverwaltung extends FHD_Controller {
 		// get tut data view - always visible to every role
 		$subview_data['lecture_details'] = $this->kursverwaltung_model->get_lecture_details($course_id, $eventtype);
 		$tut = $this->load->view('courses/partials/courses_tablehead', $subview_data, TRUE);
-		$tut .= $this->load->view($subview_to_load, $subview_data, TRUE);
+		// !! view has to be courses_lecture because tut should be able to save changes in tut
+		$tut .= $this->load->view('courses/partials/courses_lecture', $subview_data, TRUE);
 		return $tut;
 	}
 	
@@ -343,7 +344,6 @@ class Kursverwaltung extends FHD_Controller {
 	// >> last data won't be detected by change of course_id (there is no new course-id)
 	$this->kursverwaltung_model->save_course_details(
 		$sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
-//	TODO save description
 //	echo '<pre>';
 //	echo '<div>course</div>';
 //	print_r($save_course_details_to_db);
