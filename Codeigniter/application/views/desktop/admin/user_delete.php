@@ -8,57 +8,106 @@
 	// needet vars
 	$data_formopen = array('id' => 'delete_user_row');
 	$data_submit = array(
-		'name'			=> 'submit',
+		'id'			=> 'delete_user_btn',
+		'name'			=> 'delete_user_btn',
 		'class'			=> 'btn btn-mini btn-danger delete_user_btn'
 	);
 	//--------------------------------------------------------------------------
 ?>
-<div class="row-fluid">
-	<h2>Benutzer löschen</h2>
-</div>
-<hr>
+
 <div class="row-fluid">
 	<table id="user_overview" class="table table-striped">
 		<thead>
 			<tr>
-				<th>Benutzername</th>
-				<th>Nachname</th>
-				<th>Vorname</th>
-				<th>Email</th>
-				<th>Löschen</th>
+				<th>
+					<div class="span2">Loginname</div>
+					<div class="span2">Nachname</div>
+					<div class="span2">Vorname</div>
+					<div class="span2">E-Mail</div>
+					<div class="span2">Los</div>
+				</th>
 			</tr>
 		</thead>
 		<tbody>
-			<?php foreach ($user as $zeile): ?>
+			<?php foreach ($user as $zeile) : ?>
 			<tr>
-				<?php
-				echo form_open('admin/delete_user/', $data_formopen);
-				// hidden field, with user_id, needed to save changes
-				echo form_hidden('user_id', $zeile['BenutzerID']);
-				?>
-				<td><?php echo $zeile['LoginName'] ?></td>
-				<td><?php echo $zeile['Nachname'] ?></td>
-				<td><?php echo $zeile['Vorname'] ?></td>
-				<td><?php echo $zeile['Email'] ?></td>
-				<td><?php echo form_submit($data_submit, 'Loeschen'); ?></td>
-				<?php echo form_close(); ?>
+				<td id="content_userrow">
+					<?php echo form_open('admin/delete_user/', $data_formopen); ?>
+					<?php echo form_hidden('user_id', $zeile['BenutzerID']); ?>
+
+					<div class="span2"><?php echo $zeile['LoginName']; ?></div>
+					<div class="span2"><?php echo $zeile['Nachname']; ?></div>
+					<div class="span2"><?php echo $zeile['Vorname']; ?></div>
+					<div class="span2"><?php echo $zeile['Email']; ?></div>
+
+					<?php echo "<div class=\"span2\">".form_submit($data_submit, 'Löschen')."</div>"; ?>
+					<div class="clearfix"></div>
+					<?php echo form_close(); ?>
+				</td>
 			</tr>
 			<?php endforeach ?>
 		</tbody>
 	</table>
+
+	<div id="modalcontent"></div>
+
 </div>
 <?php endblock(); ?>
 
 <?php startblock('customFooterJQueryCode');?>
-				$("input.delete_user_btn").hide();
-				
-				$('tr').hover(
-					function() {
-						$(this).find('.delete_user_btn').show();
-					},
-					function() {
-						$(this).find('.delete_user_btn').hide();
-					}
-				);
+
+	// prompt dialogs
+	$("td#content_userrow").on("click", "input#delete_user_btn", function() {
+		$(this).attr("data-clicked", "true");
+
+		var mm = createModalDialog('User löschen', 'Soll der User wirklich gelöscht werden?');
+		$("#modalcontent").html(mm);
+
+		$('#myModal').modal({
+			keyboard: false
+		}).on('hide', function () {
+			$("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
+		}).modal('show');
+		
+		return false;
+	});
+
+	function createModalDialog(title, text) {
+		var $myModalDialog = $('<div class="modal hide" id="myModal"></div>')
+					.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
+					.append('<div class="modal-body"><p>'+text+'</p></div>')
+					.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Abbrechen</a><a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
+		return $myModalDialog;
+	}
+
+	/** */
+	$("#modalcontent").on( 'click', 'button, a', function(event) {
+		if ( $(this).attr("data-accept") === 'modal' ) {
+			console.log("accept");
+
+			$(event.target).parent().parent().find("div.modal-body").html("Bitte warten, der Befehl wird ausgeführt");
+			$(event.target).parent().parent().find("div.modal-footer").hide();
+
+			$("input[type=submit][data-clicked=true]").parents("form#delete_user_row").submit();
+			// $("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
+		} else {
+			console.log("cancel");
+			// $("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
+		}
+
+		return false;
+	});
+
+	/* helper functions */
+	function hide_all_submit_buttons() {
+		$("input#delete_user_btn").hide();
+	}
+
+	function show_delete_button(c) {
+			c.find("#delete_user_btn").show();
+	}
+		function hide_delete_button(c) {
+			c.find("#delete_user_btn").hide();
+	}
 <?php endblock(); ?>
 <?php end_extend(); # end extend main template ?>

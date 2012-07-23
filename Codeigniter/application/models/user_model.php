@@ -2,12 +2,13 @@
 
 class User_model extends CI_Model {
 
-	private $user_email = '';
+	private $user_id = 0;
+
+	private $email = '';
 	private $loginname = '';
 	private $forename = '';
 	private $lastname = '';
 
-	private $user_id = 0;
 	private $user_roles = array();
 	private $user_permissions_all = array();
 	
@@ -34,6 +35,12 @@ class User_model extends CI_Model {
 		if ($uid)
 		{
 			$this->user_id = $uid;
+
+			$this->lastname = $this->_query_user_singlecolumndata('Vorname');
+			$this->lastname = $this->_query_user_singlecolumndata('Nachname');
+			$this->loginname = $this->_query_user_singlecolumndata('LoginName');
+			$this->email = $this->_query_user_singlecolumndata('Email');
+
 			$this->user_roles = $this->_query_all_roles();
 			$this->user_permissions_all = $this->_query_all_permissions();
 			
@@ -42,18 +49,28 @@ class User_model extends CI_Model {
 			
 		}
 
+		// global data
 		$userdata = array(
-                'userid' => $this->user_id,
-                'loginname' => 'Freak',
-                'userpermissions' => $this->user_permissions_all,
-                'roles' => $this->user_roles
-            );
-
-        $this->data->add('userdata', $userdata);
-
+	                'userid' => $this->user_id,
+	                'loginname' => $this->loginname,
+	                'userpermissions' => $this->user_permissions_all,
+	                'roles' => $this->user_roles
+	            );
 
 		// write userdata in global $data
-		$this->data->add('rollentest', $this->user_permissions_all);
+        $this->data->add('userdata', $userdata);
+
+	}
+
+	/** */
+	private function _query_user_singlecolumndata($columnname)
+	{
+		$this->db->select($columnname)
+				 ->from('benutzer')
+				 ->where('BenutzerID', $this->user_id);
+		$q = $this->db->get()->row_array();
+
+		return ($q[$columnname]);
 	}
 
 	/** */
@@ -114,13 +131,31 @@ class User_model extends CI_Model {
 		$permissions_cleaned = array();
 		foreach ($permissions_to_clean as $role) 
 		{
+			#echo '<div style="height: 100px;"></div>';
+			#krumo($role);
+			if ( ! in_array($role['RolleID'], $permissions_cleaned))
+				{
+					array_push($permissions_cleaned, $role['RolleID']);
+				}
+			
+			/*
+			# PHP 5.4: illegal string offset warning 'RolleID' (jetzt) in zeile 150
+			# -> seit 5.4 wird genauer auf datentypen geachtet und $v['RolleID'] ist ein string und kein array
+			# warum und weshalb es ein array sein muss bzw der fehler auftaucht, kann ich nicht genau sagen ...
+			# laut Dokumentation erwartet in_array() eigentlich einen string.. evtl hat sich in 5.4 da was geändert
+			# Peter Jaraczewski: ich hab das mal VOR den foreach loops gedumpt und das array hatte nur eine dimension
+			# Peter Jaraczewski: oder kann es eine 2. auch kriegen ?
+			# Frank Gottwald: ich denke ja - kontext ist immer wichtig :\
+			# TODO: verification needed here!
 			foreach ($role as $v)
 			{
+				krumo($v);
 				if ( ! in_array($v['RolleID'], $permissions_cleaned))
 				{
 					array_push($permissions_cleaned, $v['RolleID']);
 				}
 			}
+			*/
 		}
 		return $permissions_cleaned;
 	}

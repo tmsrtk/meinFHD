@@ -62,7 +62,7 @@
 					<hr>
 					<?php echo form_open('admin/validate_create_user_form/', $data_formopen); // main inputs for all users ?>
 						<fieldset id="user-info">
-							<?php echo form_dropdown('role', $all_roles, /*standard value*/'0', $data_roles); ?>
+							<?php echo form_dropdown('role', $all_roles, /*standard value*/'', $data_roles); ?>
 							<?php echo form_input($data_loginname); ?>
 							<?php echo form_input($data_email); ?>
 							<?php echo form_input($data_forename); ?>
@@ -76,15 +76,19 @@
 								echo form_input($data_matrikelnummer);
 								echo form_input($data_startjahr);
 								// echo form_radio('semesteranfang', 'WS', TRUE);
-								// creating the radio manually, to use the set_checkbox() method
+								// creating the radio manually, to use the set_radio() method
 								// echo '<input type="radio" name="semesteranfang" value="WiSe"'.set_radio('semesteranfang', 'WiSe', TRUE).' />';
 								// echo 'WiSe';
 								// // echo form_radio('semesteranfang', 'SS', FALSE);
 								// echo '<input type="radio" name="semesteranfang" value="SoSe"'.set_radio('semesteranfang', 'SoSe', FALSE).' />';
 								// echo 'SoSe'; echo '<br />';
+
+								echo '<input type="radio" name="semesteranfang" value="WiSe"'.set_radio('semesteranfang', 'WiSe', TRUE).' />';
+								echo 'WiSe';
+								// echo form_radio('semesteranfang', 'SS', FALSE);
+								echo '<input type="radio" name="semesteranfang" value="SoSe"'.set_radio('semesteranfang', 'SoSe', FALSE).' />';
+								echo 'SoSe'; echo '<br />';
 							?>
-							<input type="radio" name="semesteranfang" value="WiSe" <?php echo set_radio('semesteranfang', 'WiSe', TRUE); ?> />
-							<input type="radio" name="semesteranfang" value="SoSe" <?php echo set_radio('semesteranfang', 'SoSe'); ?> />
 							<?php echo form_dropdown('studiengang', $studiengaenge, /*standard value*/'', $data_studiengang); ?>
 						</fieldset>
 						<hr>
@@ -99,40 +103,40 @@
 <?php endblock(); ?>
 
 <?php startblock('customFooterJQueryCode');?>
-				var Studentsdata = {
-					init : function( config ) {
-						this.config = config;
-						this.bindEvents();
-						this.toggleStudentsdata();
-					},
-					
-					bindEvents : function() {
-						var self = this;
-						this.config.roleDropdown.on( 'change', function() {
-							self.toggleStudentsdata($(this));
-						} );
-					},
-					
-					toggleStudentsdata : function(selectbox) {
-						var studentdata_container = this.config.studentdataField;
-						var dropdown_value = (selectbox)
-							? dropdown_value = selectbox.val()
-							: '0';
-						(dropdown_value === '4') ? studentdata_container.slideDown() : studentdata_container.slideUp();
-					}
-				};
-				
-				// in case of more than one object
-				// var sd1 = Object.create( Studentsdata );
-				// sd1.init({
-				// 	studentdataField : $('#studentdata'),
-				// 	roleDropdown : $('select.role')
-				// });
-				
-				Studentsdata.init({
-					studentdataField : $('#studentdata'),
-					roleDropdown : $('select.role')
-				});
+	var Studentsdata = {
+		init : function( config ) {
+			this.config = config;
+			this.bindEvents();
+			this.toggleStudentsdata();
+		},
+		
+		bindEvents : function() {
+			var self = this;
+			this.config.roleDropdown.on( 'change', function() {
+				self.toggleStudentsdata($(this));
+			} );
+		},
+		
+		toggleStudentsdata : function(selectbox) {
+			var studentdata_container = this.config.studentdataField;
+			var dropdown_value = (selectbox)
+				? dropdown_value = selectbox.val()
+				: '0';
+			(dropdown_value === '5') ? studentdata_container.slideDown() : studentdata_container.slideUp();
+		}
+	};
+	
+	// in case of more than one object
+	// var sd1 = Object.create( Studentsdata );
+	// sd1.init({
+	// 	studentdataField : $('#studentdata'),
+	// 	roleDropdown : $('select.role')
+	// });
+	
+	Studentsdata.init({
+		studentdataField : $('#studentdata'),
+		roleDropdown : $('select.role')
+	});
 <?php endblock(); ?>
 
 <?php end_extend(); ?>

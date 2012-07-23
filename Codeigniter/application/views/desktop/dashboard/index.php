@@ -33,7 +33,7 @@
 							Edit Credit Anzeige
 							<form >
 								<label>Edit Credits Box </label>
-								<input type="checkbox" id ="semesterende" onclick="toggle_credits($(this))" checked="true"> Anzeigen
+								<input type="checkbox" id="semesterende" onclick="toggle_credits($(this))" checked="true"> Anzeigen
 								
 							</form>
 							<a href="#" class="flipLink btn btn-success pull-right">
@@ -107,13 +107,14 @@
 						<i class="icon icon-question-sign pull-right" title="Willst Du es wissen wile lange noch in diesen Semester hast?" rel="tooltip"></i>
 						<h5><i class="icon icon-tasks"></i>Semestercountdown EDIT</h5>
 						<div class="widget-edit">
-							Edit Counter
 							<form >
-								<label>Suche Deine Counter </label>
-								<input type="checkbox" id ="semesterende" onclick="toggle_counter($(this))" checked="true"> Semester Ende
-								<input type="checkbox" id ="klausurstart1" onclick="toggle_counter($(this))"checked="true" > Klausur1 
-								<input type="checkbox" id ="klausurstart2" onclick="toggle_counter($(this))"checked="true"> Klausur2
-								<input type="checkbox" id ="klausurstart3" onclick="toggle_counter($(this))"checked="true" > Klausur3
+								<fieldset>
+								<legend>Wähle deine Counter </legend>
+								<input type="checkbox" id="semesterende" onclick="toggle_counter($(this))" checked="checked"><label for="semesterende">Semester Ende</label>
+								<input type="checkbox" id="klausurstart1" onclick="toggle_counter($(this))" checked="checked"><label for="semesterende">Klausur1</label>
+								<input type="checkbox" id="klausurstart2" onclick="toggle_counter($(this))" checked="checked"><label for="semesterende">Klausur2</label>
+								<input type="checkbox" id="klausurstart3" onclick="toggle_counter($(this))" checked="checked"><label for="semesterende">Klausur3</label>
+								</fieldset>
 							</form>
 							<a href="#" class="flipLink btn btn-success pull-right">
 								<i class="icon-white icon-ok pull-left"></i>
@@ -167,8 +168,9 @@
 						</div>
 					</div>
 				</div><!-- /.span4-->
+				<!-- CONTENT ENDE-->
 <?php endblock(); ?>
-		<!-- CONTENT ENDE-->
+		
 <?php startblock('headJSfiles'); ?>
 				{jQuery_highcharts: "<?php print base_url(); ?>resources/js/highcharts.js"},
 				{jQuery_countdown: "<?php print base_url(); ?>resources/js/jquery.countdown.js"},
