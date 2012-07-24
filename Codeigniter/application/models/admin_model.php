@@ -534,27 +534,96 @@ class Admin_model extends CI_Model {
 	 * @return unknown
 	 */
 	function get_stdgng_courses($stdgng_id){
-		$q = $this->db->get_where('studiengangkurs', array('StudiengangID' => $stdgng_id));
-		
-		// first line of stdgng-list-view should give the opportunity to create an own course
-		// therefore first index of data-array must be filled with a 'default' Kurs
-		// KursID 0 won't be in studiengangkurs-table and cann be used as flag for course-creating
-		$data[] = null;
-		
-		if($q->num_rows() > 0){
-		    foreach ($q->result() as $row){
-			    $data[] = $row;
-		    }
-		    return $data;
-		}
+	    $q = '';
+	    $data = array();
+	    $course_exams = '';
 
-// 		foreach ($q->result_array() as $row)
-// 		{
-// 			$data[] = $row;
-// 		}
-// 		return $data;
-		
+	    // add exam-type to data
+	    $exam_types = $this->get_exam_types();
+	    
+	    $this->db->order_by('Semester', 'asc');
+	    $q = $this->db->get_where('studiengangkurs', array('StudiengangID' => $stdgng_id));
+
+	    // first line of stdgng-list-view should give the opportunity to create an own course
+	    // therefore first index of data-array must be filled with a 'default' Kurs
+	    // KursID 0 won't be in studiengangkurs-table and cann be used as flag for course-creating
+	    $data[] = null;
+
+	    // count rows to fill additional data to correct array
+	    $counter = 1;
+	    
+	    if($q->num_rows() > 0){
+		foreach ($q->result_array() as $row){
+		    $data[] = $row;
+		    
+		    // get exams for that course
+		    $course_exams = $this->get_exams_for_course($row['KursID']);
+
+		    // run through all types and add field to data
+		    foreach ($exam_types as $e_type) {
+			if($course_exams){
+			    // run through exams for course and store if type matches
+			    foreach ($course_exams as $key) {
+				if($e_type->PruefungstypID == $key['PruefungstypID']){
+				    $data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = 1;
+				} else {
+				    $data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = 0;
+				}
+
+			    }
+			} else {
+			    $data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = 0;
+			}
+			
+		    }
+		    $counter++;
+		}
+		return $data;
+	    }
 	}
+	
+	
+	/**
+	 * Returns the exam-types
+	 * @return Array (with Objects)
+	 */
+	private function get_exam_types(){
+	    $data = array();
+	    $this->db->select('PruefungstypID');
+	    $q = $this->db->get('pruefungstyp');
+	    
+	    if($q->num_rows() > 0){
+		foreach ($q->result() as $row){
+			    $data[] = $row;
+		}
+		return $data;
+	    }
+	}
+	
+	/**
+	 * Returns (0) one or more exam-types for a passed course_id
+	 * @param int $course_id
+	 */
+	private function get_exams_for_course($course_id){
+	    $data = array();
+	    $q = '';
+	    $q = $this->db->get_where('pruefungssammlung', array('KursID' => $course_id));
+	    
+	    if($q->num_rows() > 0){
+//		foreach ($q->result() as $row){
+//			    $data[] = $row;
+//		    }
+//		    return $data;
+//		}
+		foreach ($q->result_array() as $row){
+		    $data[] = $row;
+		}
+		return $data;
+	    
+	    }
+	}
+	
+	
 	
 	/**
 	 * Returns all ids belonging to a specified Studiengang

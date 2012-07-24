@@ -740,6 +740,11 @@ class Admin extends FHD_Controller {
 		
 		$this->load->view('admin/studiengang_add', $this->data->load());
 		
+//		echo '<div class="well"><pre>';
+//		echo 'DEBUG - if you see this tell developer - Frank ^^';
+//		print_r($this->admin_model->get_stdgng_courses(1));
+//		echo '</pre></div>';
+		
 	}
 	
 	/**
@@ -810,27 +815,26 @@ class Admin extends FHD_Controller {
 	 * Shows list of all stdgng to give the opportunity to delete them
 	 */
 	function delete_stdgng_view(){
-		// get all stdgnge for the view
-		$this->data->add('allStdgnge', $this->admin_model->getAllStdgnge());
-		
-		$siteinfo = array(
-		    'title' => 'Studiengang löschen',
-		    'main_content' => 'admin_stdgng_delete'
-		);
-		$this->data->add('siteinfo', $siteinfo);
-		
-		$this->load->view('includes/template', $this->data->load());
-		
+	    // get all stdgnge for the view
+	    $this->data->add('allStdgnge', $this->admin_model->getAllStdgnge());
+
+	    $siteinfo = array(
+		'title' => 'Studiengang löschen',
+		'main_content' => 'admin_stdgng_delete'
+	    );
+	    $this->data->add('siteinfo', $siteinfo);
+
+	    $this->load->view('includes/template', $this->data->load());
 	}
 	
 	/**
-	 * Returns an div holding the stdgng-table for a specified stdgng
+	 * Returns an div holding the stdgng-table for a passed stdgng
 	 * >> $this->input->get('stdgng_id')
 	 */
-	function ajax_show_courses_of_stdgng($stdgng_id = 0){
+	function ajax_show_courses_of_stdgng($stdgng_id = '0'){
 
 	    // if parameter is 0 - method called from within view
-	    if($stdgng_id === 0){
+	    if($stdgng_id === '0'){
 		// get submitted data - AJAX
 		$stdgng_chosen_id = $this->input->get('stdgng_id');
 	    // otherwise methode called from within controller (delete course)
@@ -847,12 +851,12 @@ class Admin extends FHD_Controller {
 
 	    // get number of semesters and prepare data for dropdown
 	    $regelsemester = $details_of_single_stdgng->Regelsemester;
-	    for($i = 0; $i <= $regelsemester; $i++){
-		if($i != 0){
-			$semester_dropdown_options[$i] = $i;
-		} else {
-			$semester_dropdown_options[$i] = '';
-		}
+	    for($i = 0; $i < $regelsemester; $i++){
+//		if($i != 0){
+			$semester_dropdown_options[$i] = $i+1;
+//		} else {
+//			$semester_dropdown_options[$i] = '';
+//		}
 	    }
 
 	    // stdgng_id is already needed here to generate unique ids for delete-buttons
@@ -866,36 +870,56 @@ class Admin extends FHD_Controller {
 	    // >> necessary because first line of table view should be
 	    // for creation of new courses
 	    // only KursID is needed, because creation of input-fields grabs
-	    // KursID to generate unique names
-	    $courses_of_single_stdgng[0]->KursID = '0';
-	    $courses_of_single_stdgng[0]->Kursname = '';
-	    $courses_of_single_stdgng[0]->kurs_kurz = '';
-	    $courses_of_single_stdgng[0]->Creditpoints = '';
-	    $courses_of_single_stdgng[0]->SWS_Vorlesung = '';
-	    $courses_of_single_stdgng[0]->SWS_Uebung = '';
-	    $courses_of_single_stdgng[0]->SWS_Praktikum = '';
-	    $courses_of_single_stdgng[0]->SWS_Projekt = '';
-	    $courses_of_single_stdgng[0]->SWS_Seminar = '';
-	    $courses_of_single_stdgng[0]->SWS_SeminarUnterricht = '';
-	    $courses_of_single_stdgng[0]->Semester = '';
-	    $courses_of_single_stdgng[0]->Beschreibung = '';
+	    // KursID to generate unique names => array[0]
+	    $courses_of_single_stdgng[0]['KursID'] = '0';
+	    $courses_of_single_stdgng[0]['Kursname'] = '';
+	    $courses_of_single_stdgng[0]['kurs_kurz'] = '';
+	    $courses_of_single_stdgng[0]['Creditpoints'] = '';
+	    $courses_of_single_stdgng[0]['SWS_Vorlesung'] = '';
+	    $courses_of_single_stdgng[0]['SWS_Uebung'] = '';
+	    $courses_of_single_stdgng[0]['SWS_Praktikum'] = '';
+	    $courses_of_single_stdgng[0]['SWS_Projekt'] = '';
+	    $courses_of_single_stdgng[0]['SWS_Seminar'] = '';
+	    $courses_of_single_stdgng[0]['SWS_SeminarUnterricht'] = '';
+	    $courses_of_single_stdgng[0]['Semester'] = '0';
+	    $courses_of_single_stdgng[0]['Beschreibung'] = '';
+	    // if there will be more exam-types added: this is the place to add them too!!
+	    $courses_of_single_stdgng[0]['pruefungstyp_1'] = FALSE;
+	    $courses_of_single_stdgng[0]['pruefungstyp_2'] = FALSE;
+	    $courses_of_single_stdgng[0]['pruefungstyp_3'] = FALSE;
+	    $courses_of_single_stdgng[0]['pruefungstyp_4'] = FALSE;
+	    $courses_of_single_stdgng[0]['pruefungstyp_5'] = FALSE;
+	    $courses_of_single_stdgng[0]['pruefungstyp_6'] = FALSE;
+	    $courses_of_single_stdgng[0]['pruefungstyp_7'] = FALSE;
+	    $courses_of_single_stdgng[0]['pruefungstyp_8'] = FALSE;
 
 	    //for each record - print out table-row with form-fields
 	    foreach($courses_of_single_stdgng as $sd){
 		// build a table-row for each course
-		$data['KursID'] = $sd->KursID;
-		$data['Kursname'] = $sd->Kursname;
-		$data['kurs_kurz'] = $sd->kurs_kurz;
-		$data['Creditpoints'] = $sd->Creditpoints;
-		$data['SWS_Vorlesung'] = $sd->SWS_Vorlesung;
-		$data['SWS_Uebung'] = $sd->SWS_Uebung;
-		$data['SWS_Praktikum'] = $sd->SWS_Praktikum;
-		$data['SWS_Projekt'] = $sd->SWS_Projekt;
-		$data['SWS_Seminar'] = $sd->SWS_Seminar;
-		$data['SWS_SeminarUnterricht'] = $sd->SWS_SeminarUnterricht;
+		$data['KursID'] = $sd['KursID'];
+		$data['Kursname'] = $sd['Kursname'];
+		$data['kurs_kurz'] = $sd['kurs_kurz'];
+		$data['Creditpoints'] = $sd['Creditpoints'];
+		$data['SWS_Vorlesung'] = $sd['SWS_Vorlesung'];
+		$data['SWS_Uebung'] = $sd['SWS_Uebung'];
+		$data['SWS_Praktikum'] = $sd['SWS_Praktikum'];
+		$data['SWS_Projekt'] = $sd['SWS_Projekt'];
+		$data['SWS_Seminar'] = $sd['SWS_Seminar'];
+		$data['SWS_SeminarUnterricht'] = $sd['SWS_SeminarUnterricht'];
 		$data['SemesterDropdown'] = $semester_dropdown_options;	// array holding all dropdown-options
-		$data['Semester'] = $sd->Semester;
-		$data['Beschreibung'] = $sd->Beschreibung;
+		$data['Semester'] = $sd['Semester'];
+		$data['Beschreibung'] = $sd['Beschreibung'];
+		// if there will be more exam-types added: this is the place to add them too!!
+		$data['pruefungstyp_1'] = (($sd['pruefungstyp_1'] == '1') ? TRUE : FALSE); // convert data (1/0) to boolean
+		$data['pruefungstyp_2'] = (($sd['pruefungstyp_2'] == '1') ? TRUE : FALSE);
+		$data['pruefungstyp_3'] = (($sd['pruefungstyp_3'] == '1') ? TRUE : FALSE);
+		$data['pruefungstyp_4'] = (($sd['pruefungstyp_4'] == '1') ? TRUE : FALSE);
+		$data['pruefungstyp_5'] = (($sd['pruefungstyp_5'] == '1') ? TRUE : FALSE);
+		$data['pruefungstyp_6'] = (($sd['pruefungstyp_6'] == '1') ? TRUE : FALSE);
+		$data['pruefungstyp_7'] = (($sd['pruefungstyp_7'] == '1') ? TRUE : FALSE);
+		$data['pruefungstyp_8'] = (($sd['pruefungstyp_8'] == '1') ? TRUE : FALSE);
+		
+		// adding 
 
 		// array holding all rows
 		$rows[] = $this->load->view('admin-subviews/admin_stdgng_coursetable_row', $data, TRUE);
@@ -985,8 +1009,6 @@ class Admin extends FHD_Controller {
 			$id->KursID.'kurs_kurz', 'Kurzbezeichnung fehlt - ID: '.$id->KursID, 'required');
 		$this->form_validation->set_rules(
 			$id->KursID.'Creditpoints', 'Creditpoints fehlen oder nicht numerisch - ID: '.$id->KursID, 'required|numeric');
-		$this->form_validation->set_rules(
-			$id->KursID.'Semester', 'Wählen Sie ein Semester aus - ID: '.$id->KursID, 'greater_than[0]');
 	    }
 	    
 	    if ($this->form_validation->run() == FALSE) {
@@ -1010,7 +1032,7 @@ class Admin extends FHD_Controller {
 //		echo '</pre>';
 		
 		// build an array, containing all keys that have to be updated in db
-		$updateFields = array(
+		$update_fields = array(
 				'Kursname',
 				'kurs_kurz',
 				'Creditpoints',
@@ -1023,25 +1045,46 @@ class Admin extends FHD_Controller {
 				'Semester',
 				'Beschreibung');
 		
+		// TODO handle checkboxes different - values only submitted when checked
+		$update_checkboxes = array(
+				'ext1',
+				'ext2',
+				'ext3',
+				'ext4',
+				'ext5',
+				'ext6',
+				'ext7',
+				'ext8'
+		);  
+		
 		// get ids of a single studiengang - specified by id
-		$stdgngIds = $this->admin_model->getStdgngCourseIds(
+		$stdgng_ids = $this->admin_model->getStdgngCourseIds(
 			$this->input->post('stdgng_id'));
 				
 		// get values of nested object - KursIds - to run through the ids and update records
-		foreach ($stdgngIds as $si){
-		    $stdgngIdValues[] = $si->KursID;
+		foreach ($stdgng_ids as $si){
+		    $stdgng_id_values[] = $si->KursID;
 		}
 		
 		// run through all course-ids that belong to a single Studiengang, build data-array for updating records in db
 		// AND update data for every id
-		foreach($stdgngIdValues as $id){
+		foreach($stdgng_id_values as $id){
 		    // produces an array holding db-keys as keys and data as values
-		    for ($i = 0; $i < count($updateFields); $i++){
-			$updateStdgngData[$updateFields[$i]] = $this->input->post($id.$updateFields[$i]);
+		    for ($i = 0; $i < count($update_fields); $i++){
+			$update_stdgng_data[$update_fields[$i]] = $this->input->post($id.$update_fields[$i]);
 		    }
 		    // call function in model to update records
-		    $this->admin_model->update_stdgng_courses($updateStdgngData, $id);
+		    $this->admin_model->update_stdgng_courses($update_stdgng_data, $id);
+		    
+		    // handle checkboxes
+		    foreach ($update_checkboxes as $value) {
+			if($this->input->post($id.$value) === '1'){
+			    // TODO save to db
+			}
+		    }
 		}
+		
+		    
 		
 		// show StudiengangDetails-List again
 		$this->show_stdgng_course_list();	

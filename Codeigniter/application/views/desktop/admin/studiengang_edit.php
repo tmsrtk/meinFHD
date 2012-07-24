@@ -146,7 +146,7 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
 	});
 	
 
-	
+	return false;
 
     });
 <?php endblock(); ?>
