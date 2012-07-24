@@ -73,9 +73,12 @@
 <!-- Test für speichern der Modulreihenfolge -->
 <?php $fs_attrs = array(
 	'id'	=>	'sendButton',
-	'name'	=>	'sendButton'
+	'name'	=>	'sendButton',
+	'class' =>	'btn btn-success'
 	); ?>
 <?php echo form_submit($fs_attrs, 'Los'); ?>
+
+<button name="resetStudienPlan" id="resetStudienPlan" class="btn btn-warning" >Reset</button>
 
 <div id="modalcontent"></div>
 
@@ -181,6 +184,7 @@
 				this.config.changedModulesHistory = new Array();
 				this.initJQUIsortable();
 				this.initSendButton();
+				this.initResetButton();
 				this.initBtnPruefen();
 			},
 			
@@ -194,6 +198,7 @@
 					placeholder: 'semestermodul_placeholder',
 					dropOnEmpty: true,
 					tolerance: 'pointer',
+					revert : 'true',
 	
 					// hier findet das Schreiben in die Datenbank statt
 					// jedes Mal wenn das Draggen aufgehört hat UND es eine Veränderung
@@ -290,6 +295,18 @@
 				return false;
 			},
 
+			initResetButton : function() {
+				var self = this;
+
+				this.config.resetButton.click(function() {
+
+					self.config.sortableColumns.sortable( "cancel" );
+					self.config.changedModulesHistory = new Array();
+
+					return false;
+				});
+			},
+
 			initBtnPruefen : function() {
 
 				// console.log(this.config.btnPruefen);
@@ -362,6 +379,7 @@
 			sortableColumns: $(".semesterplanspalte"),
 			connectWithColumns: '.semesterplanspalte',
 			sendButton : $('#sendButton'),
+			resetButton : $('#resetStudienPlan'),
 			btnPruefen : $('a.b_pruefen')
 		});
 
