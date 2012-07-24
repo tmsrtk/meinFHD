@@ -827,81 +827,91 @@ class Admin extends FHD_Controller {
 	 * Returns an div holding the stdgng-table for a specified stdgng
 	 * >> $this->input->get('stdgng_id')
 	 */
-	function ajax_show_courses_of_stdgng(){
+	function ajax_show_courses_of_stdgng($stdgng_id = 0){
 
+	    // if parameter is 0 - method called from within view
+	    if($stdgng_id === 0){
 		// get submitted data - AJAX
 		$stdgng_chosen_id = $this->input->get('stdgng_id');
-		$courses_of_single_stdgng = $this->admin_model->
-			get_stdgng_courses($stdgng_chosen_id);
+	    // otherwise methode called from within controller (delete course)
+	    // id is passed
+	    } else {
+		$stdgng_chosen_id = $stdgng_id;
+	    }
 		
-		$details_of_single_stdgng = $this->admin_model->
-			get_stdgng_details_asrow($stdgng_chosen_id);
-	
-		// get number of semesters and prepare data for dropdown
-		$regelsemester = $details_of_single_stdgng->Regelsemester;
-		for($i = 0; $i <= $regelsemester; $i++){
-		    if($i != 0){
-			    $semester_dropdown_options[$i] = $i;
-		    } else {
-			    $semester_dropdown_options[$i] = '';
-		    }
-	        }
-		
+	    $courses_of_single_stdgng = $this->admin_model->
+		    get_stdgng_courses($stdgng_chosen_id);
+
+	    $details_of_single_stdgng = $this->admin_model->
+		    get_stdgng_details_asrow($stdgng_chosen_id);
+
+	    // get number of semesters and prepare data for dropdown
+	    $regelsemester = $details_of_single_stdgng->Regelsemester;
+	    for($i = 0; $i <= $regelsemester; $i++){
+		if($i != 0){
+			$semester_dropdown_options[$i] = $i;
+		} else {
+			$semester_dropdown_options[$i] = '';
+		}
+	    }
+
+	    // stdgng_id is already needed here to generate unique ids for delete-buttons
+	    $data['stdgng_id'] = $stdgng_chosen_id;
+
 //		echo '<pre>';
 //		print_r($flag);
 //		echo '</pre>';
-		
-		// fill first element of object-array with default-values -
-		// >> necessary because first line of table view should be
-		// for creation of new courses
-		// only KursID is needed, because creation of input-fields grabs
-		// KursID to generate unique names
-		$courses_of_single_stdgng[0]->KursID = '0';
-		$courses_of_single_stdgng[0]->Kursname = '';
-		$courses_of_single_stdgng[0]->kurs_kurz = '';
-		$courses_of_single_stdgng[0]->Creditpoints = '';
-		$courses_of_single_stdgng[0]->SWS_Vorlesung = '';
-		$courses_of_single_stdgng[0]->SWS_Uebung = '';
-		$courses_of_single_stdgng[0]->SWS_Praktikum = '';
-		$courses_of_single_stdgng[0]->SWS_Projekt = '';
-		$courses_of_single_stdgng[0]->SWS_Seminar = '';
-		$courses_of_single_stdgng[0]->SWS_SeminarUnterricht = '';
-		$courses_of_single_stdgng[0]->Semester = '';
-		$courses_of_single_stdgng[0]->Beschreibung = '';
-		
-		//for each record - print out table-row with form-fields
-		foreach($courses_of_single_stdgng as $sd){
-		    // build a table-row for each course
-		    $data['KursID'] = $sd->KursID;
-		    $data['Kursname'] = $sd->Kursname;
-		    $data['kurs_kurz'] = $sd->kurs_kurz;
-		    $data['Creditpoints'] = $sd->Creditpoints;
-		    $data['SWS_Vorlesung'] = $sd->SWS_Vorlesung;
-		    $data['SWS_Uebung'] = $sd->SWS_Uebung;
-		    $data['SWS_Praktikum'] = $sd->SWS_Praktikum;
-		    $data['SWS_Projekt'] = $sd->SWS_Projekt;
-		    $data['SWS_Seminar'] = $sd->SWS_Seminar;
-		    $data['SWS_SeminarUnterricht'] = $sd->SWS_SeminarUnterricht;
-		    $data['SemesterDropdown'] = $semester_dropdown_options;	// array holding all dropdown-options
-		    $data['Semester'] = $sd->Semester;
-		    $data['Beschreibung'] = $sd->Beschreibung;
-		    
-		    // array holding all rows
-		    $rows[] = $this->load->view('admin-subviews/admin_stdgng_coursetable_row', $data, TRUE);
-		}
-		
-		// make data available in view
-		$data['stdgng_details'] = $details_of_single_stdgng;
-		$data['stdgng_course_rows'] = $rows;
-		$data['stdgng_id'] = $stdgng_chosen_id;
-		
-		// return content
-		$result = '';
-		$result .= $this->load->view('admin/partials/studiengang_details', $data, TRUE);
-		$result .= $this->load->view('admin-subviews/admin_stdgng_coursetable_content', $data, TRUE);
-		
-		echo $result;
-		
+
+	    // fill first element of object-array with default-values -
+	    // >> necessary because first line of table view should be
+	    // for creation of new courses
+	    // only KursID is needed, because creation of input-fields grabs
+	    // KursID to generate unique names
+	    $courses_of_single_stdgng[0]->KursID = '0';
+	    $courses_of_single_stdgng[0]->Kursname = '';
+	    $courses_of_single_stdgng[0]->kurs_kurz = '';
+	    $courses_of_single_stdgng[0]->Creditpoints = '';
+	    $courses_of_single_stdgng[0]->SWS_Vorlesung = '';
+	    $courses_of_single_stdgng[0]->SWS_Uebung = '';
+	    $courses_of_single_stdgng[0]->SWS_Praktikum = '';
+	    $courses_of_single_stdgng[0]->SWS_Projekt = '';
+	    $courses_of_single_stdgng[0]->SWS_Seminar = '';
+	    $courses_of_single_stdgng[0]->SWS_SeminarUnterricht = '';
+	    $courses_of_single_stdgng[0]->Semester = '';
+	    $courses_of_single_stdgng[0]->Beschreibung = '';
+
+	    //for each record - print out table-row with form-fields
+	    foreach($courses_of_single_stdgng as $sd){
+		// build a table-row for each course
+		$data['KursID'] = $sd->KursID;
+		$data['Kursname'] = $sd->Kursname;
+		$data['kurs_kurz'] = $sd->kurs_kurz;
+		$data['Creditpoints'] = $sd->Creditpoints;
+		$data['SWS_Vorlesung'] = $sd->SWS_Vorlesung;
+		$data['SWS_Uebung'] = $sd->SWS_Uebung;
+		$data['SWS_Praktikum'] = $sd->SWS_Praktikum;
+		$data['SWS_Projekt'] = $sd->SWS_Projekt;
+		$data['SWS_Seminar'] = $sd->SWS_Seminar;
+		$data['SWS_SeminarUnterricht'] = $sd->SWS_SeminarUnterricht;
+		$data['SemesterDropdown'] = $semester_dropdown_options;	// array holding all dropdown-options
+		$data['Semester'] = $sd->Semester;
+		$data['Beschreibung'] = $sd->Beschreibung;
+
+		// array holding all rows
+		$rows[] = $this->load->view('admin-subviews/admin_stdgng_coursetable_row', $data, TRUE);
+	    }
+
+	    // make data available in view
+	    $data['stdgng_details'] = $details_of_single_stdgng;
+	    $data['stdgng_course_rows'] = $rows;
+
+	    // return content
+	    $result = '';
+	    $result .= $this->load->view('admin/partials/studiengang_details', $data, TRUE);
+	    $result .= $this->load->view('admin-subviews/admin_stdgng_coursetable_content', $data, TRUE);
+
+	    echo $result;
+
 	}
 	
 	
@@ -1065,6 +1075,24 @@ class Admin extends FHD_Controller {
 		// show StudiengangDetails-List again
 		$this->show_stdgng_course_list();
 		
+	}
+	
+	
+	/**
+	 * Deletes single course from studiengangkurs-table
+	 * called from stdgng_edit view after user confirmed
+	 * deletion with click on OK in confirmation-dialog
+	 */
+	function ajax_delete_single_course_from_stdgng(){
+	   $delete_course_id =  $this->input->post('delete_course_id');
+	   
+	   $split = explode('_', $delete_course_id);
+	   
+	   // TODO delete course with $split[0] - course id
+	   $this->admin_model->delete_stdgng_single_course($split[0]);
+	   
+	   // call view with updated data	   
+	   echo $this->ajax_show_courses_of_stdgng($split[1]);
 	}
 	
 	/* *****************************************************

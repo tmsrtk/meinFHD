@@ -29,7 +29,7 @@
     <div class="tab-content">
 	<?php 
 	    // print div for each course
-	    foreach($course_names_ids as $c_id => $value){
+	    foreach($course_names_ids as $c_id => $value) :
 		echo '<div class="tab-pane" id="'.$value->kurs_kurz.'-'.$c_id.'"> ';
 
 		// checkbox data - has to be generate each time because of course_id!
@@ -59,23 +59,27 @@
 		    'id' => 'course-mgt-label-overall-'.$c_id,
 		    'class' => 'label label-info',
 		);
+	?>
 		
-		// print email-checkbox
-		echo '<div id="staff-send-email" class="clearfix">';
-		echo form_open(''); 
-		echo '<h3>Emailversand:</h3>';
-		echo '<div class="span1">';
-		echo form_checkbox($cb_data);
-		echo '</div>';
-		echo '<div class="span4">';
-		echo form_label('Email senden an alle Personen und Kursteilnehmer', '', $overall_label_attrs);
-		echo '</div>';
-		echo '<div class="span2">';
-		echo form_submit($submit_data_send_email);
-		echo form_close();
-		echo '</div>';
-		echo '</div>';
+		<!-- print email-line -->
+		<div id="staff-send-email" class="clearfix">
+		    <?php echo form_open(''); ?>
+		    <h3>Emailversand:</h3>
+		    <div class="span1">
+			<?php echo form_checkbox($cb_data); ?>
+		    </div>
+		    <div class="span4">
+			<?php echo form_label('Email senden an alle Personen und Kursteilnehmer', '', $overall_label_attrs); ?>
+		    </div>
+		    <div class="span2">
+			<?php 
+			    echo form_submit($submit_data_send_email);
+			    echo form_close();
+			?>
+		    </div>
+		</div>
 		
+	<?php
 		// print staff-table
 		print $staff[$c_id];
 		
@@ -106,17 +110,17 @@
 		    'rows' => 7,
 		    'cols' => 40
 		);
-		
-		echo '<h3>Beschreibung </h3>';
-		echo '<div>'.form_textarea($course_description_textarea_data).'</div>';
-		
-		echo form_close(); // end of form
-		
-		echo '</div>'; // end of tab
-	    }
-	?>    
-    </div>
-    
+	?>
+	
+		<div>
+		    <h3>Beschreibung </h3>
+		    <div>
+			<?php echo form_textarea($course_description_textarea_data); ?>
+		    </div>
+		    <?php echo form_close(); // end of form ?>
+		</div>
+	<?php endforeach; ?>    
+    </div><!-- end of tab -->
 </div>
 
 

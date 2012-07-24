@@ -636,6 +636,15 @@ class Admin_model extends CI_Model {
 	}
 	
 	
+	/**
+	 * Deltes a single course from studiengangkurs-table
+	 * @param int $course_id
+	 */
+	function delete_stdgng_single_course($course_id){
+	    $this->db->delete('studiengangkurs', array('KursID' => $course_id));
+	}
+	
+	
 	/* *****************************************************
 	 * ************** Stundenplanverwaltung Anfang *********
 	 * *****************************************************/

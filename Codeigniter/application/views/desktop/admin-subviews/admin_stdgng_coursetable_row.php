@@ -14,7 +14,7 @@
 	<?php 
 	    $kursnameData = array(
 		'name' => $KursID.'Kursname',
-		'id' => 'Kursname',
+		'id' => 'kursname',
 		'value' => $Kursname
 	    );
 	?>
@@ -24,7 +24,7 @@
 	<?php 
 	    $kursnameKurzData = array(
 		'name' => $KursID.'kurs_kurz',
-		'id' => 'KursnameKurz',
+		'id' => 'kursname-kurz',
 		'value' => $kurs_kurz,
 		'class' => 'span1'
 	    );
@@ -35,7 +35,7 @@
 	<?php 
 	    $creditpointsData = array(
 		'name' => $KursID.'Creditpoints',
-		'id' => 'CP',
+		'id' => 'cp',
 		'value' => $Creditpoints,
 		'class' => 'span1'
 	    );
@@ -53,7 +53,7 @@
 	    }
 	    $swsDataVorl = array(
 		'name' => $KursID.'SWS_Vorlesung',
-		'id' => 'SWS_Vorl',
+		'id' => 'sws-vorl',
 		'value' => $sd_SWS_Vorlesung,
 		'class' => 'span1'
 	    );
@@ -66,7 +66,7 @@
 	    }
 	    $swsDataUeb = array(
 		'name' => $KursID.'SWS_Uebung',
-		'id' => 'SWS_Ueb',
+		'id' => 'sws-ueb',
 		'value' => $sd_SWS_Uebung,
 		'class' => 'span1'
 	    );
@@ -79,7 +79,7 @@
 	    }
 	    $swsDataPrakt = array(
 		'name' => $KursID.'SWS_Praktikum',
-		'id' => 'SWS_Prakt',
+		'id' => 'sws-prakt',
 		'value' => $sd_SWS_Praktikum,
 		'class' => 'span1'
 	    );
@@ -92,7 +92,7 @@
 	    }
 	    $swsDataPro = array(
 		'name' => $KursID.'SWS_Projekt',
-		'id' => 'SWS_Pro',
+		'id' => 'sws-pro',
 		'value' => $sd_SWS_Projekt,
 		'class' => 'span1'
 	    );
@@ -105,7 +105,7 @@
 	    }
 	    $swsDataSem = array(
 		'name' => $KursID.'SWS_Seminar',
-		'id' => 'SWS_Sem',
+		'id' => 'sws-seminar',
 		'value' => $sd_SWS_Seminar,
 		'class' => 'span1'
 	    );
@@ -118,7 +118,7 @@
 	    }
 	    $swsDataSemU = array(
 		'name' => $KursID.'SWS_SeminarUnterricht',
-		'id' => 'SWS_SemU',
+		'id' => 'sws-seminar-u',
 		'value' => $sd_SWS_SeminarUnterricht,
 		'class' => 'span1'
 	    );
@@ -144,12 +144,17 @@
 	?>
 	<td><?php print form_dropdown($KursID.'Semester', $SemesterDropdown,
 		$Semester, $dropdown_attributes)?></td>
+	
+	<!-- Prüfungstypen -->
+	<?php 
+	?>
+	<td><?php ;?></td>
 
 	<!-- Beschreibung -->
 	<?php 
 	    $textareaData = array(
 		'name' => $KursID.'Beschreibung',
-		'id' => 'Beschreibung',
+		'id' => 'beschreibung',
 		'value' => $Beschreibung,
 		'rows' => 3,
 		'cols' => 5
@@ -162,21 +167,20 @@
 	    if($KursID == 0){ 
 		$buttonData = array(
 		    'name' => $KursID.'createCourse',
-		    'id' => 'create_btn_stdgng',
+		    'id' => 'create-stdgng-btn',
 		    'value' => true,
 		    'content' => 'Hinzufügen'
 		);
 	    } else {
 		$buttonData = array(
-		    'name' => $KursID.'deleteCourse',
-		    'id' => 'delete_btn_stdgng',
+		    'name' => $KursID.'_'.$stdgng_id,
+		    'id' => 'delete-stdgng-btn',
 		    'data-id' => $KursID,
 		    'value' => true,
 		    'content' => 'Löschen'
 		);
 	    }
 	?>
-	<!-- TODO event for button-click - id vergeben und über AJAX -->
 	<td><?php print form_button($buttonData); ?></td>
 
     </tr>

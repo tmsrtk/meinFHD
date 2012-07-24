@@ -8,114 +8,86 @@
 ?>
 <!-- overview over relevant staff for this course -->
 <h3>Personen:</h3>
-<!--<table class="table table-striped table-bordered table-condensed">
-    <tbody>
-	<tr>
-	    <td class="span1">-->
 <div> <!-- staff part starts here -->
     <div class="clearfix"> <!-- FIRST line -->
 	<div class="span1"> <!-- checkbox FIRST line -->
-		<?php
-		    $cb_data['name'] = $course_id.'-1';
-		    $cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-1';
-		    echo form_open('');
-		    echo form_checkbox($cb_data);
-		    echo form_close();
-		?>
+	    <?php
+		$cb_data['name'] = $course_id.'-1';
+		$cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-1';
+		echo form_open('');
+		echo form_checkbox($cb_data);
+		echo form_close();
+	    ?>
 	</div> <!-- checkbox FIRST line ends here -->
-<!--	    </td>
-	    <td class="span1 ">-->
 	<div class="span2"> <!-- label FIRST line -->
 		<label class="label label-info" id="course-mgt-label-<?php echo $course_id.'-1'; ?>">Dozent</label>
 	</div> <!-- label ends here -->
-<!--	    </td>
-	    <td>-->
 	<div class="span6"> <!-- staff FIRST line -->
 		<?php echo $prof; ?>
 	</div> <!-- staff FIRST line ends here -->
     </div> <!-- FIRST line ends here -->
     <div class="clearfix"> <!-- SECOND line -->
-<!--	    </td>
-	</tr>
-	<tr>
-	    <td class="span1">-->
 	<div class="span1"> <!-- checkbox SECOND line -->
-		<?php
-		    $cb_data['name'] = $course_id.'-2';
-		    $cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-2';
-		    echo form_open('');
-		    echo form_checkbox($cb_data);
-		    echo form_close();
-		?>
+	    <?php
+		$cb_data['name'] = $course_id.'-2';
+		$cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-2';
+		echo form_open('');
+		echo form_checkbox($cb_data);
+		echo form_close();
+	    ?>
 	</div> <!-- checkbox SECOND line ends here -->
-<!--	    </td>
-	    <td class="span1">-->
 	<div class="span2"> <!-- label SECOND line -->
 		<label class="label label-info" id="course-mgt-label-<?php echo $course_id.'-2'; ?>">Betreuer</label>
 	</div> <!-- label ends here -->
-<!--	    </td>
-	    <td>-->
-		<div class="span6" id="current-labings-<?php echo $course_id; ?>"><!-- staff SECOND line -->
-		    <?php 
-			// print button
-			if(!$is_tutor){
-			    echo '<a class="btn btn-mini" id="labings-slider-'.$course_id.'" href="#">+</a>';
+	    <div class="span6" id="current-labings-<?php echo $course_id; ?>"><!-- staff SECOND line -->
+		<?php 
+		    // print button
+		    if(!$is_tutor){
+			echo '<a class="btn btn-mini" id="labings-slider-'.$course_id.'" href="#">+</a>';
+		    }
+		    // if there are already - print
+		    foreach($current_labings as $labings){
+			foreach($labings as $l){
+			    echo '<span
+				id="added-labings-'.$course_id.'-'.$l['BenutzerID'].'"> '.$l['Vorname'].' '.$l['Nachname'].', </span>';
 			}
-			// if there are already - print
-			foreach($current_labings as $labings){
-			    foreach($labings as $l){
-				echo '<span
-				    id="added-labings-'.$course_id.'-'.$l['BenutzerID'].'"> '.$l['Vorname'].' '.$l['Nachname'].', </span>';
-			    }
-			}
-		    ?>
-<!--		    <div> hidden panel -->
-<!--		    </div>-->
-		</div> <!-- staff SECOND line ends here -->
+		    }
+		?>
+	    </div> <!-- staff SECOND line ends here -->
     </div> <!-- SECOND line ends here -->
+    
     <div class="clearfix"><?php echo $labing_panel; ?></div>
-<!--	    </td>
-	</tr>-->
+    
     <div class="clearfix"> <!-- THIRD line -->
 	<div class="span1"> <!-- checkbox THIRD line -->
-<!--	<tr>
-	    <td class="span1">-->
-		<?php
-		    $cb_data['name'] = $course_id.'-3';
-		    $cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-3';
-		    echo form_open('');
-		    echo form_checkbox($cb_data);
-		    echo form_close();
-		?>
+	    <?php
+		$cb_data['name'] = $course_id.'-3';
+		$cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-3';
+		echo form_open('');
+		echo form_checkbox($cb_data);
+		echo form_close();
+	    ?>
 	</div> <!-- checkbox ends here -->
-<!--	    </td>
-	    <td class="span1">-->
 	<div class="span2"> <!-- label THIRD line -->
 		<label class="label label-info" id="course-mgt-label-<?php echo $course_id.'-3'; ?>">Tutor(en)</label>
 	</div><!-- label ends here -->
-<!--	    </td>
-	    <td>-->
-		<div class="span6" id="current-tuts-<?php echo $course_id; ?>"><!-- staff THIRD line -->
-		    <?php if(!$is_tutor){
-			echo '<a class="btn btn-mini" id="tuts-slider-'.$course_id.'" href="#">+</a>';
+	    <div class="span6" id="current-tuts-<?php echo $course_id; ?>"><!-- staff THIRD line -->
+		<?php if(!$is_tutor){
+		    echo '<a class="btn btn-mini" id="tuts-slider-'.$course_id.'" href="#">+</a>';
+		}
+		// if there are already - print
+		foreach($current_tuts as $tuts){
+		    foreach($tuts as $t){
+			echo '<span
+			    id="added-tuts-'.$course_id.'-'.$t['BenutzerID'].'"> '.$t['Vorname'].' '.$t['Nachname'].', </span>';
 		    }
-		    // if there are already - print
-		    foreach($current_tuts as $tuts){
-			foreach($tuts as $t){
-			    echo '<span
-				id="added-tuts-'.$course_id.'-'.$t['BenutzerID'].'"> '.$t['Vorname'].' '.$t['Nachname'].', </span>';
-			}
-		    }
-		    ?>
-<!--		    <div> hidden panel -->
-<!--		    </div>-->
-		</div><!-- staff ends here -->
-<!--	    </td>
-	</tr>
-    </tbody>
-</table>-->
+		}
+		?>
+	    </div><!-- staff ends here -->
     </div> <!-- THIRD line ends here -->
+    
     <div class="clearfix"><?php echo $tut_panel; ?></div>
+
 </div> <!-- staff part ends here -->
 
 <script>

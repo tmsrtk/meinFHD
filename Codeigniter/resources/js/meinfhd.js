@@ -1,10 +1,20 @@
 (function($) {
 	// custom js functionality goes here
+
 	
+	
+//	$('#delete-dialog-container').on('click', '#delete-dialog-cancel', function(){
+//	   $('#delete-dialog').hide();
+//	   
+//	   return false;
+//	});
+
+
+
 	// autoclosing twitter bootstrap alerts
 	function createAutoClosingAlert(selector, delay) {
 		var alert = $(selector).alert();
-		window.setTimeout(function() { alert.alert('close') }, delay);
+		window.setTimeout(function() {alert.alert('close')}, delay);
 	}
 	
 	createAutoClosingAlert(".alert.in", 3000);
