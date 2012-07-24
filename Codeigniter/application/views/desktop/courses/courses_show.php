@@ -119,8 +119,9 @@
 		    </div>
 		    <?php echo form_close(); // end of form ?>
 		</div>
+	    </div><!-- end of tab -->
 	<?php endforeach; ?>    
-    </div><!-- end of tab -->
+    </div>
 </div>
 
 
@@ -279,12 +280,12 @@
 	
     }); // end checkbox-handling
     
-    
-    // handle button to add tuts to benutzer_mm_rolle
-    $('#tutor-button').click(function(){
-	
-    });
-    
+//    
+//    // handle button to add tuts to benutzer_mm_rolle
+//    $('#tutor-button').click(function(){
+//	
+//    });
+//    
     
     
 	
