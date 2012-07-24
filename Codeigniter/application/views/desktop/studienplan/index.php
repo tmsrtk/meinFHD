@@ -36,7 +36,7 @@
 						<?php foreach($semester as $modul): ?>
 							<?php if($i != 0) : # Anerkennungssemester ?>
 								<td>
-									<ul id="semester_<?php echo $i ?>" class="unstyled semesterplanspalte">
+									<ul id="<?php echo $i ?>" class="unstyled semesterplanspalte">
 										<?php foreach($modul as $data): ?>
 											<?php if ($data['KursID'] != NULL): ?>
 												<li id="module_<?php echo $data['KursID']; ?>">
@@ -69,6 +69,13 @@
 		</table>
 	<?php echo form_close(); ?>
 </div>
+
+<!-- Test für speichern der Modulreihenfolge -->
+<?php $fs_attrs = array(
+	'id'	=>	'sendButton',
+	'name'	=>	'sendButton'
+	); ?>
+<?php echo form_submit($fs_attrs, 'Los'); ?>
 
 <div id="modalcontent"></div>
 
@@ -170,11 +177,15 @@
 
 	var Studienplan = {
 			init: function( config ) {
-				this.config = config; 
+				this.config = config;
+				this.config.changedModulesHistory = new Array();
 				this.initJQUIsortable();
+				this.initSendButton();
+				this.initBtnPruefen();
 			},
 			
 			initJQUIsortable: function() {
+
 				var self = this;
 				this.config.sortableColumns.sortable({
 					connectWith: self.config.connectWithColumns,
@@ -182,62 +193,176 @@
 					opacity: '0.6',
 					placeholder: 'semestermodul_placeholder',
 					dropOnEmpty: true,
+					tolerance: 'pointer',
 	
 					// hier findet das Schreiben in die Datenbank statt
 					// jedes Mal wenn das Draggen aufgehört hat UND es eine Veränderung
 					// in der Reihenfolge gibt
 					update: function(event, ui) {
 
-						// kein ajax!
-						return;
 
 						// Färbe das Modul mit einem roten Rahmen ein um zu zeigen
 						// das ein Request ausgeführt wird
-						$(ui.item).children(".semestermodul").toggleClass("highlight");
+						// $(ui.item).children(".semestermodul").toggleClass("highlight");
 	
 						// serialisiere die Modulreihenfolge
-						var module_serialisiert = $(this).sortable("serialize");
+						module_serialisiert = $(this).sortable("serialize");
 	
 						// hänge auch die semesternr an die url
-						var semester = $(this).attr('id');
+						semester = $(this).attr('id');
 						module_serialisiert+='&semester='+semester;
-	
+
+						// array mit allen befehlen zwischenspeichern, beim klicken auf submit, wird dieses
+						// array als post übertragen? und auf der serverseite für jeden array eintrag 
+						// die db ausgeführt
+						
+						
+
+						self.config.changedModulesHistory.push(module_serialisiert);
+
+
 						// DEBUG:
-						console.log(module_serialisiert);
+						// console.log(changedModulesHistory);
+
+						// kein ajax!
+						// return;
+
+						//---------------------------------------------------------------------------------
+
+
 	
 						// ajax request to save the new module orders
-						$.ajax({
-							type: 'GET',
-							url: "<?php echo site_url();?>ajax/schreibe_reihenfolge_in_db/", 
-							data: module_serialisiert, 
-							success: function(response) {
-								// entferne wieder den roten Rahmen wenn request erfolgreich
-								$(ui.item).children(".semestermodul").toggleClass("highlight");
-							}
-						});
-					},
-	
-					// beim Draggen UND JEDER Veränderung
-					change: function(event, ui) {
-	
-					},
-	
-					// beim Start des Draggens
-					start: function(event, ui) {
-	
-					},
-	
-					// beim Stop des Draggends
-					stop: function(event, ui) {
-						
+						// $.ajax({
+						// 	type: 'GET',
+						// 	url: "<?php echo site_url();?>ajax/schreibe_reihenfolge_in_db/", 
+						// 	data: module_serialisiert, 
+						// 	success: function(response) {
+						// 		// entferne wieder den roten Rahmen wenn request erfolgreich
+						// 		$(ui.item).children(".semestermodul").toggleClass("highlight");
+						// 	}
+						// });
 					}
+				});
+			},
+
+			initSendButton : function() {
+				var self = this;
+
+				this.config.sendButton.click(function() {
+
+					// create an array of the saved Object where the history of the changes is stored
+					test = $.makeArray(self.config.changedModulesHistory);
+
+					// for each element, fire an ajax request to save the new orders
+					$.each(test , function(index, value) {
+						console.log(index+" "+value);
+
+						$.ajax({
+						  url: "<?php echo site_url();?>ajax/schreibe_reihenfolge_in_db/",
+						  type: 'GET',
+						  data: value,
+						  complete: function(xhr, textStatus) {
+						    //called when complete
+						  },
+						  success: function(data, textStatus, xhr) {
+						    console.log("success");
+						  },
+						  error: function(xhr, textStatus, errorThrown) {
+						    //called when there is an error
+						  }
+						});
+						
+					} );
+					
+				});
+
+
+				// this.config.sendButton.click(function() {
+				// 	$.ajax({
+				// 			type: 'GET',
+				// 			url: "<?php echo site_url();?>ajax/save_changes/", 
+				// 			data: self.config.changedModulesHistory, 
+				// 			success: function(response) {
+				// 				console.log(response);
+				// 			}
+				// 		});
+				// });
+				return false;
+			},
+
+			initBtnPruefen : function() {
+
+				// console.log(this.config.btnPruefen);
+
+				$(this.config.btnPruefen).each(function(index, elem) {
+
+					var self = this;
+
+					// console.log($(elem).parent().attr('data-kursid'));
+
+					value = 'kursid='+$(elem).parent().attr('data-kursid');
+
+					$.ajax({
+					  url: "<?php echo site_url();?>ajax/check_status_pruefung/",
+					  type: 'GET',
+					  data: value,
+					  complete: function(xhr, textStatus) {
+					    //called when complete
+					  },
+					  success: function(data, textStatus, xhr) {
+					    // (data == '1') ? console.log("true") : console.log("false");
+					    (data == '1') ? $(self).addClass('b_active') : console.log("false");
+					    // console.log(data);
+					  },
+					  error: function(xhr, textStatus, errorThrown) {
+					    //called when there is an error
+					  }
+					});
+				});
+
+				$(this.config.btnPruefen).click(function() {
+
+					value = 'kursid='+$(this).parent().attr('data-kursid');
+
+					if ( $(this).hasClass('b_active') ) {
+						$(this).removeClass('b_active');
+
+						$.ajax({
+						  url: "<?php echo site_url();?>ajax/deactivate_status_pruefung/",
+						  type: 'GET',
+						  data: value,
+						  success: function(data, textStatus, xhr) {
+						    // (data == '1') ? console.log("true") : console.log("false");
+						    // (data == '1') ? $(self).addClass('b_active') : console.log("false");
+						    console.log("deactivated");
+						  }
+						});
+
+					} else {
+						$(this).addClass('b_active');
+
+						$.ajax({
+						  url: "<?php echo site_url();?>ajax/activate_status_pruefung/",
+						  type: 'GET',
+						  data: value,
+						  success: function(data, textStatus, xhr) {
+						    // (data == '1') ? console.log("true") : console.log("false");
+						    // (data == '1') ? $(self).addClass('b_active') : console.log("false");
+						    console.log("activated");
+						  }
+						});
+					}
+
+					return false;
 				});
 			}
 		};
 		
 		Studienplan.init({
 			sortableColumns: $(".semesterplanspalte"),
-			connectWithColumns: '.semesterplanspalte'
+			connectWithColumns: '.semesterplanspalte',
+			sendButton : $('#sendButton'),
+			btnPruefen : $('a.b_pruefen')
 		});
 
 <?php endblock(); ?>

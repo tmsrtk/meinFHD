@@ -31,8 +31,16 @@ class Ajax_model extends CI_Model {
 				 ->where('KursID', $mid)
 				 ;
 		$q = $this->db->get();
+
+		if ($q > 0)
+		{
+			// TODO:
+		}
+
 		return $q->row_array();
 	}
+
+	// alte Methoden --------------------------------------------------------------------
 
 	// public function get_request()
 	// {
@@ -81,6 +89,42 @@ class Ajax_model extends CI_Model {
     {
         $this->load->model('Studienplan_Model');
         $this->semesterplanID = $this->Studienplan_Model->getStudyplanID();
+    }
+
+
+
+
+
+
+
+
+
+
+    public function query_status_pruefung($kurs_id)
+    {
+    	$this->db->select('KursSchreiben')
+    			 ->from('semesterkurs')
+    			 ->where('SemesterplanID', 1866)
+    			 ->where('KursID', $kurs_id)
+    			 ;
+
+    	$q = $this->db->get()->row_array();
+
+    	echo $q['KursSchreiben'];
+    }
+
+    public function write_activate_status_pruefung($kurs_id)
+    {
+    	$this->db->where('SemesterplanID', 1866);
+    	$this->db->where('KursID', $kurs_id);
+    	$this->db->update('semesterkurs', array('KursSchreiben' => 1) );
+    }
+
+    public function write_deactivate_status_pruefung($kurs_id)
+    {
+    	$this->db->where('SemesterplanID', 1866);
+    	$this->db->where('KursID', $kurs_id);
+    	$this->db->update('semesterkurs', array('KursSchreiben' => 0));
     }
 
 }

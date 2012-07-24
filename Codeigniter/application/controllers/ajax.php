@@ -72,7 +72,8 @@ class Ajax extends CI_Controller {
 		$neue_reihenfolge = $this->input->get('module');
 		$semesternr = $this->input->get('semester');
 
-		
+		FB::log($neue_reihenfolge);
+		FB::log($semesternr);
 
 		// speichere die neue Reihenfolge in die Datenbank
 		$this->ajax_model->set_reihenfolge($neue_reihenfolge, $semesternr);
@@ -96,6 +97,30 @@ class Ajax extends CI_Controller {
 		'Inhalt: Programmiersprachen und Konzepte.'.br().'Einführung in die OOP mit Java.'.br().' Datenstrukturen und Algorithmen'.br().'Arbeiten mit einer IDE'.
 		'<hr>'.
 		'';
+	}
+
+	public function save_changes()
+	{
+		echo "bla";
+	}
+
+
+	public function check_status_pruefung()
+	{
+		$kurs_id = $this->input->get('kursid');
+		$this->ajax_model->query_status_pruefung($kurs_id);
+	}
+
+	public function activate_status_pruefung()
+	{
+		$kurs_id = $this->input->get('kursid');
+		$this->ajax_model->write_activate_status_pruefung($kurs_id);
+	}
+
+	public function deactivate_status_pruefung()
+	{
+		$kurs_id = $this->input->get('kursid');
+		$this->ajax_model->write_deactivate_status_pruefung($kurs_id);
 	}
 
 }
