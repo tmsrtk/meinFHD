@@ -769,7 +769,7 @@ class Admin_model extends CI_Model {
 	 * Deletes a Studiengang from db
 	 * @param int $id
 	 */
-	function delete_stdgng($id){
+	function delete_degree_program($id){
 	    // delete from studiengang-table
 	    $this->db->where('StudiengangID', $id);
 	    $this->db->delete('studiengang');
@@ -792,7 +792,7 @@ class Admin_model extends CI_Model {
 	 * Copies stdgng - creates other name
 	 * @param int $stdgng_id
 	 */
-	function copy_stdgng($stdgng_id){
+	function copy_degree_program($stdgng_id){
 	    
 	}
 	

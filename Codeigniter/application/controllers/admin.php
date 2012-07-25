@@ -705,25 +705,9 @@ class Admin extends FHD_Controller {
 	 * 
 	 */
 	
-	/**
-	 * Get all data for a selectable (dropdown) list of Studiengänge
-	 */
-	function degree_program_edit($reload = 0){
-
-	    // get all stdgnge for filter-view
-	    $this->data->add('all_stdgnge', $this->admin_model->getAllStdgnge());
-	    // set stdgng_id to 0 - indicates, that view has been loaded directly from controller
-	    // no autoreload without validation
-	    $this->data->add('stdgng_id_automatic_reload', $reload);
-
-	    $siteinfo = array(
-		'title' => 'Studiengangverwaltung',
-		'main_content' => 'admin_stdgng_edit'
-	    );
-	    $this->data->add('siteinfo', $siteinfo);
-
-	    $this->load->view('admin/degree_program_edit', $this->data->load());
-	}
+	
+	/*** add >> ***************************************************************
+	**************************************************************************/
 	
 	/**
 	 * Show page with empty inpuf-fields 
@@ -805,16 +789,36 @@ class Admin extends FHD_Controller {
 	    $this->degree_program_edit();
 	}
 	
+	/*** << add ***************************************************************
+	**************************************************************************/
 	
+	/*** copy/delete >> *******************************************************
+	**************************************************************************/
+	
+	/**
+	 * Helper method called when degree programm should be deleted
+	 * @param boolean $delete
+	 */
+	function degree_program_delete(){
+	    $this->degree_program_copy_delete(TRUE);
+	}
+	
+	/**
+	 * Helper method called when degree programm should be copied
+	 * @param boolean $delete
+	 */
+	function degree_program_copy(){
+	    $this->degree_program_copy_delete(FALSE);
+	}
 	
 	
 	/**
 	 * Shows list of all stdgng to give the opportunity to delete them
 	 */
-	function degree_program_delete(){
+	private function degree_program_copy_delete($delete){
 	    // get all stdgnge for the view
 	    $this->data->add('allStdgnge', $this->admin_model->getAllStdgnge());
-	    $this->data->add('delete', TRUE);
+	    $this->data->add('delete', $delete);
 
 	    $siteinfo = array(
 		'title' => 'Studiengang löschen',
@@ -824,6 +828,55 @@ class Admin extends FHD_Controller {
 
 	    $this->load->view('admin/degree_program_delete', $this->data->load());
 	}
+	
+	/**
+	 * Deltes a whole Stdgng - called when button is clicked
+	 */
+	function delete_degree_program() {
+	    $delete_id = $this->input->post('degree_program_id');
+	    $this->admin_model->deletecopy_degree_program($delete_id);
+
+	    // show view again
+	    $this->degree_program_delete(TRUE);
+	}
+	
+	/**
+	 * Deltes a whole Stdgng - called when button is clicked
+	 */
+	function copy_degree_program() {
+	    $delete_id = $this->input->post('degree_program_id');
+	    $this->admin_model->copy_degree_program($delete_id);
+
+	    // show view again
+	    $this->degree_program_delete(FALSE);
+	}
+	
+	/*** << copy/delete *******************************************************
+	**************************************************************************/
+
+	/*** edit >> **************************************************************
+	**************************************************************************/
+	
+	/**
+	 * Get all data for a selectable (dropdown) list of Studiengänge
+	 */
+	function degree_program_edit($reload = 0){
+
+	    // get all stdgnge for filter-view
+	    $this->data->add('all_stdgnge', $this->admin_model->getAllStdgnge());
+	    // set stdgng_id to 0 - indicates, that view has been loaded directly from controller
+	    // no autoreload without validation
+	    $this->data->add('stdgng_id_automatic_reload', $reload);
+
+	    $siteinfo = array(
+		'title' => 'Studiengangverwaltung',
+		'main_content' => 'admin_stdgng_edit'
+	    );
+	    $this->data->add('siteinfo', $siteinfo);
+
+	    $this->load->view('admin/degree_program_edit', $this->data->load());
+	}
+	
 	
 	/**
 	 * Returns an div holding the stdgng-table for a passed stdgng
@@ -938,17 +991,6 @@ class Admin extends FHD_Controller {
 
 	    echo $result;
 
-	}
-	
-	
-	/**
-	 * Deltes a whole Stdgng - called when button is clicked
-	 */
-	function delete_degree_program() {
-	    $delete_id = $this->input->post('degree_program_id');
-	    $this->admin_model->delete_stdgng($delete_id);
-
-	    $this->degree_program_delete();
 	}
 	
 	
@@ -1201,10 +1243,9 @@ class Admin extends FHD_Controller {
 	   echo $this->ajax_show_courses_of_stdgng($split[1]);
 	}
 	
+	/*** << edit **************************************************************
+	**************************************************************************/
 	
-	function copy_stdgng_view(){
-	    
-	}
 	
 	/* 
 	 * 
