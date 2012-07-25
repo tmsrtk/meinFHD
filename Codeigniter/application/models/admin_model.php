@@ -543,10 +543,10 @@ class Admin_model extends CI_Model {
 	    // first line of stdgng-list-view should give the opportunity to create an own course
 	    // therefore first index of data-array must be filled with a 'default' Kurs
 	    // KursID 0 won't be in studiengangkurs-table and cann be used as flag for course-creating
-	    $data[] = null;
+//	    $data[] = null;
 
 	    // count rows to fill additional data to data-array
-	    $counter = 1;
+	    $counter = 0;
 	    
 	    if($q->num_rows() > 0){
 		foreach ($q->result_array() as $row){
@@ -668,8 +668,62 @@ class Admin_model extends CI_Model {
 	 * @param unknown_type $stdgng_id
 	 */
 	function update_stdgng_courses($data, $kurs_id){
-		$this->db->where('KursID', $kurs_id);
-		$this->db->update('studiengangkurs', $data);
+	    $this->db->where('KursID', $kurs_id);
+	    $this->db->update('studiengangkurs', $data);
+	}
+	
+	
+	/**
+	 * Inserts data of new created course into db - order is important!
+	 * 1. create new course
+	 * 2. fetch id of new created course
+	 * 3. save exam data
+	 * @param array $course_data
+	 * @param array $exam_data
+	 */
+	function insert_new_course($course_data, $exam_data){
+	    $e_data = array();
+	    $e_data_tmp = array();
+	    
+	    // save new course
+	    $this->db->insert('studiengangkurs', $course_data);
+	    
+	    // get highest course_id to save exam_data
+	    $course_id_max = $this->get_highest_course_id();
+	    
+	    // modify exam_array to store
+	    foreach ($exam_data as $key => $value) {
+		// get exam-type from key
+		$split = explode('_', $key); // $split[1] holds id
+		$e_data_tmp['KursID'] = $course_id_max; // course_id_max is course_id of new course
+		$e_data_tmp['PruefungstypID'] = $split[1];
+		$e_data[] = $e_data_tmp;
+	    }
+	    
+	    // store data
+	    foreach ($e_data as $e) {
+		$this->db->insert('pruefungssammlung', $e);
+	    }
+	    
+	}
+	
+	
+	/**
+	 * Helper to get highest course-id
+	 * @return int
+	 */
+	private function get_highest_course_id(){
+	    $q = '';
+	    
+	    $this->db->select_max('KursID');
+	    $q = $this->db->get('studiengangkurs');
+	    
+	    if($q->num_rows() > 0){
+		foreach ($q->result() as $row){
+		    $data = $row->KursID;
+		}
+		return $data;
+	    }
 	}
 	
 	
@@ -679,8 +733,8 @@ class Admin_model extends CI_Model {
 	 * @param unknown_type $stdgng_id
 	 */
 	function update_stdgng_description_data($data, $stdgng_id){
-		$this->db->where('StudiengangID', $stdgng_id);
-		$this->db->update('studiengang', $data);
+	    $this->db->where('StudiengangID', $stdgng_id);
+	    $this->db->update('studiengang', $data);
 	}
 	
 	/**

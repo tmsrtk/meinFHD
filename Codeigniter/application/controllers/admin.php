@@ -704,7 +704,6 @@ class Admin extends FHD_Controller {
 	
 	/**
 	 * Get all data for a selectable (dropdown) list of Studiengänge
-	 * TODO have to be dynamic - right now - static stdgng_id !!!
 	 */
 	function show_stdgng_course_list($reload = 0){
 		
@@ -861,9 +860,10 @@ class Admin extends FHD_Controller {
 
 	    // stdgng_id is already needed here to generate unique ids for delete-buttons
 	    $data['stdgng_id'] = $stdgng_chosen_id;
+	    $data['semester_dropdown'] = $semester_dropdown_options;
 
 //		echo '<pre>';
-//		print_r($flag);
+//		print_r($courses_of_single_stdgng);
 //		echo '</pre>';
 
 	    // fill first element of object-array with default-values -
@@ -871,28 +871,32 @@ class Admin extends FHD_Controller {
 	    // for creation of new courses
 	    // only KursID is needed, because creation of input-fields grabs
 	    // KursID to generate unique names => array[0]
-	    $courses_of_single_stdgng[0]['KursID'] = '0';
-	    $courses_of_single_stdgng[0]['Kursname'] = '';
-	    $courses_of_single_stdgng[0]['kurs_kurz'] = '';
-	    $courses_of_single_stdgng[0]['Creditpoints'] = '';
-	    $courses_of_single_stdgng[0]['SWS_Vorlesung'] = '';
-	    $courses_of_single_stdgng[0]['SWS_Uebung'] = '';
-	    $courses_of_single_stdgng[0]['SWS_Praktikum'] = '';
-	    $courses_of_single_stdgng[0]['SWS_Projekt'] = '';
-	    $courses_of_single_stdgng[0]['SWS_Seminar'] = '';
-	    $courses_of_single_stdgng[0]['SWS_SeminarUnterricht'] = '';
-	    $courses_of_single_stdgng[0]['Semester'] = '0';
-	    $courses_of_single_stdgng[0]['Beschreibung'] = '';
-	    // if there will be more exam-types added: this is the place to add them too!!
-	    $courses_of_single_stdgng[0]['pruefungstyp_1'] = FALSE;
-	    $courses_of_single_stdgng[0]['pruefungstyp_2'] = FALSE;
-	    $courses_of_single_stdgng[0]['pruefungstyp_3'] = FALSE;
-	    $courses_of_single_stdgng[0]['pruefungstyp_4'] = FALSE;
-	    $courses_of_single_stdgng[0]['pruefungstyp_5'] = FALSE;
-	    $courses_of_single_stdgng[0]['pruefungstyp_6'] = FALSE;
-	    $courses_of_single_stdgng[0]['pruefungstyp_7'] = FALSE;
-	    $courses_of_single_stdgng[0]['pruefungstyp_8'] = FALSE;
+//	    $courses_of_single_stdgng[0]['KursID'] = '0';
+//	    $courses_of_single_stdgng[0]['Kursname'] = '';
+//	    $courses_of_single_stdgng[0]['kurs_kurz'] = '';
+//	    $courses_of_single_stdgng[0]['Creditpoints'] = '';
+//	    $courses_of_single_stdgng[0]['SWS_Vorlesung'] = '';
+//	    $courses_of_single_stdgng[0]['SWS_Uebung'] = '';
+//	    $courses_of_single_stdgng[0]['SWS_Praktikum'] = '';
+//	    $courses_of_single_stdgng[0]['SWS_Projekt'] = '';
+//	    $courses_of_single_stdgng[0]['SWS_Seminar'] = '';
+//	    $courses_of_single_stdgng[0]['SWS_SeminarUnterricht'] = '';
+//	    $courses_of_single_stdgng[0]['Semester'] = '0';
+//	    $courses_of_single_stdgng[0]['Beschreibung'] = '';
+//	    // if there will be more exam-types added: this is the place to add them too!!
+//	    $courses_of_single_stdgng[0]['pruefungstyp_1'] = FALSE;
+//	    $courses_of_single_stdgng[0]['pruefungstyp_2'] = FALSE;
+//	    $courses_of_single_stdgng[0]['pruefungstyp_3'] = FALSE;
+//	    $courses_of_single_stdgng[0]['pruefungstyp_4'] = FALSE;
+//	    $courses_of_single_stdgng[0]['pruefungstyp_5'] = FALSE;
+//	    $courses_of_single_stdgng[0]['pruefungstyp_6'] = FALSE;
+//	    $courses_of_single_stdgng[0]['pruefungstyp_7'] = FALSE;
+//	    $courses_of_single_stdgng[0]['pruefungstyp_8'] = FALSE;
 
+	    
+	    // building a first line to save a new course to db
+	    $data['new_course'] = $this->load->view('admin-subviews/admin_stdgng_coursetable_row_first', $data, TRUE);
+	    
 	    //for each record - print out table-row with form-fields
 	    foreach($courses_of_single_stdgng as $sd){
 		// build a table-row for each course
@@ -919,15 +923,14 @@ class Admin extends FHD_Controller {
 		$data['pruefungstyp_7'] = (($sd['pruefungstyp_7'] == '1') ? TRUE : FALSE);
 		$data['pruefungstyp_8'] = (($sd['pruefungstyp_8'] == '1') ? TRUE : FALSE);
 		
-		// adding 
-
 		// array holding all rows
 		$rows[] = $this->load->view('admin-subviews/admin_stdgng_coursetable_row', $data, TRUE);
 	    }
-
+	    
 	    // make data available in view
 	    $data['stdgng_details'] = $details_of_single_stdgng;
 	    $data['stdgng_course_rows'] = $rows;
+	    $data['course_tablehead'] = $this->load->view('admin-subviews/admin_stdgng_coursetable_head', '', TRUE);
 
 	    // return content
 	    $result = '';
@@ -960,8 +963,7 @@ class Admin extends FHD_Controller {
 	 */
 	function validate_stdgng_details_changes(){
 	    
-	    // TODO??? PO, Name, Abk. Kombi muss unique sein
-	    
+	    // TODO??? PO-Name-Abk-Kombi muss UNIQUE sein
 	    
 	    
 	    // get all stdgnge for filter-view
@@ -1016,6 +1018,32 @@ class Admin extends FHD_Controller {
 		$this->show_stdgng_course_list($stdgng_id);
 	    } else {
 		$this->save_stdgng_course_changes();
+	    }
+	}
+	
+	
+	/**
+	 * Gets data for new course to create and validates
+	 */
+	function validate_new_stdgng_course(){
+	    $stdgng_id = $this->input->post('StudiengangID');
+	    
+	    $this->form_validation->set_rules('Kursname', 'Kursname fehlt', 'required');
+	    $this->form_validation->set_rules('kurs_kurz', 'Abkürzung fehlt', 'required');
+	    $this->form_validation->set_rules('Creditpoints', 'Creditpoints fehlen oder nicht numerisch', 'required|numeric');
+	    $this->form_validation->set_rules('SWS_Vorlesung', 'SWS-Vorlesung nicht numerisch', 'numeric');
+	    $this->form_validation->set_rules('SWS_Uebung', 'SWS-Übung nicht numerisch', 'numeric');
+	    $this->form_validation->set_rules('SWS_Praktikum', 'SWS-Praktikum nicht numerisch', 'numeric');
+	    $this->form_validation->set_rules('SWS_Projekt', 'SWS-Projekt nicht numerisch', 'numeric');
+	    $this->form_validation->set_rules('SWS_Seminar', 'SWS-Seminar nicht numerisch', 'numeric');
+	    $this->form_validation->set_rules('SWS_SeminarUnterricht', 'SWS-SeminarUnterricht nicht numerisch', 'numeric');
+	    
+	    
+	    if ($this->form_validation->run() == FALSE) {
+		// reload view
+		$this->show_stdgng_course_list($stdgng_id);
+	    } else {
+		$this->save_stdgng_new_course();
 	    }
 	}
 	
@@ -1125,6 +1153,38 @@ class Admin extends FHD_Controller {
 		// show StudiengangDetails-List again
 		$this->show_stdgng_course_list();
 		
+	}
+	
+	/**
+	 * After validation, new course is saved here.
+	 */
+	function save_stdgng_new_course(){
+	    $new_course = array();
+	    $new_course = $this->input->post();
+	    
+	    // data
+	    $course_data = array();
+	    $exam_data = array();
+	    
+	    // run through data and prepare for saving
+	    foreach ($new_course as $key => $value) {
+		// if not submit-button-data
+		if($key != 'save_new_course'){
+		    // and not exam-data
+		    if(!strstr($key, 'ext')){
+			$course_data[$key] = $value;
+		    } else {
+			// exam data to separate array
+			$exam_data[$key] = $value;
+		    }
+		}
+	    }
+	    
+	    // insert course-data into db
+	    $this->admin_model->insert_new_course($course_data, $exam_data, $new_course['StudiengangID']);
+	    
+	    //back to view
+	    $this->show_stdgng_course_list();
 	}
 	
 	
