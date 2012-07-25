@@ -2,21 +2,28 @@
 
 class Admin_model extends CI_Model {
 
-	// ################ RECHTESYSTEM
+	/* ***********************************************************************
+	 * 
+	 * ********************************* Rechtesystem ANFANG
+	 * ************************************** Frank Gottwald
+	 * 
+	 */
 	
 	/**
 	 * Liefert alle Permissions die in meinFHD gesetzt werden können
 	 * @return unknown
 	 */
 	function getAllPermissions(){
-		$q = $this->db->get('berechtigung');
-		
-		if($q->num_rows() > 0){
-			foreach ($q->result() as $row){
-				$data[] = $row;
-			}
-			return $data;
+	    $data = array();
+	    
+	    $q = $this->db->get('berechtigung');
+
+	    if($q->num_rows() > 0){
+		foreach ($q->result() as $row){
+			$data[] = $row;
 		}
+		return $data;
+	    }
 	}
 
 	
@@ -25,14 +32,16 @@ class Admin_model extends CI_Model {
 	 * @return unknown
 	 */
 	function getAllRoles(){
-		$q = $this->db->get('rolle');
-		
-		if($q->num_rows() > 0){
-			foreach ($q->result() as $row){
-				$data[] = $row;
-			}
-			return $data;
+	    $data = array();
+	    
+	    $q = $this->db->get('rolle');
+
+	    if($q->num_rows() > 0){
+		foreach ($q->result() as $row){
+			$data[] = $row;
 		}
+		return $data;
+	    }
 	}
 	
 	/**
@@ -40,13 +49,14 @@ class Admin_model extends CI_Model {
 	 * @return unknown
 	 */
 	function getAllRoleIds(){
-		$q = $this->db->get('rolle');
-		
-		foreach ($q->result_array() as $row)
-		{
-			$data[] = $row['RolleID'];
-		}
-		return $data;
+	    $data = array();
+	    
+	    $q = $this->db->get('rolle');
+
+	    foreach ($q->result_array() as $row){
+		$data[] = $row['RolleID'];
+	    }
+	    return $data;
 	}
 	
 	
@@ -54,7 +64,7 @@ class Admin_model extends CI_Model {
 	 * Liefert die Anzahl der angelegten Rollen.
 	 */
 	function countRoles(){
-		return $this->db->count_all('rolle');
+	    return $this->db->count_all('rolle');
 	}
 
 	
@@ -62,7 +72,7 @@ class Admin_model extends CI_Model {
 	 * >> Löschen aller Einträge und befüllen mit neuen Daten.
 	 */
 	function deleteRolePermissions(){
-		$this->db->empty_table('rolle_mm_berechtigung');
+	    $this->db->empty_table('rolle_mm_berechtigung');
 	}
 	
 	
@@ -72,7 +82,7 @@ class Admin_model extends CI_Model {
 	 * @param unknown_type $pid - PermissionIDs
 	 */
 	function updateRolePermissions($rp){
-		$this->db->insert('rolle_mm_berechtigung', $rp);
+	    $this->db->insert('rolle_mm_berechtigung', $rp);
 	}
 	
 		
@@ -81,26 +91,26 @@ class Admin_model extends CI_Model {
 	 * @param unknown_type $rid
 	 */
 	function getAllRolePermissions($rid){
-		$this->db->select('BerechtigungID');
-		$q = $this->db->get_where('rolle_mm_berechtigung', array('RolleID' => $rid));
-		
-// 		if($q->num_rows() > 0){
-// 			foreach ($q->result() as $row){
-// 				$data[] = $row;
-// 			}
-// 			return $data;
-// 		}
+	    $data = array();
+	    
+	    $this->db->select('BerechtigungID');
+	    $q = $this->db->get_where('rolle_mm_berechtigung', array('RolleID' => $rid));
 
-		$data[] = null;
-		
-		foreach ($q->result_array() as $row)
-		{
-			$data[] = $row['BerechtigungID'];
-		}
-		return $data;
+	    $data[] = null; // necessary?!
+
+	    foreach ($q->result_array() as $row){
+		$data[] = $row['BerechtigungID'];
+	    }
+	    return $data;
 	}
 
 
+	/* 
+	 * 
+	 * *********************************** Rechtesystem ENDE
+	 * ************************************** Frank Gottwald
+	 * 
+	 * ***********************************************************************/
 
 
 
@@ -494,13 +504,12 @@ class Admin_model extends CI_Model {
 	
 	
 	
-	
-	
-	
-	
-	/* *****************************************************
-	 * ************** Studiengangverwaltung Anfang *********
-	 * *****************************************************/
+	/* ************************************************************************
+	 * 
+	 * ************************ Studiengangverwaltung ANFANG
+	 * ************************************** Frank Gottwald
+	 * 
+	 */
 
 	
 	/**
@@ -509,17 +518,16 @@ class Admin_model extends CI_Model {
 	 * @return unknown
 	 */
 	function getAllStdgnge(){
-	    $q = '';
 	    $data = array();
 
 	    $this->db->order_by('Pruefungsordnung', 'desc');
 	    $q = $this->db->get('studiengang');
 		
 	    if($q->num_rows() > 0){
-		    foreach ($q->result() as $row){
-			    $data[] = $row;
-		    }
-		    return $data;
+		foreach ($q->result() as $row){
+		    $data[] = $row;
+		}
+		return $data;
 	    }
 	}
 	
@@ -530,7 +538,6 @@ class Admin_model extends CI_Model {
 	 * @return unknown
 	 */
 	function get_stdgng_courses($stdgng_id){
-	    $q = '';
 	    $data = array();
 	    $course_exams = '';
 
@@ -584,6 +591,7 @@ class Admin_model extends CI_Model {
 	 */
 	private function get_exam_types(){
 	    $data = array();
+	    
 	    $this->db->select('PruefungstypID');
 	    $q = $this->db->get('pruefungstyp');
 	    
@@ -601,7 +609,7 @@ class Admin_model extends CI_Model {
 	 */
 	private function get_exams_for_course($course_id){
 	    $data = array();
-	    $q = '';
+
 	    $q = $this->db->get_where('pruefungssammlung', array('KursID' => $course_id));
 	    
 	    if($q->num_rows() > 0){
@@ -614,7 +622,6 @@ class Admin_model extends CI_Model {
 		    $data[] = $row['PruefungstypID'];
 		}
 		return $data;
-	    
 	    }
 	}
 	
@@ -626,40 +633,35 @@ class Admin_model extends CI_Model {
 	 * @return unknown
 	 */
 	function getStdgngCourseIds($stdgng_id){
-		$this->db->select('KursID');
-		$q = $this->db->get_where('studiengangkurs', array('StudiengangID' => $stdgng_id));
-	
-		if($q->num_rows() > 0){
-		    foreach ($q->result() as $row){
-			    $data[] = $row;
-		    }
-		    return $data;
+	    $data = array();
+	    
+	    $this->db->select('KursID');
+	    $q = $this->db->get_where('studiengangkurs', array('StudiengangID' => $stdgng_id));
+
+	    if($q->num_rows() > 0){
+		foreach ($q->result() as $row){
+			$data[] = $row;
 		}
-		
-// 		foreach ($q->result_array() as $row)
-// 		{
-// 			$data[] = $row;
-// 		}
-// 		return $data;
-	
+		return $data;
+	    }
 	}
 	
 	/**
-	 * Returns all details from a specified Stdgng
+	 * Returns all details from a passed Stdgng
 	 * @param unknown_type $stdgng_id
 	 * @return unknown
 	 */
 	function get_stdgng_details_asrow($stdgng_id){
-		$q = $this->db->get_where('studiengang', array('StudiengangID' => $stdgng_id));
-		
-		if($q->num_rows() == 1){
+	    $q = '';
+	    
+	    $q = $this->db->get_where('studiengang', array('StudiengangID' => $stdgng_id));
+
+	    if($q->num_rows() == 1){
 // 			foreach ($q->result() as $row){
 // 				$data[] = $row;
 // 			}
-			return $q->row();
-		}
-		
-		
+		return $q->row();
+	    }
 	}
 	
 	/**
@@ -713,7 +715,7 @@ class Admin_model extends CI_Model {
 	 * @return int
 	 */
 	private function get_highest_course_id(){
-	    $q = '';
+	    $data = array();
 	    
 	    $this->db->select_max('KursID');
 	    $q = $this->db->get('studiengangkurs');
@@ -755,24 +757,30 @@ class Admin_model extends CI_Model {
 	}
 	
 	
+	/**
+	 * Creates new Studiengang in db
+	 * @param array $data
+	 */
 	function create_new_stdgng($data){
-		$this->db->insert('studiengang', $data);
+	    $this->db->insert('studiengang', $data);
 	}
-	
-	function delete_stdgng($id){
-		// delete from studiengang-table
-		$this->db->where('StudiengangID', $id);
-		$this->db->delete('studiengang');
-		
-		// delete all courses with this stdgng_id from studiengangkurs
-		$this->db->where('StudiengangID', $id);
-		$this->db->delete('studiengangkurs');		
-		
-	}
-	
 	
 	/**
-	 * Deltes a single course from studiengangkurs-table
+	 * Deletes a Studiengang from db
+	 * @param int $id
+	 */
+	function delete_stdgng($id){
+	    // delete from studiengang-table
+	    $this->db->where('StudiengangID', $id);
+	    $this->db->delete('studiengang');
+
+	    // delete all courses with this stdgng_id from studiengangkurs
+	    $this->db->where('StudiengangID', $id);
+	    $this->db->delete('studiengangkurs');		
+	}
+	
+	/**
+	 * Deletes a single course from studiengangkurs-table
 	 * @param int $course_id
 	 */
 	function delete_stdgng_single_course($course_id){
@@ -780,12 +788,36 @@ class Admin_model extends CI_Model {
 	}
 	
 	
-	/* *****************************************************
-	 * ************** Stundenplanverwaltung Anfang *********
-	 * *****************************************************/
+	/**
+	 * Copies stdgng - creates other name
+	 * @param int $stdgng_id
+	 */
+	function copy_stdgng($stdgng_id){
+	    
+	}
+	
+	
+	/* 
+	 * 
+	 * ******************************* Stundenplanverwaltung
+	 * ************************************** Frank Gottwald
+	 * 
+	 * ***********************************************************************/
+	
+	
+	
+	/* ************************************************************************
+	 * 
+	 * ******************************* Stundenplanverwaltung
+	 * ************************************** Frank Gottwald
+	 * 
+	 */
 
 	
 	function get_stdplan_filterdata(){
+	    $q = '';
+	    $data = array();
+	    
 	    $this->db->distinct();
 	    $this->db->select('a.Semester, b.StudiengangAbkuerzung, b.Pruefungsordnung');
 	    $this->db->from('studiengangkurs as a');
@@ -810,6 +842,8 @@ class Admin_model extends CI_Model {
 	 * @return type
 	 */
 	function get_stdplan_filterdata_plus_id(){
+	    $data = array();
+	    
 	    $this->db->distinct();
 	    $this->db->select('a.StudiengangID, b.StudiengangName, a.Semester, b.StudiengangAbkuerzung, b.Pruefungsordnung');
 	    $this->db->from('studiengangkurs as a');
@@ -828,13 +862,13 @@ class Admin_model extends CI_Model {
 	}
 	
 
-//// Stundenplanfilter
-//select distinct b.`StudiengangAbkuerzung`, b.`Pruefungsordnung`, a.`Semester`
-//from studiengangkurs as a
-//inner join studiengang as b
-//on a.`StudiengangID` = b.`StudiengangID`
-//inner join stundenplankurs as c
-//on a.`KursID` = c.`KursID`;
+	//// KEEP !! Stundenplanfilter
+	//select distinct b.`StudiengangAbkuerzung`, b.`Pruefungsordnung`, a.`Semester`
+	//from studiengangkurs as a
+	//inner join studiengang as b
+	//on a.`StudiengangID` = b.`StudiengangID`
+	//inner join stundenplankurs as c
+	//on a.`KursID` = c.`KursID`;
 
 	
 	/**
@@ -843,6 +877,8 @@ class Admin_model extends CI_Model {
 	 * @return type
 	 */
 	function get_stdplan_data($ids){
+	    $data = array();
+	    
 	    $this->db->distinct();
 	    $this->db->select('a.SPKursID, b.KursID, b.Semester, c.Pruefungsordnung, c.StudiengangAbkuerzung,
 		    b.Kursname, a.VeranstaltungsformID, a.VeranstaltungsformAlternative,
@@ -873,6 +909,8 @@ class Admin_model extends CI_Model {
 	 * @return type
 	 */
 	function get_all_stdplan_spkurs_ids($ids){
+	    $data = array();
+	    
 	    $this->db->distinct();
 	    $this->db->select('a.SPKursID');
 	    $this->db->from('stundenplankurs as a');
@@ -893,19 +931,19 @@ class Admin_model extends CI_Model {
 	    
 	}
 
-// Inhalte der Tabelle
-// 
-//select distinct
-//    c.`Pruefungsordnung`, c.`StudiengangAbkuerzung`, b.`Semester`,
-//    b.`Kursname`, a.`VeranstaltungsformID`, a.`VeranstaltungsformAlternative`,
-//    a.`Raum`, a.`DozentID`, a.`StartID`, a.`EndeID`, a.`TagID`, a.`isWPF`, a.`WPFName`, a.`Farbe`
-//from stundenplankurs as a
-//inner join studiengangkurs as b
-//on a.`KursID` = b.`KursID`
-//inner join studiengang as c
-//on b.`StudiengangID` = c.`StudiengangID`
-//where c.`Pruefungsordnung` = 2010 and b.`Semester` = 1 and c.`StudiengangAbkuerzung` = "BMI";
-// letzte zeile dann mit den einzelnen werten aus dem filter füllen
+	// KEEP!! Inhalte der Tabelle
+	// 
+	//select distinct
+	//    c.`Pruefungsordnung`, c.`StudiengangAbkuerzung`, b.`Semester`,
+	//    b.`Kursname`, a.`VeranstaltungsformID`, a.`VeranstaltungsformAlternative`,
+	//    a.`Raum`, a.`DozentID`, a.`StartID`, a.`EndeID`, a.`TagID`, a.`isWPF`, a.`WPFName`, a.`Farbe`
+	//from stundenplankurs as a
+	//inner join studiengangkurs as b
+	//on a.`KursID` = b.`KursID`
+	//inner join studiengang as c
+	//on b.`StudiengangID` = c.`StudiengangID`
+	//where c.`Pruefungsordnung` = 2010 and b.`Semester` = 1 and c.`StudiengangAbkuerzung` = "BMI";
+	// letzte zeile dann mit den einzelnen werten aus dem filter füllen
 
 	
 	/**
@@ -914,6 +952,8 @@ class Admin_model extends CI_Model {
 	 * @return type
 	 */
 	function get_stdplan_course_ids($ids){
+	    $data = array();
+	    
 	    $this->db->distinct();
 	    $this->db->select('a.SPKursID');
 	    $this->db->from('stundenplankurs as a');
@@ -940,6 +980,8 @@ class Admin_model extends CI_Model {
 	 * Returns all enventtypes
 	 */
 	function get_eventtypes(){
+	    $data = array();
+	    
 	    $q = $this->db->get('veranstaltungsform');
 	    
 	    $data[] = null;
@@ -958,6 +1000,8 @@ class Admin_model extends CI_Model {
 	 * TODO get ALL users - not only profs (uid = dozentid)
 	 */
 	function get_profs_for_stdplan_list(){
+	    $data = array();
+	    
 	    $this->db->distinct();
 	    $this->db->select('a.DozentID, b.Nachname, b.Vorname');
 	    $this->db->from('stundenplankurs as a');
@@ -980,6 +1024,8 @@ class Admin_model extends CI_Model {
 	 * Returns all start and end times for dropdown
 	 */
 	function get_start_end_times(){
+	    $data = array();
+	    
 	    $q = $this->db->get('stunde');
 	    
 	    $data[] = null;
@@ -997,6 +1043,8 @@ class Admin_model extends CI_Model {
 	 * Returns all days
 	 */
 	function get_days(){
+	    $data = array();
+	    
 	    $q = $this->db->get('tag');
 	    
 	    $data[] = null;
@@ -1013,6 +1061,8 @@ class Admin_model extends CI_Model {
 	 * Returns als existing colors in Stdplan
 	 */
 	function get_colors_from_stdplan(){
+	    $data = array();
+	    
 	    $this->db->distinct();
 	    $this->db->select('Farbe');
 	    
@@ -1026,10 +1076,6 @@ class Admin_model extends CI_Model {
 		}
 		return $data;
 	    }
-//	    foreach ($q->result_array() as $row) { 
-//		$data[] = $row;
-//	    }
-// 		return $data;
 		
 	}
 	
@@ -1123,5 +1169,11 @@ class Admin_model extends CI_Model {
 	}
 	
 	
+	/* 
+	 * 
+	 * ******************************* Stundenplanverwaltung
+	 * ************************************** Frank Gottwald
+	 * 
+	 * ***********************************************************************/
 	
 }

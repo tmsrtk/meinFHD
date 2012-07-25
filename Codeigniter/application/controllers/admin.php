@@ -698,29 +698,31 @@ class Admin extends FHD_Controller {
 	
 	
 	
-	/* *****************************************************
-	 * ************** Studiengangverwaltung Anfang *********
-	* *****************************************************/
+	/* ************************************************************************
+	 * 
+	 * ******************************* Studiengangverwaltung
+	 * ************************************** Frank Gottwald
+	 * 
+	 */
 	
 	/**
 	 * Get all data for a selectable (dropdown) list of Studiengänge
 	 */
 	function show_stdgng_course_list($reload = 0){
-		
-		// get all stdgnge for filter-view
-		$this->data->add('all_stdgnge', $this->admin_model->getAllStdgnge());
-		// set stdgng_id to 0 - indicates, that view has been loaded directly from controller
-		// no autoreload without validation
-		$this->data->add('stdgng_id_automatic_reload', $reload);
-		
-		$siteinfo = array(
-		    'title' => 'Studiengangverwaltung',
-		    'main_content' => 'admin_stdgng_edit'
-		);
-		$this->data->add('siteinfo', $siteinfo);
-		
-		$this->load->view('admin/studiengang_edit', $this->data->load());
-		
+
+	    // get all stdgnge for filter-view
+	    $this->data->add('all_stdgnge', $this->admin_model->getAllStdgnge());
+	    // set stdgng_id to 0 - indicates, that view has been loaded directly from controller
+	    // no autoreload without validation
+	    $this->data->add('stdgng_id_automatic_reload', $reload);
+
+	    $siteinfo = array(
+		'title' => 'Studiengangverwaltung',
+		'main_content' => 'admin_stdgng_edit'
+	    );
+	    $this->data->add('siteinfo', $siteinfo);
+
+	    $this->load->view('admin/studiengang_edit', $this->data->load());
 	}
 	
 	/**
@@ -728,22 +730,21 @@ class Admin extends FHD_Controller {
 	 */
 	function create_new_stdgng(){
 				
-		// get all stdgnge for the view
-		$this->data->add('allStdgnge', $this->admin_model->getAllStdgnge());
-		
-		$siteinfo = array(
-		    'title' => 'Neuen Studiengang anlegen',
-		    'main_content' => 'admin_stdgng_createnew'
-		);
-		$this->data->add('siteinfo', $siteinfo);
-		
-		$this->load->view('admin/studiengang_add', $this->data->load());
-		
-		echo '<div class="well"><pre>';
-		echo 'DEBUG - if you see this tell developer - Frank ^^';
-		print_r($this->admin_model->get_stdgng_courses(2));
-		echo '</pre></div>';
-		
+	    // get all stdgnge for the view
+	    $this->data->add('allStdgnge', $this->admin_model->getAllStdgnge());
+
+	    $siteinfo = array(
+		'title' => 'Neuen Studiengang anlegen',
+		'main_content' => 'admin_stdgng_createnew'
+	    );
+	    $this->data->add('siteinfo', $siteinfo);
+
+	    $this->load->view('admin/studiengang_add', $this->data->load());
+
+	    echo '<div class="well"><pre>';
+	    echo 'DEBUG - if you see this tell developer - Frank ^^';
+	    print_r($this->admin_model->get_stdgng_courses(2));
+	    echo '</pre></div>';
 	}
 	
 	/**
@@ -777,34 +778,31 @@ class Admin extends FHD_Controller {
 	 * Insert new entry into db with given values ($_POST)
 	 */
 	function save_new_created_stdgng(){
-		// check if given name and version are already used - in this case return show errormessage
-		
-		
-		$insertFields = array(
-				'Pruefungsordnung',
-				'StudiengangName',
-				'StudiengangAbkuerzung',
-				'Regelsemester',
-				'Creditpoints',
-				'CreditpointsMin',
-				'FachbereichID',
-				'Beschreibung'
-				);
-		
-		// get data from form-submission
-		for($i = 0; $i < count($insertFields); $i++){
-			if($_POST[$insertFields[$i]] != null){
-				$insertNewStdgng[$insertFields[$i]] = $_POST[$insertFields[$i]];
-			}
-		}
-		
-		// save
-		$this->admin_model->create_new_stdgng($insertNewStdgng);
-		
-		// load stdgng view with dropdown
-		$this->show_stdgng_course_list();
-		
-		
+	    // TODO check if given name and version are already used - in this case return show errormessage
+
+	    $insertFields = array(
+			    'Pruefungsordnung',
+			    'StudiengangName',
+			    'StudiengangAbkuerzung',
+			    'Regelsemester',
+			    'Creditpoints',
+			    'CreditpointsMin',
+			    'FachbereichID',
+			    'Beschreibung'
+			    );
+
+	    // get data from form-submission
+	    for($i = 0; $i < count($insertFields); $i++){
+		    if($_POST[$insertFields[$i]] != null){
+			    $insertNewStdgng[$insertFields[$i]] = $_POST[$insertFields[$i]];
+		    }
+	    }
+
+	    // save
+	    $this->admin_model->create_new_stdgng($insertNewStdgng);
+
+	    // load stdgng view with dropdown
+	    $this->show_stdgng_course_list();
 	}
 	
 	
@@ -946,10 +944,10 @@ class Admin extends FHD_Controller {
 	 * Deltes a whole Stdgng - called when button is clicked
 	 */
 	function delete_stdgng() {
-		$deleteId = $this->input->post('deleteStdgngId');
-		$this->admin_model->delete_stdgng($deleteId);
-		
-		$this->delete_stdgng_view();
+	    $deleteId = $this->input->post('deleteStdgngId');
+	    $this->admin_model->delete_stdgng($deleteId);
+
+	    $this->delete_stdgng_view();
 	}
 	
 	
@@ -1023,7 +1021,7 @@ class Admin extends FHD_Controller {
 	
 	
 	/**
-	 * Gets data for new course to create and validates
+	 * Gets data of new course to create and validates
 	 */
 	function validate_new_stdgng_course(){
 	    $stdgng_id = $this->input->post('StudiengangID');
@@ -1052,77 +1050,74 @@ class Admin extends FHD_Controller {
 	 */
 	function save_stdgng_course_changes(){
 		
-		// TODO react on KursID 0 >> CREATE NEW COURSE
-		// TODO validation incoming data - specially when course is created
-	    	
 //		echo '<pre>';
 //		print_r($this->input->post());
 //		echo '</pre>';
-		
-		// build an array, containing all keys that have to be updated in db
-		$update_fields = array(
-				'Kursname',
-				'kurs_kurz',
-				'Creditpoints',
-				'SWS_Vorlesung',
-				'SWS_Uebung',
-				'SWS_Praktikum',
-				'SWS_Projekt',
-				'SWS_Seminar',
-				'SWS_SeminarUnterricht',
-				'Semester',
-				'Beschreibung');
-		
-		// TODO handle checkboxes different - values only submitted when checked
-		$update_checkboxes = array(
-				'ext_1',
-				'ext_2',
-				'ext_3',
-				'ext_4',
-				'ext_5',
-				'ext_6',
-				'ext_7',
-				'ext_8'
-		);  
-		
-		// get ids of a single studiengang - specified by id
-		$stdgng_ids = $this->admin_model->getStdgngCourseIds(
-			$this->input->post('stdgng_id'));
-				
-		// get values of nested object - KursIds - to run through the ids and update records
-		foreach ($stdgng_ids as $si){
-		    $stdgng_id_values[] = $si->KursID;
+
+	    // build an array, containing all keys that have to be updated in db
+	    $update_fields = array(
+			    'Kursname',
+			    'kurs_kurz',
+			    'Creditpoints',
+			    'SWS_Vorlesung',
+			    'SWS_Uebung',
+			    'SWS_Praktikum',
+			    'SWS_Projekt',
+			    'SWS_Seminar',
+			    'SWS_SeminarUnterricht',
+			    'Semester',
+			    'Beschreibung');
+
+	    // TODO handle checkboxes different - values only submitted when checked
+	    $update_checkboxes = array(
+			    'ext_1',
+			    'ext_2',
+			    'ext_3',
+			    'ext_4',
+			    'ext_5',
+			    'ext_6',
+			    'ext_7',
+			    'ext_8'
+	    );  
+
+	    // get ids of a single studiengang - specified by id
+	    $stdgng_ids = $this->admin_model->getStdgngCourseIds(
+		    $this->input->post('stdgng_id'));
+
+	    // get values of nested object - KursIds - to run through the ids and update records
+	    foreach ($stdgng_ids as $si){
+		$stdgng_id_values[] = $si->KursID;
+	    }
+
+	    // run through all course-ids that belong to a single Studiengang, build data-array for updating records in db
+	    // AND update data for every id
+	    foreach($stdgng_id_values as $id){
+		$update_stdgng_data = array(); // init
+		// produces an array holding db-keys as keys and data as values
+		for ($i = 0; $i < count($update_fields); $i++){
+		    $update_stdgng_data[$update_fields[$i]] = $this->input->post($id.$update_fields[$i]);
 		}
-		
-		// run through all course-ids that belong to a single Studiengang, build data-array for updating records in db
-		// AND update data for every id
-		foreach($stdgng_id_values as $id){
-		    $update_stdgng_data = array(); // init
-		    // produces an array holding db-keys as keys and data as values
-		    for ($i = 0; $i < count($update_fields); $i++){
-			$update_stdgng_data[$update_fields[$i]] = $this->input->post($id.$update_fields[$i]);
+		// call function in model to update records
+		$this->admin_model->update_stdgng_courses($update_stdgng_data, $id);
+
+		$cb_data = array(); // init
+		$tmp_cb_data = array(); // init
+		// handle checkboxes
+		foreach ($update_checkboxes as $value) {
+		    if($this->input->post($id.$value) === '1'){
+			$split = explode('_', $value); // second value is exam-type-id
+			$tmp_cb_data['KursID'] = $id;
+			$tmp_cb_data['PruefungstypID'] = $split[1];
+			// build array to save data
+			$cb_data[] = $tmp_cb_data;
 		    }
-		    // call function in model to update records
-		    $this->admin_model->update_stdgng_courses($update_stdgng_data, $id);
-		    
-		    $cb_data = array(); // init
-		    $tmp_cb_data = array(); // init
-		    // handle checkboxes
-		    foreach ($update_checkboxes as $value) {
-			if($this->input->post($id.$value) === '1'){
-			    $split = explode('_', $value); // second value is exam-type-id
-			    $tmp_cb_data['KursID'] = $id;
-			    $tmp_cb_data['PruefungstypID'] = $split[1];
-			    // build array to save data
-			    $cb_data[] = $tmp_cb_data;
-			}
-		    }
-		    // save cb-data to db - passed array contains all checkboxes that have to be stored
-		    $this->admin_model->save_exam_types_for_course($id, $cb_data);
 		}
-		
-		// show StudiengangDetails-List again
-		$this->show_stdgng_course_list();	
+		// save cb-data to db - passed array contains all checkboxes that have to be stored
+		$this->admin_model->save_exam_types_for_course($id, $cb_data);
+	    }
+
+	    // show StudiengangDetails-List again
+	    $this->show_stdgng_course_list();	
 	}
 	
 	
@@ -1130,28 +1125,28 @@ class Admin extends FHD_Controller {
 	 * Save all fields (studiengang) - getting data from $_POST, after button-click
 	 */
 	function save_stdgng_details_changes(){
-		$updateFields = array(
-		    'Pruefungsordnung',
-		    'StudiengangName',
-		    'StudiengangAbkuerzung',
-		    'Regelsemester',
-		    'Creditpoints',
-		    'Beschreibung'
-		);
-		
-		// get value via hidden field
-		$stdgngId = $this->input->post('stdgng_id');
-		
-		// run through fields and produce an associative array holding keys and values - $_POST
-		for($i = 0; $i < count($updateFields); $i++){
-		    $updateStdgngDescriptionData[$updateFields[$i]] = $_POST[$stdgngId.$updateFields[$i]];
-		}
-		
-		// save data
-		$this->admin_model->update_stdgng_description_data($updateStdgngDescriptionData, $stdgngId);
-		
-		// show StudiengangDetails-List again
-		$this->show_stdgng_course_list();
+	    $updateFields = array(
+		'Pruefungsordnung',
+		'StudiengangName',
+		'StudiengangAbkuerzung',
+		'Regelsemester',
+		'Creditpoints',
+		'Beschreibung'
+	    );
+
+	    // get value via hidden field
+	    $stdgngId = $this->input->post('stdgng_id');
+
+	    // run through fields and produce an associative array holding keys and values - $_POST
+	    for($i = 0; $i < count($updateFields); $i++){
+		$updateStdgngDescriptionData[$updateFields[$i]] = $_POST[$stdgngId.$updateFields[$i]];
+	    }
+
+	    // save data
+	    $this->admin_model->update_stdgng_description_data($updateStdgngDescriptionData, $stdgngId);
+
+	    // show StudiengangDetails-List again
+	    $this->show_stdgng_course_list();
 		
 	}
 	
@@ -1205,14 +1200,21 @@ class Admin extends FHD_Controller {
 	   echo $this->ajax_show_courses_of_stdgng($split[1]);
 	}
 	
-	/* *****************************************************
-	 * ************** Studienganghandling End **************
-	 * *****************************************************/
+	/* 
+	 * 
+	 * ******************************* Studiengangverwaltung
+	 * ************************************** Frank Gottwald
+	 * 
+	 * ***********************************************************************/
 	
 	
-	/* *****************************************************
-	 * ************** Stundenplanhandling Start ************
-	 * *****************************************************/
+	
+	/* ************************************************************************
+	 * 
+	 * ******************************* Stundenplanverwaltung
+	 * ************************************** Frank Gottwald
+	 * 
+	 */
 	
 	function show_stdplan_list($reload = 0){
 	    // get all stdplan-data
@@ -1476,14 +1478,20 @@ class Admin extends FHD_Controller {
 	    
 	}
 	
-	/* *****************************************************
-	 * ************** Stundenplanhandling End **************
-	 * *****************************************************/
+	/* 
+	 * 
+	 * ******************************* Stundenplanverwaltung
+	 * ************************************** Frank Gottwald
+	 * 
+	 * ***********************************************************************/
 	
 	
-	/* *****************************************************
-	 * ************** Stundenplan IMPORT *******************
-	 * *****************************************************/
+	/* ***********************************************************************
+	 * 
+	 * *********************************** Stundenplanimport
+	 * ************************************** Frank Gottwald
+	 * 
+	 */
 	
 	function import_stdplan_view($error = ''){
 	    
@@ -1601,5 +1609,11 @@ class Admin extends FHD_Controller {
 	    $this->import_stdplan_view();
 	}
 	
+	/* 
+	 * 
+	 * *********************************** Stundenplanimport
+	 * ************************************** Frank Gottwald
+	 * 
+	 * ***********************************************************************/
 	
 }
