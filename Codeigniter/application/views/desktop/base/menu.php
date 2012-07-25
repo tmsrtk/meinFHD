@@ -60,19 +60,19 @@
 									</a>
 									<ul class="dropdown-menu level-2">
 										<?php if ( $this->authentication->has_permissions('hat_studiengang_anlegen') ) : ?>
-										<li><a href="<?php print base_url('admin/create_new_stdgng'); ?>">Studiengang anlegen</a></li>
+										<li><a href="<?php print base_url('admin/degree_program_add'); ?>">Studiengang anlegen</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_studiengang_importieren') ) : ?>
 										<li><a href="<?php print base_url('#'); ?>">Studiengang importieren</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_studiengang_bearbeiten') ) : ?>
-										<li><a href="<?php print base_url('admin/show_stdgng_course_list'); ?>">Studiengang bearbeiten</a></li>
+										<li><a href="<?php print base_url('admin/degree_program_edit'); ?>">Studiengang bearbeiten</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_studiengang_kopieren') ) : ?>
 										<li><a href="<?php print base_url('#'); ?>">Studiengang kopieren</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_studiengang_loeschen') ) : ?>
-										<li><a href="<?php print base_url('admin/delete_stdgng_view'); ?>">Studiengang loeschen</a></li>
+										<li><a href="<?php print base_url('admin/degree_program_delete'); ?>">Studiengang loeschen</a></li>
 										<?php endif ?>
 									</ul> <!-- /.nav .level-2 -->
 								</li>

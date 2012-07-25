@@ -708,7 +708,7 @@ class Admin extends FHD_Controller {
 	/**
 	 * Get all data for a selectable (dropdown) list of Studiengänge
 	 */
-	function show_stdgng_course_list($reload = 0){
+	function degree_program_edit($reload = 0){
 
 	    // get all stdgnge for filter-view
 	    $this->data->add('all_stdgnge', $this->admin_model->getAllStdgnge());
@@ -722,13 +722,13 @@ class Admin extends FHD_Controller {
 	    );
 	    $this->data->add('siteinfo', $siteinfo);
 
-	    $this->load->view('admin/studiengang_edit', $this->data->load());
+	    $this->load->view('admin/degree_program_edit', $this->data->load());
 	}
 	
 	/**
 	 * Show page with empty inpuf-fields 
 	 */
-	function create_new_stdgng(){
+	function degree_program_add(){
 				
 	    // get all stdgnge for the view
 	    $this->data->add('allStdgnge', $this->admin_model->getAllStdgnge());
@@ -739,12 +739,12 @@ class Admin extends FHD_Controller {
 	    );
 	    $this->data->add('siteinfo', $siteinfo);
 
-	    $this->load->view('admin/studiengang_add', $this->data->load());
+	    $this->load->view('admin/degree_program_add', $this->data->load());
 
-	    echo '<div class="well"><pre>';
-	    echo 'DEBUG - if you see this tell developer - Frank ^^';
-	    print_r($this->admin_model->get_stdgng_courses(2));
-	    echo '</pre></div>';
+//	    echo '<div class="well"><pre>';
+//	    echo 'DEBUG - if you see this tell developer - Frank ^^';
+//	    print_r($this->admin_model->get_stdgng_courses(2));
+//	    echo '</pre></div>';
 	}
 	
 	/**
@@ -767,7 +767,7 @@ class Admin extends FHD_Controller {
 	    
 	    if ($this->form_validation->run() == FALSE) {
 		// reload view
-		$this->create_new_stdgng();
+		$this->degree_program_add();
 	    } else {
 		$this->save_new_created_stdgng();
 	    }
@@ -802,7 +802,7 @@ class Admin extends FHD_Controller {
 	    $this->admin_model->create_new_stdgng($insertNewStdgng);
 
 	    // load stdgng view with dropdown
-	    $this->show_stdgng_course_list();
+	    $this->degree_program_edit();
 	}
 	
 	
@@ -811,9 +811,10 @@ class Admin extends FHD_Controller {
 	/**
 	 * Shows list of all stdgng to give the opportunity to delete them
 	 */
-	function delete_stdgng_view(){
+	function degree_program_delete(){
 	    // get all stdgnge for the view
 	    $this->data->add('allStdgnge', $this->admin_model->getAllStdgnge());
+	    $this->data->add('delete', TRUE);
 
 	    $siteinfo = array(
 		'title' => 'Studiengang löschen',
@@ -821,7 +822,7 @@ class Admin extends FHD_Controller {
 	    );
 	    $this->data->add('siteinfo', $siteinfo);
 
-	    $this->load->view('includes/template', $this->data->load());
+	    $this->load->view('admin/degree_program_delete', $this->data->load());
 	}
 	
 	/**
@@ -932,7 +933,7 @@ class Admin extends FHD_Controller {
 
 	    // return content
 	    $result = '';
-	    $result .= $this->load->view('admin/partials/studiengang_details', $data, TRUE);
+	    $result .= $this->load->view('admin/partials/degree_program_details', $data, TRUE);
 	    $result .= $this->load->view('admin-subviews/admin_stdgng_coursetable_content', $data, TRUE);
 
 	    echo $result;
@@ -943,11 +944,11 @@ class Admin extends FHD_Controller {
 	/**
 	 * Deltes a whole Stdgng - called when button is clicked
 	 */
-	function delete_stdgng() {
-	    $deleteId = $this->input->post('deleteStdgngId');
-	    $this->admin_model->delete_stdgng($deleteId);
+	function delete_degree_program() {
+	    $delete_id = $this->input->post('degree_program_id');
+	    $this->admin_model->delete_stdgng($delete_id);
 
-	    $this->delete_stdgng_view();
+	    $this->degree_program_delete();
 	}
 	
 	
@@ -985,7 +986,7 @@ class Admin extends FHD_Controller {
 	    
 	    if ($this->form_validation->run() == FALSE) {
 		// reload view
-		$this->show_stdgng_course_list($stdgng_id);
+		$this->degree_program_edit($stdgng_id);
 	    } else {
 		$this->save_stdgng_details_changes();
 	    }
@@ -1013,7 +1014,7 @@ class Admin extends FHD_Controller {
 	    
 	    if ($this->form_validation->run() == FALSE) {
 		// reload view
-		$this->show_stdgng_course_list($stdgng_id);
+		$this->degree_program_edit($stdgng_id);
 	    } else {
 		$this->save_stdgng_course_changes();
 	    }
@@ -1039,7 +1040,7 @@ class Admin extends FHD_Controller {
 	    
 	    if ($this->form_validation->run() == FALSE) {
 		// reload view
-		$this->show_stdgng_course_list($stdgng_id);
+		$this->degree_program_edit($stdgng_id);
 	    } else {
 		$this->save_stdgng_new_course();
 	    }
@@ -1117,7 +1118,7 @@ class Admin extends FHD_Controller {
 	    }
 
 	    // show StudiengangDetails-List again
-	    $this->show_stdgng_course_list();	
+	    $this->degree_program_edit();	
 	}
 	
 	
@@ -1146,7 +1147,7 @@ class Admin extends FHD_Controller {
 	    $this->admin_model->update_stdgng_description_data($updateStdgngDescriptionData, $stdgngId);
 
 	    // show StudiengangDetails-List again
-	    $this->show_stdgng_course_list();
+	    $this->degree_program_edit();
 		
 	}
 	
@@ -1179,7 +1180,7 @@ class Admin extends FHD_Controller {
 	    $this->admin_model->insert_new_course($course_data, $exam_data, $new_course['StudiengangID']);
 	    
 	    //back to view
-	    $this->show_stdgng_course_list();
+	    $this->degree_program_edit();
 	}
 	
 	
@@ -1198,6 +1199,11 @@ class Admin extends FHD_Controller {
 	   
 	   // call view with updated data	   
 	   echo $this->ajax_show_courses_of_stdgng($split[1]);
+	}
+	
+	
+	function copy_stdgng_view(){
+	    
 	}
 	
 	/* 
