@@ -155,56 +155,56 @@
     <?php
 	// exam-type 1
 	$data_dropdown_ext1 = array(
-	    'name' => $KursID.'ext1',
+	    'name' => $KursID.'ext_1',
 	    'value' => '1',
 	    'id' => 'ext-1',
 	    'checked' => $pruefungstyp_1,
 	);
 	// exam-type 2
 	$data_dropdown_ext2 = array(
-	    'name' => $KursID.'ext2',
+	    'name' => $KursID.'ext_2',
 	    'value' => '1',
 	    'id' => 'ext-2',
 	    'checked' => $pruefungstyp_2,
 	);
 	// exam-type 3
 	$data_dropdown_ext3 = array(
-	    'name' => $KursID.'ext3',
+	    'name' => $KursID.'ext_3',
 	    'value' => '1',
 	    'id' => 'ext-3',
 	    'checked' => $pruefungstyp_3,
 	);
 	// exam-type 4
 	$data_dropdown_ext4 = array(
-	    'name' => $KursID.'ext4',
+	    'name' => $KursID.'ext_4',
 	    'value' => '1',
 	    'id' => 'ext-4',
 	    'checked' => $pruefungstyp_4,
 	);
 	// exam-type 5
 	$data_dropdown_ext5 = array(
-	    'name' => $KursID.'ext5',
+	    'name' => $KursID.'ext_5',
 	    'value' => '1',
 	    'id' => 'ext-5',
 	    'checked' => $pruefungstyp_5,
 	);
 	// exam-type 6
 	$data_dropdown_ext6 = array(
-	    'name' => $KursID.'ext6',
+	    'name' => $KursID.'ext_6',
 	    'value' => '1',
 	    'id' => 'ext-6',
 	    'checked' => $pruefungstyp_6,
 	);
 	// exam-type 7
 	$data_dropdown_ext7 = array(
-	    'name' => $KursID.'ext7',
+	    'name' => $KursID.'ext_7',
 	    'value' => '1',
 	    'id' => 'ext-7',
 	    'checked' => $pruefungstyp_7,
 	);
 	// exam-type 8
 	$data_dropdown_ext8 = array(
-	    'name' => $KursID.'ext8',
+	    'name' => $KursID.'ext_8',
 	    'value' => '1',
 	    'id' => 'ext-8',
 	    'checked' => $pruefungstyp_8,

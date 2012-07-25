@@ -740,10 +740,10 @@ class Admin extends FHD_Controller {
 		
 		$this->load->view('admin/studiengang_add', $this->data->load());
 		
-//		echo '<div class="well"><pre>';
-//		echo 'DEBUG - if you see this tell developer - Frank ^^';
-//		print_r($this->admin_model->get_stdgng_courses(1));
-//		echo '</pre></div>';
+		echo '<div class="well"><pre>';
+		echo 'DEBUG - if you see this tell developer - Frank ^^';
+		print_r($this->admin_model->get_stdgng_courses(2));
+		echo '</pre></div>';
 		
 	}
 	
@@ -1047,14 +1047,14 @@ class Admin extends FHD_Controller {
 		
 		// TODO handle checkboxes different - values only submitted when checked
 		$update_checkboxes = array(
-				'ext1',
-				'ext2',
-				'ext3',
-				'ext4',
-				'ext5',
-				'ext6',
-				'ext7',
-				'ext8'
+				'ext_1',
+				'ext_2',
+				'ext_3',
+				'ext_4',
+				'ext_5',
+				'ext_6',
+				'ext_7',
+				'ext_8'
 		);  
 		
 		// get ids of a single studiengang - specified by id
@@ -1069,6 +1069,7 @@ class Admin extends FHD_Controller {
 		// run through all course-ids that belong to a single Studiengang, build data-array for updating records in db
 		// AND update data for every id
 		foreach($stdgng_id_values as $id){
+		    $update_stdgng_data = array(); // init
 		    // produces an array holding db-keys as keys and data as values
 		    for ($i = 0; $i < count($update_fields); $i++){
 			$update_stdgng_data[$update_fields[$i]] = $this->input->post($id.$update_fields[$i]);
@@ -1076,15 +1077,21 @@ class Admin extends FHD_Controller {
 		    // call function in model to update records
 		    $this->admin_model->update_stdgng_courses($update_stdgng_data, $id);
 		    
+		    $cb_data = array(); // init
+		    $tmp_cb_data = array(); // init
 		    // handle checkboxes
 		    foreach ($update_checkboxes as $value) {
 			if($this->input->post($id.$value) === '1'){
-			    // TODO save to db
+			    $split = explode('_', $value); // second value is exam-type-id
+			    $tmp_cb_data['KursID'] = $id;
+			    $tmp_cb_data['PruefungstypID'] = $split[1];
+			    // build array to save data
+			    $cb_data[] = $tmp_cb_data;
 			}
 		    }
+		    // save cb-data to db - passed array contains all checkboxes that have to be stored
+		    $this->admin_model->save_exam_types_for_course($id, $cb_data);
 		}
-		
-		    
 		
 		// show StudiengangDetails-List again
 		$this->show_stdgng_course_list();	

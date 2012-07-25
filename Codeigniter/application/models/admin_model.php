@@ -509,22 +509,18 @@ class Admin_model extends CI_Model {
 	 * @return unknown
 	 */
 	function getAllStdgnge(){
-		//$this->db->select('Pruefungsordnung, StudiengangName, StudiengangAbkuerzung, Regelsemester');
-		$q = $this->db->get('studiengang');
+	    $q = '';
+	    $data = array();
+
+	    $this->db->order_by('Pruefungsordnung', 'desc');
+	    $q = $this->db->get('studiengang');
 		
-// 		foreach ($q->result_array() as $row)
-// 		{
-// 			$data[] = $row;
-// 		}
-// 		return $data;
-		
-		
-		if($q->num_rows() > 0){
-			foreach ($q->result() as $row){
-				$data[] = $row;
-			}
-			return $data;
-		}
+	    if($q->num_rows() > 0){
+		    foreach ($q->result() as $row){
+			    $data[] = $row;
+		    }
+		    return $data;
+	    }
 	}
 	
 	
@@ -549,7 +545,7 @@ class Admin_model extends CI_Model {
 	    // KursID 0 won't be in studiengangkurs-table and cann be used as flag for course-creating
 	    $data[] = null;
 
-	    // count rows to fill additional data to correct array
+	    // count rows to fill additional data to data-array
 	    $counter = 1;
 	    
 	    if($q->num_rows() > 0){
@@ -561,18 +557,17 @@ class Admin_model extends CI_Model {
 
 		    // run through all types and add field to data
 		    foreach ($exam_types as $e_type) {
+			// if there are exam-types
 			if($course_exams){
-			    // run through exams for course and store if type matches
-			    foreach ($course_exams as $key) {
-				if($e_type->PruefungstypID == $key['PruefungstypID']){
-				    $data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = 1;
-				} else {
-				    $data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = 0;
-				}
-
+			    // check if TypID is in course_exams array
+			    if(in_array($e_type->PruefungstypID, $course_exams)){
+				$data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = '1';
+			    } else {
+				$data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = '0';
 			    }
+			// otherwise >> 0 for alle exam_types
 			} else {
-			    $data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = 0;
+			    $data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = '0';
 			}
 			
 		    }
@@ -616,7 +611,7 @@ class Admin_model extends CI_Model {
 //		    return $data;
 //		}
 		foreach ($q->result_array() as $row){
-		    $data[] = $row;
+		    $data[] = $row['PruefungstypID'];
 		}
 		return $data;
 	    
@@ -686,6 +681,23 @@ class Admin_model extends CI_Model {
 	function update_stdgng_description_data($data, $stdgng_id){
 		$this->db->where('StudiengangID', $stdgng_id);
 		$this->db->update('studiengang', $data);
+	}
+	
+	/**
+	 * Saves checkbox-data to db.
+	 * Deletes first all checkboxes for that course!!
+	 * @param int $course_id
+	 * @param array $cb_data
+	 */
+	function save_exam_types_for_course($course_id, $cb_data){
+	    // !! deletes all exam-types for that course first
+	    // >> perhaps not desired behaviour!!
+	    $this->db->delete('pruefungssammlung', array('KursID' => $course_id));
+	    
+	    // add data to table again
+	    foreach ($cb_data as $value) {
+		$this->db->insert('pruefungssammlung', $value);
+	    }
 	}
 	
 	
