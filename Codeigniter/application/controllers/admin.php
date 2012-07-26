@@ -17,7 +17,7 @@ class Admin extends FHD_Controller {
 	    $this->roleIds = $this->admin_model->getAllRoleIds();
 
 //	    // get all stdgnge for the views
-//	    $data['allStdgnge'] = $this->admin_model->get_all_degree_programs();
+//	    $data['all_degree_programs'] = $this->admin_model->get_all_degree_programs();
 	}
 	
 	
@@ -826,7 +826,7 @@ class Admin extends FHD_Controller {
 	    );
 	    $this->data->add('siteinfo', $siteinfo);
 
-	    $this->load->view('admin/degree_program_delete', $this->data->load());
+	    $this->load->view('admin/degree_program_copy_delete', $this->data->load());
 	}
 	
 	/**

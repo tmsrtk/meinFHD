@@ -9,7 +9,7 @@
     <tbody>
     <?php 
 
-	foreach($allStdgnge as $sg) :  
+	foreach($all_degree_programs as $sg) :  
 	    echo form_open('admin/delete_stdgng'); ?>
 	    <tr>
 		<td><?php echo $sg->StudiengangName; ?></td>

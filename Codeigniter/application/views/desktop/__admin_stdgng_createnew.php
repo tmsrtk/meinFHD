@@ -1,7 +1,7 @@
 <div class="well">
 
 <!-- 	<pre> -->
-	<?php //print_r($allStdgnge); ?>
+	<?php //print_r($degree_programs); ?>
 <!-- 	</pre> -->
 	
 	<?php 
@@ -13,7 +13,7 @@
 		<div id="stdgng-details-1" style='float:left;'>
 		    <table>
 		    <?php 
-			foreach ($allStdgnge[0] as $key => $value){
+			foreach ($all_degree_programs[0] as $key => $value){
 			    if($key == 'StudiengangName' || $key == 'StudiengangAbkuerzung' || $key == 'Pruefungsordnung'
 					    || $key == 'Regelsemester' || $key == 'Creditpoints'){
 

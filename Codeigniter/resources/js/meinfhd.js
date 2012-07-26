@@ -2,13 +2,7 @@
 	// custom js functionality goes here
 
 	
-	
-//	$('#delete-dialog-container').on('click', '#delete-dialog-cancel', function(){
-//	   $('#delete-dialog').hide();
-//	   
-//	   return false;
-//	});
-
+	    
 
 
 	// autoclosing twitter bootstrap alerts

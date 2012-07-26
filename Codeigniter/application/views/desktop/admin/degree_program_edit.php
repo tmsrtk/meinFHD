@@ -117,7 +117,7 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
 	    .html('<div class="modal-header"><button type="button" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
 	    .append('<div class="modal-body"><p>'+text+'</p></div>')
 	    .append('<div class="modal-footer"><a href="#" class="btn" id="delete-dialog-cancel" data-dismiss="modal">Abbrechen</a>\n\
-		<a href="" class="btn btn-primary" data-id="0" id="delete-dialog-delete">OK</a></div>');
+		<a href="" class="btn btn-primary" data-id="0" id="delete-dialog-delete" data-accept="modal">OK</a></div>');
 
 	return myDeleteDialog;
     };
