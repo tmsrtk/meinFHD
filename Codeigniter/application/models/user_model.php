@@ -17,7 +17,8 @@ class User_model extends CI_Model {
 	private $user_course_ids_labing = array();
 	private $user_course_ids_tut = array();
 	
-
+	// studienplan
+	private $semesterplan_id = 0;
 
 	/**
 	 * 
@@ -46,6 +47,8 @@ class User_model extends CI_Model {
 
 			$this->user_roles = $this->_query_all_roles();
 			$this->user_permissions_all = $this->_query_all_permissions();
+
+			$this->semesterplan_id = $this->_query_semesterplanid();
 			
 			// course_ids
 			// profs
@@ -88,6 +91,16 @@ class User_model extends CI_Model {
 		$q = $this->db->get()->row_array();
 
 		return ($q[$columnname]);
+	}
+
+	private function _query_semesterplanid()
+	{
+		$this->db->select('SemesterplanID')
+				->from('semesterplan')
+				->where('BenutzerID', $this->user_id)
+				;
+		$q = $this->db->get()->row_array();
+		return $q['SemesterplanID'];
 	}
 
 	/** */
@@ -293,6 +306,22 @@ class User_model extends CI_Model {
 	public function get_permission_by_roles($roles)
 	{
 
+	}
+
+	public function get_userid()
+	{
+		if ( ! empty($this->user_id) )
+		{
+			return $this->user_id;
+		}
+	}
+
+	public function get_semesterplanid()
+	{
+		if ( ! empty($this->semesterplan_id) )
+		{
+			return $this->semesterplan_id;
+		}
 	}
 	
 	/**
