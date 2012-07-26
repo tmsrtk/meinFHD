@@ -53,7 +53,7 @@
 														</ul>
 
 														<span class="modulfach"><?php echo $data['Kurzname'] ?></span>
-														<input class="modulnote input-mini" name="modulnote" type="text" value="<?php echo $data['Notenpunkte'] ?>" size="3">
+														<input class="modulnote input-mini" name="modulnote" type="text" value="<?php echo $data['Notenpunkte'] ?>">
 													</div>
 												</li>
 											<?php endif; ?>
@@ -87,94 +87,15 @@
 <?php startblock('customFooterJQueryCode');?>
 
 	// save php vars in js vars
-	<?php $test = "test"; ?>
-	var testjs = "<?php echo $test; ?>";
-	console.log( testjs );
+	// <?php $test = "test"; ?>
+	// var testjs = "<?php echo $test; ?>";
+	// console.log( testjs );
 
 
 	// -------------------------------------------------------------------------
 
-	// prompt dialogs
-	$("ul.dropdown-menu").on("click", "li.kursinfo", function() {
 
-		// console.log();
-		// return;
-
-		kursId = $(this).parent().parent().attr('data-kursid');
-
-		var mm = createModalDialog(getTitleFromModule(kursId), getTextFromModule(kursId));
-		$("#modalcontent").html(mm);
-
-		$('#myModal').modal({
-			keyboard: false
-		}).on('hide', function () {
-
-		}).modal('show');
-		
-	});
-
-	/**  */
-	function createModalDialog(title, text) {
-		var $myModalDialog = $('<div class="modal hide" id="myModal"></div>')
-					.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
-					.append('<div class="modal-body"><p>'+text+'</p></div>')
-					.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Abbrechen</a><a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
-		return $myModalDialog;
-	}
-
-	/** */
-	function getTitleFromModule(moduleId) {
-		// console.log(moduleId);
-
-		ajaxData = 'moduleid='+moduleId;
-
-		// ajax request to get the full title from server
-		$.ajax({
-			type: 'GET',
-			url: "<?php echo site_url();?>ajax/get_module_title/", 
-			data: ajaxData, 
-			success: function(response) {
-				setModuleTitle(response);
-			}
-		});
-
-		// while the ajax request is responsing, show some placeholder text
-		return 'Wird geladen...';
-	}
-
-	/** */
-	function setModuleTitle(response) {
-		$('div.modal-header h3').html(response);
-	}
-
-	/** */
-	function getTextFromModule(moduleId) {
-		ajaxData = 'moduleid='+moduleId;
-
-		// ajax request to get the full text from server
-		$.ajax({
-			type: 'GET',
-			url: "<?php echo site_url();?>ajax/get_module_text/", 
-			data: ajaxData, 
-			success: function(response) {
-				setModuleText(response);
-			}
-		});
-
-		// while the ajax request is responsing, show some placeholder text
-		return 'Wird geladen...';
-	}
-
-	/** */
-	function setModuleText(response) {
-		$('div.modal-body p').html(response);
-	}
-
-
-	/**  */
-	$("#modalcontent").on( 'click', 'button, a', function(event) {
-
-	});
+	
 
 	// -------------------------------------------------------------------------
 
@@ -189,6 +110,7 @@
 				// this.initResetButton();
 				this.initBtnPruefen();
 				this.initBtnHoeren();
+				this.initInfoButtons();
 			},
 
 			setupAjax : function() {
@@ -411,10 +333,163 @@
 					}
 					return false;
 				});
+			},
+
+			initInfoButtons : function() {
+				var self = this;
+
+				this.config.infoButtonsWrapper.on('click', 'li.kursinfo', function() {
+
+					kursId = $(this).parent().parent().attr('data-kursid');
+
+					var mm = self.createModalDialog(
+						self.getTitleFromModule(kursId).done(function(result) {
+							self.setModuleTitle(result);
+					}), 
+						self.getTextFromModule(kursId).done(function(result) {
+							self.setModuleText(result);
+						}));
+
+					self.config.moduleModalWrapper.html(mm);
+
+					$('#myModal').modal({ // self.config.modalContent.modal({ ... not working, why??
+						keyboard: false
+					}).on('hide', function () {
+
+					}).modal('show');
+
+				});
+			},
+
+			createModalDialog : function(title, text) {
+				var $myModalDialog = 
+					$('<div class="modal hide" id="myModal"></div>')
+					.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
+					.append('<div class="modal-body"><p>'+text+'</p></div>')
+					.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Abbrechen</a><a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
+				return $myModalDialog;
+			},
+
+			getTitleFromModule : function(moduleId) {
+				ajaxData = 'moduleid='+moduleId;
+
+				// ajax request to get the full title from server
+				return $.ajax({
+					type: 'GET',
+					url: "<?php echo site_url();?>ajax/get_module_title/", 
+					data: ajaxData 
+				}).promise();
+
+			},
+
+			setModuleTitle : function(response) {
+				$('div.modal-header h3').html(response);
+			},
+
+			getTextFromModule : function(moduleId) {
+				ajaxData = 'moduleid='+moduleId;
+
+				// ajax request to get the full text from server
+				return $.ajax({
+					type: 'GET',
+					url: "<?php echo site_url();?>ajax/get_module_text/", 
+					data: ajaxData,
+				}).promise();
+			},
+
+			setModuleText : function(response) {
+				$('div.modal-body p').html(response);
 			}
 
 
 		};
+
+
+
+
+
+		// prompt dialogs
+		// $("ul.dropdown-menu").on("click", "li.kursinfo", function() {
+
+		// 	// console.log();
+		// 	// return;
+
+		// 	kursId = $(this).parent().parent().attr('data-kursid');
+
+		// 	var mm = createModalDialog(
+		// 		getTitleFromModule(kursId).done(function(result) {
+		// 		setModuleTitle(result);
+		// 	}), 
+		// 		getTextFromModule(kursId).done(function(result) {
+		// 			setModuleText(result);
+		// 		}));
+
+		// 	$("#modalcontent").html(mm);
+
+		// 	$('#myModal').modal({
+		// 		keyboard: false
+		// 	}).on('hide', function () {
+
+		// 	}).modal('show');
+			
+		// });
+
+		/**  */
+		// function createModalDialog(title, text) {
+		// 	var $myModalDialog = 
+		// 		$('<div class="modal hide" id="myModal"></div>')
+		// 		.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
+		// 		.append('<div class="modal-body"><p>'+text+'</p></div>')
+		// 		.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Abbrechen</a><a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
+		// 	return $myModalDialog;
+		// }
+
+		/** */
+		// function getTitleFromModule(moduleId) {
+		// 	ajaxData = 'moduleid='+moduleId;
+
+		// 	// ajax request to get the full title from server
+		// 	return $.ajax({
+		// 		type: 'GET',
+		// 		url: "<?php echo site_url();?>ajax/get_module_title/", 
+		// 		data: ajaxData 
+		// 	}).promise();
+
+		// }
+
+		// /** */
+		// function setModuleTitle(response) {
+		// 	$('div.modal-header h3').html(response);
+		// }
+
+		// /** */
+		// function getTextFromModule(moduleId) {
+		// 	ajaxData = 'moduleid='+moduleId;
+
+		// 	// ajax request to get the full text from server
+		// 	return $.ajax({
+		// 		type: 'GET',
+		// 		url: "<?php echo site_url();?>ajax/get_module_text/", 
+		// 		data: ajaxData,
+		// 	}).promise();
+		// }
+
+		// /** */
+		// function setModuleText(response) {
+		// 	$('div.modal-body p').html(response);
+		// }
+
+
+
+
+
+
+
+
+
+
+
+
 
 		
 		Studienplan.init({
@@ -423,7 +498,10 @@
 			sendButton : $('#sendButton'),
 			resetButton : $('#resetStudienPlan'),
 			btnPruefen : $('a.b_pruefen'),
-			btnHoeren : $('a.b_hoeren')
+			btnHoeren : $('a.b_hoeren'),
+			modalContent : $('#myModal'),
+			moduleModalWrapper : $('#modalcontent'),
+			infoButtonsWrapper : $('ul.dropdown-menu')
 		});
 
 <?php endblock(); ?>

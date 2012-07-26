@@ -104,7 +104,7 @@ class Ajax_model extends CI_Model {
     {
 	    	$this->db->select('KursSchreiben')
 	    			 ->from('semesterkurs')
-	    			 ->where('SemesterplanID', 1866)
+	    			 ->where('SemesterplanID', $this->user_model->get_semesterplanid())
 	    			 ->where('KursID', $kurs_id)
 	    			 ;
 
@@ -114,13 +114,13 @@ class Ajax_model extends CI_Model {
     }
     public function write_activate_status_pruefung($kurs_id)
     {
-	    	$this->db->where('SemesterplanID', 1866);
+	    	$this->db->where('SemesterplanID', $this->user_model->get_semesterplanid());
 	    	$this->db->where('KursID', $kurs_id);
 	    	$this->db->update('semesterkurs', array('KursSchreiben' => 1) );
     }
     public function write_deactivate_status_pruefung($kurs_id)
     {
-	    	$this->db->where('SemesterplanID', 1866);
+	    	$this->db->where('SemesterplanID', $this->user_model->get_semesterplanid());
 	    	$this->db->where('KursID', $kurs_id);
 	    	$this->db->update('semesterkurs', array('KursSchreiben' => 0));
     }
@@ -131,7 +131,7 @@ class Ajax_model extends CI_Model {
     {
 	    	$this->db->select('KursHoeren')
 	    			 ->from('semesterkurs')
-	    			 ->where('SemesterplanID', 1866)
+	    			 ->where('SemesterplanID', $this->user_model->get_semesterplanid())
 	    			 ->where('KursID', $kurs_id)
 	    			 ;
 
@@ -141,13 +141,13 @@ class Ajax_model extends CI_Model {
     }
     public function write_activate_status_hoeren($kurs_id)
     {
-	    	$this->db->where('SemesterplanID', 1866);
+	    	$this->db->where('SemesterplanID', $this->user_model->get_semesterplanid());
 	    	$this->db->where('KursID', $kurs_id);
 	    	$this->db->update('semesterkurs', array('KursHoeren' => 1) );
     }
     public function write_deactivate_status_hoeren($kurs_id)
     {
-	    	$this->db->where('SemesterplanID', 1866);
+	    	$this->db->where('SemesterplanID', $this->user_model->get_semesterplanid());
 	    	$this->db->where('KursID', $kurs_id);
 	    	$this->db->update('semesterkurs', array('KursHoeren' => 0));
     }
