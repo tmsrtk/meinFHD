@@ -727,7 +727,7 @@ class Admin extends FHD_Controller {
 
 //	    echo '<div class="well"><pre>';
 //	    echo 'DEBUG - if you see this tell developer - Frank ^^';
-//	    print_r($this->admin_model->get_stdgng_courses(2));
+//	    print_r($this->admin_model->copy_degree_program(2));
 //	    echo '</pre></div>';
 	}
 	
@@ -834,7 +834,7 @@ class Admin extends FHD_Controller {
 	 */
 	function delete_degree_program() {
 	    $delete_id = $this->input->post('degree_program_id');
-	    $this->admin_model->deletecopy_degree_program($delete_id);
+	    $this->admin_model->delete_degree_program($delete_id);
 
 	    // show view again
 	    $this->degree_program_delete(TRUE);
@@ -844,11 +844,11 @@ class Admin extends FHD_Controller {
 	 * Deltes a whole Stdgng - called when button is clicked
 	 */
 	function copy_degree_program() {
-	    $delete_id = $this->input->post('degree_program_id');
-	    $this->admin_model->copy_degree_program($delete_id);
+	    $copy_id = $this->input->post('degree_program_id');
+	    $this->admin_model->copy_degree_program($copy_id);
 
 	    // show view again
-	    $this->degree_program_delete(FALSE);
+	    $this->degree_program_copy();
 	}
 	
 	/*** << copy/delete *******************************************************
@@ -1143,20 +1143,20 @@ class Admin extends FHD_Controller {
 		// call function in model to update records
 		$this->admin_model->update_stdgng_courses($update_stdgng_data, $id);
 
-		$cb_data = array(); // init
-		$tmp_cb_data = array(); // init
+		$exam_cb_data = array(); // init
+		$tmp_exam_cb_data = array(); // init
 		// handle checkboxes
 		foreach ($update_checkboxes as $value) {
 		    if($this->input->post($id.$value) === '1'){
 			$split = explode('_', $value); // second value is exam-type-id
-			$tmp_cb_data['KursID'] = $id;
-			$tmp_cb_data['PruefungstypID'] = $split[1];
+			$tmp_exam_cb_data['KursID'] = $id;
+			$tmp_exam_cb_data['PruefungstypID'] = $split[1];
 			// build array to save data
-			$cb_data[] = $tmp_cb_data;
+			$exam_cb_data[] = $tmp_exam_cb_data;
 		    }
 		}
 		// save cb-data to db - passed array contains all checkboxes that have to be stored
-		$this->admin_model->save_exam_types_for_course($id, $cb_data);
+		$this->admin_model->save_exam_types_for_course($exam_cb_data, $id);
 	    }
 
 	    // show StudiengangDetails-List again

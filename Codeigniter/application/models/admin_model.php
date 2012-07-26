@@ -745,12 +745,14 @@ class Admin_model extends CI_Model {
 	 * @param int $course_id
 	 * @param array $cb_data
 	 */
-	function save_exam_types_for_course($course_id, $cb_data){
+	function save_exam_types_for_course($cb_data, $course_id = ''){
 	    // !! deletes all exam-types for that course first
 	    // >> perhaps not desired behaviour!!
-	    $this->db->delete('pruefungssammlung', array('KursID' => $course_id));
+	    if($course_id){
+		$this->db->delete('pruefungssammlung', array('KursID' => $course_id));
+	    }
 	    
-	    // add data to table again
+	    // add data to table (again)
 	    foreach ($cb_data as $value) {
 		$this->db->insert('pruefungssammlung', $value);
 	    }
@@ -770,13 +772,21 @@ class Admin_model extends CI_Model {
 	 * @param int $id
 	 */
 	function delete_degree_program($id){
+	    // delete all exam-types stored in 'pruefungssammlung'
+	    $course_ids = $this->getStdgngCourseIds($id);
+	    foreach ($course_ids as $c_id) {
+		$this->db->where('KursID', $c_id->KursID);
+		$this->db->delete('pruefungssammlung');
+	    }
+	    
 	    // delete from studiengang-table
 	    $this->db->where('StudiengangID', $id);
 	    $this->db->delete('studiengang');
 
 	    // delete all courses with this stdgng_id from studiengangkurs
 	    $this->db->where('StudiengangID', $id);
-	    $this->db->delete('studiengangkurs');		
+	    $this->db->delete('studiengangkurs');
+	    
 	}
 	
 	/**
@@ -784,18 +794,113 @@ class Admin_model extends CI_Model {
 	 * @param int $course_id
 	 */
 	function delete_stdgng_single_course($course_id){
+	    $this->db->delete('pruefungssammlung', array('KursID' => $course_id));
 	    $this->db->delete('studiengangkurs', array('KursID' => $course_id));
 	}
 	
 	
 	/**
 	 * Copies stdgng - creates other name
-	 * @param int $stdgng_id
+	 * @param int $dp_id
 	 */
-	function copy_degree_program($stdgng_id){
+	function copy_degree_program($dp_id){
+	    // fetching data for degree program to copy
+	    $q = $this->db->get_where('studiengang', array('StudiengangID' => $dp_id));
+
+	    $data = '';
+	    if($q->num_rows() > 0){
+		foreach ($q->result_array() as $row){
+		    $data = $row;
+		}
+	    }
 	    
+	    // alter name of degree program and delete old id!!
+	    $data['StudiengangName'] .= ' - [KOPIE]';
+	    unset($data['StudiengangID']);
+	    
+	    // inserting new degree program into db 'studiengang'
+	    $this->db->insert('studiengang', $data);
+	    
+	    // fetch highest (new) degree program id
+	    $max_dp_id = $this->get_highest_degree_program_id();
+	    
+	    // getting all course_data of course to be copied
+	    $dp_to_copy = $this->get_stdgng_courses($dp_id);
+	    
+	    
+	    // run through courses
+	    foreach($dp_to_copy as $dp_course){
+		// split data for course and exam-table !! empty arrays for each course!!
+		$course_data = array();
+		$exam_data = array();
+		
+		// run through course-data
+		foreach ($dp_course as $key => $value) {
+		    // store exam-types to different array than course-data
+		    if(strstr($key, 'pruefungstyp')){
+			// only add data to array, when the box is checked
+			if($value !== '0'){
+			    $split = explode('_', $key);
+			    // not defined at that point!! - will be created when course is inserted into studiengangkurs
+//			    $exam_data_tmp['KursID'] = $dp_course['KursID'];
+//			    $exam_data_tmp['PruefungstypID'] = $split[1];
+//			    $exam_data[] = $exam_data_tmp;
+			    $exam_data[$key] = $value;
+			}
+		    } else {
+			// set new StudiengangID
+			if (strstr($key, 'StudiengangID')){
+			    $course_data[$key] = $max_dp_id;
+			} else if (strstr($key, 'KursID')){
+			    // nothing to do 
+			} else {
+			    $course_data[$key] = $value;
+			}
+		    }
+		} // endforeach course-data
+		
+		$this->insert_new_course($course_data, $exam_data);
+		
+//		// save data to db
+//		$this->save_new_degree_program_courses($course_data);
+//		
+//		// fetch highest id - to save exam-data correctly and update exam-data
+//		$max_course_id = $this->get_highest_course_id();
+//		foreach ($exam_data as $e_data) {
+//		    $e_data['KursID'] = $max_course_id;
+//		}
+//		// then save		
+//		$this->save_exam_types_for_course($exam_data);
+		
+	    } // endforeach courses
+	}// end
+	
+	/**
+	 * Helper to get highest degree-program-id
+	 * @return int
+	 */
+	private function get_highest_degree_program_id(){
+	    $data = array();
+	    
+	    $this->db->select_max('StudiengangID');
+	    $q = $this->db->get('studiengang');
+	    
+	    if($q->num_rows() > 0){
+		foreach ($q->result() as $row){
+		    $data = $row->StudiengangID;
+		}
+		return $data;
+	    }
 	}
 	
+//	/**
+//	 * Helper to save copied course-data
+//	 * Called from copy_degree_program()
+//	 * @param type $course_data
+//	 */
+//	private function save_new_degree_program_courses($course_data){
+//	    $this->db->insert('studiengangkurs', $course_data);
+//	}
 	
 	/* 
 	 * 
