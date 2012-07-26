@@ -517,7 +517,7 @@ class Admin_model extends CI_Model {
 	 * >> used with filter-view
 	 * @return unknown
 	 */
-	function getAllStdgnge(){
+	function get_all_degree_programs(){
 	    $data = array();
 
 	    $this->db->order_by('Pruefungsordnung', 'desc');
@@ -840,11 +840,6 @@ class Admin_model extends CI_Model {
 		    if(strstr($key, 'pruefungstyp')){
 			// only add data to array, when the box is checked
 			if($value !== '0'){
-			    $split = explode('_', $key);
-			    // not defined at that point!! - will be created when course is inserted into studiengangkurs
-//			    $exam_data_tmp['KursID'] = $dp_course['KursID'];
-//			    $exam_data_tmp['PruefungstypID'] = $split[1];
-//			    $exam_data[] = $exam_data_tmp;
 			    $exam_data[$key] = $value;
 			}
 		    } else {
@@ -859,18 +854,8 @@ class Admin_model extends CI_Model {
 		    }
 		} // endforeach course-data
 		
+		// call function to save a new course
 		$this->insert_new_course($course_data, $exam_data);
-		
-//		// save data to db
-//		$this->save_new_degree_program_courses($course_data);
-//		
-//		// fetch highest id - to save exam-data correctly and update exam-data
-//		$max_course_id = $this->get_highest_course_id();
-//		foreach ($exam_data as $e_data) {
-//		    $e_data['KursID'] = $max_course_id;
-//		}
-//		// then save		
-//		$this->save_exam_types_for_course($exam_data);
 		
 	    } // endforeach courses
 	}// end
@@ -893,14 +878,6 @@ class Admin_model extends CI_Model {
 	    }
 	}
 	
-//	/**
-//	 * Helper to save copied course-data
-//	 * Called from copy_degree_program()
-//	 * @param type $course_data
-//	 */
-//	private function save_new_degree_program_courses($course_data){
-//	    $this->db->insert('studiengangkurs', $course_data);
-//	}
 	
 	/* 
 	 * 

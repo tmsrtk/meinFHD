@@ -24,7 +24,6 @@
 
 ?>
 <?php startblock('content'); # additional markup before content ?>
-	    <?php #krumo($allStdgnge); ?>
 	    <div class="row-fluid">
 		    <h2><?php echo $title; ?></h2>
 	    </div>
@@ -41,7 +40,7 @@
 		</thead>
 
 		<tbody>
-		    <?php foreach($allStdgnge as $sg) : ?>
+		    <?php foreach($all_degree_programs as $sg) : ?>
 			<tr>
 			    <td>
 				<div class="span3"><?php echo $sg->StudiengangName; ?></div>
@@ -51,10 +50,10 @@
 					echo form_open($controller_function);
 					echo form_submit('copy_delete_degree_program_id', $title, $btn_attributes);
 					// put some static data into post - CreditpointsMin (actually not needed) and FachbereichID (final = 5)
-					$hiddenData = array(
+					$hidden_data = array(
 						'degree_program_id' => $sg->StudiengangID
 					);
-					echo form_hidden($hiddenData);
+					echo form_hidden($hidden_data);
 					echo form_close();
 				    ?>
 				</div>

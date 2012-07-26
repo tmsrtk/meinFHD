@@ -7,17 +7,17 @@ class Admin extends FHD_Controller {
 	private $roleIds;
 	
 	function __construct(){
-		parent::__construct();
-		
-		$this->load->model('admin_model');
+	    parent::__construct();
 
-		// Daten holen - Alle Rollen mit Bezeichnung, Alle Berechtigungen mit Bezeichnung, gesondert die RoleIds
-		$this->roles = $this->admin_model->getAllRoles();
-		$this->permissions = $this->admin_model->getAllPermissions();
-		$this->roleIds = $this->admin_model->getAllRoleIds();
-		
-		// get all stdgnge for the views
-		$data['allStdgnge'] = $this->admin_model->getAllStdgnge();
+	    $this->load->model('admin_model');
+
+	    // Daten holen - Alle Rollen mit Bezeichnung, Alle Berechtigungen mit Bezeichnung, gesondert die RoleIds
+	    $this->roles = $this->admin_model->getAllRoles();
+	    $this->permissions = $this->admin_model->getAllPermissions();
+	    $this->roleIds = $this->admin_model->getAllRoleIds();
+
+//	    // get all stdgnge for the views
+//	    $data['allStdgnge'] = $this->admin_model->get_all_degree_programs();
 	}
 	
 	
@@ -710,12 +710,12 @@ class Admin extends FHD_Controller {
 	**************************************************************************/
 	
 	/**
-	 * Show page with empty inpuf-fields 
+	 * Show page with empty input-fields 
 	 */
 	function degree_program_add(){
 				
 	    // get all stdgnge for the view
-	    $this->data->add('allStdgnge', $this->admin_model->getAllStdgnge());
+	    $this->data->add('all_degree_programs', $this->admin_model->get_all_degree_programs());
 
 	    $siteinfo = array(
 		'title' => 'Neuen Studiengang anlegen',
@@ -817,7 +817,7 @@ class Admin extends FHD_Controller {
 	 */
 	private function degree_program_copy_delete($delete){
 	    // get all stdgnge for the view
-	    $this->data->add('allStdgnge', $this->admin_model->getAllStdgnge());
+	    $this->data->add('all_degree_programs', $this->admin_model->get_all_degree_programs());
 	    $this->data->add('delete', $delete);
 
 	    $siteinfo = array(
@@ -863,7 +863,7 @@ class Admin extends FHD_Controller {
 	function degree_program_edit($reload = 0){
 
 	    // get all stdgnge for filter-view
-	    $this->data->add('all_stdgnge', $this->admin_model->getAllStdgnge());
+	    $this->data->add('all_stdgnge', $this->admin_model->get_all_degree_programs());
 	    // set stdgng_id to 0 - indicates, that view has been loaded directly from controller
 	    // no autoreload without validation
 	    $this->data->add('stdgng_id_automatic_reload', $reload);
@@ -1008,7 +1008,7 @@ class Admin extends FHD_Controller {
 	    
 	    
 	    // get all stdgnge for filter-view
-	    $data['all_stdgnge'] = $this->admin_model->getAllStdgnge();
+	    $data['all_stdgnge'] = $this->admin_model->get_all_degree_programs();
 	    
 	    // get stdgng_id
 	    $stdgng_id = $this->input->post('stdgng_id');
@@ -1038,7 +1038,7 @@ class Admin extends FHD_Controller {
 	function validate_stdgng_course_changes(){
 	    
 	    // get all stdgnge for filter-view
-//	    $data['all_stdgnge'] = $this->admin_model->getAllStdgnge();
+//	    $data['all_stdgnge'] = $this->admin_model->get_all_degree_programs();
 	    
 	    // get all course-ids belonging to a specified stdgng
 	    $stdgng_id = $this->input->post('stdgng_id');
@@ -1548,7 +1548,7 @@ class Admin extends FHD_Controller {
 	    // get files from upload-folder
 	    $upload_dir = directory_map('./resources/uploads');
 	    // get stdgnge
-	    $stdgnge = $this->admin_model->getAllStdgnge();
+	    $stdgnge = $this->admin_model->get_all_degree_programs();
 	    $data['stdgng_uploads'] = '';
 	    
 	    $last_id = 0;

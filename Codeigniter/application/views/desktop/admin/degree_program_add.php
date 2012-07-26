@@ -25,7 +25,6 @@ $btn_attributes = 'class = "btn-warning input-xxxlarge"';
 
 ?>
 <?php startblock('content'); # additional markup before content ?>
-	    <?php #krumo($allStdgnge); ?>
 	    <div class="row-fluid">
 		    <h2>Studiengang anlegen</h2>
 	    </div>
@@ -36,7 +35,7 @@ $btn_attributes = 'class = "btn-warning input-xxxlarge"';
 		    <div id="stdgng-details">
 			    <div id="stdgng-details-1" class="span6">
 				    <?php 
-					    foreach ($allStdgnge[0] as $key => $value){
+					    foreach ($all_degree_programs[0] as $key => $value){
 						    if( $key == 'StudiengangName' || 
 							    $key == 'StudiengangAbkuerzung' || 
 							    $key == 'Pruefungsordnung' || 
@@ -58,12 +57,12 @@ $btn_attributes = 'class = "btn-warning input-xxxlarge"';
 						    }
 
 						    // put some static data into post - CreditpointsMin (actually not needed) and FachbereichID (final = 5)
-						    $staticData = array(
+						    $static_data = array(
 							    'CreditpointsMin' => '0',
 							    'FachbereichID' => '5'
 					    );
 
-					    echo form_hidden($staticData);
+					    echo form_hidden($static_data);
 				    ?>
 
 			    </div>
