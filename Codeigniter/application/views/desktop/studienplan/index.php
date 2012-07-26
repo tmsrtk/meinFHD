@@ -78,7 +78,7 @@
 	); ?>
 <?php echo form_submit($fs_attrs, 'Los'); ?>
 
-<button name="resetStudienPlan" id="resetStudienPlan" class="btn btn-warning" >Reset</button>
+<!-- <button name="resetStudienPlan" id="resetStudienPlan" class="btn btn-warning" >Reset</button> -->
 
 <div id="modalcontent"></div>
 
@@ -181,16 +181,25 @@
 	var Studienplan = {
 			init: function( config ) {
 				this.config = config;
-				this.config.changedModulesHistory = new Array();
+				this.config.changedModulesHistory = [];
+
+				this.setupAjax();
 				this.initJQUIsortable();
 				this.initSendButton();
-				this.initResetButton();
+				// this.initResetButton();
 				this.initBtnPruefen();
+				this.initBtnHoeren();
+			},
+
+			setupAjax : function() {
+				$.ajaxSetup({
+					type : 'GET'
+				});
 			},
 			
 			initJQUIsortable: function() {
-
 				var self = this;
+
 				this.config.sortableColumns.sortable({
 					connectWith: self.config.connectWithColumns,
 					cursor: 'pointer',
@@ -220,22 +229,12 @@
 						// array mit allen befehlen zwischenspeichern, beim klicken auf submit, wird dieses
 						// array als post übertragen? und auf der serverseite für jeden array eintrag 
 						// die db ausgeführt
-						
-						
 
 						self.config.changedModulesHistory.push(module_serialisiert);
-
-
-						// DEBUG:
-						// console.log(changedModulesHistory);
-
-						// kein ajax!
-						// return;
-
 						//---------------------------------------------------------------------------------
 
-
-	
+						// kein ajax mehr
+		
 						// ajax request to save the new module orders
 						// $.ajax({
 						// 	type: 'GET',
@@ -264,7 +263,6 @@
 
 						$.ajax({
 						  url: "<?php echo site_url();?>ajax/schreibe_reihenfolge_in_db/",
-						  type: 'GET',
 						  data: value,
 						  complete: function(xhr, textStatus) {
 						    //called when complete
@@ -277,21 +275,15 @@
 						  }
 						});
 						
-					} );
+					});
+
+					// reset the history array
+					self.config.changedModulesHistory = [];
+
+					self.initResetButton();	// TODO: funzt noch nicht, soll nach einem speichern, das reseten nicht mehr erlauben, bzw auch nen ajax
+											// request ausführen, der das dann entsprechen zurücksetzt
 					
 				});
-
-
-				// this.config.sendButton.click(function() {
-				// 	$.ajax({
-				// 			type: 'GET',
-				// 			url: "<?php echo site_url();?>ajax/save_changes/", 
-				// 			data: self.config.changedModulesHistory, 
-				// 			success: function(response) {
-				// 				console.log(response);
-				// 			}
-				// 		});
-				// });
 				return false;
 			},
 
@@ -308,28 +300,24 @@
 			},
 
 			initBtnPruefen : function() {
-
-				// console.log(this.config.btnPruefen);
-
+				// get the status for this button | on / off ?
 				$(this.config.btnPruefen).each(function(index, elem) {
 
+					// cache the button
 					var self = this;
 
-					// console.log($(elem).parent().attr('data-kursid'));
-
+					// get the kursid of the module	
 					value = 'kursid='+$(elem).parent().attr('data-kursid');
 
+					// ajax request, to get the status for this button | on / off ?
 					$.ajax({
 					  url: "<?php echo site_url();?>ajax/check_status_pruefung/",
-					  type: 'GET',
 					  data: value,
 					  complete: function(xhr, textStatus) {
 					    //called when complete
 					  },
 					  success: function(data, textStatus, xhr) {
-					    // (data == '1') ? console.log("true") : console.log("false");
 					    (data == '1') ? $(self).addClass('b_active') : console.log("false");
-					    // console.log(data);
 					  },
 					  error: function(xhr, textStatus, errorThrown) {
 					    //called when there is an error
@@ -337,50 +325,105 @@
 					});
 				});
 
+				// click function to turn on or off
 				$(this.config.btnPruefen).click(function() {
 
 					value = 'kursid='+$(this).parent().attr('data-kursid');
 
+					// if actual button has the b_active class, turn in off
 					if ( $(this).hasClass('b_active') ) {
 						$(this).removeClass('b_active');
 
 						$.ajax({
 						  url: "<?php echo site_url();?>ajax/deactivate_status_pruefung/",
-						  type: 'GET',
 						  data: value,
 						  success: function(data, textStatus, xhr) {
-						    // (data == '1') ? console.log("true") : console.log("false");
-						    // (data == '1') ? $(self).addClass('b_active') : console.log("false");
 						    console.log("deactivated");
 						  }
 						});
-
-					} else {
+					} else { // otherwise, turn it on
 						$(this).addClass('b_active');
 
 						$.ajax({
 						  url: "<?php echo site_url();?>ajax/activate_status_pruefung/",
-						  type: 'GET',
 						  data: value,
 						  success: function(data, textStatus, xhr) {
-						    // (data == '1') ? console.log("true") : console.log("false");
-						    // (data == '1') ? $(self).addClass('b_active') : console.log("false");
 						    console.log("activated");
 						  }
 						});
 					}
+					return false;
+				});
+			},
 
+			initBtnHoeren : function() {
+				// get the status for this button | on / off ?
+				$(this.config.btnHoeren).each(function(index, elem) {
+
+					// cache the button
+					var self = this;
+
+					// get the kursid of the module	
+					value = 'kursid='+$(elem).parent().attr('data-kursid');
+
+					// ajax request, to get the status for this button | on / off ?
+					$.ajax({
+					  url: "<?php echo site_url();?>ajax/check_status_hoeren/",
+					  data: value,
+					  complete: function(xhr, textStatus) {
+					    //called when complete
+					  },
+					  success: function(data, textStatus, xhr) {
+					    (data == '1') ? $(self).addClass('b_active') : console.log("false");
+					  },
+					  error: function(xhr, textStatus, errorThrown) {
+					    //called when there is an error
+					  }
+					});
+				});
+
+				// click function to turn on or off
+				$(this.config.btnHoeren).click(function() {
+
+					value = 'kursid='+$(this).parent().attr('data-kursid');
+
+					// if actual button has the b_active class, turn in off
+					if ( $(this).hasClass('b_active') ) {
+						$(this).removeClass('b_active');
+
+						$.ajax({
+						  url: "<?php echo site_url();?>ajax/deactivate_status_hoeren/",
+						  data: value,
+						  success: function(data, textStatus, xhr) {
+						    console.log("deactivated");
+						  }
+						});
+					} else { // otherwise, turn it on
+						$(this).addClass('b_active');
+
+						$.ajax({
+						  url: "<?php echo site_url();?>ajax/activate_status_hoeren/",
+						  data: value,
+						  success: function(data, textStatus, xhr) {
+						    console.log("activated");
+						  }
+						});
+					}
 					return false;
 				});
 			}
+
+
 		};
+
 		
 		Studienplan.init({
 			sortableColumns: $(".semesterplanspalte"),
 			connectWithColumns: '.semesterplanspalte',
 			sendButton : $('#sendButton'),
 			resetButton : $('#resetStudienPlan'),
-			btnPruefen : $('a.b_pruefen')
+			btnPruefen : $('a.b_pruefen'),
+			btnHoeren : $('a.b_hoeren')
 		});
 
 <?php endblock(); ?>

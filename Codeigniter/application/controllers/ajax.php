@@ -110,17 +110,33 @@ class Ajax extends CI_Controller {
 		$kurs_id = $this->input->get('kursid');
 		$this->ajax_model->query_status_pruefung($kurs_id);
 	}
-
 	public function activate_status_pruefung()
 	{
 		$kurs_id = $this->input->get('kursid');
 		$this->ajax_model->write_activate_status_pruefung($kurs_id);
 	}
-
 	public function deactivate_status_pruefung()
 	{
 		$kurs_id = $this->input->get('kursid');
 		$this->ajax_model->write_deactivate_status_pruefung($kurs_id);
+	}
+
+
+
+	public function check_status_hoeren()
+	{
+		$kurs_id = $this->input->get('kursid');
+		$this->ajax_model->query_status_hoeren($kurs_id);
+	}
+	public function activate_status_hoeren()
+	{
+		$kurs_id = $this->input->get('kursid');
+		$this->ajax_model->write_activate_status_hoeren($kurs_id);
+	}
+	public function deactivate_status_hoeren()
+	{
+		$kurs_id = $this->input->get('kursid');
+		$this->ajax_model->write_deactivate_status_hoeren($kurs_id);
 	}
 
 }
