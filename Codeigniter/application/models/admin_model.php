@@ -506,7 +506,7 @@ class Admin_model extends CI_Model {
 	
 	/* ************************************************************************
 	 * 
-	 * ************************ Studiengangverwaltung ANFANG
+	 * ******************************* Studiengangverwaltung
 	 * ************************************** Frank Gottwald
 	 * 
 	 */
@@ -520,7 +520,7 @@ class Admin_model extends CI_Model {
 	function get_all_degree_programs(){
 	    $data = array();
 
-	    $this->db->order_by('Pruefungsordnung', 'desc');
+	    $this->db->order_by('StudiengangID', 'desc');
 	    $q = $this->db->get('studiengang');
 		
 	    if($q->num_rows() > 0){

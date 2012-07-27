@@ -2,9 +2,6 @@
 	// custom js functionality goes here
 
 	
-	    
-
-
 	// autoclosing twitter bootstrap alerts
 	function createAutoClosingAlert(selector, delay) {
 		var alert = $(selector).alert();
