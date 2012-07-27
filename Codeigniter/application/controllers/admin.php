@@ -894,6 +894,7 @@ class Admin extends FHD_Controller {
 		$stdgng_chosen_id = $stdgng_id;
 	    }
 		
+	    $courses_of_single_stdgng = array();
 	    $courses_of_single_stdgng = $this->admin_model->
 		    get_stdgng_courses($stdgng_chosen_id);
 
@@ -949,34 +950,39 @@ class Admin extends FHD_Controller {
 	    // building a first line to save a new course to db
 	    $data['new_course'] = $this->load->view('admin-subviews/admin_stdgng_coursetable_row_first', $data, TRUE);
 	    
-	    //for each record - print out table-row with form-fields
-	    foreach($courses_of_single_stdgng as $sd){
-		// build a table-row for each course
-		$data['KursID'] = $sd['KursID'];
-		$data['Kursname'] = $sd['Kursname'];
-		$data['kurs_kurz'] = $sd['kurs_kurz'];
-		$data['Creditpoints'] = $sd['Creditpoints'];
-		$data['SWS_Vorlesung'] = $sd['SWS_Vorlesung'];
-		$data['SWS_Uebung'] = $sd['SWS_Uebung'];
-		$data['SWS_Praktikum'] = $sd['SWS_Praktikum'];
-		$data['SWS_Projekt'] = $sd['SWS_Projekt'];
-		$data['SWS_Seminar'] = $sd['SWS_Seminar'];
-		$data['SWS_SeminarUnterricht'] = $sd['SWS_SeminarUnterricht'];
-		$data['SemesterDropdown'] = $semester_dropdown_options;	// array holding all dropdown-options
-		$data['Semester'] = $sd['Semester'];
-		$data['Beschreibung'] = $sd['Beschreibung'];
-		// if there will be more exam-types added: this is the place to add them too!!
-		$data['pruefungstyp_1'] = (($sd['pruefungstyp_1'] == '1') ? TRUE : FALSE); // convert data (1/0) to boolean
-		$data['pruefungstyp_2'] = (($sd['pruefungstyp_2'] == '1') ? TRUE : FALSE);
-		$data['pruefungstyp_3'] = (($sd['pruefungstyp_3'] == '1') ? TRUE : FALSE);
-		$data['pruefungstyp_4'] = (($sd['pruefungstyp_4'] == '1') ? TRUE : FALSE);
-		$data['pruefungstyp_5'] = (($sd['pruefungstyp_5'] == '1') ? TRUE : FALSE);
-		$data['pruefungstyp_6'] = (($sd['pruefungstyp_6'] == '1') ? TRUE : FALSE);
-		$data['pruefungstyp_7'] = (($sd['pruefungstyp_7'] == '1') ? TRUE : FALSE);
-		$data['pruefungstyp_8'] = (($sd['pruefungstyp_8'] == '1') ? TRUE : FALSE);
-		
-		// array holding all rows
-		$rows[] = $this->load->view('admin-subviews/admin_stdgng_coursetable_row', $data, TRUE);
+	    $rows = array(); // init
+	    
+	    // if there are courses - otherwise only course-details has been created
+	    if($courses_of_single_stdgng){
+		//for each record - print out table-row with form-fields
+		foreach($courses_of_single_stdgng as $sd){
+		    // build a table-row for each course
+		    $data['KursID'] = $sd['KursID'];
+		    $data['Kursname'] = $sd['Kursname'];
+		    $data['kurs_kurz'] = $sd['kurs_kurz'];
+		    $data['Creditpoints'] = $sd['Creditpoints'];
+		    $data['SWS_Vorlesung'] = $sd['SWS_Vorlesung'];
+		    $data['SWS_Uebung'] = $sd['SWS_Uebung'];
+		    $data['SWS_Praktikum'] = $sd['SWS_Praktikum'];
+		    $data['SWS_Projekt'] = $sd['SWS_Projekt'];
+		    $data['SWS_Seminar'] = $sd['SWS_Seminar'];
+		    $data['SWS_SeminarUnterricht'] = $sd['SWS_SeminarUnterricht'];
+		    $data['SemesterDropdown'] = $semester_dropdown_options;	// array holding all dropdown-options
+		    $data['Semester'] = $sd['Semester'];
+		    $data['Beschreibung'] = $sd['Beschreibung'];
+		    // if there will be more exam-types added: this is the place to add them too!!
+		    $data['pruefungstyp_1'] = (($sd['pruefungstyp_1'] == '1') ? TRUE : FALSE); // convert data (1/0) to boolean
+		    $data['pruefungstyp_2'] = (($sd['pruefungstyp_2'] == '1') ? TRUE : FALSE);
+		    $data['pruefungstyp_3'] = (($sd['pruefungstyp_3'] == '1') ? TRUE : FALSE);
+		    $data['pruefungstyp_4'] = (($sd['pruefungstyp_4'] == '1') ? TRUE : FALSE);
+		    $data['pruefungstyp_5'] = (($sd['pruefungstyp_5'] == '1') ? TRUE : FALSE);
+		    $data['pruefungstyp_6'] = (($sd['pruefungstyp_6'] == '1') ? TRUE : FALSE);
+		    $data['pruefungstyp_7'] = (($sd['pruefungstyp_7'] == '1') ? TRUE : FALSE);
+		    $data['pruefungstyp_8'] = (($sd['pruefungstyp_8'] == '1') ? TRUE : FALSE);
+
+		    // array holding all rows
+		    $rows[] = $this->load->view('admin-subviews/admin_stdgng_coursetable_row', $data, TRUE);
+		}
 	    }
 	    
 	    // make data available in view

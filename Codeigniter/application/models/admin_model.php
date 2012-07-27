@@ -773,10 +773,14 @@ class Admin_model extends CI_Model {
 	 */
 	function delete_degree_program($id){
 	    // delete all exam-types stored in 'pruefungssammlung'
+	    $course_ids = array();
 	    $course_ids = $this->getStdgngCourseIds($id);
-	    foreach ($course_ids as $c_id) {
-		$this->db->where('KursID', $c_id->KursID);
-		$this->db->delete('pruefungssammlung');
+	    // if there are courses - otherwise dp was created without courses
+	    if($course_ids){
+		foreach ($course_ids as $c_id) {
+		    $this->db->where('KursID', $c_id->KursID);
+		    $this->db->delete('pruefungssammlung');
+		}
 	    }
 	    
 	    // delete from studiengang-table
@@ -825,39 +829,42 @@ class Admin_model extends CI_Model {
 	    $max_dp_id = $this->get_highest_degree_program_id();
 	    
 	    // getting all course_data of course to be copied
+	    $dp_to_copy = array();
 	    $dp_to_copy = $this->get_stdgng_courses($dp_id);
 	    
-	    
-	    // run through courses
-	    foreach($dp_to_copy as $dp_course){
-		// split data for course and exam-table !! empty arrays for each course!!
-		$course_data = array();
-		$exam_data = array();
-		
-		// run through course-data
-		foreach ($dp_course as $key => $value) {
-		    // store exam-types to different array than course-data
-		    if(strstr($key, 'pruefungstyp')){
-			// only add data to array, when the box is checked
-			if($value !== '0'){
-			    $exam_data[$key] = $value;
-			}
-		    } else {
-			// set new StudiengangID
-			if (strstr($key, 'StudiengangID')){
-			    $course_data[$key] = $max_dp_id;
-			} else if (strstr($key, 'KursID')){
-			    // nothing to do 
+	    // if the degree program already has data - if not degree program was only created (without courses)
+	    if($dp_to_copy){
+		// run through courses
+		foreach($dp_to_copy as $dp_course){
+		    // split data for course and exam-table !! empty arrays for each course!!
+		    $course_data = array();
+		    $exam_data = array();
+
+		    // run through course-data
+		    foreach ($dp_course as $key => $value) {
+			// store exam-types to different array than course-data
+			if(strstr($key, 'pruefungstyp')){
+			    // only add data to array, when the box is checked
+			    if($value !== '0'){
+				$exam_data[$key] = $value;
+			    }
 			} else {
-			    $course_data[$key] = $value;
+			    // set new StudiengangID
+			    if (strstr($key, 'StudiengangID')){
+				$course_data[$key] = $max_dp_id;
+			    } else if (strstr($key, 'KursID')){
+				// nothing to do 
+			    } else {
+				$course_data[$key] = $value;
+			    }
 			}
-		    }
-		} // endforeach course-data
-		
-		// call function to save a new course
-		$this->insert_new_course($course_data, $exam_data);
-		
-	    } // endforeach courses
+		    } // endforeach course-data
+
+		    // call function to save a new course
+		    $this->insert_new_course($course_data, $exam_data);
+
+		} // endforeach courses
+	    }
 	}// end
 	
 	/**

@@ -75,21 +75,8 @@
 		</tbody>
 	    </table>
 		
-		<div id="copy-delete-confirmation"></div>
+	    <div id="copy-delete-confirmation"></div>
 		
-<!--	    <div class="modal hide" id="copy-delete-confirmation-dialog">
-		<div class="modal-header">
-		    <button type="button" data-dismiss="modal">×</button>
-		    <h3><?php echo $title; ?></h3>
-		</div>
-		<div class="modal-body">
-		    <p><?php echo $modal_text; ?></p>
-		</div>
-		<div class="modal-footer">
-		    <a href="#" class="btn" id="dismiss-copy-delete-confirmation-dialog" data-dismiss="modal">Abbrechen</a>
-		    <a href="#" class="btn btn-primary" id="confirm-copy-delete-confirmation-dialog">OK</a>
-		</div>
-	    </div>-->
 <?php endblock(); ?>
 
 <?php startblock('postCodeContent'); # additional markup before content ?>

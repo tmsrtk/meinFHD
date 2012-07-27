@@ -25,9 +25,13 @@
 	<table class="table table-striped table-bordered table-condensed">
 	<?php echo $course_tablehead; ?>
 	    <tbody>
-		<?php foreach($stdgng_course_rows as $row) : ?>
-		    <tr><?php print $row; ?></tr>
-		<?php endforeach; ?>
+		<?php 
+		    if($stdgng_course_rows){
+			foreach($stdgng_course_rows as $row){
+			    echo '<tr>'.$row.'</tr>';
+			}
+		    }
+		?>
 
 	    </tbody>
 	</table>
