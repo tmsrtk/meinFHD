@@ -15,34 +15,109 @@
  */
 
 class Ajax_model extends CI_Model {
+
+    	public function __construct()
+    	{
+    		parent::__construct();
+    	}
+
+    	public function query_module_title($mid)
+    	{
+    		$this->db->select('Kursname')
+    				 ->from('studiengangkurs')
+    				 ->where('KursID', $mid)
+    				 ;
+    		$q = $this->db->get();
+
+    		// if ($q > 0)
+    		// {
+    		// 	// TODO:
+    		// }
+
+    		return $q->row_array();
+    	}
+
+    	public function query_module_text($mid)
+    	{
+    		// TODO: same shit as query_module_title
+
+    		$this->db->select('studiengangkurs.*');
+    		$this->db->from('studiengangkurs');
+    		// $this->db->join('semesterkurs', 'semesterkurs.KursID = studiengangkurs.KursID');
+    		$this->db->where('studiengangkurs.KursID', $mid);
+    		// $this->db->order_by('studiengangkurs.KursID', 'ASC');
+    		$studiengang = $this->db->get();
+
+    		return $studiengang->row_array();
+    	}
+
+    public function query_status_pruefung($kurs_id)
+    {
+	    	$this->db->select('KursSchreiben')
+	    			 ->from('semesterkurs')
+	    			 ->where('SemesterplanID', $this->user_model->get_semesterplanid())
+	    			 ->where('KursID', $kurs_id)
+	    			 ;
+
+	    	$q = $this->db->get()->row_array();
+
+	    	echo $q['KursSchreiben'];
+    }
+    public function write_activate_status_pruefung($kurs_id)
+    {
+	    	$this->db->where('SemesterplanID', $this->user_model->get_semesterplanid());
+	    	$this->db->where('KursID', $kurs_id);
+	    	$this->db->update('semesterkurs', array('KursSchreiben' => 1) );
+    }
+    public function write_deactivate_status_pruefung($kurs_id)
+    {
+	    	$this->db->where('SemesterplanID', $this->user_model->get_semesterplanid());
+	    	$this->db->where('KursID', $kurs_id);
+	    	$this->db->update('semesterkurs', array('KursSchreiben' => 0));
+    }
+
+
     
-        private $semesterplanID;
+    public function query_status_hoeren($kurs_id)
+    {
+	    	$this->db->select('KursHoeren')
+	    			 ->from('semesterkurs')
+	    			 ->where('SemesterplanID', $this->user_model->get_semesterplanid())
+	    			 ->where('KursID', $kurs_id)
+	    			 ;
 
-	public function __construct()
-	{
-		parent::__construct();
-        $this->setSemesterplanID();
-	}
+	    	$q = $this->db->get()->row_array();
 
-	public function query_module_title($mid)
-	{
-		$this->db->select('Kursname')
-				 ->from('studiengangkurs')
-				 ->where('KursID', $mid)
-				 ;
-		$q = $this->db->get();
-		return $q->row_array();
-	}
+	    	echo $q['KursHoeren'];
+    }
+    public function write_activate_status_hoeren($kurs_id)
+    {
+	    	$this->db->where('SemesterplanID', $this->user_model->get_semesterplanid());
+	    	$this->db->where('KursID', $kurs_id);
+	    	$this->db->update('semesterkurs', array('KursHoeren' => 1) );
+    }
+    public function write_deactivate_status_hoeren($kurs_id)
+    {
+	    	$this->db->where('SemesterplanID', $this->user_model->get_semesterplanid());
+	    	$this->db->where('KursID', $kurs_id);
+	    	$this->db->update('semesterkurs', array('KursHoeren' => 0));
+    }
 
-	// public function get_request()
-	// {
-	// 	$this->db->select('semesterplanposition');
-	// 	$this->db->from('modul');
 
-	// 	$q = $this->db->get();
 
-	// 	return $q->result_array();
-	// }
+
+
+    public function query_status_hoeren_vl($kurs_id)
+    {
+    		$this->db->select('Semester')
+    				->from('studiengangkurs')
+    				->where('KursID', $kurs_id)
+    				;
+    		return $this->db->get()->row_array();
+    }
+
+
+	// alte Methoden --------------------------------------------------------------------
 
 	// hole die gespeicherte Reihenfolge der Module
 	public function get_reihenfolge($semesternr)
@@ -60,27 +135,21 @@ class Ajax_model extends CI_Model {
 		// counter für die Reihenfolge
 		$counter = 1;
 		// speichere neue Reihenfolge in die DB
-		foreach ($neue_reihenfolge as $serialized_position) {
+		foreach ($neue_reihenfolge as $serialized_position)
+		{
 			$data = array(
                //'Semesterposition' => $counter,
                'Semester' => $semesternr
-            );
+               );
 
-            // FB::log($serialized_position);
 
-			$this->db->where('SemesterplanID', $this->semesterplanID);     // TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			$this->db->where('SemesterplanID', $this->user_model->get_semesterplanid());
 			$this->db->where('KursID', $serialized_position);
 			$this->db->update('Semesterkurs', $data);
 
 			$counter++;
 		}
 	}
-        
-        
-    public function setSemesterplanID()
-    {
-        $this->load->model('Studienplan_Model');
-        $this->semesterplanID = $this->Studienplan_Model->getStudyplanID();
-    }
+
 
 }
