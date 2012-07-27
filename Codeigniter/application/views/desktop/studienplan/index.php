@@ -14,7 +14,7 @@
 <hr>
 
 <div id="studienplan" class="well">
-	<?php echo form_open('studienplan/save_changes', $data_formopen); ?>
+	<?php echo form_open('', $data_formopen); ?>
 		<table>
 			<thead>
 				<tr>
@@ -42,18 +42,16 @@
 												<li id="module_<?php echo $data['KursID']; ?>">
 													<div class="semestermodul dropup" data-kursid="<?php echo $data['KursID']; ?>">
 														<i class="arrw icon-chevron-up" data-toggle="dropdown"></i>
-														<a class="b_pruefen" href="">P</a>
 														<a class="b_hoeren" href="">H</a>
+														<a class="b_pruefen" href="">P</a>
 														<ul class="dropdown-menu">
 														      <li class="kursinfo"><a href="#">Info</a></li>
-														      <li><a href="#"><?php echo $data['KursID']; ?></a></li>
-														      <li><a href="#">Something else here</a></li>
 														      <li class="divider"></li>
-														      <li><a href="#">Separated link</a></li>
+														      <li><a href="#">Resetten</a></li>
 														</ul>
 
 														<span class="modulfach"><?php echo $data['Kurzname'] ?></span>
-														<input class="modulnote input-mini" name="modulnote" type="text" value="<?php echo $data['Notenpunkte'] ?>">
+														<input class="modulnote input-mini" name="modulnote[]" type="text" value="<?php echo $data['Notenpunkte'] ?>">
 													</div>
 												</li>
 											<?php endif; ?>
@@ -67,16 +65,17 @@
 				</tr>
 			</tbody>
 		</table>
+	<!-- Test für speichern der Modulreihenfolge -->
+	<?php $fs_attrs = array(
+		'id'	=>	'sBu',
+		'name'	=>	'sendButton',
+		'class' =>	'btn btn-success'
+		); ?>
+	<?php # echo form_submit($fs_attrs, 'Los'); ?>
 	<?php echo form_close(); ?>
 </div>
 
-<!-- Test für speichern der Modulreihenfolge -->
-<?php $fs_attrs = array(
-	'id'	=>	'sendButton',
-	'name'	=>	'sendButton',
-	'class' =>	'btn btn-success'
-	); ?>
-<?php echo form_submit($fs_attrs, 'Los'); ?>
+<!-- <button name="resetStudienPlan" id="sB" class="btn btn-warning" >Reset</button> -->
 
 <!-- <button name="resetStudienPlan" id="resetStudienPlan" class="btn btn-warning" >Reset</button> -->
 
@@ -92,25 +91,43 @@
 	// console.log( testjs );
 
 
-	// -------------------------------------------------------------------------
+	// -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	// $(document).ready(function() {
+	//   $(window).keydown(function(event){
+	//     if( (event.keyCode == 13) && (validationFunction() == false) ) {
+	//       event.preventDefault();
+	//       return false;
+	//     }
+	//   });
+	// });
 
 
-	
+	$(window).keydown(function(event){
+	    if(event.keyCode == 13) {
+	      event.preventDefault();
+	      return false;
+	    }
+	  });
 
-	// -------------------------------------------------------------------------
 
 	var Studienplan = {
 			init: function( config ) {
 				this.config = config;
-				this.config.changedModulesHistory = [];
+				// this.config.changedModulesHistory = [];
 
 				this.setupAjax();
+
 				this.initJQUIsortable();
+
+				this.initModules();
+				this.initHoerenButtons();
+				this.initPruefenButtons();
+				this.initModulNotenInputs();
+				this.initInfoModalButtons();
+				
 				this.initSendButton();
 				// this.initResetButton();
-				this.initBtnPruefen();
-				this.initBtnHoeren();
-				this.initInfoButtons();
 			},
 
 			setupAjax : function() {
@@ -134,82 +151,210 @@
 					// for each change of modules order, save the serialized get url
 					update: function(event, ui) {
 						// serialize the module order
-						module_serialisiert = $(this).sortable("serialize");
+						// module_serialisiert = $(this).sortable("serialize");
 	
 						// additionally add the semester number to the get url
-						semester = $(this).attr('id');
-						module_serialisiert+='&semester='+semester;
+						// semester = $(this).attr('id');
+						// module_serialisiert+='&semester='+semester;
 
 						// save each order change, in the global "history" variable
-						self.config.changedModulesHistory.push(module_serialisiert);
+						// self.config.changedModulesHistory.push(module_serialisiert);
 
 					},
 
 					stop : function(event, ui) {
-						value = 'kursid='+ui.item.find('.semestermodul').attr('data-kursid');
-						// semester = $(this).attr('id');
+						kursId = 'kursid='+ui.item.find('.semestermodul').attr('data-kursid');
 						semester = ui.item.parent().attr('id');
 						$selfBtnHoeren = ui.item.find('.b_hoeren');
 
-						// console.log(value);
-						// console.log(semester);
-						// return;
+						self.getSemesterForModule(kursId).done(function(result) {
+							regEven = false;
+							actEven = false;
 
-						self.checkIfModuleHasVl(value).done(function(result) {
+							(result%2 == 0) ? regEven = true : regEven = false;
+							(semester%2 == 0) ? actEven = true : actEven = false;
 
-							console.log(result);
-							console.log(semester);
+							if ( regEven === actEven ) {
+								// console.log("ist im richtigen Semester");
+							} else {
+								// console.log("ist im falschen Semester");
 
-							if ( semester == result  ) {
+								if ( $selfBtnHoeren.hasClass('b_active') ) {
+									$selfBtnHoeren.removeClass('b_active');
+								}
+							}
+
+							// ich muss wissen ob das reguläre semester gerade oder ungerade ist
+							// wenns es gerade ist, schaltet sich beim modul auf ungeraden semestern das T aus
+
+							// if ( semester == result  ) {
 								
-								console.log("ist im richtigen Semester");
+							// 	console.log("ist im richtigen Semester");
 
-								// if actual button has the b_active class, turn it off
+							// } else {
+							// 	console.log("ist im falschen Semester");
+
 								// if ( $selfBtnHoeren.hasClass('b_active') ) {
 								// 	$selfBtnHoeren.removeClass('b_active');
 
 								// 	$.ajax({
 								// 	  url: "<?php echo site_url();?>ajax/deactivate_status_hoeren/",
-								// 	  data: value,
+								// 	  data: kursId,
 								// 	  success: function(data, textStatus, xhr) {
 								// 	    console.log("deactivated");
 								// 	  }
 								// 	});
-								// } else { // otherwise, turn it on
-								// 	$selfBtnHoeren.addClass('b_active');
-
-								// 	$.ajax({
-								// 	  url: "<?php echo site_url();?>ajax/activate_status_hoeren/",
-								// 	  data: value,
-								// 	  success: function(data, textStatus, xhr) {
-								// 	    console.log("activated");
-								// 	  }
-								// 	});
 								// }
-							} else {
-								console.log("ist im falschen Semester");
-
-								if ( $selfBtnHoeren.hasClass('b_active') ) {
-									$selfBtnHoeren.removeClass('b_active');
-
-									$.ajax({
-									  url: "<?php echo site_url();?>ajax/deactivate_status_hoeren/",
-									  data: value,
-									  success: function(data, textStatus, xhr) {
-									    console.log("deactivated");
-									  }
-									});
-								}
-							}
+							// }
 						});
 					}
 				});
+			},
+
+			initModules : function() {
+				var self = this;
+
+				// for each semester
+				(this.config.sortableColumns).each(function(index, semester) {
+					// console.log($(semester));
+
+					$semester = $(semester);
+
+					// modules per semester
+					semestermodule = $semester.find('.semestermodul');
+
+					// for each module in a semester
+					(semestermodule).each(function(index, modul) {
+						$modul = $(modul);
+
+						// get mark
+						mark = $modul.find('.modulnote').val();
+						// get kursid
+						kursId = $modul.attr('data-kursid');
+
+						// check mark, add styles
+						$modul.addClass(self._addMarkColor(mark));
+
+						var hoeren = $modul.find('a.b_hoeren');
+						var pruefen = $modul.find('a.b_pruefen');
+
+						// check hoeren/pruefen, add styles
+						self._checkStatusHoerenPruefen(kursId, 'hoeren').done(function(status) {
+							if (status == '1') {
+								hoeren.addClass('b_active');
+							}
+						});
+
+						self._checkStatusHoerenPruefen(kursId, 'pruefen').done(function(status) {
+							if (status == '1') {
+								pruefen.addClass('b_active');
+							}
+						});
+					});
+				});
+			},
+
+			_checkStatusHoerenPruefen : function(kursId, what) {
+				value = 'kursid='+kursId;
+
+				return $.ajax({
+					url: "<?php echo site_url();?>ajax/check_status_"+what,
+					data: value
+				}).promise();
+			},
+
+			_addMarkColor : function( mark ) {
+
+				if ( mark == '1' || mark == '1-' ) {
+					return 'sm_green';
+				} else if ( mark == '2+' || mark == '2' || mark == '2-' ) {
+					return 'sm_yellow-green';
+				} else if ( mark == '3+' || mark == '3' || mark == '3-' ) {
+					return 'sm_yellow'
+				} else if ( mark == '4+' || mark == '4' || mark == '4-' ) {
+					return 'sm_orange';
+				} else if ( mark == '5') {
+					return 'sm_red';
+				} else {
+					return '';
+				}
+
+			},
+
+			initModulNotenInputs : function() {
+				var self = this;
+
+				// validate function & .blur() -> add classes
+				this.config.modulNotenInputs.blur(function() {
+
+					// get input
+					$this = $(this);
+					// get module
+					module = $this.parent();
+					// get mark
+					mark = $this.val();
+
+					colors = ['sm_green', 'sm_yellow-green', 'sm_yellow', 'sm_orange', 'sm_red'];
+					// if there is a mark and the mark is validated, remove old colors
+					if ( mark && self._validateUserInput(mark) == true ) {
+						$.each(colors, function(index, val) {
+							if (module.hasClass(val)) { module.removeClass(val) };
+						});
+					} else if ( mark && self._validateUserInput(mark) == false ) {
+						$this.val('');
+						mm = self.createModalDialog('Falscher Wert!', 'Tragen Sie bitte in das Feld einen Wert zwischen 1 - 5 ein.');
+						self.config.moduleModalWrapper.html(mm);
+
+						$('#myModal').modal({
+							keyboard: false
+						}).on('hide', function () {
+							// console.log("hidden");
+						}).modal('show');
+					} else {
+						$.each(colors, function(index, val) {
+							if (module.hasClass(val)) { module.removeClass(val) };
+						});
+					}
+
+					// get color for the mark
+					module.addClass(self._addMarkColor(mark));
+				});
+
+			},
+
+			_validateUserInput : function(mark) {
+				if ( mark == '1' || mark == '1-' || mark == '2+'
+					|| mark == '2' || mark == '2-' || mark == '3+'
+					|| mark == '3' || mark == '3-' || mark == '4+'
+					|| mark == '4' || mark == '4-' || mark == '5' ) { 
+				return true;
+			}
+				else return false;
 			},
 
 			initSendButton : function() {
 				var self = this;
 
 				this.config.sendButton.click(function() {
+
+					var v = self.config.sortableColumns;
+
+					// semester run var
+					var i = 1;
+					// for each semester
+					(v).each(function(index, elem) {
+						// get in each semester for each module values, if the h/t buttons are klicked or not
+						($(elem).find('.semestermodul')).each(function(index, elem) {
+							console.log('kursid='+$(elem).attr('data-kursid')+'&status='+$(elem).find('a.b_hoeren').hasClass('b_active'));
+						});
+						// serialize module order values
+						console.log($(elem).sortable("serialize")+'&semester='+i);
+						i++;
+					});
+
+					return false;
+
+					// *************************************** testing **************************************************************************************************************************
 
 					// create an array of the saved Object where the history of the changes is stored
 					test = $.makeArray(self.config.changedModulesHistory);
@@ -250,37 +395,37 @@
 				this.config.resetButton.click(function() {
 
 					self.config.sortableColumns.sortable( "cancel" );
-					self.config.changedModulesHistory = new Array();
+					self.config.changedModulesHistory = [];
 
 					return false;
 				});
 			},
 
-			initBtnPruefen : function() {
-				// get the status for this button | on / off ?
-				$(this.config.btnPruefen).each(function(index, elem) {
+			initPruefenButtons : function() {
+				// // get the status for this button | on / off ?
+				// $(this.config.btnPruefen).each(function(index, elem) {
 
-					// cache the button
-					var self = this;
+				// 	// cache the button
+				// 	var self = this;
 
-					// get the kursid of the module	
-					value = 'kursid='+$(elem).parent().attr('data-kursid');
+				// 	// get the kursid of the module	
+				// 	value = 'kursid='+$(elem).parent().attr('data-kursid');
 
-					// ajax request, to get the status for this button | on / off ?
-					$.ajax({
-					  url: "<?php echo site_url();?>ajax/check_status_pruefung/",
-					  data: value,
-					  complete: function(xhr, textStatus) {
-					    //called when complete
-					  },
-					  success: function(data, textStatus, xhr) {
-					    (data == '1') ? $(self).addClass('b_active') : console.log("false");
-					  },
-					  error: function(xhr, textStatus, errorThrown) {
-					    //called when there is an error
-					  }
-					});
-				});
+				// 	// ajax request, to get the status for this button | on / off ?
+				// 	$.ajax({
+				// 	  url: "<?php echo site_url();?>ajax/check_status_pruefung/",
+				// 	  data: value,
+				// 	  complete: function(xhr, textStatus) {
+				// 	    //called when complete
+				// 	  },
+				// 	  success: function(data, textStatus, xhr) {
+				// 	    (data == '1') ? $(self).addClass('b_active') : console.log("false");
+				// 	  },
+				// 	  error: function(xhr, textStatus, errorThrown) {
+				// 	    //called when there is an error
+				// 	  }
+				// 	});
+				// });
 
 				// click function to turn on or off
 				$(this.config.btnPruefen).click(function() {
@@ -291,95 +436,124 @@
 					if ( $(this).hasClass('b_active') ) {
 						$(this).removeClass('b_active');
 
-						$.ajax({
-						  url: "<?php echo site_url();?>ajax/deactivate_status_pruefung/",
-						  data: value,
-						  success: function(data, textStatus, xhr) {
-						    console.log("deactivated");
-						  }
-						});
+						// $.ajax({
+						//   url: "<?php echo site_url();?>ajax/deactivate_status_pruefung/",
+						//   data: value,
+						//   success: function(data, textStatus, xhr) {
+						//     console.log("deactivated");
+						//   }
+						// });
 					} else { // otherwise, turn it on
 						$(this).addClass('b_active');
 
-						$.ajax({
-						  url: "<?php echo site_url();?>ajax/activate_status_pruefung/",
-						  data: value,
-						  success: function(data, textStatus, xhr) {
-						    console.log("activated");
-						  }
-						});
+						// $.ajax({
+						//   url: "<?php echo site_url();?>ajax/activate_status_pruefung/",
+						//   data: value,
+						//   success: function(data, textStatus, xhr) {
+						//     console.log("activated");
+						//   }
+						// });
 					}
 					return false;
 				});
 			},
 
-			initBtnHoeren : function() {
+			initHoerenButtons : function() {
 				var self = this;
 
-				// get the status for this button | on / off ?
-				$(this.config.btnHoeren).each(function(index, elem) {
+				// // get the status for this button | on / off ?
+				// $(this.config.btnHoeren).each(function(index, elem) {
 
-					// cache the button
-					var self = this;
+				// 	// cache the button
+				// 	var self = this;
 
-					// get the kursid of the module	
-					value = 'kursid='+$(elem).parent().attr('data-kursid');
+				// 	// get the kursid of the module	
+				// 	value = 'kursid='+$(elem).parent().attr('data-kursid');
 
-					// ajax request, to get the status for this button | on / off ?
-					$.ajax({
-					  url: "<?php echo site_url();?>ajax/check_status_hoeren/",
-					  data: value,
-					  complete: function(xhr, textStatus) {
-					    //called when complete
-					  },
-					  success: function(data, textStatus, xhr) {
-					    (data == '1') ? $(self).addClass('b_active') : console.log("false");
-					  },
-					  error: function(xhr, textStatus, errorThrown) {
-					    //called when there is an error
-					  }
-					});
-				});
+				// 	// ajax request, to get the status for this button | on / off ?
+				// 	$.ajax({
+				// 	  url: "<?php echo site_url();?>ajax/check_status_hoeren/",
+				// 	  data: value,
+				// 	  complete: function(xhr, textStatus) {
+				// 	    //called when complete
+				// 	  },
+				// 	  success: function(data, textStatus, xhr) {
+				// 	    (data == '1') ? $(self).addClass('b_active') : console.log("false");
+				// 	  },
+				// 	  error: function(xhr, textStatus, errorThrown) {
+				// 	    //called when there is an error
+				// 	  }
+				// 	});
+				// });
 
 				// click function to turn on or off
 				$(this.config.btnHoeren).click(function() {
+					// cache actual button
 					var $selfBtnHoeren = $(this);
 
-					value = 'kursid='+$(this).parent().attr('data-kursid');
+					kursId = 'kursid='+$(this).parent().attr('data-kursid');
 
 					// in which semester is our module at the moment?
-					semester = $(this).parent().parent().parent().attr('id');
+					var actSemester = $(this).parent().parent().parent().attr('id');
 
 					// check if this module has vl for this semester
-					self.checkIfModuleHasVl(value).done(function(result) {
-						if ( semester == result  ) {
-							console.log("ist im richtigen Semester");
+					self.getSemesterForModule(kursId).done(function(regSem) {
+						regEven = false;
+						actEven = false;
 
-							// if actual button has the b_active class, turn it off
+						(regSem%2 == 0) ? regEven = true : regEven = false;
+						(actSemester%2 == 0) ? actEven = true : actEven = false;
+
+						if ( regEven === actEven ) {
+							// console.log("ist im richtigen Semester");
+
 							if ( $selfBtnHoeren.hasClass('b_active') ) {
 								$selfBtnHoeren.removeClass('b_active');
-
-								$.ajax({
-								  url: "<?php echo site_url();?>ajax/deactivate_status_hoeren/",
-								  data: value,
-								  success: function(data, textStatus, xhr) {
-								    console.log("deactivated");
-								  }
-								});
 							} else { // otherwise, turn it on
 								$selfBtnHoeren.addClass('b_active');
-
-								$.ajax({
-								  url: "<?php echo site_url();?>ajax/activate_status_hoeren/",
-								  data: value,
-								  success: function(data, textStatus, xhr) {
-								    console.log("activated");
-								  }
-								});
 							}
 						} else {
-							console.log("ist im falschen Semester");
+							// console.log("ist im falschen Semester");
+
+							// no way to turn it on again
+							mm = self.createModalDialog('Keine VL!', 'Für dieses Modul wird keine Vorlesung in diesem Semester angeboten!');
+							self.config.moduleModalWrapper.html(mm);
+
+							$('#myModal').modal({
+								keyboard: false
+							}).on('hide', function () {
+								// console.log("hidden");
+							}).modal('show');
 						}
+
+						// if ( actSemester == semester  ) {
+						// 	// console.log("ist im richtigen Semester");
+
+						// 	// if actual button has the b_active class, turn it off
+						// 	if ( $selfBtnHoeren.hasClass('b_active') ) {
+						// 		$selfBtnHoeren.removeClass('b_active');
+
+						// 		// $.ajax({
+						// 		//   url: "<?php echo site_url();?>ajax/deactivate_status_hoeren/",
+						// 		//   data: value,
+						// 		//   success: function(data, textStatus, xhr) {
+						// 		//     console.log("deactivated");
+						// 		//   }
+						// 		// });
+						// 	} else { // otherwise, turn it on
+						// 		$selfBtnHoeren.addClass('b_active');
+
+						// 		// $.ajax({
+						// 		//   url: "<?php echo site_url();?>ajax/activate_status_hoeren/",
+						// 		//   data: value,
+						// 		//   success: function(data, textStatus, xhr) {
+						// 		//     console.log("activated");
+						// 		//   }
+						// 		// });
+						// 	}
+						// } else {
+						// 	// console.log("ist im falschen Semester");
+						// }
 					});
 
 					
@@ -387,14 +561,14 @@
 				});
 			},
 
-			checkIfModuleHasVl : function(moduleId) {
+			getSemesterForModule : function(moduleId) {
 				return $.ajax({
 					url: "<?php echo site_url();?>ajax/check_status_hoeren_vl/",
 					data: moduleId
 				}).promise();
 			},
 
-			initInfoButtons : function() {
+			initInfoModalButtons : function() {
 				var self = this;
 
 				this.config.infoButtonsWrapper.on('click', 'li.kursinfo', function() {
@@ -402,10 +576,10 @@
 					kursId = $(this).parent().parent().attr('data-kursid');
 
 					var mm = self.createModalDialog(
-						self.getTitleFromModule(kursId).done(function(result) {
+						self.getTitleForModule(kursId).done(function(result) {
 							self.setModuleTitle(result);
 					}), 
-						self.getTextFromModule(kursId).done(function(result) {
+						self.getTextForModule(kursId).done(function(result) {
 							self.setModuleText(result);
 						}));
 
@@ -414,7 +588,7 @@
 					$('#myModal').modal({ // self.config.modalContent.modal({ ... not working, why??  s. u. Kommentar!!!
 						keyboard: false
 					}).on('hide', function () {
-
+						// console.log("hidden");
 					}).modal('show');
 
 				});
@@ -425,11 +599,12 @@
 					$('<div class="modal hide" id="myModal"></div>')
 					.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
 					.append('<div class="modal-body"><p>'+text+'</p></div>')
-					.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Abbrechen</a><a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
+					.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Schließen</a>');
+					// <a href="" class="btn btn-primary" data-accept="modal">OK</a></div>
 				return myModalDialog;
 			},
 
-			getTitleFromModule : function(moduleId) {
+			getTitleForModule : function(moduleId) {
 				ajaxData = 'moduleid='+moduleId;
 
 				// ajax request to get the full title from server
@@ -444,7 +619,7 @@
 				$('div.modal-header h3').html(response);
 			},
 
-			getTextFromModule : function(moduleId) {
+			getTextForModule : function(moduleId) {
 				ajaxData = 'moduleid='+moduleId;
 
 				// ajax request to get the full text from server
@@ -466,13 +641,14 @@
 		Studienplan.init({
 			sortableColumns: $(".semesterplanspalte"),
 			connectWithColumns: '.semesterplanspalte',
-			sendButton : $('#sendButton'),
+			sendButton : $('#sB'),
 			resetButton : $('#resetStudienPlan'),
 			btnPruefen : $('a.b_pruefen'),
 			btnHoeren : $('a.b_hoeren'),
-			modalContent : $('#myModal'), //existiert an dieser stelle noch nicht!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! deswegen funzt nicht oben
+			modalContent : $('#myModal'), //existiert an dieser stelle noch nicht!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! deswegen funzt oben nicht
 			moduleModalWrapper : $('#modalcontent'),
-			infoButtonsWrapper : $('ul.dropdown-menu')
+			infoButtonsWrapper : $('ul.dropdown-menu'),
+			modulNotenInputs : $('.semestermodul input.modulnote')
 		});
 
 <?php endblock(); ?>

@@ -90,11 +90,12 @@ class Ajax extends CI_Controller {
 
 	public function save_changes()
 	{
-		echo "bla";
+		$data = $this->input->post();
+		FB::log($data);
 	}
 
 
-	public function check_status_pruefung()
+	public function check_status_pruefen()
 	{
 		$kurs_id = $this->input->get('kursid');
 		$this->ajax_model->query_status_pruefung($kurs_id);

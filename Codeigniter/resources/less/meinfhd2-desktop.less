@@ -73,24 +73,27 @@
 			top: 0px;
 	}
 
-	.b_pruefen {
+	// main class for hoeren/pruefen buttons
+	.b {
 		border-left: 1px solid grey;
 		border-right: 1px solid grey;
 		border-bottom: 1px solid grey;
-		.buttonBackground(#AAA, #777);
 
 		text-align: center;
-
 		color: black;
-
 		line-height: 8px;
+		font-size: 8px;
 
 		width: 25px;
 		height: 10px;
-
 		padding: 0;
+	}
 
-		font-size: 8px;
+	// pruefen button
+	.b_pruefen {
+		.b;
+
+		.buttonBackground(#AAA, #777);
 
 		position: absolute;
 			top: 0;
@@ -98,30 +101,18 @@
 
 	}
 
+	// hoeren button
 	.b_hoeren {
-		border-left: 1px solid grey;
-		border-right: 1px solid grey;
-		border-bottom: 1px solid grey;
+		.b;
+
 		.buttonBackground(#AAA, #777);
-
-		text-align: center;
-
-		color: black;
-
-		line-height: 8px;
-
-		width: 25px;
-		height: 10px;
-
-		padding: 0;
-
-		font-size: 8px;
 
 		position: absolute;
 			top: 0;
 			right: 33px;
 	}
 
+	// active version of pruefen/hoeren
 	.b_active {
 		.buttonBackground(#448844, #A7CC28);
 	}
@@ -147,6 +138,26 @@
 		border: 1px solid grey;
 		.border-radius(4px);
 	}
+}
+
+.sm_red {
+	.buttonBackground(#D95B44, #FF0000);
+}
+
+.sm_orange {
+	.buttonBackground(#FFA500, #D95B44);
+}
+
+.sm_yellow {
+	.buttonBackground(#FFA500, #FFFF00);
+}
+
+.sm_yellow-green {
+	.buttonBackground(#FFFF00, #A7CC28);
+}
+
+.sm_green {
+	.buttonBackground(#A7CC28, #448844);
 }
 
 .semestermodul_placeholder {

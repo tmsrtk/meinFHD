@@ -100,7 +100,8 @@ class User_model extends CI_Model {
 				->where('BenutzerID', $this->user_id)
 				;
 		$q = $this->db->get()->row_array();
-		return $q['SemesterplanID'];
+
+		if ( ! empty($q)) return $q['SemesterplanID'];
 	}
 
 	/** */
