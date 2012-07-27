@@ -1,11 +1,11 @@
-<div id="stdgng-courses">
+<div id="stdgng-courses" class="span12">
     
 	
     <?php 
 	$new_course_form_attributes = array('id' => 'stdgng-new-course-save-button');
 	print form_open('admin/validate_new_stdgng_course', $new_course_form_attributes); //save_stdgng_course_changes
     ?>
-	<table class="table table-striped table-bordered table-condensed">
+	<table class="table">
 	    <?php echo $course_tablehead; ?>
 	    
 	    <!-- first row as own table to insert new course -->
@@ -22,7 +22,7 @@
 	print form_open('admin/validate_stdgng_course_changes', $change_data_form_attributes); //save_stdgng_course_changes
     ?>
 	
-	<table class="table table-striped table-bordered table-condensed">
+	<table class="table">
 	<?php echo $course_tablehead; ?>
 	    <tbody>
 		<?php 

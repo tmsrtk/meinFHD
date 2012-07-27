@@ -168,20 +168,22 @@
 	);
     ?>
     <td>
-	<table>
+<!--	<table>
 	    <tbody>
-		<tr>
-		    <td><?php print form_checkbox($data_dropdown_ext1); ?></td>
-		    <td><?php print form_checkbox($data_dropdown_ext2); ?></td>
-		    <td><?php print form_checkbox($data_dropdown_ext3); ?></td>
-		    <td><?php print form_checkbox($data_dropdown_ext4); ?></td>
-		    <td><?php print form_checkbox($data_dropdown_ext5); ?></td>
-		    <td><?php print form_checkbox($data_dropdown_ext6); ?></td>
-		    <td><?php print form_checkbox($data_dropdown_ext7); ?></td>
-		    <td><?php print form_checkbox($data_dropdown_ext8); ?></td>
-		</tr>
+		<tr>-->
+	    <div style="float:left">
+		    <?php print form_checkbox($data_dropdown_ext1); ?>
+		    <?php print form_checkbox($data_dropdown_ext2); ?>
+		    <?php print form_checkbox($data_dropdown_ext3); ?>
+		    <?php print form_checkbox($data_dropdown_ext4); ?>
+		    <?php print form_checkbox($data_dropdown_ext5); ?>
+		    <?php print form_checkbox($data_dropdown_ext6); ?>
+		    <?php print form_checkbox($data_dropdown_ext7); ?>
+		    <?php print form_checkbox($data_dropdown_ext8); ?>
+	    </div>
+<!--		</tr>
 	    </tbody>
-	</table>
+	</table>-->
     </td>
 
     <!-- Beschreibung -->
