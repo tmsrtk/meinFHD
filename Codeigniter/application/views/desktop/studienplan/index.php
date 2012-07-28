@@ -55,7 +55,7 @@
 								<?php if($i != 0) : # Anerkennungssemester ?> 
 									<th style="background-color: #eee;">
 										<h3 style="font-weight: normal;">Semester <?php echo $i ?></h3>
-										<p>WiSe 2008</p>
+										<p style="font-size: 10px; color: #bbb;">WiSe 2008</p>
 									</th>
 								<?php endif; ?>
 								<?php $i++ ?>
@@ -69,7 +69,7 @@
 								<?php $i = 0; // semester nr ?>
 								<?php foreach($semester as $modul): ?>
 									<?php if($i != 0) : # Anerkennungssemester ?>
-										<td>
+										<td <?php if($i==3) echo 'style="border-top:4px solid #acd704";' ?> >
 											<ul id="<?php echo $i ?>" class="unstyled semesterplanspalte">
 												<?php foreach($modul as $data): ?>
 													<?php if ($data['KursID'] != NULL): ?>
