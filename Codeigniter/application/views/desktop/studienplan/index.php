@@ -11,17 +11,32 @@
 <div class="well well-small admin">
 
 	<div class="row-fluid">
-		<div class="span8">
+		<div class="span4">
 			<h1>Studienplan</h1>
 		</div>
 		<div class="span4">
+			<p>Studium abgeschlossen zu </p>
+			<div class="progress progress-success">
+				<div class="bar" style="width: <?php echo $percentage ?>%;"><?php echo $percentage ?>%</div>
+			</div>
+		</div>
+		<div class="span2">
+			<p>Durchschnittsnote</p>
+			<span class="badge"><?php echo round($averageMark) ?></span>
+		</div>
+		<div class="span2">
 			<div id="studienplan-einstellungen" class="btn-group pull-right">
 				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 					Einstellungen
 					<span class="caret"></span>
 				</a>
 				<ul class="dropdown-menu">
-					<!-- dropdown menu links -->
+					<li class=""><a href="#">Info</a></li>
+					<li class="divider"></li>
+					<li class=""><a href="#">Weiteres Semester anlegen</a></li>
+					<li class=""><a href="#">Letztes Semester löschen</a></li>
+					<li class="divider"></li>
+					<li class=""><a href="#">Studienplan resetten</a></li>
 				</ul>
 			</div>
 		</div>
@@ -31,14 +46,17 @@
 	<div class="row-fluid">
 		<div id="studienplan" class="span12">
 			<?php echo form_open('', $data_formopen); ?>
-				<table class="table">
+				<table class="table table-bordered table-condensed">
 					<thead>
 						<tr>
 						<?php foreach($studienplan as $semester): ?>
 							<?php $i = 0; // semester nr ?>
 							<?php foreach($semester as $modul): ?>
 								<?php if($i != 0) : # Anerkennungssemester ?> 
-									<th>Semester <?php echo $i ?></th>
+									<th style="background-color: #eee;">
+										<h3 style="font-weight: normal;">Semester <?php echo $i ?></h3>
+										<p>WiSe 2008</p>
+									</th>
 								<?php endif; ?>
 								<?php $i++ ?>
 							<?php endforeach // $semester ?>
@@ -52,13 +70,12 @@
 								<?php foreach($semester as $modul): ?>
 									<?php if($i != 0) : # Anerkennungssemester ?>
 										<td>
-											
 											<ul id="<?php echo $i ?>" class="unstyled semesterplanspalte">
 												<?php foreach($modul as $data): ?>
 													<?php if ($data['KursID'] != NULL): ?>
 														<li id="module_<?php echo $data['KursID']; ?>">
 															<div class="semestermodul dropup" data-kursid="<?php echo $data['KursID']; ?>">
-																<i class="arrw icon-chevron-up" data-toggle="dropdown"></i>
+																<i class="arrw icon-align-justify" data-toggle="dropdown"></i>
 																<a class="b_hoeren" href="">H</a>
 																<a class="b_pruefen" href="">P</a>
 																<ul class="dropdown-menu">
@@ -74,7 +91,21 @@
 													<?php endif; ?>
 												<?php endforeach; // $modul ?>
 											</ul>
-											
+										</td>
+									<?php endif; ?>
+									<?php $i++ ?>
+								<?php endforeach; // $semester ?>
+							<?php endforeach; // $studienplan ?>
+						</tr>
+						<tr>
+							<?php foreach($studienplan as $semester): ?>
+								<?php $i = 0; // semester nr ?>
+								<?php foreach($semester as $modul): ?>
+									<?php if($i != 0) : # Anerkennungssemester ?>
+										<td>
+											<p>SWS: <span class="badge badge-success pull-right"><?php echo $swsCp[$i]['SWS_Summe'] ?></span></p>
+											<hr>
+											<p>CP: <span class="badge badge-info pull-right"><?php echo $swsCp[$i]['CP_Summe']?></span></p>
 										</td>
 									<?php endif; ?>
 									<?php $i++ ?>
