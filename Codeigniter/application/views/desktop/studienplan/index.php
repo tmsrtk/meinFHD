@@ -47,7 +47,7 @@
 														<ul class="dropdown-menu">
 														      <li class="kursinfo"><a href="#">Info</a></li>
 														      <li class="divider"></li>
-														      <li><a href="#">Resetten</a></li>
+														      <li class="reset-kurs"><a href="#">Resetten</a></li>
 														</ul>
 
 														<span class="modulfach"><?php echo $data['Kurzname'] ?></span>
@@ -144,7 +144,6 @@
 					cursor: 'pointer',
 					opacity: '0.6',
 					placeholder: 'semestermodul_placeholder',
-					dropOnEmpty: true,
 					tolerance: 'pointer',
 					revert : 'true',
 	
@@ -167,7 +166,7 @@
 						semester = ui.item.parent().attr('id');
 						$selfBtnHoeren = ui.item.find('.b_hoeren');
 
-						self.getSemesterForModule(kursId).done(function(result) {
+						self._getSemesterForModule(kursId).done(function(result) {
 							regEven = false;
 							actEven = false;
 
@@ -235,10 +234,16 @@
 						// check mark, add styles
 						$modul.addClass(self._addMarkColor(mark));
 
+						// check mark, if avaliable, hide hoeren/pruefen
+						hoerenAndPruefen = $modul.find('a.b_hoeren, a.b_pruefen');
+						if (mark) {
+							hoerenAndPruefen.hide();
+						}
+
+						// check hoeren/pruefen, add styles
 						var hoeren = $modul.find('a.b_hoeren');
 						var pruefen = $modul.find('a.b_pruefen');
 
-						// check hoeren/pruefen, add styles
 						self._checkStatusHoerenPruefen(kursId, 'hoeren').done(function(status) {
 							if (status == '1') {
 								hoeren.addClass('b_active');
@@ -293,6 +298,8 @@
 					module = $this.parent();
 					// get mark
 					mark = $this.val();
+					// hoeren&pruefen
+					hoerenAndPruefen = module.find('a.b_hoeren, a.b_pruefen');
 
 					colors = ['sm_green', 'sm_yellow-green', 'sm_yellow', 'sm_orange', 'sm_red'];
 					// if there is a mark and the mark is validated, remove old colors
@@ -300,8 +307,18 @@
 						$.each(colors, function(index, val) {
 							if (module.hasClass(val)) { module.removeClass(val) };
 						});
+						// hide hoeren/pruefen
+						hoerenAndPruefen.hide();
+
 					} else if ( mark && self._validateUserInput(mark) == false ) {
 						$this.val('');
+
+						hoerenAndPruefen.show();
+
+						$.each(colors, function(index, val) {
+							if (module.hasClass(val)) { module.removeClass(val) };
+						});
+
 						mm = self.createModalDialog('Falscher Wert!', 'Tragen Sie bitte in das Feld einen Wert zwischen 1 - 5 ein.');
 						self.config.moduleModalWrapper.html(mm);
 
@@ -311,6 +328,8 @@
 							// console.log("hidden");
 						}).modal('show');
 					} else {
+						hoerenAndPruefen.show();
+
 						$.each(colors, function(index, val) {
 							if (module.hasClass(val)) { module.removeClass(val) };
 						});
@@ -497,7 +516,7 @@
 					var actSemester = $(this).parent().parent().parent().attr('id');
 
 					// check if this module has vl for this semester
-					self.getSemesterForModule(kursId).done(function(regSem) {
+					self._getSemesterForModule(kursId).done(function(regSem) {
 						regEven = false;
 						actEven = false;
 
@@ -561,7 +580,7 @@
 				});
 			},
 
-			getSemesterForModule : function(moduleId) {
+			_getSemesterForModule : function(moduleId) {
 				return $.ajax({
 					url: "<?php echo site_url();?>ajax/check_status_hoeren_vl/",
 					data: moduleId
@@ -591,6 +610,53 @@
 						// console.log("hidden");
 					}).modal('show');
 
+				});
+
+
+
+				this.config.infoButtonsWrapper.on('click', 'li.reset-kurs', function() {
+
+					$this = $(this);
+					module = $this.parents('.semestermodul');
+
+					self._resetModule(module);
+
+					// determine in which semester this this modulee should be regulary
+					// self._getSemesterForModule(kursId).done(function( regSem ) {
+					// 	// if different from actual semester, move baby
+					// 	if ( actSem !== regSem ) {
+					// 		$detachedModulee = $this.parent().parent().parent().detach();
+					// 		$detachedModulee.appendTo($('.semesterplanspalte#'+regSem));
+					// 	}
+					// });
+
+				});
+			},
+
+			_resetModule : function(module) {
+				// reset input field
+				module.find('input.modulnote').val('');
+				// reset hoeren/pruefen
+				hoerenAndPruefen = module.find('a.b_hoeren, a.b_pruefen');
+				hoerenAndPruefen.each(function(index, elem) {
+					$elem = $(elem);
+					if ( $elem.hasClass('b_active') == false ) $elem.addClass('b_active');
+					$elem.show();
+				});
+				// remove colors
+				colors = ['sm_green', 'sm_yellow-green', 'sm_yellow', 'sm_orange', 'sm_red'];
+				$.each(colors, function(index, val) {
+					if (module.hasClass(val)) { module.removeClass(val) };
+				});
+				kursId = 'kursid='+module.attr('data-kursid');
+				actSem = $this.parents('.semesterplanspalte ').attr('id');
+				// determine in which semester this this modulee should be regulary
+				this._getSemesterForModule(kursId).done(function( regSem ) {
+					// if different from actual semester, move baby
+					if ( actSem !== regSem ) {
+						$detachedModulee = $this.parent().parent().parent().detach();
+						$detachedModulee.appendTo($('.semesterplanspalte#'+regSem));
+					}
 				});
 			},
 
