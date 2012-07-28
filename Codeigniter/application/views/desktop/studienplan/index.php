@@ -75,7 +75,7 @@
 													<?php if ($data['KursID'] != NULL): ?>
 														<li id="module_<?php echo $data['KursID']; ?>">
 															<div class="semestermodul dropup" data-kursid="<?php echo $data['KursID']; ?>">
-																<i class="arrw icon-align-justify" data-toggle="dropdown"></i>
+																<i class="arrw icon-align-justify" data-toggle="dropdown" style="height: 10px; width: 3px;"></i>
 																<a class="b_hoeren" href="">H</a>
 																<a class="b_pruefen" href="">P</a>
 																<ul class="dropdown-menu">
