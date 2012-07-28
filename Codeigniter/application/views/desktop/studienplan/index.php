@@ -28,66 +28,70 @@
 	</div>
 	<hr>
 
-	<div id="studienplan">
-		<?php echo form_open('', $data_formopen); ?>
-			<table>
-				<thead>
-					<tr>
-					<?php foreach($studienplan as $semester): ?>
-						<?php $i = 0; // semester nr ?>
-						<?php foreach($semester as $modul): ?>
-							<?php if($i != 0) : # Anerkennungssemester ?> 
-								<th>Semester <?php echo $i ?></th>
-							<?php endif; ?>
-							<?php $i++ ?>
-						<?php endforeach // $semester ?>
-					<?php endforeach // $studienplan ?>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
+	<div class="row-fluid">
+		<div id="studienplan" class="span12">
+			<?php echo form_open('', $data_formopen); ?>
+				<table class="table">
+					<thead>
+						<tr>
 						<?php foreach($studienplan as $semester): ?>
 							<?php $i = 0; // semester nr ?>
 							<?php foreach($semester as $modul): ?>
-								<?php if($i != 0) : # Anerkennungssemester ?>
-									<td>
-										<ul id="<?php echo $i ?>" class="unstyled semesterplanspalte">
-											<?php foreach($modul as $data): ?>
-												<?php if ($data['KursID'] != NULL): ?>
-													<li id="module_<?php echo $data['KursID']; ?>">
-														<div class="semestermodul dropup" data-kursid="<?php echo $data['KursID']; ?>">
-															<i class="arrw icon-chevron-up" data-toggle="dropdown"></i>
-															<a class="b_hoeren" href="">H</a>
-															<a class="b_pruefen" href="">P</a>
-															<ul class="dropdown-menu">
-															      <li class="kursinfo"><a href="#">Info</a></li>
-															      <li class="divider"></li>
-															      <li class="reset-kurs"><a href="#">Resetten</a></li>
-															</ul>
-
-															<span class="modulfach"><?php echo $data['Kurzname'] ?></span>
-															<input class="modulnote input-mini" name="modulnote[]" type="text" value="<?php echo $data['Notenpunkte'] ?>">
-														</div>
-													</li>
-												<?php endif; ?>
-											<?php endforeach; // $modul ?>
-										</ul>
-									</td>
+								<?php if($i != 0) : # Anerkennungssemester ?> 
+									<th>Semester <?php echo $i ?></th>
 								<?php endif; ?>
 								<?php $i++ ?>
-							<?php endforeach; // $semester ?>
-						<?php endforeach; // $studienplan ?>
-					</tr>
-				</tbody>
-			</table>
-		<!-- Test für speichern der Modulreihenfolge -->
-		<?php $fs_attrs = array(
-			'id'	=>	'sBu',
-			'name'	=>	'sendButton',
-			'class' =>	'btn btn-success'
-			); ?>
-		<?php # echo form_submit($fs_attrs, 'Los'); ?>
-		<?php echo form_close(); ?>
+							<?php endforeach // $semester ?>
+						<?php endforeach // $studienplan ?>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<?php foreach($studienplan as $semester): ?>
+								<?php $i = 0; // semester nr ?>
+								<?php foreach($semester as $modul): ?>
+									<?php if($i != 0) : # Anerkennungssemester ?>
+										<td>
+											
+											<ul id="<?php echo $i ?>" class="unstyled semesterplanspalte">
+												<?php foreach($modul as $data): ?>
+													<?php if ($data['KursID'] != NULL): ?>
+														<li id="module_<?php echo $data['KursID']; ?>">
+															<div class="semestermodul dropup" data-kursid="<?php echo $data['KursID']; ?>">
+																<i class="arrw icon-chevron-up" data-toggle="dropdown"></i>
+																<a class="b_hoeren" href="">H</a>
+																<a class="b_pruefen" href="">P</a>
+																<ul class="dropdown-menu">
+																      <li class="kursinfo"><a href="#">Info</a></li>
+																      <li class="divider"></li>
+																      <li class="reset-kurs"><a href="#">Resetten</a></li>
+																</ul>
+	
+																<span class="modulfach"><?php echo $data['Kurzname'] ?></span>
+																<input class="modulnote input-mini" name="modulnote[]" type="text" value="<?php echo $data['Notenpunkte'] ?>">
+															</div>
+														</li>
+													<?php endif; ?>
+												<?php endforeach; // $modul ?>
+											</ul>
+											
+										</td>
+									<?php endif; ?>
+									<?php $i++ ?>
+								<?php endforeach; // $semester ?>
+							<?php endforeach; // $studienplan ?>
+						</tr>
+					</tbody>
+				</table>
+			<!-- Test für speichern der Modulreihenfolge -->
+			<?php $fs_attrs = array(
+				'id'	=>	'sBu',
+				'name'	=>	'sendButton',
+				'class' =>	'btn btn-success'
+				); ?>
+			<?php # echo form_submit($fs_attrs, 'Los'); ?>
+			<?php echo form_close(); ?>
+		</div>
 	</div>
 
 </div>
