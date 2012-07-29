@@ -31,12 +31,12 @@
 					<span class="caret"></span>
 				</a>
 				<ul class="dropdown-menu">
-					<li class=""><a href="#">Info</a></li>
+					<li class="sp-info"><a href="#">Info</a></li>
 					<li class="divider"></li>
-					<li class=""><a href="#">Weiteres Semester anlegen</a></li>
-					<li class=""><a href="#">Letztes Semester löschen</a></li>
+					<li class="sp-addsem"><a href="#">Weiteres Semester anlegen</a></li>
+					<li class="sp-remsem"><a href="#">Letztes Semester löschen</a></li>
 					<li class="divider"></li>
-					<li class=""><a href="#">Studienplan resetten</a></li>
+					<li class="sp-reset"><a href="#">Studienplan resetten</a></li>
 				</ul>
 			</div>
 		</div>
@@ -155,6 +155,7 @@
 	// });
 
 
+	// disable "Enter"-key functionality 
 	$(window).keydown(function(event){
 	    if(event.keyCode == 13) {
 	      event.preventDefault();
@@ -162,7 +163,7 @@
 	    }
 	  });
 
-
+	// initialize the Studienplan var
 	var Studienplan = {
 			init: function( config ) {
 				this.config = config;
@@ -177,6 +178,7 @@
 				this.initPruefenButtons();
 				this.initModulNotenInputs();
 				this.initInfoModalButtons();
+				this.initSemesterplanEdit();
 				
 				this.initSendButton();
 				// this.initResetButton();
@@ -191,7 +193,7 @@
 			initJQUIsortable: function() {
 				var self = this;
 
-				this.config.sortableColumns.sortable({
+				this.config.semesterplanspalten.sortable({
 					connectWith: self.config.connectWithColumns,
 					cursor: 'pointer',
 					opacity: '0.6',
@@ -215,17 +217,17 @@
 
 					stop : function(event, ui) {
 						kursId = 'kursid='+ui.item.find('.semestermodul').attr('data-kursid');
-						semester = ui.item.parent().attr('id');
-						$selfBtnHoeren = ui.item.find('.b_hoeren');
+						var semester = ui.item.parent().attr('id');
+						$selfhoerenButtons = ui.item.find('.b_hoeren');
 
-						self._getSemesterForModule(kursId).done(function(result) {
+						self._getModuleRegSemester(kursId).done(function(result) {
 							if ( self._checkSemesterEquality(semester, result) === true ) {
 								// console.log("ist im richtigen Semester");
 							} else {
 								// console.log("ist im falschen Semester");
 
-								if ( $selfBtnHoeren.hasClass('b_active') ) {
-									$selfBtnHoeren.removeClass('b_active');
+								if ( $selfhoerenButtons.hasClass('b_active') ) {
+									$selfhoerenButtons.removeClass('b_active');
 								}
 							}
 
@@ -239,8 +241,8 @@
 							// } else {
 							// 	console.log("ist im falschen Semester");
 
-								// if ( $selfBtnHoeren.hasClass('b_active') ) {
-								// 	$selfBtnHoeren.removeClass('b_active');
+								// if ( $selfhoerenButtons.hasClass('b_active') ) {
+								// 	$selfhoerenButtons.removeClass('b_active');
 
 								// 	$.ajax({
 								// 	  url: "<?php echo site_url();?>ajax/deactivate_status_hoeren/",
@@ -260,7 +262,7 @@
 				var self = this;
 
 				// for each semester
-				(this.config.sortableColumns).each(function(index, semester) {
+				this.config.semesterplanspalten.each(function(index, semester) {
 					// console.log($(semester));
 
 					$semester = $(semester);
@@ -269,34 +271,40 @@
 					semestermodule = $semester.find('.semestermodul');
 
 					// for each module in a semester
-					(semestermodule).each(function(index, modul) {
-						$modul = $(modul);
+					(semestermodule).each(function(index, module) {
+						// cache jquery object of each module
+						$module = $(module);
 
 						// get mark
-						mark = $modul.find('.modulnote').val();
+						// mark = $module.find('.modulnote').val();
 						// get kursid
-						kursId = $modul.attr('data-kursid');
+						// kursId = $module.attr('data-kursid');
 
 						// check mark, add styles
-						$modul.addClass(self._addMarkColor(mark));
+						self._addModuleMarkColor($module);
+						// $module.addClass(self._getModuleMarkColorClass(self._getModuleMark($module)));
+
 
 						// check mark, if avaliable, hide hoeren/pruefen
-						hoerenAndPruefen = $modul.find('a.b_hoeren, a.b_pruefen');
+						hoerenAndPruefen = $module.find('a.b_hoeren, a.b_pruefen');
 						if (mark) {
 							hoerenAndPruefen.hide();
 						}
 
 						// check hoeren/pruefen, add styles
-						var hoeren = $modul.find('a.b_hoeren');
-						var pruefen = $modul.find('a.b_pruefen');
+						var hoeren = self._getModuleHoerenButton($module);
+						var pruefen = self._getModulePruefenButton($module);
+						// var hoeren = $module.find('a.b_hoeren');
+						// var pruefen = $module.find('a.b_pruefen');
 
-						self._checkStatusHoerenPruefen(kursId, 'hoeren').done(function(status) {
+						self._getModuleHoerenPruefenStatus(self._getModuleKursId($module), 'hoeren').done(function(status) {
 							if (status == '1') {
 								hoeren.addClass('b_active');
+								// self._activateModuleHoerenButton($module);
 							}
 						});
 
-						self._checkStatusHoerenPruefen(kursId, 'pruefen').done(function(status) {
+						self._getModuleHoerenPruefenStatus(self._getModuleKursId($module), 'pruefen').done(function(status) {
 							if (status == '1') {
 								pruefen.addClass('b_active');
 							}
@@ -305,68 +313,47 @@
 				});
 			},
 
-			_checkStatusHoerenPruefen : function(kursId, what) {
-				value = 'kursid='+kursId;
-
-				return $.ajax({
-					url: "<?php echo site_url();?>ajax/check_status_"+what,
-					data: value
-				}).promise();
-			},
-
-			_addMarkColor : function( mark ) {
-
-				if ( mark == '1' || mark == '1-' ) {
-					return 'sm_green';
-				} else if ( mark == '2+' || mark == '2' || mark == '2-' ) {
-					return 'sm_yellow-green';
-				} else if ( mark == '3+' || mark == '3' || mark == '3-' ) {
-					return 'sm_yellow'
-				} else if ( mark == '4+' || mark == '4' || mark == '4-' ) {
-					return 'sm_orange';
-				} else if ( mark == '5') {
-					return 'sm_red';
-				} else {
-					return '';
-				}
-
-			},
-
 			initModulNotenInputs : function() {
 				var self = this;
 
 				// validate function & .blur() -> add classes
 				this.config.modulNotenInputs.blur(function() {
-
 					// get input
 					$this = $(this);
+
+					// cache appropriate module
+					$module = $this.parents('.semestermodul ');
 					// get module
-					module = $this.parent();
+					// module = $this.parent();
+
 					// get mark
-					mark = $this.val();
+					mark = self._getModuleMark($module);
+					// mark = $this.val();
+
 					// hoeren&pruefen
-					hoerenAndPruefen = module.find('a.b_hoeren, a.b_pruefen');
+					var hoeren = self._getModuleHoerenButton($module);
+					var pruefen = self._getModulePruefenButton($module);
+					// hoerenAndPruefen = module.find('a.b_hoeren, a.b_pruefen');
 
 					colors = ['sm_green', 'sm_yellow-green', 'sm_yellow', 'sm_orange', 'sm_red'];
 					// if there is a mark and the mark is validated, remove old colors
 					if ( mark && self._validateUserInput(mark) == true ) {
-						$.each(colors, function(index, val) {
-							if (module.hasClass(val)) { module.removeClass(val) };
-						});
+						self._removeModuleColorClass($module);
 						// hide hoeren/pruefen
-						hoerenAndPruefen.hide();
+						hoeren.hide();
+						pruefen.hide();
 
 					} else if ( mark && self._validateUserInput(mark) == false ) {
 						$this.val('');
 
-						hoerenAndPruefen.show();
+						hoeren.show();
+						pruefen.show();
 
-						$.each(colors, function(index, val) {
-							if (module.hasClass(val)) { module.removeClass(val) };
-						});
+						self._removeModuleColorClass($module);
 
+						// create and show modal
 						mm = self.createModalDialog('Falscher Wert!', 'Tragen Sie bitte in das Feld einen Wert zwischen 1 - 5 ein.');
-						self.config.moduleModalWrapper.html(mm);
+						self.config.modalWrapper.html(mm);
 
 						$('#myModal').modal({
 							keyboard: false
@@ -374,35 +361,25 @@
 							// console.log("hidden");
 						}).modal('show');
 					} else {
-						hoerenAndPruefen.show();
+						hoeren.show();
+						pruefen.show();
 
-						$.each(colors, function(index, val) {
-							if (module.hasClass(val)) { module.removeClass(val) };
-						});
+						self._removeModuleColorClass($module);
 					}
 
 					// get color for the mark
-					module.addClass(self._addMarkColor(mark));
+					self._addModuleMarkColor($module);
 				});
 
 			},
 
-			_validateUserInput : function(mark) {
-				if ( mark == '1' || mark == '1-' || mark == '2+'
-					|| mark == '2' || mark == '2-' || mark == '3+'
-					|| mark == '3' || mark == '3-' || mark == '4+'
-					|| mark == '4' || mark == '4-' || mark == '5' ) { 
-				return true;
-			}
-				else return false;
-			},
+			
 
 			initSendButton : function() {
 				var self = this;
 
 				this.config.sendButton.click(function() {
-
-					var v = self.config.sortableColumns;
+					var v = self.config.semesterplanspalten;
 
 					// semester run var
 					var i = 1;
@@ -459,7 +436,7 @@
 
 				this.config.resetButton.click(function() {
 
-					self.config.sortableColumns.sortable( "cancel" );
+					self.config.semesterplanspalten.sortable( "cancel" );
 					self.config.changedModulesHistory = [];
 
 					return false;
@@ -468,7 +445,7 @@
 
 			initPruefenButtons : function() {
 				// // get the status for this button | on / off ?
-				// $(this.config.btnPruefen).each(function(index, elem) {
+				// $(this.config.pruefenButtons).each(function(index, elem) {
 
 				// 	// cache the button
 				// 	var self = this;
@@ -493,13 +470,16 @@
 				// });
 
 				// click function to turn on or off
-				$(this.config.btnPruefen).click(function() {
+				$(this.config.pruefenButtons).click(function() {
+					// cache appropriate module
+					$this = $(this);
+					$module = $this.parents('.semestermodul');
 
-					value = 'kursid='+$(this).parent().attr('data-kursid');
+					// value = 'kursid='+$(this).parent().attr('data-kursid');
 
 					// if actual button has the b_active class, turn in off
-					if ( $(this).hasClass('b_active') ) {
-						$(this).removeClass('b_active');
+					if ( $this.hasClass('b_active') ) {
+						$this.removeClass('b_active');
 
 						// $.ajax({
 						//   url: "<?php echo site_url();?>ajax/deactivate_status_pruefung/",
@@ -509,7 +489,7 @@
 						//   }
 						// });
 					} else { // otherwise, turn it on
-						$(this).addClass('b_active');
+						$this.addClass('b_active');
 
 						// $.ajax({
 						//   url: "<?php echo site_url();?>ajax/activate_status_pruefung/",
@@ -527,7 +507,7 @@
 				var self = this;
 
 				// // get the status for this button | on / off ?
-				// $(this.config.btnHoeren).each(function(index, elem) {
+				// $(this.config.hoerenButtons).each(function(index, elem) {
 
 				// 	// cache the button
 				// 	var self = this;
@@ -552,17 +532,21 @@
 				// });
 
 				// click function to turn on or off
-				$(this.config.btnHoeren).click(function() {
-					// cache actual button
+				this.config.hoerenButtons.click(function() {
+					// cache actual hoeren button
 					var $this = $(this);
+					// cache appropriate module
+					$module = $this.parents('.semestermodul');
 
-					kursId = 'kursid='+$(this).parent().attr('data-kursid');
+					// get kursid
+					kursId = 'kursid='+self._getModuleKursId($module);
 
 					// in which semester is our module at the moment?
-					var actSemester = $(this).parent().parent().parent().attr('id');
+					var actSemester = self._getModuleActSemester($module);
+					console.log(actSemester);
 
 					// check if this module has vl for this semester
-					self._getSemesterForModule(kursId).done(function(regSem) {
+					self._getModuleRegSemester(kursId).done(function(regSem) {
 						if ( self._checkSemesterEquality(actSemester, regSem) === true ) {
 							if ( $this.hasClass('b_active') ) {
 								$this.removeClass('b_active');
@@ -572,7 +556,7 @@
 						} else {
 							// no way to turn it on again
 							mm = self.createModalDialog('Keine VL!', 'Für dieses Modul wird keine Vorlesung in diesem Semester angeboten!');
-							self.config.moduleModalWrapper.html(mm);
+							self.config.modalWrapper.html(mm);
 
 							$('#myModal').modal({
 								keyboard: false
@@ -616,23 +600,7 @@
 				});
 			},
 
-			_checkSemesterEquality : function(actSem, regSem) {
-				regEven = false;
-				actEven = false;
-
-				(regSem%2 == 0) ? regEven = true : regEven = false;
-				(actSem%2 == 0) ? actEven = true : actEven = false;
-
-				if ( regEven === actEven ) return true; else return false;
-
-			},
-
-			_getSemesterForModule : function(moduleId) {
-				return $.ajax({
-					url: "<?php echo site_url();?>ajax/check_status_hoeren_vl/",
-					data: moduleId
-				}).promise();
-			},
+			
 
 			initInfoModalButtons : function() {
 				// cache main object
@@ -640,9 +608,12 @@
 
 				// module-context menu, "Info"
 				this.config.infoButtonsWrapper.on('click', 'li.kursinfo', function() {
-					kursId = $(this).parents('.semestermodul').attr('data-kursid');
+					$this = $(this);
+					$module = $this.parents('.semestermodul');
 
-					// create modal with appropriate modle infos
+					kursId = self._getModuleKursId($module);
+
+					// create modal with appropriate module infos
 					var mm = self.createModalDialog(
 						self.getTitleForModule(kursId).done(function(result) {
 							self.setModuleTitle(result);
@@ -651,7 +622,7 @@
 							self.setModuleText(result);
 						}));
 
-					self.config.moduleModalWrapper.html(mm);
+					self.config.modalWrapper.html(mm);
 
 					$('#myModal').modal({ // self.config.modalContent.modal({ ... not working, why??  s. u. Kommentar!!!
 						keyboard: false
@@ -665,41 +636,46 @@
 				this.config.infoButtonsWrapper.on('click', 'li.reset-kurs', function() {
 					// cache
 					$this = $(this);
-					module = $this.parents('.semestermodul');
+					$module = $this.parents('.semestermodul');
 
 					// reset the module
-					self._resetModule(module);
+					self._resetModule($module);
 
 				});
 			},
 
-			_resetModule : function(module) {
-				// reset input field
-				module.find('input.modulnote').val('');
-				// reset hoeren/pruefen
-				hoerenAndPruefen = module.find('a.b_hoeren, a.b_pruefen');
-				hoerenAndPruefen.each(function(index, elem) {
-					$elem = $(elem);
-					if ( $elem.hasClass('b_active') == false ) $elem.addClass('b_active');
-					$elem.show();
-				});
-				// remove colors
-				colors = ['sm_green', 'sm_yellow-green', 'sm_yellow', 'sm_orange', 'sm_red'];
-				$.each(colors, function(index, val) {
-					if (module.hasClass(val)) { module.removeClass(val) };
-				});
-				kursId = 'kursid='+module.attr('data-kursid');
-				actSem = $this.parents('.semesterplanspalte ').attr('id');
-				// determine in which semester this this modulee should be regulary
-				this._getSemesterForModule(kursId).done(function( regSem ) {
-					// if different from actual semester, move baby
-					if ( actSem !== regSem ) {
-						$detachedModulee = $this.parent().parent().parent().detach();
-						$detachedModulee.appendTo($('.semesterplanspalte#'+regSem));
-					}
+			initSemesterplanEdit : function() {
+				var self = this;
+
+				info = this.config.semesterplanEditCtxMenu.find('li.sp-info');
+				addsem = this.config.semesterplanEditCtxMenu.find('li.sp-addsem');
+				remsem = this.config.semesterplanEditCtxMenu.find('li.sp-remsem');
+				reset = this.config.semesterplanEditCtxMenu.find('li.sp-reset');
+
+				reset.click(function() {
+					self.config.semesterplanspalten.each(function(index, semester) {
+						// cache semester
+						$semester = $(semester);
+
+						// modules per semester
+						$semestermodule = $semester.find('.semestermodul');
+
+						// for each module in a semester
+						($semestermodule).each(function(index, module) {
+							// cache jquery object of each module
+							$module = $(module);
+
+							self._resetModule($module);
+						});
+					});
 				});
 			},
 
+			
+
+			// helper methods --------------------------------------------------------------------------
+
+			// modals ---------------------------------------
 			createModalDialog : function(title, text) {
 				myModalDialog = 
 					$('<div class="modal hide" id="myModal"></div>')
@@ -737,24 +713,140 @@
 
 			setModuleText : function(response) {
 				$('div.modal-body p').html(response);
+			},
+
+			// modules ---------------------------------------
+
+			_validateUserInput : function(mark) {
+				if ( mark == '1' || mark == '1-' || mark == '2+'
+					|| mark == '2' || mark == '2-' || mark == '3+'
+					|| mark == '3' || mark == '3-' || mark == '4+'
+					|| mark == '4' || mark == '4-' || mark == '5' ) { 
+				return true;
 			}
+				else return false;
+			},
 
+			_checkSemesterEquality : function(actSem, regSem) {
+				regEven = false;
+				actEven = false;
 
+				(regSem%2 == 0) ? regEven = true : regEven = false;
+				(actSem%2 == 0) ? actEven = true : actEven = false;
+
+				if ( regEven === actEven ) return true; else return false;
+
+			},
+
+			_resetModule : function(module) {
+				// reset input field
+				module.find('input.modulnote').val('');
+				// reset hoeren/pruefen
+				hoerenAndPruefen = module.find('a.b_hoeren, a.b_pruefen');
+				hoerenAndPruefen.each(function(index, elem) {
+					$elem = $(elem);
+					if ( $elem.hasClass('b_active') == false ) $elem.addClass('b_active');
+					$elem.show();
+				});
+				// remove colors
+				colors = ['sm_green', 'sm_yellow-green', 'sm_yellow', 'sm_orange', 'sm_red'];
+				$.each(colors, function(index, val) {
+					if (module.hasClass(val)) { module.removeClass(val) };
+				});
+				kursId = 'kursid='+this._getModuleKursId(module);
+				var actSem = this._getModuleActSemester(module);
+				// actSem = $this.parents('.semesterplanspalte ').attr('id');
+				// determine in which semester this this modulee should be regulary
+				this._getModuleRegSemester(kursId).done(function( regSem ) {
+					// if different from actual semester, move baby
+					if ( actSem !== regSem ) {
+						module.appendTo($('.semesterplanspalte#'+regSem));
+					}
+				});
+			},
+
+			_getModuleKursId : function(module) {
+				kursId = module.attr('data-kursid');
+				return kursId;
+			},
+			_getModuleRegSemester : function(moduleId) {
+				return $.ajax({
+					url: "<?php echo site_url();?>ajax/check_status_hoeren_vl/",
+					data: moduleId
+				}).promise();
+			},
+			_getModuleActSemester : function(module) {
+				regSem = module.parents('.semesterplanspalte').attr('id');
+				return regSem;
+			},
+			_getModuleMark : function(module) {
+				mark = module.find('.modulnote').val();
+				return mark;
+			},
+			_addModuleMarkColor : function(module) {
+				module.addClass( this._getModuleMarkColorClass(this._getModuleMark(module)) );
+			},
+			_getModuleHoerenButton : function(module) {
+				return module.find('a.b_hoeren');
+			},
+			_getModulePruefenButton : function(module) {
+				return module.find('a.b_pruefen');
+			},
+			// _activateModuleHoerenButton : function(module) {
+			// 	hoeren = this._getModuleHoerenButton(module);
+			// 	console.log(hoeren);
+			// 	hoeren.addClass('b_active');
+			// },
+
+			_getModuleHoerenPruefenStatus : function(kursId, what) {
+				value = 'kursid='+kursId;
+
+				return $.ajax({
+					url: "<?php echo site_url();?>ajax/check_status_"+what,
+					data: value
+				}).promise();
+			},
+
+			_getModuleMarkColorClass : function( mark ) {
+				if ( mark == '1' || mark == '1-' ) {
+					return 'sm_green';
+				} else if ( mark == '2+' || mark == '2' || mark == '2-' ) {
+					return 'sm_yellow-green';
+				} else if ( mark == '3+' || mark == '3' || mark == '3-' ) {
+					return 'sm_yellow'
+				} else if ( mark == '4+' || mark == '4' || mark == '4-' ) {
+					return 'sm_orange';
+				} else if ( mark == '5') {
+					return 'sm_red';
+				} else {
+					return '';
+				}
+			},
+			_removeModuleColorClass : function(module) {
+				// possible classes
+				colors = ['sm_green', 'sm_yellow-green', 'sm_yellow', 'sm_orange', 'sm_red'];
+
+				$.each(colors, function(index, val) {
+					if (module.hasClass(val)) { module.removeClass(val) };
+				});
+			}
 		};
 
 
 		
 		Studienplan.init({
-			sortableColumns: $(".semesterplanspalte"),
+			semesterplanspalten: $(".semesterplanspalte"),
 			connectWithColumns: '.semesterplanspalte',
 			sendButton : $('#sB'),
 			resetButton : $('#resetStudienPlan'),
-			btnPruefen : $('a.b_pruefen'),
-			btnHoeren : $('a.b_hoeren'),
+			pruefenButtons : $('a.b_pruefen'),
+			hoerenButtons : $('a.b_hoeren'),
 			modalContent : $('#myModal'), //existiert an dieser stelle noch nicht!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! deswegen funzt oben nicht
-			moduleModalWrapper : $('#modalcontent'),
+			modalWrapper : $('#modalcontent'),
 			infoButtonsWrapper : $('ul.dropdown-menu'),
-			modulNotenInputs : $('.semestermodul input.modulnote')
+			modulNotenInputs : $('.semestermodul input.modulnote'),
+			semesterplanEditCtxMenu : $('#studienplan-einstellungen')
+
 		});
 
 <?php endblock(); ?>
