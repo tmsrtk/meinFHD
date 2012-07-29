@@ -55,7 +55,7 @@
 								<?php if($i != 0) : # Anerkennungssemester ?> 
 									<th style="background-color: #eee;">
 										<h3 style="font-weight: normal;">Semester <?php echo $i ?></h3>
-										<p style="font-size: 10px; color: #bbb;">WiSe 2008</p>
+										<p style="font-size: 10px; color: #bbb;">WiSe <?php echo $userdata['studienbeginn_jahr']+$i ?></p>
 									</th>
 								<?php endif; ?>
 								<?php $i++ ?>
@@ -69,7 +69,7 @@
 								<?php $i = 0; // semester nr ?>
 								<?php foreach($semester as $modul): ?>
 									<?php if($i != 0) : # Anerkennungssemester ?>
-										<td <?php if($i==3) echo 'style="border-top:4px solid #acd704";' ?> >
+										<td <?php if($i==$userdata['act_semester']) echo 'style="border-top:4px solid #acd704";' ?> >
 											<ul id="<?php echo $i ?>" class="unstyled semesterplanspalte">
 												<?php foreach($modul as $data): ?>
 													<?php if ($data['KursID'] != NULL): ?>
@@ -219,13 +219,7 @@
 						$selfBtnHoeren = ui.item.find('.b_hoeren');
 
 						self._getSemesterForModule(kursId).done(function(result) {
-							regEven = false;
-							actEven = false;
-
-							(result%2 == 0) ? regEven = true : regEven = false;
-							(semester%2 == 0) ? actEven = true : actEven = false;
-
-							if ( regEven === actEven ) {
+							if ( self._checkSemesterEquality(semester, result) === true ) {
 								// console.log("ist im richtigen Semester");
 							} else {
 								// console.log("ist im falschen Semester");
@@ -560,7 +554,7 @@
 				// click function to turn on or off
 				$(this.config.btnHoeren).click(function() {
 					// cache actual button
-					var $selfBtnHoeren = $(this);
+					var $this = $(this);
 
 					kursId = 'kursid='+$(this).parent().attr('data-kursid');
 
@@ -569,23 +563,13 @@
 
 					// check if this module has vl for this semester
 					self._getSemesterForModule(kursId).done(function(regSem) {
-						regEven = false;
-						actEven = false;
-
-						(regSem%2 == 0) ? regEven = true : regEven = false;
-						(actSemester%2 == 0) ? actEven = true : actEven = false;
-
-						if ( regEven === actEven ) {
-							// console.log("ist im richtigen Semester");
-
-							if ( $selfBtnHoeren.hasClass('b_active') ) {
-								$selfBtnHoeren.removeClass('b_active');
+						if ( self._checkSemesterEquality(actSemester, regSem) === true ) {
+							if ( $this.hasClass('b_active') ) {
+								$this.removeClass('b_active');
 							} else { // otherwise, turn it on
-								$selfBtnHoeren.addClass('b_active');
+								$this.addClass('b_active');
 							}
 						} else {
-							// console.log("ist im falschen Semester");
-
 							// no way to turn it on again
 							mm = self.createModalDialog('Keine VL!', 'Für dieses Modul wird keine Vorlesung in diesem Semester angeboten!');
 							self.config.moduleModalWrapper.html(mm);
@@ -601,8 +585,8 @@
 						// 	// console.log("ist im richtigen Semester");
 
 						// 	// if actual button has the b_active class, turn it off
-						// 	if ( $selfBtnHoeren.hasClass('b_active') ) {
-						// 		$selfBtnHoeren.removeClass('b_active');
+						// 	if ( $this.hasClass('b_active') ) {
+						// 		$this.removeClass('b_active');
 
 						// 		// $.ajax({
 						// 		//   url: "<?php echo site_url();?>ajax/deactivate_status_hoeren/",
@@ -612,7 +596,7 @@
 						// 		//   }
 						// 		// });
 						// 	} else { // otherwise, turn it on
-						// 		$selfBtnHoeren.addClass('b_active');
+						// 		$this.addClass('b_active');
 
 						// 		// $.ajax({
 						// 		//   url: "<?php echo site_url();?>ajax/activate_status_hoeren/",
@@ -632,6 +616,17 @@
 				});
 			},
 
+			_checkSemesterEquality : function(actSem, regSem) {
+				regEven = false;
+				actEven = false;
+
+				(regSem%2 == 0) ? regEven = true : regEven = false;
+				(actSem%2 == 0) ? actEven = true : actEven = false;
+
+				if ( regEven === actEven ) return true; else return false;
+
+			},
+
 			_getSemesterForModule : function(moduleId) {
 				return $.ajax({
 					url: "<?php echo site_url();?>ajax/check_status_hoeren_vl/",
@@ -640,12 +635,14 @@
 			},
 
 			initInfoModalButtons : function() {
+				// cache main object
 				var self = this;
 
+				// module-context menu, "Info"
 				this.config.infoButtonsWrapper.on('click', 'li.kursinfo', function() {
+					kursId = $(this).parents('.semestermodul').attr('data-kursid');
 
-					kursId = $(this).parent().parent().attr('data-kursid');
-
+					// create modal with appropriate modle infos
 					var mm = self.createModalDialog(
 						self.getTitleForModule(kursId).done(function(result) {
 							self.setModuleTitle(result);
@@ -664,23 +661,14 @@
 
 				});
 
-
-
+				// module-context menu, "Resetten"
 				this.config.infoButtonsWrapper.on('click', 'li.reset-kurs', function() {
-
+					// cache
 					$this = $(this);
 					module = $this.parents('.semestermodul');
 
+					// reset the module
 					self._resetModule(module);
-
-					// determine in which semester this this modulee should be regulary
-					// self._getSemesterForModule(kursId).done(function( regSem ) {
-					// 	// if different from actual semester, move baby
-					// 	if ( actSem !== regSem ) {
-					// 		$detachedModulee = $this.parent().parent().parent().detach();
-					// 		$detachedModulee.appendTo($('.semesterplanspalte#'+regSem));
-					// 	}
-					// });
 
 				});
 			},
