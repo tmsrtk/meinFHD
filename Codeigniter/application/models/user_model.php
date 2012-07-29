@@ -19,6 +19,8 @@ class User_model extends CI_Model {
 	
 	// studienplan
 	private $semesterplan_id = 0;
+	private $act_semester = 0;
+	private $studienbeginn_jahr = 0;
 
 	/**
 	 * 
@@ -49,6 +51,8 @@ class User_model extends CI_Model {
 			$this->user_permissions_all = $this->_query_all_permissions();
 
 			$this->semesterplan_id = $this->_query_semesterplanid();
+			$this->act_semester = $this->_query_user_singlecolumndata('Semester');
+			$this->studienbeginn_jahr = $this->_query_user_singlecolumndata('StudienbeginnJahr');
 			
 			// course_ids
 			// profs
@@ -74,7 +78,9 @@ class User_model extends CI_Model {
 	                'userid' => $this->user_id,
 	                'loginname' => $this->loginname,
 	                'userpermissions' => $this->user_permissions_all,
-	                'roles' => $this->user_roles
+	                'roles' => $this->user_roles,
+	                'act_semester'	=> $this->act_semester,
+	                'studienbeginn_jahr' => $this->studienbeginn_jahr
 	            );
 
 		// write userdata in global $data
@@ -322,6 +328,14 @@ class User_model extends CI_Model {
 		if ( ! empty($this->semesterplan_id) )
 		{
 			return $this->semesterplan_id;
+		}
+	}
+
+	public function get_actsemester()
+	{
+		if ( ! empty($this->act_semester) )
+		{
+			return $this->act_semester;
 		}
 	}
 	
