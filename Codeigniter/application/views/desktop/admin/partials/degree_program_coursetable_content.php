@@ -5,12 +5,12 @@
 	$new_course_form_attributes = array('id' => 'stdgng-new-course-save-button');
 	print form_open('admin/validate_new_degree_program_course', $new_course_form_attributes); //save_stdgng_course_changes
     ?>
-	<table class="table">
+	<table class="table" id="degree-program-table">
 	    <?php echo $course_tablehead; ?>
 	    
 	    <!-- first row as own table to insert new course -->
 	    <?php echo $new_course; ?>
-	</table>
+<!--	</table>-->
     
     <?php
 	// close form
@@ -22,8 +22,8 @@
 	print form_open('admin/validate_degree_program_course_changes', $change_data_form_attributes); //save_stdgng_course_changes
     ?>
 	
-	<table class="table">
-	<?php echo $course_tablehead; ?>
+<!--	<table class="table">-->
+	<?php // echo $course_tablehead; ?>
 	    <tbody>
 		<?php 
 		    if($stdgng_course_rows){

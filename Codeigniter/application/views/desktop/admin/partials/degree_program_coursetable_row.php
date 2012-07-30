@@ -1,5 +1,5 @@
 <!--  single row in stdgng-list-table  -->
-<tr>
+<tr style="clear:both">
     <!-- id - just for orientation -->
     <?php	    
 	$id_attrs = array(
@@ -25,7 +25,7 @@
 	    'name' => $KursID.'kurs_kurz',
 	    'id' => 'kursname-kurz',
 	    'value' => $kurs_kurz,
-	    'class' => 'span1'
+	    'class' => 'span'
 	);
     ?>
     <td><?php print form_input($kursnameKurzData); ?></td>
@@ -36,7 +36,7 @@
 	    'name' => $KursID.'Creditpoints',
 	    'id' => 'cp',
 	    'value' => $Creditpoints,
-	    'class' => 'span1'
+	    'class' => 'span'
 	);
     ?>
     <td><?php print form_input($creditpointsData); ?></td>
@@ -54,7 +54,7 @@
 	    'name' => $KursID.'SWS_Vorlesung',
 	    'id' => 'sws-vorl',
 	    'value' => $sd_SWS_Vorlesung,
-	    'class' => 'span1'
+	    'class' => 'span'
 	);
 
 	// get data for Uebung
@@ -67,7 +67,7 @@
 	    'name' => $KursID.'SWS_Uebung',
 	    'id' => 'sws-ueb',
 	    'value' => $sd_SWS_Uebung,
-	    'class' => 'span1'
+	    'class' => 'span'
 	);
 
 	// get data for Praktikum
@@ -80,7 +80,7 @@
 	    'name' => $KursID.'SWS_Praktikum',
 	    'id' => 'sws-prakt',
 	    'value' => $sd_SWS_Praktikum,
-	    'class' => 'span1'
+	    'class' => 'span'
 	);
 
 	// get data for Projekt
@@ -93,7 +93,7 @@
 	    'name' => $KursID.'SWS_Projekt',
 	    'id' => 'sws-pro',
 	    'value' => $sd_SWS_Projekt,
-	    'class' => 'span1'
+	    'class' => 'span'
 	);
 
 	// get data for Seminar
@@ -106,7 +106,7 @@
 	    'name' => $KursID.'SWS_Seminar',
 	    'id' => 'sws-seminar',
 	    'value' => $sd_SWS_Seminar,
-	    'class' => 'span1'
+	    'class' => 'span'
 	);
 
 	// get data for Seminarunterricht - ?? // TODO check if this field is still needed / in use?
@@ -119,27 +119,21 @@
 	    'name' => $KursID.'SWS_SeminarUnterricht',
 	    'id' => 'sws-seminar-u',
 	    'value' => $sd_SWS_SeminarUnterricht,
-	    'class' => 'span1'
+	    'class' => 'span'
 	);
     ?>			
     <td>
-	<table>
-	    <tbody>
-		<tr>
-		    <td><?php print form_input($swsDataVorl); ?></td>
-		    <td><?php print form_input($swsDataUeb); ?></td>
-		    <td><?php print form_input($swsDataPrakt); ?></td>
-		    <td><?php print form_input($swsDataPro); ?></td>
-		    <td><?php print form_input($swsDataSem); ?></td>
-		    <td><?php print form_input($swsDataSemU); ?></td>
-		</tr>
-	    </tbody>
-	</table>
+	<div class="span2"><?php print form_input($swsDataVorl); ?></div>
+	<div class="span2"><?php print form_input($swsDataUeb); ?></div>
+	<div class="span2"><?php print form_input($swsDataPrakt); ?></div>
+	<div class="span2"><?php print form_input($swsDataPro); ?></div>
+	<div class="span2"><?php print form_input($swsDataSem); ?></div>
+	<div class="span2"><?php print form_input($swsDataSemU); ?></div>
     </td>
 
     <!-- Semester -->
     <?php 
-	$dropdown_attributes = 'class = "span1"';
+	$dropdown_attributes = 'class = "span"';
     ?>
     <td>
 	<?php 
@@ -210,21 +204,15 @@
 	    'checked' => $pruefungstyp_8,
 	);
     ?>
-    <td>
-	<table>
-	    <tbody>
-		<tr>
-		    <td><?php print form_checkbox($data_dropdown_ext1); ?></td>
-		    <td><?php print form_checkbox($data_dropdown_ext2); ?></td>
-		    <td><?php print form_checkbox($data_dropdown_ext3); ?></td>
-		    <td><?php print form_checkbox($data_dropdown_ext4); ?></td>
-		    <td><?php print form_checkbox($data_dropdown_ext5); ?></td>
-		    <td><?php print form_checkbox($data_dropdown_ext6); ?></td>
-		    <td><?php print form_checkbox($data_dropdown_ext7); ?></td>
-		    <td><?php print form_checkbox($data_dropdown_ext8); ?></td>
-		</tr>
-	    </tbody>
-	</table>
+    <td nowrap>
+	<?php print form_checkbox($data_dropdown_ext1); ?>
+	<?php print form_checkbox($data_dropdown_ext2); ?>
+	<?php print form_checkbox($data_dropdown_ext3); ?>
+	<?php print form_checkbox($data_dropdown_ext4); ?>
+	<?php print form_checkbox($data_dropdown_ext5); ?>
+	<?php print form_checkbox($data_dropdown_ext6); ?>
+	<?php print form_checkbox($data_dropdown_ext7); ?>
+	<?php print form_checkbox($data_dropdown_ext8); ?>
     </td>
 
     <!-- Beschreibung -->
@@ -234,7 +222,7 @@
 	    'id' => 'beschreibung',
 	    'value' => $Beschreibung,
 	    'rows' => 3,
-	    'cols' => 5
+	    'class' => 'span'
 	);
     ?>
     <td><?php print form_textarea($textareaData); ?></td>

@@ -149,6 +149,21 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
 	return false;
 
     });
+    
+    
+    /*
+    var table = $('#degree-program-table');
+    
+    $(window).scroll(function(){
+	console.log('test');
+	var windowTop = $(window).scrollTop();
+	
+	if(windowTop > table.offset().top) {
+	    $('thead', table).addClass('fixed').css('top', windowTop);
+	}
+    });
+    */
+    
 <?php endblock(); ?>
 
 <?php end_extend(); ?>

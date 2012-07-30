@@ -4,12 +4,7 @@
 	<th>Kursname:</hd>
 	<th>Abk.:</th>
 	<th>CP:</th>
-	<th>
-	    <div>SWS:</div>
-	    <div style="float:left">test </div>
-	    <div style="float:left">test </div>
-	    <div style="float:left">test </div>
-	</th>
+	<th>SWS:</th>
 	<th>Sem.:</th>
 	<th>Prüfungstypen:</th>
 	<th>Beschreibung:</th>
