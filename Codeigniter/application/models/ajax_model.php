@@ -130,25 +130,34 @@ class Ajax_model extends CI_Model {
 	}
 
 	// speichere die übergebene Reihenfolge für ein Semester
-	public function set_reihenfolge($neue_reihenfolge, $semesternr)
+	public function set_reihenfolge($neue_reihenfolge, $semesternr, $hoeren, $pruefen, $mark)
 	{
 		// counter für die Reihenfolge
 		$counter = 1;
 		// speichere neue Reihenfolge in die DB
+        $i = 0;
 		foreach ($neue_reihenfolge as $serialized_position)
 		{
+            if ( empty($mark[$i]) ) $mark[$i] = 101; else $mark[$i] = 100;
+
 			$data = array(
                //'Semesterposition' => $counter,
-               'Semester' => $semesternr
+               'Semester' => $semesternr,
+               'KursHoeren' => $hoeren[$i],
+               'KursSchreiben' => $pruefen[$i],
+               'Notenpunkte' => $mark[$i]
                );
 
 
-			$this->db->where('SemesterplanID', $this->user_model->get_semesterplanid());
-			$this->db->where('KursID', $serialized_position);
-			$this->db->update('Semesterkurs', $data);
+            $this->db->where('SemesterplanID', $this->user_model->get_semesterplanid());
+            $this->db->where('KursID', $serialized_position);
+            $this->db->update('semesterkurs', $data);
 
-			$counter++;
-		}
+            $i++;
+            $counter++;
+        }
+            // FB::log($data);
+            // return;
 	}
 
 

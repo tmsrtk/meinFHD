@@ -116,11 +116,11 @@
 				</table>
 			<!-- Test für speichern der Modulreihenfolge -->
 			<?php $fs_attrs = array(
-				'id'	=>	'sBu',
+				'id'	=>	'sendButton',
 				'name'	=>	'sendButton',
 				'class' =>	'btn btn-success'
 				); ?>
-			<?php # echo form_submit($fs_attrs, 'Los'); ?>
+			<?php echo form_submit($fs_attrs, 'Los'); ?>
 			<?php echo form_close(); ?>
 		</div>
 	</div>
@@ -379,18 +379,52 @@
 				var self = this;
 
 				this.config.sendButton.click(function() {
-					var v = self.config.semesterplanspalten;
-
 					// semester run var
 					var i = 1;
+
+					self.config.semesterplanspalten.sortable( "refreshPositions" );
 					// for each semester
-					(v).each(function(index, elem) {
+					(self.config.semesterplanspalten).each(function(index, semester) {
+						var hoerenPruefen = '';
+						var mark = '';
+
 						// get in each semester for each module values, if the h/t buttons are klicked or not
-						($(elem).find('.semestermodul')).each(function(index, elem) {
-							console.log('kursid='+$(elem).attr('data-kursid')+'&status='+$(elem).find('a.b_hoeren').hasClass('b_active'));
+						($(semester).find('.semestermodul')).each(function(index, module) {
+							// console.log('kursid='+$(module).attr('data-kursid')+'&status='+$(module).find('a.b_hoeren').hasClass('b_active'));
+
+							hoerenModus = 0;
+							pruefenModus = 0;
+							if ( $(module).find('a.b_hoeren').hasClass('b_active') ) hoerenModus = 1;
+							if ( $(module).find('a.b_pruefen').hasClass('b_active') ) pruefenModus = 1;
+
+							mark+='&mark[]='+self._getModuleMark($(module));
+
+							hoerenPruefen+='&hoeren[]='+hoerenModus;
+							hoerenPruefen+='&pruefen[]='+pruefenModus;
 						});
-						// serialize module order values
-						console.log($(elem).sortable("serialize")+'&semester='+i);
+						// serialize module order values+hoeren/pruefen+semester
+						modules = $(semester).sortable("serialize");
+						semester = '&semester='+i;
+
+						value = modules+hoerenPruefen+mark+semester;
+
+						// console.log(modules+hoerenPruefen+semester);
+						// console.log("-------------------------------------------------------");
+
+						$.ajax({
+						  url: "<?php echo site_url();?>ajax/schreibe_reihenfolge_in_db/",
+						  data: value,
+						  complete: function(xhr, textStatus) {
+						    //called when complete
+						  },
+						  success: function(data, textStatus, xhr) {
+						    console.log("success");
+						  },
+						  error: function(xhr, textStatus, errorThrown) {
+						    //called when there is an error
+						  }
+						});
+
 						i++;
 					});
 
@@ -760,7 +794,7 @@
 				this._getModuleRegSemester(kursId).done(function( regSem ) {
 					// if different from actual semester, move baby
 					if ( actSem !== regSem ) {
-						module.appendTo($('.semesterplanspalte#'+regSem));
+						module.parent().appendTo($('.semesterplanspalte#'+regSem));
 					}
 				});
 			},
@@ -837,7 +871,7 @@
 		Studienplan.init({
 			semesterplanspalten: $(".semesterplanspalte"),
 			connectWithColumns: '.semesterplanspalte',
-			sendButton : $('#sB'),
+			sendButton : $('#sendButton'),
 			resetButton : $('#resetStudienPlan'),
 			pruefenButtons : $('a.b_pruefen'),
 			hoerenButtons : $('a.b_hoeren'),
