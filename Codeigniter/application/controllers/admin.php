@@ -734,7 +734,7 @@ class Admin extends FHD_Controller {
 	/**
 	 * Validates if form is filled correctly.
 	 */
-	function validate_new_created_stdgng(){
+	function validate_new_created_degree_program(){
 		
 	    $this->form_validation->set_rules(
 		    'Pruefungsordnung', 'Pruefungsordnung fehlt', 'required|numeric');
@@ -820,11 +820,11 @@ class Admin extends FHD_Controller {
 	    $this->data->add('all_degree_programs', $this->admin_model->get_all_degree_programs());
 	    $this->data->add('delete', $delete);
 
-	    $siteinfo = array(
-		'title' => 'Studiengang löschen',
-		'main_content' => 'admin_stdgng_delete'
-	    );
-	    $this->data->add('siteinfo', $siteinfo);
+//	    $siteinfo = array(
+//		'title' => 'Studiengang löschen',
+//		'main_content' => 'admin_stdgng_delete'
+//	    );
+//	    $this->data->add('siteinfo', $siteinfo);
 
 	    $this->load->view('admin/degree_program_copy_delete', $this->data->load());
 	}
@@ -868,11 +868,11 @@ class Admin extends FHD_Controller {
 	    // no autoreload without validation
 	    $this->data->add('stdgng_id_automatic_reload', $reload);
 
-	    $siteinfo = array(
-		'title' => 'Studiengangverwaltung',
-		'main_content' => 'admin_stdgng_edit'
-	    );
-	    $this->data->add('siteinfo', $siteinfo);
+//	    $siteinfo = array(
+//		'title' => 'Studiengangverwaltung',
+//		'main_content' => 'admin_stdgng_edit'
+//	    );
+//	    $this->data->add('siteinfo', $siteinfo);
 
 	    $this->load->view('admin/degree_program_edit', $this->data->load());
 	}
@@ -882,7 +882,7 @@ class Admin extends FHD_Controller {
 	 * Returns an div holding the stdgng-table for a passed stdgng
 	 * >> $this->input->get('stdgng_id')
 	 */
-	function ajax_show_courses_of_stdgng($stdgng_id = '0'){
+	function ajax_show_courses_of_degree_program($stdgng_id = '0'){
 
 	    // if parameter is 0 - method called from within view
 	    if($stdgng_id === '0'){
@@ -896,10 +896,10 @@ class Admin extends FHD_Controller {
 		
 	    $courses_of_single_stdgng = array();
 	    $courses_of_single_stdgng = $this->admin_model->
-		    get_stdgng_courses($stdgng_chosen_id);
+		    get_degree_program_courses($stdgng_chosen_id);
 
 	    $details_of_single_stdgng = $this->admin_model->
-		    get_stdgng_details_asrow($stdgng_chosen_id);
+		    get_degree_program_details_asrow($stdgng_chosen_id);
 
 	    // get number of semesters and prepare data for dropdown
 	    $regelsemester = $details_of_single_stdgng->Regelsemester;
@@ -948,7 +948,7 @@ class Admin extends FHD_Controller {
 
 	    
 	    // building a first line to save a new course to db
-	    $data['new_course'] = $this->load->view('admin-subviews/admin_stdgng_coursetable_row_first', $data, TRUE);
+	    $data['new_course'] = $this->load->view('admin/partials/degree_program_coursetable_row_first', $data, TRUE);
 	    
 	    $rows = array(); // init
 	    
@@ -981,19 +981,19 @@ class Admin extends FHD_Controller {
 		    $data['pruefungstyp_8'] = (($sd['pruefungstyp_8'] == '1') ? TRUE : FALSE);
 
 		    // array holding all rows
-		    $rows[] = $this->load->view('admin-subviews/admin_stdgng_coursetable_row', $data, TRUE);
+		    $rows[] = $this->load->view('admin/partials/degree_program_coursetable_row', $data, TRUE);
 		}
 	    }
 	    
 	    // make data available in view
 	    $data['stdgng_details'] = $details_of_single_stdgng;
 	    $data['stdgng_course_rows'] = $rows;
-	    $data['course_tablehead'] = $this->load->view('admin-subviews/admin_stdgng_coursetable_head', '', TRUE);
+	    $data['course_tablehead'] = $this->load->view('admin/partials/degree_program_coursetable_head', '', TRUE);
 
 	    // return content
 	    $result = '';
 	    $result .= $this->load->view('admin/partials/degree_program_details', $data, TRUE);
-	    $result .= $this->load->view('admin-subviews/admin_stdgng_coursetable_content', $data, TRUE);
+	    $result .= $this->load->view('admin/partials/degree_program_coursetable_content', $data, TRUE);
 
 	    echo $result;
 
@@ -1008,7 +1008,7 @@ class Admin extends FHD_Controller {
 	 * - Regelsemester - required, numeric
 	 * - CP - required, numeric
 	 */
-	function validate_stdgng_details_changes(){
+	function validate_degree_program_details_changes(){
 	    
 	    // TODO??? PO-Name-Abk-Kombi muss UNIQUE sein
 	    
@@ -1036,19 +1036,19 @@ class Admin extends FHD_Controller {
 		// reload view
 		$this->degree_program_edit($stdgng_id);
 	    } else {
-		$this->save_stdgng_details_changes();
+		$this->save_degree_program_details_changes();
 	    }
 	}
 	
 	
-	function validate_stdgng_course_changes(){
+	function validate_degree_program_course_changes(){
 	    
 	    // get all stdgnge for filter-view
 //	    $data['all_stdgnge'] = $this->admin_model->get_all_degree_programs();
 	    
 	    // get all course-ids belonging to a specified stdgng
 	    $stdgng_id = $this->input->post('stdgng_id');
-	    $stdgng_course_ids = $this->admin_model->getStdgngCourseIds($stdgng_id);
+	    $stdgng_course_ids = $this->admin_model->get_degree_program_course_ids($stdgng_id);
 	    
 	    foreach($stdgng_course_ids as $id){
 		// run through all ids and generate id-specific validation-rules
@@ -1064,7 +1064,7 @@ class Admin extends FHD_Controller {
 		// reload view
 		$this->degree_program_edit($stdgng_id);
 	    } else {
-		$this->save_stdgng_course_changes();
+		$this->save_degree_program_course_changes();
 	    }
 	}
 	
@@ -1072,7 +1072,7 @@ class Admin extends FHD_Controller {
 	/**
 	 * Gets data of new course to create and validates
 	 */
-	function validate_new_stdgng_course(){
+	function validate_new_degree_program_course(){
 	    $stdgng_id = $this->input->post('StudiengangID');
 	    
 	    $this->form_validation->set_rules('Kursname', 'Kursname fehlt', 'required');
@@ -1090,14 +1090,14 @@ class Admin extends FHD_Controller {
 		// reload view
 		$this->degree_program_edit($stdgng_id);
 	    } else {
-		$this->save_stdgng_new_course();
+		$this->save_degree_program_new_course();
 	    }
 	}
 	
 	/**
 	 * Saving all Values from $_POST after submit button has been clicked.
 	 */
-	function save_stdgng_course_changes(){
+	function save_degree_program_course_changes(){
 		
 //		echo '<pre>';
 //		print_r($this->input->post());
@@ -1130,7 +1130,7 @@ class Admin extends FHD_Controller {
 	    );  
 
 	    // get ids of a single studiengang - specified by id
-	    $stdgng_ids = $this->admin_model->getStdgngCourseIds(
+	    $stdgng_ids = $this->admin_model->get_degree_program_course_ids(
 		    $this->input->post('stdgng_id'));
 
 	    // get values of nested object - KursIds - to run through the ids and update records
@@ -1147,7 +1147,7 @@ class Admin extends FHD_Controller {
 		    $update_stdgng_data[$update_fields[$i]] = $this->input->post($id.$update_fields[$i]);
 		}
 		// call function in model to update records
-		$this->admin_model->update_stdgng_courses($update_stdgng_data, $id);
+		$this->admin_model->update_degree_program_courses($update_stdgng_data, $id);
 
 		$exam_cb_data = array(); // init
 		$tmp_exam_cb_data = array(); // init
@@ -1173,7 +1173,7 @@ class Admin extends FHD_Controller {
 	/**
 	 * Save all fields (studiengang) - getting data from $_POST, after button-click
 	 */
-	function save_stdgng_details_changes(){
+	function save_degree_program_details_changes(){
 	    $updateFields = array(
 		'Pruefungsordnung',
 		'StudiengangName',
@@ -1192,7 +1192,7 @@ class Admin extends FHD_Controller {
 	    }
 
 	    // save data
-	    $this->admin_model->update_stdgng_description_data($updateStdgngDescriptionData, $stdgngId);
+	    $this->admin_model->update_degree_program_description_data($updateStdgngDescriptionData, $stdgngId);
 
 	    // show StudiengangDetails-List again
 	    $this->degree_program_edit();
@@ -1202,7 +1202,7 @@ class Admin extends FHD_Controller {
 	/**
 	 * After validation, new course is saved here.
 	 */
-	function save_stdgng_new_course(){
+	function save_degree_program_new_course(){
 	    $new_course = array();
 	    $new_course = $this->input->post();
 	    
@@ -1237,7 +1237,7 @@ class Admin extends FHD_Controller {
 	 * called from stdgng_edit view after user confirmed
 	 * deletion with click on OK in confirmation-dialog
 	 */
-	function ajax_delete_single_course_from_stdgng(){
+	function ajax_delete_single_course_from_degree_program(){
 	   $delete_course_id =  $this->input->post('delete_course_id');
 	   
 	   $split = explode('_', $delete_course_id);
@@ -1246,7 +1246,7 @@ class Admin extends FHD_Controller {
 	   $this->admin_model->delete_stdgng_single_course($split[0]);
 	   
 	   // call view with updated data	   
-	   echo $this->ajax_show_courses_of_stdgng($split[1]);
+	   echo $this->ajax_show_courses_of_degree_program($split[1]);
 	}
 	
 	/*** << edit **************************************************************

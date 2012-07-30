@@ -4,11 +4,11 @@
 
 <?php
 # general form setup
-$stdgnge_filter[0] = 'Bitte auswählen';
+$degree_program_filter[0] = 'Bitte auswählen';
 
 # prepare dropdown options
-foreach($all_stdgnge as $sg ){ 
-	$stdgnge_filter[$sg->StudiengangID] = $sg->StudiengangAbkuerzung . ' ' . $sg->Pruefungsordnung . ' ' . $sg->StudiengangName; 
+foreach($all_stdgnge as $dp ){ 
+	$degree_program_filter[$dp->StudiengangID] = $dp->StudiengangAbkuerzung . ' ' . $dp->Pruefungsordnung . ' ' . $dp->StudiengangName; 
 }
 # setup js for dropdown
 $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
@@ -20,7 +20,7 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
 	    <div class="span8"><h2>Studiengangverwaltung</h2></div>
 	    <div class="span4">
 		    <h5>Filter</h5>
-		    <?php echo form_dropdown('stdgnge_dropdown', $stdgnge_filter, '', $params); ?>
+		    <?php echo form_dropdown('stdgnge_dropdown', $degree_program_filter, '', $params); ?>
 	    </div>
 	</div>
 	<hr>
@@ -42,7 +42,7 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
 	    // ajax
 	    if($(this).val() != 0) {
 		    $.get(
-			    "<?php echo site_url();?>admin/ajax_show_courses_of_stdgng/",
+			    "<?php echo site_url();?>admin/ajax_show_courses_of_degree_program/",
 			    'stdgng_id='+$(this).val(),
 			    function(response) {
 				// returns view into div
@@ -74,7 +74,7 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
 	$("#stdgng-list").html('suche...');
 	    // reload view
 	    $.get(
-		"<?php echo site_url();?>admin/ajax_show_courses_of_stdgng/",
+		"<?php echo site_url();?>admin/ajax_show_courses_of_degree_program/",
 		// send stdgng_id AND a flag to signalize that default-values for input-fields should be empty
 		{stdgng_id: stdgng_id},
 		function(response) {
@@ -135,7 +135,7 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
 	// AND reload view with updated data
 	$.ajax({
 	    type: 'POST',
-	    url: "<?php echo site_url();?>admin/ajax_delete_single_course_from_stdgng/",
+	    url: "<?php echo site_url();?>admin/ajax_delete_single_course_from_degree_program/",
 	    dataType: 'html',
 	    data: {delete_course_id : deleteId},
 	    success: function (data){

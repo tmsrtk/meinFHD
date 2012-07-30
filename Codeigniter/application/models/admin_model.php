@@ -513,7 +513,7 @@ class Admin_model extends CI_Model {
 
 	
 	/**
-	 * Returns PO, name, abbreviation of all Studiengänge
+	 * Returns PO, name, abbreviation of all degree programs
 	 * >> used with filter-view
 	 * @return unknown
 	 */
@@ -533,11 +533,11 @@ class Admin_model extends CI_Model {
 	
 	
 	/**
-	 * Returns all records belonging to a single Studiengang (specified by id)
-	 * @param unknown_type $stdgng_id
+	 * Returns all records belonging to a single degree program (specified by id)
+	 * @param unknown_type $dp_id
 	 * @return unknown
 	 */
-	function get_stdgng_courses($stdgng_id){
+	function get_degree_program_courses($dp_id){
 	    $data = array();
 	    $course_exams = '';
 
@@ -545,7 +545,7 @@ class Admin_model extends CI_Model {
 	    $exam_types = $this->get_exam_types();
 	    
 	    $this->db->order_by('Semester', 'asc');
-	    $q = $this->db->get_where('studiengangkurs', array('StudiengangID' => $stdgng_id));
+	    $q = $this->db->get_where('studiengangkurs', array('StudiengangID' => $dp_id));
 
 	    // first line of stdgng-list-view should give the opportunity to create an own course
 	    // therefore first index of data-array must be filled with a 'default' Kurs
@@ -632,7 +632,7 @@ class Admin_model extends CI_Model {
 	 * @param unknown_type $stdgng_id
 	 * @return unknown
 	 */
-	function getStdgngCourseIds($stdgng_id){
+	function get_degree_program_course_ids($stdgng_id){
 	    $data = array();
 	    
 	    $this->db->select('KursID');
@@ -651,7 +651,7 @@ class Admin_model extends CI_Model {
 	 * @param unknown_type $stdgng_id
 	 * @return unknown
 	 */
-	function get_stdgng_details_asrow($stdgng_id){
+	function get_degree_program_details_asrow($stdgng_id){
 	    $q = '';
 	    
 	    $q = $this->db->get_where('studiengang', array('StudiengangID' => $stdgng_id));
@@ -669,7 +669,7 @@ class Admin_model extends CI_Model {
 	 * @param unknown_type $data
 	 * @param unknown_type $stdgng_id
 	 */
-	function update_stdgng_courses($data, $kurs_id){
+	function update_degree_program_courses($data, $kurs_id){
 	    $this->db->where('KursID', $kurs_id);
 	    $this->db->update('studiengangkurs', $data);
 	}
@@ -734,7 +734,7 @@ class Admin_model extends CI_Model {
 	 * @param unknown_type $data
 	 * @param unknown_type $stdgng_id
 	 */
-	function update_stdgng_description_data($data, $stdgng_id){
+	function update_degree_program_description_data($data, $stdgng_id){
 	    $this->db->where('StudiengangID', $stdgng_id);
 	    $this->db->update('studiengang', $data);
 	}
@@ -774,7 +774,7 @@ class Admin_model extends CI_Model {
 	function delete_degree_program($id){
 	    // delete all exam-types stored in 'pruefungssammlung'
 	    $course_ids = array();
-	    $course_ids = $this->getStdgngCourseIds($id);
+	    $course_ids = $this->get_degree_program_course_ids($id);
 	    // if there are courses - otherwise dp was created without courses
 	    if($course_ids){
 		foreach ($course_ids as $c_id) {
@@ -830,7 +830,7 @@ class Admin_model extends CI_Model {
 	    
 	    // getting all course_data of course to be copied
 	    $dp_to_copy = array();
-	    $dp_to_copy = $this->get_stdgng_courses($dp_id);
+	    $dp_to_copy = $this->get_degree_program_courses($dp_id);
 	    
 	    // if the degree program already has data - if not degree program was only created (without courses)
 	    if($dp_to_copy){

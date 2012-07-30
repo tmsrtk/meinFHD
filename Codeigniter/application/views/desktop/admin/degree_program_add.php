@@ -12,7 +12,7 @@
 // general form setup
 
 #textarea
-$stdgng_details_textarea_data = array(
+$degree_program_details_textarea_data = array(
 	'name' => 'Beschreibung',
 	'id' => 'input-stdgng-beschreibung',
 	'class' => 'input-xxxlarge',
@@ -31,7 +31,7 @@ $btn_attributes = 'class = "btn-warning input-xxxlarge"';
 	    <hr>
 	    <?php echo validation_errors(); ?>
 	    <div class="row-fluid">
-	    <?php echo form_open('admin/validate_new_created_stdgng'); ?>
+	    <?php echo form_open('admin/validate_new_created_degree_program'); ?>
 		    <div id="stdgng-details">
 			    <div id="stdgng-details-1" class="span6">
 				    <?php 
@@ -67,7 +67,7 @@ $btn_attributes = 'class = "btn-warning input-xxxlarge"';
 
 			    </div>
 			    <div id="stdgng-details-2" class="span6">
-				    <?php echo form_textarea($stdgng_details_textarea_data); ?>
+				    <?php echo form_textarea($degree_program_details_textarea_data); ?>
 				    <?php echo form_submit('save_stdgng_detail_changes', 'Neuen Studiengang speichern', $btn_attributes); ?>
 			    </div>
 		    </div>

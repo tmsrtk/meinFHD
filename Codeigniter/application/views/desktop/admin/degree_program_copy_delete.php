@@ -44,23 +44,23 @@
 		</thead>
 
 		<tbody>
-		    <?php foreach($all_degree_programs as $sg) : ?>
+		    <?php foreach($all_degree_programs as $dp) : ?>
 			<tr>
 			    <td>
-				<div class="span3"><?php echo $sg->StudiengangName; ?></div>
-				<div class="span1"><?php echo $sg->Pruefungsordnung; ?></div>
+				<div class="span3"><?php echo $dp->StudiengangName; ?></div>
+				<div class="span1"><?php echo $dp->Pruefungsordnung; ?></div>
 				<div class="span3">
 				    <?php 
 					echo form_open($controller_function, $form_attrs);
 				        $btn_attributes = array(
 					    'class' => 'btn btn-danger submit-copy-delete-button',
-					    'id' => 'submit-'.$sg->StudiengangID,
+					    'id' => 'submit-'.$dp->StudiengangID,
 					    'name' => 'copy_delete_degree_program_id'
 					);
 					echo form_submit($btn_attributes, $title);
 					// put some static data into post - CreditpointsMin (actually not needed) and FachbereichID (final = 5)
 					$hidden_data = array(
-						'degree_program_id' => $sg->StudiengangID
+						'degree_program_id' => $dp->StudiengangID
 					);
 					echo form_hidden($hidden_data);
 					echo form_close();

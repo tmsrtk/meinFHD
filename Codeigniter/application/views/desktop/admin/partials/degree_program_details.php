@@ -2,7 +2,7 @@
 # general form setup
 
 # textarea
-$stdgng_details_textarea_data = array(
+$degree_program_details_textarea_data = array(
 	'name' => ($stdgng_details->StudiengangID).'Beschreibung',
 	'id' => 'input-stdgng-beschreibung',
 	'class' => 'input-xlarge',
@@ -15,7 +15,7 @@ $btn_attributes = 'class = "btn-warning"';
 
 <div id="stdgng-details">
 	<div>
-		<?php echo form_open('admin/validate_stdgng_details_changes'); ?>
+		<?php echo form_open('admin/validate_degree_program_details_changes'); ?>
 		<?php echo form_hidden('stdgng_id', $stdgng_id); // hidden field to transmit the stdgng-id ?>
 		<div id="stdgng-details-1" class="span6">
 		    <table>
@@ -47,7 +47,7 @@ $btn_attributes = 'class = "btn-warning"';
 		    </table>
 		</div>
 		<div id="stdgng-details-2" class="span5">
-		    <?php echo form_textarea($stdgng_details_textarea_data); ?>
+		    <?php echo form_textarea($degree_program_details_textarea_data); ?>
 		</div>
 		<div class="span12">
 		    <?php echo form_submit('save_stdgng_detail_changes', 'Änderungen an den Details speichern', $btn_attributes); ?>
