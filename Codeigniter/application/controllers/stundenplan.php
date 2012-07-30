@@ -102,5 +102,17 @@ class Stundenplan extends FHD_Controller {
 
 		$this->load->view('stundenplan/week', $this->data->load());
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	public function timetable_show(){
+	    // TODO pass roles-specific data to view
+	    $this->load->view('stundenplan/tabview_desktop', $this->data->load());
+	}
 
 }
