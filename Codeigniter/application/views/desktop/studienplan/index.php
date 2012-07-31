@@ -12,7 +12,7 @@
 
 	<div class="row-fluid">
 		<div class="span4">
-			<h1>Studienplan</h1>
+			<h1 class="headline">Studienplan</h1>
 		</div>
 		<div class="span4">
 			<p>Studium abgeschlossen zu </p>
@@ -51,12 +51,18 @@
 						<tr>
 						<?php foreach($studienplan as $semester): ?>
 							<?php $i = 0; // semester nr ?>
+							<?php $sem_typ = $userdata['studienbeginn_semestertyp'] ?>
+							<?php $sem_jahr = $userdata['studienbeginn_jahr'] ?>
 							<?php foreach($semester as $modul): ?>
 								<?php if($i != 0) : # Anerkennungssemester ?> 
 									<th style="background-color: #eee;">
 										<h3 style="font-weight: normal;">Semester <?php echo $i ?></h3>
-										<p style="font-size: 10px; color: #bbb;">WiSe <?php echo $userdata['studienbeginn_jahr']+$i ?></p>
+										<p style="font-size: 10px; color: #bbb;"><?php echo $sem_typ ?> <?php echo $sem_jahr ?></p>
 									</th>
+									<?php 
+										(($i+1)%2 == 0) ? $sem_typ = 'SoSe' : $sem_typ = 'WiSe';		// TODO: look for a better algo
+										(($i+1)%2 == 0) ? $sem_jahr++ : $sem_jahr;
+									?>
 								<?php endif; ?>
 								<?php $i++ ?>
 							<?php endforeach // $semester ?>
@@ -118,9 +124,9 @@
 			<?php $fs_attrs = array(
 				'id'	=>	'sendButton',
 				'name'	=>	'sendButton',
-				'class' =>	'btn btn-success'
+				'class' =>	'btn btn-success pull-right'
 				); ?>
-			<?php echo form_submit($fs_attrs, 'Los'); ?>
+			<?php echo form_submit($fs_attrs, 'Änderungen speichern'); ?>
 			<?php echo form_close(); ?>
 		</div>
 	</div>
@@ -132,6 +138,8 @@
 <!-- <button name="resetStudienPlan" id="resetStudienPlan" class="btn btn-warning" >Reset</button> -->
 
 <div id="modalcontent"></div>
+
+<?php #FB::log($userdata['studiengang_data']) ?>
 
 <?php endblock();?>
 
@@ -162,6 +170,14 @@
 	      return false;
 	    }
 	  });
+
+	$('h1.headline').ajaxStart(function() {
+		$(this).html('Lade...');
+	});
+
+	$('h1.headline').ajaxStop(function() {
+		$(this).html('Studienplan');
+	});
 
 	// initialize the Studienplan var
 	var Studienplan = {
@@ -298,16 +314,11 @@
 						// var pruefen = $module.find('a.b_pruefen');
 
 						self._getModuleHoerenPruefenStatus(self._getModuleKursId($module), 'hoeren').done(function(status) {
-							if (status == '1') {
-								hoeren.addClass('b_active');
-								// self._activateModuleHoerenButton($module);
-							}
+							if (status == '1') { hoeren.addClass('b_active'); }
 						});
 
 						self._getModuleHoerenPruefenStatus(self._getModuleKursId($module), 'pruefen').done(function(status) {
-							if (status == '1') {
-								pruefen.addClass('b_active');
-							}
+							if (status == '1') { pruefen.addClass('b_active'); }
 						});
 					});
 				});
@@ -315,6 +326,14 @@
 
 			initModulNotenInputs : function() {
 				var self = this;
+
+				// trigger .blur on enter functionality 
+				this.config.modulNotenInputs.keydown(function(event) {
+				    if(event.keyCode == 13) {
+				      event.preventDefault();
+				      $(this).blur();
+				    }
+				});
 
 				// validate function & .blur() -> add classes
 				this.config.modulNotenInputs.blur(function() {
@@ -331,11 +350,10 @@
 					// mark = $this.val();
 
 					// hoeren&pruefen
-					var hoeren = self._getModuleHoerenButton($module);
-					var pruefen = self._getModulePruefenButton($module);
+					hoeren = self._getModuleHoerenButton($module);
+					pruefen = self._getModulePruefenButton($module);
 					// hoerenAndPruefen = module.find('a.b_hoeren, a.b_pruefen');
 
-					colors = ['sm_green', 'sm_yellow-green', 'sm_yellow', 'sm_orange', 'sm_red'];
 					// if there is a mark and the mark is validated, remove old colors
 					if ( mark && self._validateUserInput(mark) == true ) {
 						self._removeModuleColorClass($module);
@@ -352,14 +370,7 @@
 						self._removeModuleColorClass($module);
 
 						// create and show modal
-						mm = self.createModalDialog('Falscher Wert!', 'Tragen Sie bitte in das Feld einen Wert zwischen 1 - 5 ein.');
-						self.config.modalWrapper.html(mm);
-
-						$('#myModal').modal({
-							keyboard: false
-						}).on('hide', function () {
-							// console.log("hidden");
-						}).modal('show');
+						self._showModal('Falscher Wert!', 'Tragen Sie bitte in das Feld einen Wert zwischen 1 - 5 ein.');
 					} else {
 						hoeren.show();
 						pruefen.show();
@@ -379,90 +390,11 @@
 				var self = this;
 
 				this.config.sendButton.click(function() {
-					// semester run var
-					var i = 1;
-
-					self.config.semesterplanspalten.sortable( "refreshPositions" );
-					// for each semester
-					(self.config.semesterplanspalten).each(function(index, semester) {
-						var hoerenPruefen = '';
-						var mark = '';
-
-						// get in each semester for each module values, if the h/t buttons are klicked or not
-						($(semester).find('.semestermodul')).each(function(index, module) {
-							// console.log('kursid='+$(module).attr('data-kursid')+'&status='+$(module).find('a.b_hoeren').hasClass('b_active'));
-
-							hoerenModus = 0;
-							pruefenModus = 0;
-							if ( $(module).find('a.b_hoeren').hasClass('b_active') ) hoerenModus = 1;
-							if ( $(module).find('a.b_pruefen').hasClass('b_active') ) pruefenModus = 1;
-
-							mark+='&mark[]='+self._getModuleMark($(module));
-
-							hoerenPruefen+='&hoeren[]='+hoerenModus;
-							hoerenPruefen+='&pruefen[]='+pruefenModus;
-						});
-						// serialize module order values+hoeren/pruefen+semester
-						modules = $(semester).sortable("serialize");
-						semester = '&semester='+i;
-
-						value = modules+hoerenPruefen+mark+semester;
-
-						// console.log(modules+hoerenPruefen+semester);
-						// console.log("-------------------------------------------------------");
-
-						$.ajax({
-						  url: "<?php echo site_url();?>ajax/schreibe_reihenfolge_in_db/",
-						  data: value,
-						  complete: function(xhr, textStatus) {
-						    //called when complete
-						  },
-						  success: function(data, textStatus, xhr) {
-						    console.log("success");
-						  },
-						  error: function(xhr, textStatus, errorThrown) {
-						    //called when there is an error
-						  }
-						});
-
-						i++;
+					self._saveSemesterplan().done(function() {
+						location.reload();
 					});
-
 					return false;
-
-					// *************************************** testing **************************************************************************************************************************
-
-					// create an array of the saved Object where the history of the changes is stored
-					test = $.makeArray(self.config.changedModulesHistory);
-
-					// for each element, fire an ajax request to save the new orders
-					$.each(test , function(index, value) {
-						console.log(index+" "+value);
-
-						$.ajax({
-						  url: "<?php echo site_url();?>ajax/schreibe_reihenfolge_in_db/",
-						  data: value,
-						  complete: function(xhr, textStatus) {
-						    //called when complete
-						  },
-						  success: function(data, textStatus, xhr) {
-						    console.log("success");
-						  },
-						  error: function(xhr, textStatus, errorThrown) {
-						    //called when there is an error
-						  }
-						});
-						
-					});
-
-					// reset the history array
-					self.config.changedModulesHistory = [];
-
-					//self.initResetButton();	// TODO: funzt noch nicht, soll nach einem speichern, das reseten nicht mehr erlauben, bzw auch nen ajax
-											// request ausführen, der das dann entsprechen zurücksetzt
-					
 				});
-				return false;
 			},
 
 			initResetButton : function() {
@@ -589,14 +521,7 @@
 							}
 						} else {
 							// no way to turn it on again
-							mm = self.createModalDialog('Keine VL!', 'Für dieses Modul wird keine Vorlesung in diesem Semester angeboten!');
-							self.config.modalWrapper.html(mm);
-
-							$('#myModal').modal({
-								keyboard: false
-							}).on('hide', function () {
-								// console.log("hidden");
-							}).modal('show');
+							self._showModal('Keine VL!', 'Für dieses Modul wird keine Vorlesung in diesem Semester angeboten!');
 						}
 
 						// if ( actSemester == semester  ) {
@@ -648,22 +573,13 @@
 					kursId = self._getModuleKursId($module);
 
 					// create modal with appropriate module infos
-					var mm = self.createModalDialog(
-						self.getTitleForModule(kursId).done(function(result) {
-							self.setModuleTitle(result);
-					}), 
-						self.getTextForModule(kursId).done(function(result) {
-							self.setModuleText(result);
-						}));
-
-					self.config.modalWrapper.html(mm);
-
-					$('#myModal').modal({ // self.config.modalContent.modal({ ... not working, why??  s. u. Kommentar!!!
-						keyboard: false
-					}).on('hide', function () {
-						// console.log("hidden");
-					}).modal('show');
-
+					self._showModal(
+							self.getTitleForModule(kursId).done(function(result) {
+								self.setModuleTitle(result);
+						}), 
+							self.getTextForModule(kursId).done(function(result) {
+								self.setModuleText(result);
+							}));
 				});
 
 				// module-context menu, "Resetten"
@@ -682,10 +598,100 @@
 				var self = this;
 
 				info = this.config.semesterplanEditCtxMenu.find('li.sp-info');
-				addsem = this.config.semesterplanEditCtxMenu.find('li.sp-addsem');
-				remsem = this.config.semesterplanEditCtxMenu.find('li.sp-remsem');
+				addSem = this.config.semesterplanEditCtxMenu.find('li.sp-addsem');
+				remSem = this.config.semesterplanEditCtxMenu.find('li.sp-remsem');
 				reset = this.config.semesterplanEditCtxMenu.find('li.sp-reset');
 
+				info.click(function() {
+					title = "<?php echo $userdata['studiengang_data']['StudiengangName'] ?>";
+					text = '<p>Regelsemester: '+"<?php echo  $userdata['studiengang_data']['Regelsemester'] ?>"+'</p>...';
+					self._showModal(
+						title,
+						text
+						);
+				});
+
+				// add new coloumn
+				addSem.click(function() {
+					return $.ajax({
+					  url: "<?php echo site_url();?>studienplan/spalteEinfuegen"
+					}).promise().done(function() {
+						self._saveSemesterplan().done(function() {
+							// reload page
+							location.reload();
+						});
+					});
+				});
+
+
+				// delete the last semester
+				remSem.click(function() {
+					// before delete
+					// - check if actual semester sum is equal to regular
+					// if so, no deleting possible
+
+					regelSemester = "<?php echo $userdata['studiengang_data']['Regelsemester'] ?>";
+					// console.log(regelSemester);
+					// return;
+
+					if ( regelSemester != self.config.semesterplanspalten.length ) {
+						// - check if there are any modules in the last semester
+						// get last semester, and appropriate modules
+						lastSem = self.config.semesterplanspalten.last().find('.semestermodul');
+						var modulesInLastSemester = false;
+						lastSem.each(function(index, module) {
+							// if there are modules, no way to delete the last sem 
+							// -> show modal with a hint to clear the last semester from modules
+							if (module) {
+								modulesInLastSemester = true;
+								return;
+							}
+						});
+						// if there were any modules, no decreasing possible
+						if ( modulesInLastSemester === true ) {
+							self._showModal(
+							'Letztes Semester nicht leer', 
+							'Im letzten Semester befinden sich noch Module, bitte entfernen Sie diese!');
+						} else {
+							// decrease semesteranzahl in db
+							return $.ajax({
+							  url: "<?php echo site_url();?>studienplan/spalteLoeschen"
+							}).promise().done(function() {
+								self._saveSemesterplan().done(function() {
+									// reload page
+									location.reload();
+								});
+							});
+						}
+					} else {
+						self._showModal('Nicht möglich', 'Die Regelstudienzeit für diesen Studiengang beträgt '+regelSemester+' Semester. Keine weitere Verkürzung möglich.')
+					}
+
+					
+
+
+
+					// // hook in document, to wait until all requests are finished
+					// $(window).ajaxStop(function() {
+					// 	// location.reload();
+					// 	console.log("ready reset");
+					// 	self._saveSemesterplan(); // endlosschleife hier, weil ajaxStop jedes mal nach _saveSemesterplan() neu aufgerufen wird
+					// });
+
+					
+
+
+					// location.reload();
+					
+					// if so, reset them
+
+					// otherwise, ajax request to decrease the semester sum from "semesterplan"
+
+					// reload
+
+				});
+
+				// reset the studienplan
 				reset.click(function() {
 					self.config.semesterplanspalten.each(function(index, semester) {
 						// cache semester
@@ -698,7 +704,7 @@
 						($semestermodule).each(function(index, module) {
 							// cache jquery object of each module
 							$module = $(module);
-
+							// reset the actual module
 							self._resetModule($module);
 						});
 					});
@@ -718,6 +724,17 @@
 					.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Schließen</a>');
 					// <a href="" class="btn btn-primary" data-accept="modal">OK</a></div>
 				return myModalDialog;
+			},
+
+			_showModal : function(title, text) {
+				mm = this.createModalDialog(title, text);
+				this.config.modalWrapper.html(mm);
+
+				$('#myModal').modal({
+					keyboard: false
+				}).on('hide', function () {
+					// console.log("hidden");
+				}).modal('show');
 			},
 
 			getTitleForModule : function(moduleId) {
@@ -774,7 +791,9 @@
 
 			_resetModule : function(module) {
 				// reset input field
-				module.find('input.modulnote').val('');
+				// module.find('input.modulnote').val('');
+				this._setModuleMark(module, '');
+
 				// reset hoeren/pruefen
 				hoerenAndPruefen = module.find('a.b_hoeren, a.b_pruefen');
 				hoerenAndPruefen.each(function(index, elem) {
@@ -783,13 +802,10 @@
 					$elem.show();
 				});
 				// remove colors
-				colors = ['sm_green', 'sm_yellow-green', 'sm_yellow', 'sm_orange', 'sm_red'];
-				$.each(colors, function(index, val) {
-					if (module.hasClass(val)) { module.removeClass(val) };
-				});
+				this._removeModuleColorClass(module);
+
 				kursId = 'kursid='+this._getModuleKursId(module);
 				var actSem = this._getModuleActSemester(module);
-				// actSem = $this.parents('.semesterplanspalte ').attr('id');
 				// determine in which semester this this modulee should be regulary
 				this._getModuleRegSemester(kursId).done(function( regSem ) {
 					// if different from actual semester, move baby
@@ -816,6 +832,9 @@
 			_getModuleMark : function(module) {
 				mark = module.find('.modulnote').val();
 				return mark;
+			},
+			_setModuleMark : function(module, mark) {
+				module.find('.modulnote').val(mark);
 			},
 			_addModuleMarkColor : function(module) {
 				module.addClass( this._getModuleMarkColorClass(this._getModuleMark(module)) );
@@ -863,6 +882,69 @@
 				$.each(colors, function(index, val) {
 					if (module.hasClass(val)) { module.removeClass(val) };
 				});
+			},
+
+			_saveSemesterplan : function() {
+				var dfd = $.Deferred();
+
+				var self = this;
+				// semester run var
+				var i = 1;
+				var count = this.config.semesterplanspalten.length;
+				var successfulDbWritings = 1;
+
+				// trigger manually, cause of _resetModule()
+				this.config.semesterplanspalten.sortable( "refreshPositions" );
+
+				// for each semester
+				(this.config.semesterplanspalten).each(function(index, semester) {
+
+					var hoerenPruefen = '';
+					var mark = '';
+
+					// get in each semester for each module values, if the h/t buttons are klicked or not
+					($(semester).find('.semestermodul')).each(function(index, module) {
+						// console.log('kursid='+$(module).attr('data-kursid')+'&status='+$(module).find('a.b_hoeren').hasClass('b_active'));
+
+						hoerenModus = 0;
+						pruefenModus = 0;
+						if ( $(module).find('a.b_hoeren').hasClass('b_active') ) hoerenModus = 1;
+						if ( $(module).find('a.b_pruefen').hasClass('b_active') ) pruefenModus = 1;
+
+						mark+='&mark[]='+self._getModuleMark($(module));
+
+						hoerenPruefen+='&hoeren[]='+hoerenModus;
+						hoerenPruefen+='&pruefen[]='+pruefenModus;
+					});
+					// serialize module order values+hoeren/pruefen+semester
+					modules = $(semester).sortable("serialize");
+					semester = '&semester='+i;
+
+					value = modules+hoerenPruefen+mark+semester;
+
+					// console.log(modules+hoerenPruefen+semester);
+					// console.log("-------------------------------------------------------");
+
+					
+					$.ajax({
+					  url: "<?php echo site_url();?>ajax/schreibe_reihenfolge_in_db/",
+					  data: value,
+					  complete: function(xhr, textStatus) {
+					    //called when complete
+					  },
+					  success: function(data, textStatus, xhr) {
+					    console.log("count: "+count+" | i: "+successfulDbWritings);
+					    if (count === successfulDbWritings) dfd.resolve();
+					    successfulDbWritings++;
+					  },
+					  error: function(xhr, textStatus, errorThrown) {
+					    //called when there is an error
+					  }
+					});
+
+					i++;
+				});
+				return dfd.promise();
 			}
 		};
 
