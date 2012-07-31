@@ -13,7 +13,8 @@
 	$kursnameData = array(
 	    'name' => 'Kursname',
 	    'id' => 'kursname',
-	    'value' => ''
+	    'value' => '',
+	    'placeholder' => 'Kursname'
 	);
     ?>
     <td><?php print form_input($kursnameData); ?></td>
@@ -24,7 +25,8 @@
 	    'name' => 'kurs_kurz',
 	    'id' => 'kursname-kurz',
 	    'value' => '',
-	    'class' => 'span'
+	    'class' => 'span',
+	    'placeholder' => 'Abk.'
 	);
     ?>
     <td><?php print form_input($kursnameKurzData); ?></td>
@@ -35,7 +37,8 @@
 	    'name' => 'Creditpoints',
 	    'id' => 'cp',
 	    'value' => '',
-	    'class' => 'span'
+	    'class' => 'span',
+	    'placeholder' => 'CP'
 	);
     ?>
     <td><?php print form_input($creditpointsData); ?></td>
@@ -48,7 +51,8 @@
 	    'name' => 'SWS_Vorlesung',
 	    'id' => 'sws-vorl',
 	    'value' => '',
-	    'class' => 'span'
+	    'class' => 'span',
+	    'placeholder' => 'V'
 	);
 
 	// get data for Uebung
@@ -56,7 +60,8 @@
 	    'name' => 'SWS_Uebung',
 	    'id' => 'sws-ueb',
 	    'value' => '',
-	    'class' => 'span'
+	    'class' => 'span',
+	    'placeholder' => 'UE'
 	);
 
 	// get data for Praktikum
@@ -64,7 +69,8 @@
 	    'name' => 'SWS_Praktikum',
 	    'id' => 'sws-prakt',
 	    'value' => '',
-	    'class' => 'span'
+	    'class' => 'span',
+	    'placeholder' => 'P'
 	);
 
 	// get data for Projekt
@@ -72,7 +78,8 @@
 	    'name' => 'SWS_Projekt',
 	    'id' => 'sws-pro',
 	    'value' => '',
-	    'class' => 'span'
+	    'class' => 'span',
+	    'placeholder' => 'Pr'
 	);
 
 	// get data for Seminar
@@ -80,7 +87,8 @@
 	    'name' => 'SWS_Seminar',
 	    'id' => 'sws-seminar',
 	    'value' => '',
-	    'class' => 'span'
+	    'class' => 'span',
+	    'placeholder' => 'S'
 	);
 
 	// get data for Seminarunterricht - ?? // TODO check if this field is still needed / in use?
@@ -88,22 +96,17 @@
 	    'name' => 'SWS_SeminarUnterricht',
 	    'id' => 'sws-seminar-u',
 	    'value' => '',
-	    'class' => 'span'
+	    'class' => 'span',
+	    'placeholder' => 'SU'
 	);
     ?>			
     <td>
-<!--	<table>
-	    <tbody>
-		<tr>-->
-		    <div class="span2"><?php print form_input($swsDataVorl); ?></div>
-		    <div class="span2"><?php print form_input($swsDataUeb); ?></div>
-		    <div class="span2"><?php print form_input($swsDataPrakt); ?></div>
-		    <div class="span2"><?php print form_input($swsDataPro); ?></div>
-		    <div class="span2"><?php print form_input($swsDataSem); ?></div>
-		    <div class="span2"><?php print form_input($swsDataSemU); ?></div>
-<!--		</tr>
-	    </tbody>
-	</table>-->
+		<div class="span2"><?php print form_input($swsDataVorl); ?></div>
+		<div class="span2"><?php print form_input($swsDataUeb); ?></div>
+		<div class="span2"><?php print form_input($swsDataPrakt); ?></div>
+		<div class="span2"><?php print form_input($swsDataPro); ?></div>
+		<div class="span2"><?php print form_input($swsDataSem); ?></div>
+		<div class="span2"><?php print form_input($swsDataSemU); ?></div>
     </td>
 
     <!-- Semester -->

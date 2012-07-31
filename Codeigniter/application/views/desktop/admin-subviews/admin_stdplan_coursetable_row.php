@@ -19,7 +19,7 @@
     <td><?php print form_dropdown(
 	    $spkurs_id.'_VeranstaltungsformID',
 	    $eventtype_dropdown_options,
-	    $eventtypes[$veranstaltungsform_id]->VeranstaltungsformID,
+	    $veranstaltungsform_id-1, // !! ARRAY - minus 1
 	    $dropdown_attributes); ?>
     </td>
 
@@ -57,7 +57,7 @@
     <td><?php print form_dropdown(
 	    $spkurs_id.'_StartID',
 	    $starttimes_dropdown_options,
-	    $times[$beginn_id]->StundeID,
+	    $beginn_id-1, // !! ARRAY - minus 1
 	    $dropdown_attributes); ?>
     </td>
 
@@ -65,7 +65,7 @@
     <td><?php print form_dropdown(
 	    $spkurs_id.'_EndeID',
 	    $endtimes_dropdown_options,
-	    $times[$ende_id]->StundeID,
+	    $ende_id-1, // !! ARRAY - minus 1
 	    $dropdown_attributes); ?>
     </td>
 
@@ -73,7 +73,7 @@
     <td><?php print form_dropdown(
 	    $spkurs_id.'_TagID',
 	    $days_dropdown_options,
-	    $days[$tag_id]->TagID,
+	    $tag_id-1, // !! ARRAY - minus 1
 	    $dropdown_attributes); ?>
     </td>
 

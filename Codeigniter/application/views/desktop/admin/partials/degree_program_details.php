@@ -17,7 +17,7 @@ $btn_attributes = 'class = "btn-warning"';
     <?php echo form_open('admin/validate_degree_program_details_changes'); ?>
     <?php echo form_hidden('stdgng_id', $stdgng_id); // hidden field to transmit the stdgng-id ?>
     <div id="stdgng-details-1" class="span5">
-	<table><tbody>
+	<table id="dp-details-table"><tbody>
 	<?php 
 	    foreach ($stdgng_details as $key => $value){
 		if( $key == 'StudiengangName' ||

@@ -1,13 +1,11 @@
-<thead>
-    <tr>
-	<th>ID:</hd>
-	<th>Kursname:</hd>
-	<th>Abk.:</th>
-	<th>CP:</th>
-	<th>SWS:</th>
-	<th>Sem.:</th>
-	<th>Prüfungstypen:</th>
-	<th>Beschreibung:</th>
-	<th>Aktion:</th>
-    </tr>
-</thead>
+<tr>
+    <th>ID:</hd>
+    <th>Kursname:</hd>
+    <th>Abk.:</th>
+    <th>CP:</th>
+    <th>SWS:</th>
+    <th>Sem.:</th>
+    <th>Prüfungstypen:</th>
+    <th>Beschreibung:</th>
+    <th>Aktion:</th>
+</tr>

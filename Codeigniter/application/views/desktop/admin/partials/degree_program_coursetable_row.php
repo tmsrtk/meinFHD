@@ -123,12 +123,12 @@
 	);
     ?>			
     <td>
-	<div class="span2"><?php print form_input($swsDataVorl); ?></div>
-	<div class="span2"><?php print form_input($swsDataUeb); ?></div>
-	<div class="span2"><?php print form_input($swsDataPrakt); ?></div>
-	<div class="span2"><?php print form_input($swsDataPro); ?></div>
-	<div class="span2"><?php print form_input($swsDataSem); ?></div>
-	<div class="span2"><?php print form_input($swsDataSemU); ?></div>
+		<div class="span2"><?php print form_input($swsDataVorl); ?></div>
+		<div class="span2"><?php print form_input($swsDataUeb); ?></div>
+		<div class="span2"><?php print form_input($swsDataPrakt); ?></div>
+		<div class="span2"><?php print form_input($swsDataPro); ?></div>
+		<div class="span2"><?php print form_input($swsDataSem); ?></div>
+		<div class="span2"><?php print form_input($swsDataSemU); ?></div>
     </td>
 
     <!-- Semester -->

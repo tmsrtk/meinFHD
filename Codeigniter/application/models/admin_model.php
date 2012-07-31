@@ -1073,7 +1073,7 @@ class Admin_model extends CI_Model {
 	    
 	    $q = $this->db->get('veranstaltungsform');
 	    
-	    $data[] = null;
+//	    $data[] = null;
 	    
 	    if($q->num_rows() > 0){
 		foreach ($q->result() as $row){
@@ -1098,7 +1098,7 @@ class Admin_model extends CI_Model {
 	    
 	    $q = $this->db->get();
 	    
-	    $data[] = null;
+//	    $data[] = null;
 	    
 	    if($q->num_rows() > 0){
 		foreach ($q->result() as $row){
@@ -1109,42 +1109,42 @@ class Admin_model extends CI_Model {
 	}
 	
 	
-	/**
-	 * Returns all start and end times for dropdown
-	 */
-	function get_start_end_times(){
-	    $data = array();
-	    
-	    $q = $this->db->get('stunde');
-	    
-	    $data[] = null;
-	    
-	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-		    $data[] = $row;
-		}
-		return $data;
-	    }
-	}
-	
-	
-	/**
-	 * Returns all days
-	 */
-	function get_days(){
-	    $data = array();
-	    
-	    $q = $this->db->get('tag');
-	    
-	    $data[] = null;
-	    
-	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-		    $data[] = $row;
-		}
-		return $data;
-	    }
-	}
+//	/**
+//	 * Returns all start and end times for dropdown
+//	 */
+//	function get_start_end_times(){
+//	    $data = array();
+//	    
+//	    $q = $this->db->get('stunde');
+//	    
+////	    $data[] = null;
+//	    
+//	    if($q->num_rows() > 0){
+//		foreach ($q->result() as $row){
+//		    $data[] = $row;
+//		}
+//		return $data;
+//	    }
+//	}
+//	
+//	
+//	/**
+//	 * Returns all days
+//	 */
+//	function get_days(){
+//	    $data = array();
+//	    
+//	    $q = $this->db->get('tag');
+//	    
+////	    $data[] = null;
+//	    
+//	    if($q->num_rows() > 0){
+//		foreach ($q->result() as $row){
+//		    $data[] = $row;
+//		}
+//		return $data;
+//	    }
+//	}
 	
 	/**
 	 * Returns als existing colors in Stdplan
@@ -1157,7 +1157,7 @@ class Admin_model extends CI_Model {
 	    
 	    $q = $this->db->get('stundenplankurs');
 	    
-	    $data[] = null;
+//	    $data[] = null;
 	    
 	    if($q->num_rows() > 0){
 		foreach ($q->result() as $row){

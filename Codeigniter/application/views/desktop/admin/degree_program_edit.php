@@ -66,7 +66,7 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
 	    
     // autoreload after submission AND validation-errors
     var stdgng_id = "<?php echo $stdgng_id_automatic_reload; ?>";
-    console.log("nix?: "+ stdgng_id);
+    console.log("dp-id from controller - preselect dropdown?: "+ stdgng_id);
     // TODO antoher flag that asks for save-button-click
     if(stdgng_id != "0"){
 	console.log(" != 0");
@@ -150,19 +150,7 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
 
     });
     
-    
-    /*
-    var table = $('#degree-program-table');
-    
-    $(window).scroll(function(){
-	console.log('test');
-	var windowTop = $(window).scrollTop();
-	
-	if(windowTop > table.offset().top) {
-	    $('thead', table).addClass('fixed').css('top', windowTop);
-	}
-    });
-    */
+        
     
 <?php endblock(); ?>
 

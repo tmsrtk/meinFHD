@@ -61,11 +61,11 @@
     <!-- building table >> content-->
     <div class="span1"><?php echo form_input($course_room_attrs); ?></div>
     <div class="span1"><?php echo form_dropdown(
-	    $lecture_details->SPKursID.'_StartID', $starttime_options, $lecture_details->StartID, $dropdown_attrs); ?></div>
+	    $lecture_details->SPKursID.'_StartID', $starttime_options, $lecture_details->StartID-1, $dropdown_attrs); ?></div>
     <div class="span1"><?php echo form_dropdown(
-	    $lecture_details->SPKursID.'_EndeID', $endtime_options, $lecture_details->EndeID, $dropdown_attrs); ?></div>
+	    $lecture_details->SPKursID.'_EndeID', $endtime_options, $lecture_details->EndeID-1, $dropdown_attrs); ?></div>
     <div class="span2"><?php echo form_dropdown(
-	    $lecture_details->SPKursID.'_TagID', $day_options, $lecture_details->TagID, $dropdown_attrs2); ?></div>
+	    $lecture_details->SPKursID.'_TagID', $day_options, $lecture_details->TagID-1, $dropdown_attrs2); ?></div>
     <div class="span1">
 	<?php
 	    // add another field for number of possible particitpants - for labs view
