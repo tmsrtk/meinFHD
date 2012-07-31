@@ -55,7 +55,7 @@
 							<?php $sem_jahr = $userdata['studienbeginn_jahr'] ?>
 							<?php foreach($semester as $modul): ?>
 								<?php if($i != 0) : # Anerkennungssemester ?> 
-									<th style="background-color: #eee;">
+									<th <?php if($i==$userdata['act_semester']) echo 'style="background-color: #dee4c5";'; else echo 'style="background-color: #eee";'; ?> >
 										<h3 style="font-weight: normal;">Semester <?php echo $i ?></h3>
 										<p style="font-size: 10px; color: #bbb;"><?php echo $sem_typ ?> <?php echo $sem_jahr ?></p>
 									</th>
@@ -75,7 +75,7 @@
 								<?php $i = 0; // semester nr ?>
 								<?php foreach($semester as $modul): ?>
 									<?php if($i != 0) : # Anerkennungssemester ?>
-										<td <?php if($i==$userdata['act_semester']) echo 'style="border-top:4px solid #acd704";' ?> >
+										<td <?php if($i==$userdata['act_semester']) echo 'style="background-color: #dee4c5";' ?> >
 											<ul id="<?php echo $i ?>" class="unstyled semesterplanspalte">
 												<?php foreach($modul as $data): ?>
 													<?php if ($data['KursID'] != NULL): ?>
@@ -108,9 +108,8 @@
 								<?php $i = 0; // semester nr ?>
 								<?php foreach($semester as $modul): ?>
 									<?php if($i != 0) : # Anerkennungssemester ?>
-										<td>
+										<td <?php if($i==$userdata['act_semester']) echo 'style="background-color: #dee4c5";' ?> >
 											<p>SWS: <span class="badge badge-success pull-right"><?php echo $swsCp[$i]['SWS_Summe'] ?></span></p>
-											<hr>
 											<p>CP: <span class="badge badge-info pull-right"><?php echo $swsCp[$i]['CP_Summe']?></span></p>
 										</td>
 									<?php endif; ?>
