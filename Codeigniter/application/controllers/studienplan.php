@@ -120,6 +120,18 @@ class Studienplan extends FHD_Controller
     }
     
     
+
+    /**
+     * Remove a coloumn in semesterplan
+     */
+    public function spalteLoeschen()
+    {
+        $this->load->model('Studienplan_Model');
+        $this->Studienplan_Model->delete_last_semesterplan_coloumn();
+
+        // header('Location: /meinFHD/Codeigniter/studienplan/');
+    }
+
     
     
     
