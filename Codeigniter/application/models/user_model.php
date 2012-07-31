@@ -18,9 +18,11 @@ class User_model extends CI_Model {
 	private $user_course_ids_tut = array();
 	
 	// studienplan
+	private $studiengang_id = 0;
 	private $semesterplan_id = 0;
 	private $act_semester = 0;
 	private $studienbeginn_jahr = 0;
+	private $studiengang_data = array();
 
 	/**
 	 * 
@@ -53,6 +55,10 @@ class User_model extends CI_Model {
 			$this->semesterplan_id = $this->_query_semesterplanid();
 			$this->act_semester = $this->_query_user_singlecolumndata('Semester');
 			$this->studienbeginn_jahr = $this->_query_user_singlecolumndata('StudienbeginnJahr');
+			$this->studienbeginn_semestertyp = $this->_query_user_singlecolumndata('StudienbeginnSemestertyp');
+			$this->studiengang_id = $this->_query_studiengang_id();
+			$this->studiengang_data = $this->_query_studiengang_data();
+
 			
 			// course_ids
 			// profs
@@ -75,12 +81,15 @@ class User_model extends CI_Model {
 
 		// global data
 		$userdata = array(
-	                'userid' => $this->user_id,
-	                'loginname' => $this->loginname,
-	                'userpermissions' => $this->user_permissions_all,
-	                'roles' => $this->user_roles,
-	                'act_semester'	=> $this->act_semester,
-	                'studienbeginn_jahr' => $this->studienbeginn_jahr
+	                'userid' 					=> $this->user_id,
+	                'loginname' 				=> $this->loginname,
+	                'userpermissions' 			=> $this->user_permissions_all,
+	                'roles' 					=> $this->user_roles,
+	                'act_semester'				=> $this->act_semester,
+	                'studienbeginn_jahr' 		=> $this->studienbeginn_jahr,
+	                'studienbeginn_semestertyp'	=> $this->studienbeginn_semestertyp,
+	                'semesterplan_id'			=> $this->semesterplan_id,
+	                'studiengang_data'			=> $this->studiengang_data
 	            );
 
 		// write userdata in global $data
@@ -97,6 +106,27 @@ class User_model extends CI_Model {
 		$q = $this->db->get()->row_array();
 
 		return ($q[$columnname]);
+	}
+
+	public function _query_studiengang_id()
+	{
+		$this->db->select('StudiengangID')
+				->from('benutzer')
+				->where('BenutzerID', $this->user_id)
+				;
+		$q = $this->db->get()->row_array();
+		return $q['StudiengangID'];
+	}
+
+
+	public function _query_studiengang_data()
+	{
+		$this->db->select('*')
+				->from('studiengang')
+				->where('StudiengangID', $this->studiengang_id)
+				;
+		$q = $this->db->get()->row_array();
+		return $q;
 	}
 
 	private function _query_semesterplanid()
