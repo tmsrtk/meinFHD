@@ -109,8 +109,8 @@
 								<?php foreach($semester as $modul): ?>
 									<?php if($i != 0) : # Anerkennungssemester ?>
 										<td <?php if($i==$userdata['act_semester']) echo 'style="background-color: #dee4c5";' ?> >
-											<p>SWS: <span class="badge badge-success pull-right"><?php echo $swsCp[$i]['SWS_Summe'] ?></span></p>
-											<p>CP: <span class="badge badge-info pull-right"><?php echo $swsCp[$i]['CP_Summe']?></span></p>
+											<p>SWS: <span class="badge badge-success pull-right"><?php if( ! empty($swsCp[$i]['SWS_Summe'])) echo $swsCp[$i]['SWS_Summe'] ?></span></p>
+											<p>CP: <span class="badge badge-info pull-right"><?php if( ! empty($swsCp[$i]['CP_Summe'])) echo $swsCp[$i]['CP_Summe']?></span></p>
 										</td>
 									<?php endif; ?>
 									<?php $i++ ?>
