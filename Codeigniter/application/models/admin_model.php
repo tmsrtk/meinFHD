@@ -19,9 +19,9 @@ class Admin_model extends CI_Model {
 	    $q = $this->db->get('berechtigung');
 
 	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-			$data[] = $row;
-		}
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
 		return $data;
 	    }
 	}
@@ -37,9 +37,9 @@ class Admin_model extends CI_Model {
 	    $q = $this->db->get('rolle');
 
 	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-			$data[] = $row;
-		}
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
 		return $data;
 	    }
 	}
@@ -54,7 +54,7 @@ class Admin_model extends CI_Model {
 	    $q = $this->db->get('rolle');
 
 	    foreach ($q->result_array() as $row){
-		$data[] = $row['RolleID'];
+			$data[] = $row['RolleID'];
 	    }
 	    return $data;
 	}
@@ -99,7 +99,7 @@ class Admin_model extends CI_Model {
 	    $data[] = null; // necessary?!
 
 	    foreach ($q->result_array() as $row){
-		$data[] = $row['BerechtigungID'];
+			$data[] = $row['BerechtigungID'];
 	    }
 	    return $data;
 	}
@@ -524,9 +524,9 @@ class Admin_model extends CI_Model {
 	    $q = $this->db->get('studiengang');
 		
 	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-		    $data[] = $row;
-		}
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
 		return $data;
 	    }
 	}
@@ -556,30 +556,30 @@ class Admin_model extends CI_Model {
 	    $counter = 0;
 	    
 	    if($q->num_rows() > 0){
-		foreach ($q->result_array() as $row){
-		    $data[] = $row;
-		    
-		    // get exams for that course
-		    $course_exams = $this->get_exams_for_course($row['KursID']);
+			foreach ($q->result_array() as $row){
+				$data[] = $row;
 
-		    // run through all types and add field to data
-		    foreach ($exam_types as $e_type) {
-			// if there are exam-types
-			if($course_exams){
-			    // check if TypID is in course_exams array
-			    if(in_array($e_type->PruefungstypID, $course_exams)){
-				$data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = '1';
-			    } else {
-				$data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = '0';
-			    }
-			// otherwise >> 0 for alle exam_types
-			} else {
-			    $data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = '0';
+				// get exams for that course
+				$course_exams = $this->get_exams_for_course($row['KursID']);
+
+				// run through all types and add field to data
+				foreach ($exam_types as $e_type) {
+					// if there are exam-types
+					if($course_exams){
+						// check if TypID is in course_exams array
+						if(in_array($e_type->PruefungstypID, $course_exams)){
+							$data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = '1';
+						} else {
+							$data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = '0';
+						}
+					// otherwise >> 0 for alle exam_types
+					} else {
+						$data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = '0';
+					}
+
+				}
+				$counter++;
 			}
-			
-		    }
-		    $counter++;
-		}
 		return $data;
 	    }
 	}
@@ -596,9 +596,9 @@ class Admin_model extends CI_Model {
 	    $q = $this->db->get('pruefungstyp');
 	    
 	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-			    $data[] = $row;
-		}
+			foreach ($q->result() as $row){
+					$data[] = $row;
+			}
 		return $data;
 	    }
 	}
@@ -618,9 +618,9 @@ class Admin_model extends CI_Model {
 //		    }
 //		    return $data;
 //		}
-		foreach ($q->result_array() as $row){
-		    $data[] = $row['PruefungstypID'];
-		}
+			foreach ($q->result_array() as $row){
+				$data[] = $row['PruefungstypID'];
+			}
 		return $data;
 	    }
 	}
@@ -639,9 +639,9 @@ class Admin_model extends CI_Model {
 	    $q = $this->db->get_where('studiengangkurs', array('StudiengangID' => $stdgng_id));
 
 	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-			$data[] = $row;
-		}
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
 		return $data;
 	    }
 	}
@@ -695,16 +695,16 @@ class Admin_model extends CI_Model {
 	    
 	    // modify exam_array to store
 	    foreach ($exam_data as $key => $value) {
-		// get exam-type from key
-		$split = explode('_', $key); // $split[1] holds id
-		$e_data_tmp['KursID'] = $course_id_max; // course_id_max is course_id of new course
-		$e_data_tmp['PruefungstypID'] = $split[1];
-		$e_data[] = $e_data_tmp;
+			// get exam-type from key
+			$split = explode('_', $key); // $split[1] holds id
+			$e_data_tmp['KursID'] = $course_id_max; // course_id_max is course_id of new course
+			$e_data_tmp['PruefungstypID'] = $split[1];
+			$e_data[] = $e_data_tmp;
 	    }
 	    
 	    // store data
 	    foreach ($e_data as $e) {
-		$this->db->insert('pruefungssammlung', $e);
+			$this->db->insert('pruefungssammlung', $e);
 	    }
 	    
 	}
@@ -721,9 +721,9 @@ class Admin_model extends CI_Model {
 	    $q = $this->db->get('studiengangkurs');
 	    
 	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-		    $data = $row->KursID;
-		}
+			foreach ($q->result() as $row){
+				$data = $row->KursID;
+			}
 		return $data;
 	    }
 	}
@@ -749,12 +749,12 @@ class Admin_model extends CI_Model {
 	    // !! deletes all exam-types for that course first
 	    // >> perhaps not desired behaviour!!
 	    if($course_id){
-		$this->db->delete('pruefungssammlung', array('KursID' => $course_id));
+			$this->db->delete('pruefungssammlung', array('KursID' => $course_id));
 	    }
 	    
 	    // add data to table (again)
 	    foreach ($cb_data as $value) {
-		$this->db->insert('pruefungssammlung', $value);
+			$this->db->insert('pruefungssammlung', $value);
 	    }
 	}
 	
@@ -777,10 +777,10 @@ class Admin_model extends CI_Model {
 	    $course_ids = $this->get_degree_program_course_ids($id);
 	    // if there are courses - otherwise dp was created without courses
 	    if($course_ids){
-		foreach ($course_ids as $c_id) {
-		    $this->db->where('KursID', $c_id->KursID);
-		    $this->db->delete('pruefungssammlung');
-		}
+			foreach ($course_ids as $c_id) {
+				$this->db->where('KursID', $c_id->KursID);
+				$this->db->delete('pruefungssammlung');
+			}
 	    }
 	    
 	    // delete from studiengang-table
@@ -813,9 +813,9 @@ class Admin_model extends CI_Model {
 
 	    $data = '';
 	    if($q->num_rows() > 0){
-		foreach ($q->result_array() as $row){
-		    $data = $row;
-		}
+			foreach ($q->result_array() as $row){
+				$data = $row;
+			}
 	    }
 	    
 	    // alter name of degree program and delete old id!!
@@ -834,36 +834,36 @@ class Admin_model extends CI_Model {
 	    
 	    // if the degree program already has data - if not degree program was only created (without courses)
 	    if($dp_to_copy){
-		// run through courses
-		foreach($dp_to_copy as $dp_course){
-		    // split data for course and exam-table !! empty arrays for each course!!
-		    $course_data = array();
-		    $exam_data = array();
+			// run through courses
+			foreach($dp_to_copy as $dp_course){
+				// split data for course and exam-table !! empty arrays for each course!!
+				$course_data = array();
+				$exam_data = array();
 
-		    // run through course-data
-		    foreach ($dp_course as $key => $value) {
-			// store exam-types to different array than course-data
-			if(strstr($key, 'pruefungstyp')){
-			    // only add data to array, when the box is checked
-			    if($value !== '0'){
-				$exam_data[$key] = $value;
-			    }
-			} else {
-			    // set new StudiengangID
-			    if (strstr($key, 'StudiengangID')){
-				$course_data[$key] = $max_dp_id;
-			    } else if (strstr($key, 'KursID')){
-				// nothing to do 
-			    } else {
-				$course_data[$key] = $value;
-			    }
-			}
-		    } // endforeach course-data
+				// run through course-data
+				foreach ($dp_course as $key => $value) {
+					// store exam-types to different array than course-data
+					if(strstr($key, 'pruefungstyp')){
+						// only add data to array, when the box is checked
+						if($value !== '0'){
+						$exam_data[$key] = $value;
+						}
+					} else {
+						// set new StudiengangID
+						if (strstr($key, 'StudiengangID')){
+							$course_data[$key] = $max_dp_id;
+						} else if (strstr($key, 'KursID')){
+						// nothing to do 
+						} else {
+							$course_data[$key] = $value;
+						}
+					}
+				} // endforeach course-data
 
-		    // call function to save a new course
-		    $this->insert_new_course($course_data, $exam_data);
+				// call function to save a new course
+				$this->insert_new_course($course_data, $exam_data);
 
-		} // endforeach courses
+			} // endforeach courses
 	    }
 	}// end
 	
@@ -878,9 +878,9 @@ class Admin_model extends CI_Model {
 	    $q = $this->db->get('studiengang');
 	    
 	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-		    $data = $row->StudiengangID;
-		}
+			foreach ($q->result() as $row){
+				$data = $row->StudiengangID;
+			}
 		return $data;
 	    }
 	}
@@ -917,9 +917,9 @@ class Admin_model extends CI_Model {
 	    $q = $this->db->get();
 	    
 	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-			$data[] = $row;
-		}
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
 		return $data;
 	    }
 	}
@@ -943,9 +943,9 @@ class Admin_model extends CI_Model {
 	    $q = $this->db->get();
 	    
 	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-			$data[] = $row;
-		}
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
 		return $data;
 	    }
 	}
@@ -984,9 +984,9 @@ class Admin_model extends CI_Model {
 	    $q = $this->db->get();
 	    	    
 	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-			$data[] = $row;
-		}
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
 		return $data;
 	    }
 	    
@@ -1012,9 +1012,9 @@ class Admin_model extends CI_Model {
 	    $q = $this->db->get();
 	    	    
 	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-			$data[] = $row;
-		}
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
 		return $data;
 	    }
 	    
@@ -1056,9 +1056,9 @@ class Admin_model extends CI_Model {
 	    $q = $this->db->get();
 	    	    
 	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-			$data[] = $row;
-		}
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
 		return $data;
 	    }
 	    
@@ -1076,9 +1076,9 @@ class Admin_model extends CI_Model {
 //	    $data[] = null;
 	    
 	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-		    $data[] = $row;
-		}
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
 		return $data;
 	    }
 	}
@@ -1101,9 +1101,9 @@ class Admin_model extends CI_Model {
 //	    $data[] = null;
 	    
 	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-		    $data[] = $row;
-		}
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
 		return $data;
 	    }
 	}
@@ -1160,9 +1160,9 @@ class Admin_model extends CI_Model {
 //	    $data[] = null;
 	    
 	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-		    $data[] = $row;
-		}
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
 		return $data;
 	    }
 		
@@ -1197,22 +1197,22 @@ class Admin_model extends CI_Model {
 	    // get groupids
 	    $group_ids = '';
 	    foreach($stdplan_course_ids as $id){
-		$group_ids[] = $this->get_group_id_to_delete($id->SPKursID);
+			$group_ids[] = $this->get_group_id_to_delete($id->SPKursID);
 	    }
 	    
 	    // delete from gruppe (group_ids)
 	    foreach($group_ids as $id){
-		$this->delete_from_group($id);
+			$this->delete_from_group($id);
 	    }
 	    
 	    // delete from benutzerkurs (spkurs_ids)
 	    foreach($stdplan_course_ids as $id){
-		$this->delete_from_benutzerkurs($id->SPKursID);
+			$this->delete_from_benutzerkurs($id->SPKursID);
 	    }
 	    
 	    // delete from stundenplankurs (spkursids)
 	    foreach($stdplan_course_ids as $id){
-		$this->delete_from_stundenplankurs($id->SPKursID);
+			$this->delete_from_stundenplankurs($id->SPKursID);
 	    }
 	    
 //	    echo '<pre>';
@@ -1228,9 +1228,9 @@ class Admin_model extends CI_Model {
 	    $q = $this->db->get('stundenplankurs');
 	    
 	    if($q->num_rows() > 0){
-		foreach ($q->result() as $row){
-		    return $row->GruppeID;
-		}
+			foreach ($q->result() as $row){
+				return $row->GruppeID;
+			}
 	    }
 	}
 	
