@@ -45,8 +45,8 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
 			    "<?php echo site_url();?>admin/ajax_show_courses_of_degree_program/",
 			    'stdgng_id='+$(this).val(),
 			    function(response) {
-				// returns view into div
-				$('#stdgng-list').html(response);
+					// returns view into div
+					$('#stdgng-list').html(response);
 			    });
 	    } else {
 		    $("#stdgng-list").html('');
@@ -90,63 +90,63 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
 
     // show dialogs
     $('#stdgng-list').on('click', 'button#delete-stdgng-btn', function(){
-	var courseId = $(this).attr('name');
+		var courseId = $(this).attr('name');
 
-	// open dialog and set text to show
-	var dialog = createDeleteDialog('Kurs löschen', 'Soll dieser Kurs gelöscht werden?', courseId);
-	$('#delete-dialog-container').html(dialog);
+		// open dialog and set text to show
+		var dialog = createDeleteDialog('Kurs löschen', 'Soll dieser Kurs gelöscht werden?', courseId);
+		$('#delete-dialog-container').html(dialog);
 
-	// function of dialog
-	$('#delete-dialog').modal({
-	    keyboard: false
-	// !! important part: on 'show' set data-id= courseId (the one to delete)
-	}).on('show', function(){
-	    $('#delete-dialog-delete').data('id', courseId);
-	// on hide hide ^^
-	}).on('hide', function(){
-	    console.log('hidden');
-	}).modal('show');
-	
-	return false;
-    });
+		// function of dialog
+		$('#delete-dialog').modal({
+			keyboard: false
+		// !! important part: on 'show' set data-id= courseId (the one to delete)
+		}).on('show', function(){
+			$('#delete-dialog-delete').data('id', courseId);
+		// on hide hide ^^
+		}).on('hide', function(){
+			console.log('hidden');
+		}).modal('show');
 
-    // create dialog element
-    function createDeleteDialog(title, text, courseId) {
-	var myDeleteDialog = 
-	    $('<div class="modal hide" id="delete-dialog"></div>')
-	    .html('<div class="modal-header"><button type="button" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
-	    .append('<div class="modal-body"><p>'+text+'</p></div>')
-	    .append('<div class="modal-footer"><a href="#" class="btn" id="delete-dialog-cancel" data-dismiss="modal">Abbrechen</a>\n\
-		<a href="" class="btn btn-primary" data-id="0" id="delete-dialog-delete" data-accept="modal">OK</a></div>');
+		return false;
+	});
 
-	return myDeleteDialog;
+		// create dialog element
+		function createDeleteDialog(title, text, courseId) {
+			var myDeleteDialog = 
+				$('<div class="modal hide" id="delete-dialog"></div>')
+				.html('<div class="modal-header"><button type="button" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
+				.append('<div class="modal-body"><p>'+text+'</p></div>')
+				.append('<div class="modal-footer"><a href="#" class="btn" id="delete-dialog-cancel" data-dismiss="modal">Abbrechen</a>\n\
+				<a href="" class="btn btn-primary" data-id="0" id="delete-dialog-delete" data-accept="modal">OK</a></div>');
+
+		return myDeleteDialog;
     };
 
     // behaviour of modal-buttons
     $('#delete-dialog-container').on('click', '#delete-dialog-delete', function(){
-	var deleteId = ($(this).data('id'));
-	console.log(deleteId);
+		var deleteId = ($(this).data('id'));
+		console.log(deleteId);
 
-	// hide action-buttons on dialog
-	$('#delete-dialog-container .modal-body').html('Kurs wird gelöscht.');
-	$('#delete-dialog-container .modal-footer').hide();
+		// hide action-buttons on dialog
+		$('#delete-dialog-container .modal-body').html('Kurs wird gelöscht.');
+		$('#delete-dialog-container .modal-footer').hide();
 
-	// pass data to admin-controller to delete course - AJAX
-	// AND reload view with updated data
-	$.ajax({
-	    type: 'POST',
-	    url: "<?php echo site_url();?>admin/ajax_delete_single_course_from_degree_program/",
-	    dataType: 'html',
-	    data: {delete_course_id : deleteId},
-	    success: function (data){
-		$('#stdgng-list').html(data);
-		$('#delete-dialog').modal().hide();
-		$('.modal-backdrop').hide();
-	    }
-	});
-	
+		// pass data to admin-controller to delete course - AJAX
+		// AND reload view with updated data
+		$.ajax({
+			type: 'POST',
+			url: "<?php echo site_url();?>admin/ajax_delete_single_course_from_degree_program/",
+			dataType: 'html',
+			data: {delete_course_id : deleteId},
+			success: function (data){
+				$('#stdgng-list').html(data);
+				$('#delete-dialog').modal().hide();
+				$('.modal-backdrop').hide();
+			}
+		});
 
-	return false;
+
+		return false;
 
     });
     
