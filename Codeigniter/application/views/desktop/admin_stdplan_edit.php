@@ -12,11 +12,11 @@
 				    $spf->StudiengangAbkuerzung.' '
 				    .$spf->Semester.' - '
 				    .$spf->Pruefungsordnung; 
-	}
+		}
 	
-	// generates Dropdown with stdgngeFilter as Options
-	$js = 'id="admin_stdplanfilter"';
-	echo form_dropdown('stdplanFilter', $stdplanFilter, '', $js);
+		// generates Dropdown with stdgngeFilter as Options
+		$js = 'id="admin_stdplanfilter"';
+		echo form_dropdown('stdplanFilter', $stdplanFilter, '', $js);
 	?>
 	
 <!--	<pre>
@@ -71,13 +71,13 @@
 	var stdplan_ids = "<?php echo $stdplan_id_automatic_reload; ?>"
 	if(stdplan_ids != '0'){
 	    $.ajax({
-		type: "POST",
-		url: "<?php echo site_url();?>admin/ajax_show_events_of_stdplan/",
-		dataType: 'html',
-		data : {stdplan_ids : stdplan_ids},
-		success: function (data){
-		    $('#stdplan-change-view').html(data);
-		}
+			type: "POST",
+			url: "<?php echo site_url();?>admin/ajax_show_events_of_stdplan/",
+			dataType: 'html',
+			data : {stdplan_ids : stdplan_ids},
+			success: function (data){
+				$('#stdplan-change-view').html(data);
+			}
 	    });
 	    $('#admin_stdplanfilter').val(stdplan_ids);
 	    stdplan_ids = '';

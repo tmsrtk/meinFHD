@@ -1037,7 +1037,7 @@ class Admin_model extends CI_Model {
 	
 	/**
 	 * Returns StundenplankursIDs
-	 * @param type $ids
+	 * @param array $ids holding unique comination of Abk, Sem, PO
 	 * @return type
 	 */
 	function get_stdplan_course_ids($ids){

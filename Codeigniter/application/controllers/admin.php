@@ -1398,7 +1398,7 @@ class Admin extends FHD_Controller {
 	    if ($this->form_validation->run() == FALSE) {
 			// reload view
 			$this->show_stdplan_list($stdplan_id_automatic_reload);
-			} else {
+		} else {
 			$this->save_stdplan_changes();
 	    }
 	}
@@ -1408,7 +1408,7 @@ class Admin extends FHD_Controller {
 	 */
 	function save_stdplan_changes(){
 	    // build an array, containing all keys that have to be updated in db
-	    $updateFields = array(
+	    $update_fields = array(
 			'VeranstaltungsformID',
 			'VeranstaltungsformAlternative',
 			'WPFName',
@@ -1416,53 +1416,57 @@ class Admin extends FHD_Controller {
 			'DozentID',
 			'StartID',
 			'EndeID',
-			'isWPF',
+//			'isWPF', // has to be handled separately
 			'TagID',
 			'Farbe'
 		);
 	    
-//	    // get data to convert $_POST-data into ids
-//	    $eventtypes = $this->admin_model->get_eventtypes();
-//	    $all_profs = $this->admin_model->get_profs_for_stdplan_list();
-//	    $times = $this->admin_model->get_start_end_times();
-//	    $days = $this->admin_model->get_days();
-//	    $colors = $this->admin_model->get_colors_from_stdplan();
-	    
 	    // get data from form-submission
 	    $post_data = $this->input->post();
-	    
-	    $update_data = null;
 		
-		// helper variables
-		$sp_course_id_tmp = '0';
-	    
-	    // run through data and generate a associative array per id
-	    // holding collumns as keys and data as values
-	    foreach($post_data as $key => $value){
-			if(strstr($key, 'stdplan') === FALSE){
-				// don't save name of submit-button
-				$split = explode('_', $key);
-				// don't save color >>>>>>>>>> TODO
-
-				// data from dropdown (eventtype, start, end, day) has to be mapped from array-index to ID (+1) 
-				switch($split[1]) {
-					case 'Farbe' : /*nothing*/; break;
-					case 'isWPF' : $update_data[$split[0]][$split[1]] = 1; break;
-					case 'VeranstaltungsformID' : $update_data[$split[0]][$split[1]] = $value+1; break;
-					case 'StartID' : $update_data[$split[0]][$split[1]] = $value+1; break;
-					case 'EndeID' : $update_data[$split[0]][$split[1]] = $value+1; break;
-					case 'TagID' : $update_data[$split[0]][$split[1]] = $value+1; break;
-					default : $update_data[$split[0]][$split[1]] = $value; break;
+//		echo '<pre>';
+//		print_r($post_data);
+//		echo '</pre>';
+		
+		// get spcourse_ids for stdplan that has been saved
+		// 1. get id from submission | 2. get ids from db
+		$stdplan_ids[] = $post_data['stdplan_id_abk'];
+		$stdplan_ids[] = $post_data['stdplan_id_sem'];
+		$stdplan_ids[] = $post_data['stdplan_id_po'];
+		
+		$sp_course_ids = $this->admin_model->get_stdplan_course_ids($stdplan_ids);
+		
+		// run through ids to save submitted data
+		foreach ($sp_course_ids as $id) {
+			$spc_id = $id->SPKursID; // save id from object
+			$update_stdplan_data = array(); // array for data to save
+			// run through array with fields to update
+			foreach ($update_fields as $field_name) {
+				// different behaviour depending on field-typ (cb has to be mapped from array-index to ID (+1))
+				switch($field_name){
+					case 'VeranstaltungsformID' :
+					case 'StartID' :
+					case 'EndeID' :
+					case 'TagID' : $update_stdplan_data[$field_name] = ($post_data[$spc_id.'_'.$field_name] + 1) ; break;
+					case 'Farbe' : /* nothing so far */; break;
+					default : $update_stdplan_data[$field_name] = $post_data[$spc_id.'_'.$field_name]; break;
+				}
+				// handling of checkbox
+				if(array_key_exists($spc_id.'_isWPF', $post_data)){
+					$update_stdplan_data['isWPF'] = 1;
+				} else {
+					$update_stdplan_data['isWPF'] = 0;
 				}
 			}
+			// TODO saving data
 			// update data in db - for every 
-			$this->admin_model->update_stdplan_details($update_data[$split[0]], $split[0]);
-			echo '<pre>';
-			print_r($update_data);
-			echo '</pre>';
-	    }
-//	    
-	    
+			$this->admin_model->update_stdplan_details($update_stdplan_data, $spc_id);
+//			echo '<pre>';
+//			print_r($update_stdplan_data);
+//			echo '</pre>';
+			
+		}
+		
 	    $this->show_stdplan_list();
 	}
 	
@@ -1484,9 +1488,9 @@ class Admin extends FHD_Controller {
 	    
 	    // get data from post
 	    $stdgng_ids = array(
-		$this->input->post('stdplan_abk'),
-		$this->input->post('stdplan_semester'),
-		$this->input->post('stdplan_po'),
+			$this->input->post('stdplan_abk'),
+			$this->input->post('stdplan_semester'),
+			$this->input->post('stdplan_po'),
 	    );
 
 	    // delete all data related to chosen stdplan
