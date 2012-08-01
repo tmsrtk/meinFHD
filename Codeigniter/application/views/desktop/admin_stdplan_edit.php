@@ -26,6 +26,8 @@
 	<div id="stdplan-change-view">
 		<!-- load data dynamically via AJAX -->
 	</div>
+	
+	<div id="delete-dialog-container"></div>
 
 </div>
 
@@ -82,5 +84,91 @@
 	    $('#admin_stdplanfilter').val(stdplan_ids);
 	    stdplan_ids = '';
 	}
+	
+	
+	// show delete dialogs
+    $('#stdplan-change-view').on('click', 'button.delete-stdpln-btn', function(){
+		var spCourseId = $(this).attr('name');
+
+		// open dialog and set text to show
+		var dialog = createDeleteDialog('Veranstaltgung löschen', 'Soll diese Veranstaltung gelöscht werden?', spCourseId);
+		$('#delete-dialog-container').html(dialog);
+
+		// function of dialog
+		$('#delete-dialog').modal({
+			keyboard: false
+		// !! important part: on 'show' set data-id= courseId (the one to delete)
+		}).on('show', function(){
+			$('#delete-dialog-delete').data('id', spCourseId);
+		// on hide hide ^^
+		}).on('hide', function(){
+			console.log('hidden');
+		}).modal('show');
+
+		return false;
+	});
+
+
+	// show save dialog
+	$('#stdplan-change-view').on('click', '#create-event-btn', function(){
+		var spCourseId = $(this).attr('name');
+
+		// open dialog and set text to show
+		var dialog = createDeleteDialog('Veranstaltgung löschen', 'Soll diese Veranstaltung gelöscht werden?', spCourseId);
+		$('#delete-dialog-container').html(dialog);
+
+		// function of dialog
+		$('#delete-dialog').modal({
+			keyboard: false
+		// !! important part: on 'show' set data-id= courseId (the one to delete)
+		}).on('show', function(){
+			$('#delete-dialog-delete').data('id', spCourseId);
+		// on hide hide ^^
+		}).on('hide', function(){
+			console.log('hidden');
+		}).modal('show');
+
+		return false;
+	});
+
+	// create dialog element
+	function createDeleteDialog(title, text, courseId) {
+		var myDeleteDialog = 
+			$('<div class="modal hide" id="delete-dialog"></div>')
+			.html('<div class="modal-header"><button class="close" type="button" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
+			.append('<div class="modal-body"><p>'+text+'</p></div>')
+			.append('<div class="modal-footer"><a href="#" class="btn" id="delete-dialog-cancel" data-dismiss="modal">Abbrechen</a>\n\
+			<a href="" class="btn btn-primary" data-id="0" id="delete-dialog-delete" data-accept="modal">OK</a></div>');
+
+		return myDeleteDialog;
+    };
+	
+	// behaviour of modal-buttons
+    $('#delete-dialog-container').on('click', '#delete-dialog-delete', function(){
+		var deleteId = ($(this).data('id'));
+		console.log(deleteId);
+
+		// hide action-buttons on dialog
+		$('#delete-dialog-container .modal-body').html('Veranstaltung wird gelöscht.');
+		$('#delete-dialog-container .modal-footer').hide();
+
+		// pass data to admin-controller to delete course - AJAX
+		// AND reload view with updated data
+		$.ajax({
+			type: 'POST',
+			url: "<?php echo site_url();?>admin/ajax_delete_single_event_from_stdplan/",
+			dataType: 'html',
+			data: {delete_course_id : deleteId},
+			success: function (data){
+				$('#stdplan-change-view').html(data);
+				$('#delete-dialog').modal().hide();
+				$('.modal-backdrop').hide();
+			}
+		});
+
+
+		return false;
+
+    });
 
 </script>

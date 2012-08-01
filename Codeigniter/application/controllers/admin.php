@@ -886,20 +886,18 @@ class Admin extends FHD_Controller {
 
 	    // if parameter is 0 - method called from within view
 	    if($stdgng_id === '0'){
-		// get submitted data - AJAX
-		$stdgng_chosen_id = $this->input->get('stdgng_id');
-	    // otherwise methode called from within controller (delete course)
-	    // id is passed
+			// get submitted data - AJAX
+			$stdgng_chosen_id = $this->input->get('stdgng_id');
+		// otherwise methode called from within controller (delete course)
+		// id is passed
 	    } else {
-		$stdgng_chosen_id = $stdgng_id;
+			$stdgng_chosen_id = $stdgng_id;
 	    }
 		
 	    $courses_of_single_stdgng = array();
-	    $courses_of_single_stdgng = $this->admin_model->
-		    get_degree_program_courses($stdgng_chosen_id);
+	    $courses_of_single_stdgng = $this->admin_model->get_degree_program_courses($stdgng_chosen_id);
 
-	    $details_of_single_stdgng = $this->admin_model->
-		    get_degree_program_details_asrow($stdgng_chosen_id);
+	    $details_of_single_stdgng = $this->admin_model->get_degree_program_details_asrow($stdgng_chosen_id);
 
 	    // get number of semesters and prepare data for dropdown
 	    $regelsemester = $details_of_single_stdgng->Regelsemester;
@@ -1293,13 +1291,18 @@ class Admin extends FHD_Controller {
 	/**
 	 * Returns an div holding the stdgng-table for a specified stdgng >> $this->input->get('stdplan_id')
 	 * !! combined id: StudiengangAbkuerzung, Semester, PO
+	 * @param array $reload_ids holding unique abk, sem, po combination - passed when called from within controller >> reload view (dropdown)
 	 */
-	function ajax_show_events_of_stdplan(){
-	    $ids = $this->input->post('stdplan_ids');
+	function ajax_show_events_of_stdplan($reload_ids = ''){
+	    if(!$reload_ids){
+			$ids = $this->input->post('stdplan_ids');
+			$splitted_ids = explode("_", "$ids");
+		} else {
+			$splitted_ids = $reload_ids;
+		}
 //	    $ids = "BMI_2_2010";
 	    
 	    // get all events of a stundenplan specified by stdgng-abk., semester, po
-	    $splitted_ids = explode("_", "$ids");
 	    $data['kurs_ids_split'] = $splitted_ids;
 	    $stdplan_events_of_id = $this->admin_model->get_stdplan_data($splitted_ids);
 	    
@@ -1313,10 +1316,10 @@ class Admin extends FHD_Controller {
 		$endtimes_dropdown_options = $this->helper_model->get_dropdown_options('endtimes');
 		$days_dropdown_options = $this->helper_model->get_dropdown_options('days');
 		
-	    // save dropdown-data into $data
-	    $data['eventtypes'] = $eventtypes;
-	    $data['all_profs'] = $all_profs;
-	    $data['colors'] = $colors;
+//	    // save dropdown-data into $data
+//	    $data['eventtypes'] = $eventtypes;
+//	    $data['all_profs'] = $all_profs;
+//	    $data['colors'] = $colors;
 	    
 //	    echo '<pre>';
 //	    print_r($all_profs[$i]->DozentID);
@@ -1329,8 +1332,7 @@ class Admin extends FHD_Controller {
 	    }
 	    // profs
 	    for($i = 0; $i < count($all_profs); $i++){
-			$profs_dropdown_options[$all_profs[$i]->DozentID] =
-					$all_profs[$i]->Nachname.', '.$all_profs[$i]->Vorname;
+			$profs_dropdown_options[$all_profs[$i]->DozentID] = $all_profs[$i]->Nachname.', '.$all_profs[$i]->Vorname;
 		}
 		
 	    // colors
@@ -1346,8 +1348,13 @@ class Admin extends FHD_Controller {
 	    $data['days_dropdown_options'] = $days_dropdown_options;
 	    $data['colors_dropdown_options'] = $colors_dropdown_options;
 	    
+		$data['first_row'] = TRUE;
+		
+		// getting first row - empty fields
+		$data['stdplan_first_row'] = $this->load->view('admin-subviews/admin_stdplan_coursetable_row', $data, TRUE);
 	    
 	    foreach ($stdplan_events_of_id as $sp_events){
+			$data['first_row'] = FALSE;
 			$data['spkurs_id'] = $sp_events->SPKursID;
 			$data['kursname'] = $sp_events->Kursname;
 			$data['veranstaltungsform_id'] = $sp_events->VeranstaltungsformID;
@@ -1433,8 +1440,13 @@ class Admin extends FHD_Controller {
 		$stdplan_ids[] = $post_data['stdplan_id_abk'];
 		$stdplan_ids[] = $post_data['stdplan_id_sem'];
 		$stdplan_ids[] = $post_data['stdplan_id_po'];
-		
 		$sp_course_ids = $this->admin_model->get_stdplan_course_ids($stdplan_ids);
+		
+		// getting additonal data for colors - necessaray to map from array
+	    $colors = $this->admin_model->get_colors_from_stdplan();
+	    for($i = 0; $i < count($colors); $i++){
+			$colors_dropdown_options[$i] = $colors[$i]->Farbe;
+	    }
 		
 		// run through ids to save submitted data
 		foreach ($sp_course_ids as $id) {
@@ -1448,22 +1460,23 @@ class Admin extends FHD_Controller {
 					case 'StartID' :
 					case 'EndeID' :
 					case 'TagID' : $update_stdplan_data[$field_name] = ($post_data[$spc_id.'_'.$field_name] + 1) ; break;
-					case 'Farbe' : /* nothing so far */; break;
+					case 'Farbe' : $update_stdplan_data[$field_name] = $colors_dropdown_options[$post_data[$spc_id.'_'.$field_name]]; break;
 					default : $update_stdplan_data[$field_name] = $post_data[$spc_id.'_'.$field_name]; break;
 				}
+				
 				// handling of checkbox
 				if(array_key_exists($spc_id.'_isWPF', $post_data)){
 					$update_stdplan_data['isWPF'] = 1;
 				} else {
 					$update_stdplan_data['isWPF'] = 0;
 				}
+				
 			}
-			// TODO saving data
 			// update data in db - for every 
-			$this->admin_model->update_stdplan_details($update_stdplan_data, $spc_id);
-//			echo '<pre>';
-//			print_r($update_stdplan_data);
-//			echo '</pre>';
+//			$this->admin_model->update_stdplan_details($update_stdplan_data, $spc_id);
+			echo '<pre>';
+			print_r($update_stdplan_data);
+			echo '</pre>';
 			
 		}
 		
@@ -1499,6 +1512,24 @@ class Admin extends FHD_Controller {
 	    // reload view
 	    $this->delete_stdplan_view();
 	    
+	}
+	
+	
+	public function ajax_delete_single_event_from_stdplan(){
+		// get id from post
+		$sp_course_id = $this->input->post('delete_course_id');
+		// split ids >> abk, sem, po, spk-id
+		$split_ids = explode('_', $sp_course_id);
+		
+		// delete data DB
+		$this->admin_model->delete_single_event_from_stdplan($split_ids[3]);
+		
+		// delete spcourse_id from array
+		unset($split_ids[3]);
+		
+		// reload view with unique abk, sem, po combination
+		echo $this->ajax_show_events_of_stdplan($split_ids);		
+		
 	}
 	
 	/* 

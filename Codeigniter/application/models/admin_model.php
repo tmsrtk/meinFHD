@@ -1236,15 +1236,18 @@ class Admin_model extends CI_Model {
 	
 	
 	function delete_from_group($g_id){
+		// from gruppe !!
 	    $this->db->where('GruppeID', $g_id);
 	    $this->db->delete('gruppe');
+		
+		// gruppenteilnehmer zu überlegen
+		// - mehrere pos in einer gruppe?
+		// - dahm: gruppen über das semesterende hinaus behalten
+		// wird das referenzmodul oder ?!?!
+//		// from gruppenteilnehmer !!
+//	    $this->db->where('GruppeID', $g_id);
+//	    $this->db->delete('gruppenteilnehmer');
 	}
-	
-	
-	// gruppenteilnehmer zu überlegen
-	// - mehrere pos in einer gruppe?
-	// - dahm: gruppen über das semesterende hinaus behalten
-	// wird das referenzmodul oder ?!?!
 	
 	
 	function delete_from_benutzerkurs($spk_id){
@@ -1255,6 +1258,32 @@ class Admin_model extends CI_Model {
 	function delete_from_stundenplankurs($spk_id){
 	    $this->db->where('SPKursID', $spk_id);
 	    $this->db->delete('stundenplankurs');
+	}
+	
+
+	//######################### methods needed to delete a single course from stdplan
+	
+	/**
+	 * Deletes a single event from stdplan and all related data
+	 * @param int $spcourse_id event to delete
+	 */
+	function delete_single_event_from_stdplan($spcourse_id){
+	    // get groupid
+	    $group_id = '';
+		$group_id = $this->get_group_id_to_delete($spcourse_id);
+	    
+	    // delete from gruppe (group_id)
+		$this->delete_from_group($group_id);
+	    
+	    // delete from benutzerkurs (spcourse_id)
+		$this->delete_from_benutzerkurs($spcourse_id);
+	    
+	    // delete from stundenplankurs (spkursids)
+		$this->delete_from_stundenplankurs($spcourse_id);
+	    
+//	    echo '<pre>';
+//	    print_r($id);
+//	    echo '<p/re>';
 	}
 	
 	
