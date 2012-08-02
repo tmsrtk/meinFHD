@@ -20,6 +20,8 @@ class Authentication {
 	private $name = 'Guest';
 	private $email = '';
 	private $roles = array('guest');
+    private $login_from_admin = FALSE; // variable to determine if the login was caused by an admin or not
+    private $admin_uid = 0;
 	
 	private $CI;
 	
@@ -80,6 +82,44 @@ class Authentication {
 
 		return FALSE;
 	}
+
+    /**
+     * Login function for administrators to login as another user.
+     * The regular login function can not used, because we need to save the information of the logged in administrator
+     * to perform a redirect back into the administrator session, if an logut is performed.
+     *
+     * @access public
+     * @param array user_data provides the whole user-information (user_id, loginname, lastname, forename, email, user_function)
+     * @return bool returns a bool wether the login was successful or not
+     * @author Christian Kundruss
+     */
+    public function login_as_user($userdata) {
+
+        // first of all save the user data of the actual user for moving back to the admin session when the user logout is performed
+        $this->admin_uid = $this->CI->session->userdata('user_id');// save the information of the admin (actual authenticated user) in the authentication object
+
+        // security check if the choosen user is valid, that there is only one user with the equal username (usually there is only one user....)
+        $query = $this->CI->db->query('SELECT BenutzerID, Vorname, Nachname
+                                       FROM benutzer
+                                       where BenutzerID = ?',$userdata['user_id']);
+
+        if ($query->num_rows() == 1){
+            $this->login_from_admin = TRUE;
+            $this->uid = $userdata['user_id'];
+
+            // save the name of the logged in user for further displays
+            //$this->name = $query->row();
+            $this->name = $query->row()->Vorname . ' ' . $query->row()->Nachname;
+            // initialize the session with the new user_id
+            $this->CI->session->set_userdata('uid', $this->uid);
+
+            // return TRUE if the authentication was successful and false if it was not successful
+            return TRUE;
+        }
+
+        // otherwise there went something wrong with the selected user... the user_id exists at least two times; authentication was not successful
+        return FALSE;
+    }
 	
 	/**
 	 * Loads all roles for the current user.
@@ -108,7 +148,7 @@ class Authentication {
 	}
 		
 	/**
-	 * Determines wether the user is logged in or not.
+	 * Determines whether the user is logged in or not.
 	 *
 	 * @access public
 	 * @return bool
@@ -177,6 +217,7 @@ class Authentication {
 		$this->name = 'Guest';
 		$this->email = '';
 		$this->roles = array('guest');
+        $this->login_from_admin = FALSE;
 	}
 	
 	/**
@@ -193,7 +234,16 @@ class Authentication {
 		}	
 		return FALSE;
 	}
-	
+
+    /**
+     * Returns the constructed name of the user
+     * @access public
+     * @return string the provided name of the user
+     */
+    public function get_name() {
+       return $this->name;
+        //return 'TEST';
+    }
 	/**
 	 * The firewall detects access controled routes and determines,
 	 * if the current user has access to it.

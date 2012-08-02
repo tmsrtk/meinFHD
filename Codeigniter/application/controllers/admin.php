@@ -499,7 +499,7 @@ class Admin extends FHD_Controller {
 				$this->_reset_semesterplan();
 				break;
 			case '3':
-				$this->_login_as();			
+				$this->_login_as_user();
 				break;
 
 			default:
@@ -621,6 +621,23 @@ class Admin extends FHD_Controller {
 		redirect(site_url().'admin/delete_user_mask');
 	}
 
+    /*
+     *  authenticates the admin under the account of the seleccted user
+     *  by Christian Kundruss (c) 2012
+     */
+    public function _login_as_user() {
+        $user_information = $this->input->post(); // get the whole information of the selected user
+
+        if($this->authentication->login_as_user($user_information)) { // authentication was successful
+            $message_body = 'Eingeloggt als ' . $this->authentication->get_name() .  ' (User-ID:  ' . $this->authentication->user_id() . ')';
+            // print a message to get to know as who you are logged in, and to show that the authentication was succesful
+            $this->message->set(sprintf($message_body));
+
+            // redirect the user to the dashboard
+            redirect(site_url().'dashboard/index');
+        }
+    }
+
 	/*
 	* builds the needed html markup an content (db) from incoming ajax request
 	*/
@@ -649,6 +666,7 @@ class Admin extends FHD_Controller {
 	 */
 	public function ajax_show_user()
 	{
+
 		$result = '';
 
 
