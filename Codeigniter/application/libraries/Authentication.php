@@ -20,9 +20,7 @@ class Authentication {
 	private $name = 'Guest';
 	private $email = '';
 	private $roles = array('guest');
-    private $login_from_admin = FALSE; // variable to determine if the login was caused by an admin or not
-    private $admin_uid = 0;
-	
+	private $admin_uid = 0;
 	private $CI;
 	
 	/**
@@ -76,7 +74,7 @@ class Authentication {
 			// Keep the user logged in by initializing the session
 			$this->CI->session->set_userdata('uid', $this->uid);
 
-			// User has logged in successfully
+            // User has logged in successfully
 			return TRUE;
 		}
 
@@ -96,28 +94,30 @@ class Authentication {
     public function login_as_user($userdata) {
 
         // first of all save the user data of the actual user for moving back to the admin session when the user logout is performed
-        $this->admin_uid = $this->CI->session->userdata('user_id');// save the information of the admin (actual authenticated user) in the authentication object
+        $this->admin_uid = $this->CI->session->userdata('uid');// save the information of the admin (actual authenticated user) in the authentication object
 
         // security check if the choosen user is valid, that there is only one user with the equal username (usually there is only one user....)
         $query = $this->CI->db->query('SELECT BenutzerID, Vorname, Nachname
                                        FROM benutzer
                                        where BenutzerID = ?',$userdata['user_id']);
 
-        if ($query->num_rows() == 1){
-            $this->login_from_admin = TRUE;
+        if ($query->num_rows() == 1){ // the user only exists once in the database
+            $this->CI->session->set_userdata('admin_uid', $this->admin_uid);
+            $this->CI->session->set_userdata('login_from_admin', 'TRUE'); // save that the login comes from the admin backend
+
+            // save the "new" user with the given user_id
             $this->uid = $userdata['user_id'];
 
             // save the name of the logged in user for further displays
-            //$this->name = $query->row();
             $this->name = $query->row()->Vorname . ' ' . $query->row()->Nachname;
-            // initialize the session with the new user_id
+            // initialize the session with the new user-id
             $this->CI->session->set_userdata('uid', $this->uid);
 
-            // return TRUE if the authentication was successful and false if it was not successful
+            // authentication was successful
             return TRUE;
         }
 
-        // otherwise there went something wrong with the selected user... the user_id exists at least two times; authentication was not successful
+        // authentication wasn`t successful. the user_id exists at least two times
         return FALSE;
     }
 	
@@ -209,17 +209,36 @@ class Authentication {
 	 */
 	public function logout()
 	{
-		// IS DELETING uid SAVE ENOUGH???
-		$this->CI->session->unset_userdata('uid');
+        // IS DELETING uid SAVE ENOUGH???
+        $this->CI->session->unset_userdata('uid');
+        $this->CI->session->unset_userdata('admin_uid');
+        $this->CI->session->unset_userdata('login_from_admin'); // regular logout -> the login is not provided by an admin
 
-		//$this->CI->session->sess_destroy();
-		$this->uid = 0;
-		$this->name = 'Guest';
-		$this->email = '';
-		$this->roles = array('guest');
-        $this->login_from_admin = FALSE;
+        //$this->CI->session->sess_destroy();
+        $this->uid = 0;
+        $this->name = 'Guest';
+        $this->email = '';
+        $this->roles = array('guest');
 	}
-	
+
+    /**
+     * Switch back the user back to his administrator session.
+     * Is used if an admin authenticates him as an user and then performs an logout
+     *
+     * @author Christian Kundruss
+     * @return void
+     */
+    public function switchBackToAdmin() {
+        // change the current user-id to the user-id of the admin
+        $this->uid = $this->CI->session->userdata('admin_uid');
+        $this->name = ' ';
+
+        // set the session information back to the administrator information
+        $this->CI->session->set_userdata('uid', $this->uid);
+        $this->CI->session->set_userdata('login_from_admin', 'FALSE'); // login does not come anylonger from an administrator
+        $this->CI->session->unset_userdata('admin_uid');
+    }
+
 	/**
 	 * Returns the user id.
 	 *
@@ -230,7 +249,7 @@ class Authentication {
 	{
 		if (is_numeric($this->uid))
 		{
-			return $this->uid;
+            return $this->uid;
 		}	
 		return FALSE;
 	}
@@ -318,7 +337,20 @@ class Authentication {
 		}
 		return FALSE;
 	}
-}
 
+    /**
+     * Returns if the user login comes from an admin account or not.
+     * @author Christian Kundruss
+     * @access public
+     * @return TRUE if logged in from admin-account, FALSE otherwise
+     */
+    public function isLoggedInFromAdmin() {
+        if($this->CI->session->userdata('login_from_admin') == 'TRUE'){
+            return TRUE;
+        }
+
+        return FALSE;
+    }
+}
 /* End of file Authentication.php */
 /* Location: ./application/libraries/Authentication.php */
