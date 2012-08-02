@@ -1310,22 +1310,22 @@ class Admin extends FHD_Controller {
 	    $eventtypes = $this->admin_model->get_eventtypes();
 	    $all_profs = $this->admin_model->get_profs_for_stdplan_list();
 	    $colors = $this->admin_model->get_colors_from_stdplan();
+	    $course_ids = $this->admin_model->get_stdplan_course_ids($splitted_ids);
 		
 		// getting data directly from helper_model - not implemented for all dropdowns
 		$starttimes_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
 		$endtimes_dropdown_options = $this->helper_model->get_dropdown_options('endtimes');
 		$days_dropdown_options = $this->helper_model->get_dropdown_options('days');
 		
-//	    // save dropdown-data into $data
-//	    $data['eventtypes'] = $eventtypes;
-//	    $data['all_profs'] = $all_profs;
-//	    $data['colors'] = $colors;
-	    
 //	    echo '<pre>';
 //	    print_r($all_profs[$i]->DozentID);
 //	    echo '</pre>';
 	    
 	    // and prepare for dropdowns
+		// courses
+	    for($i = 0; $i < count($course_ids); $i++){
+			$courses_dropdown_options[$i] = $course_ids[$i]->Kursname;
+	    }
 	    // eventtypes
 	    for($i = 0; $i < count($eventtypes); $i++){
 			$eventtype_dropdown_options[$i] = $eventtypes[$i]->VeranstaltungsformName;
@@ -1341,6 +1341,7 @@ class Admin extends FHD_Controller {
 	    }
 
 	    // save dropdown options into $data
+	    $data['courses_dropdown_options'] = $courses_dropdown_options;
 	    $data['eventtype_dropdown_options'] = $eventtype_dropdown_options;
 	    $data['profs_dropdown_options'] = $profs_dropdown_options;
 	    $data['starttimes_dropdown_options'] = $starttimes_dropdown_options;
@@ -1391,7 +1392,7 @@ class Admin extends FHD_Controller {
 		$this->input->post('stdplan_id_sem'),
 		$this->input->post('stdplan_id_po'));
 	    
-	    $stdplan_course_ids = $this->admin_model->get_stdplan_course_ids($stdplan_id);
+	    $stdplan_course_ids = $this->admin_model->get_stdplan_sp_course_ids($stdplan_id);
 	    
 	    
 	    foreach($stdplan_course_ids as $id){
@@ -1440,7 +1441,7 @@ class Admin extends FHD_Controller {
 		$stdplan_ids[] = $post_data['stdplan_id_abk'];
 		$stdplan_ids[] = $post_data['stdplan_id_sem'];
 		$stdplan_ids[] = $post_data['stdplan_id_po'];
-		$sp_course_ids = $this->admin_model->get_stdplan_course_ids($stdplan_ids);
+		$sp_course_ids = $this->admin_model->get_stdplan_sp_course_ids($stdplan_ids);
 		
 		// getting additonal data for colors - necessaray to map from array
 	    $colors = $this->admin_model->get_colors_from_stdplan();
@@ -1474,9 +1475,9 @@ class Admin extends FHD_Controller {
 			}
 			// update data in db - for every 
 //			$this->admin_model->update_stdplan_details($update_stdplan_data, $spc_id);
-			echo '<pre>';
-			print_r($update_stdplan_data);
-			echo '</pre>';
+//			echo '<pre>';
+//			print_r($update_stdplan_data);
+//			echo '</pre>';
 			
 		}
 		
@@ -1515,10 +1516,13 @@ class Admin extends FHD_Controller {
 	}
 	
 	
+	/**
+	 * Deletes a single line from stdplan-table-view - after button-click
+	 */
 	public function ajax_delete_single_event_from_stdplan(){
 		// get id from post
-		$sp_course_id = $this->input->post('delete_course_id');
-		// split ids >> abk, sem, po, spk-id
+		$sp_course_id = $this->input->post('course_data');
+		// split ids >> abk, sem, po, SP_COURSE_ID
 		$split_ids = explode('_', $sp_course_id);
 		
 		// delete data DB
@@ -1530,6 +1534,56 @@ class Admin extends FHD_Controller {
 		// reload view with unique abk, sem, po combination
 		echo $this->ajax_show_events_of_stdplan($split_ids);		
 		
+	}
+	
+	
+	public function ajax_create_new_event_in_stdplan(){
+		$new_course_data = $this->input->post('course_data');
+		$save_to_db = array();
+		$stdplan_ids = explode('_', $new_course_data[0]);
+		
+		// delete first key from array
+		unset($new_course_data[0]);
+		
+//		echo print_r($new_course_data); // DEBUG
+		
+		// additional data of courses - mapping values to ids
+	    $courses = $this->admin_model->get_stdplan_course_ids($stdplan_ids);
+	    for($i = 0; $i < count($courses); $i++){
+			$courses_dropdown_options[$i] = $courses[$i]->KursID;
+	    }
+		
+		// getting additonal data for colors - necessaray to map from array
+	    $colors = $this->admin_model->get_colors_from_stdplan();
+	    for($i = 0; $i < count($colors); $i++){
+			$colors_dropdown_options[$i] = $colors[$i]->Farbe;
+	    }
+		
+		// run through course-data and prepare for saving
+		foreach($new_course_data as $data){
+			$split_data = explode('_', $data);
+			// prepare data for saving
+			// - eventtype, starttime, endtime, day has to be mapped from array-index to id
+			// - isWPF: checked = 1 , undefined = 0
+			// - color need additional data >> array
+			// - KursID same as color
+			switch($split_data[1]) {
+				case 'VeranstaltungsformID' :
+				case 'StartID' :
+				case 'EndeID' :
+				case 'TagID' : $save_to_db[$split_data[1]] = ($split_data[0] + 1); break; // !! +1
+				case 'isWPF' : $save_to_db[$split_data[1]] = (($split_data[0] === 'checked') ? 1 : 0); break;
+				case 'Farbe' : $save_to_db[$split_data[1]] = $colors_dropdown_options[$split_data[0]]; break;
+				case 'KursID' : $save_to_db[$split_data[1]] = $courses_dropdown_options[$split_data[0]]; break;
+				default : $save_to_db[$split_data[1]] = ($split_data[0]); break;
+			}
+		}
+		
+//		echo print_r($save_to_db);
+		$this->admin_model->save_new_course_in_stdplan($save_to_db);
+		
+		// return updated view
+		echo $this->ajax_show_events_of_stdplan($stdplan_ids);
 	}
 	
 	/* 

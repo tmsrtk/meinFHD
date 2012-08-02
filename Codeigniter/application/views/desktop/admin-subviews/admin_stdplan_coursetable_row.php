@@ -18,7 +18,13 @@
 			if(!$first_row){
 				print form_label($kursname, $course_name_attrs);
 			} else {
-				print form_label('neue Veranstaltung erstellen');
+				$new_course_courses_dropdown_attrs = $dropdown_attributes.' id="new-course-courses-dropdown"';
+				print form_dropdown(
+					'NEW_KursID',
+					$courses_dropdown_options,
+					0, 
+					$new_course_courses_dropdown_attrs
+				);
 			}
 		?>
 	</td>
@@ -99,7 +105,7 @@
 					'NEW_DozentID', 
 					$profs_dropdown_options,
 					0,
-					$new_course_event_dropdown_attrs
+					$new_course_profs_dropdown_attrs
 				);
 			}
 		?>
@@ -254,7 +260,7 @@
 			);
 		} else {
 			$buttonData = array(
-				'name' => 'createCourse',
+				'name' => $kurs_ids_split[0].'_'.$kurs_ids_split[1].'_'.$kurs_ids_split[2],
 				'id' => 'create-btn-stdpln',
 				'value' => true,
 				'content' => 'Hinzufügen'

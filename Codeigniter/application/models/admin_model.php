@@ -1037,14 +1037,14 @@ class Admin_model extends CI_Model {
 	
 	/**
 	 * Returns StundenplankursIDs
-	 * @param array $ids holding unique comination of Abk, Sem, PO
+	 * @param array $ids holding unique combination of Abk, Sem, PO
 	 * @return type
 	 */
-	function get_stdplan_course_ids($ids){
+	function get_stdplan_sp_course_ids($ids){
 	    $data = array();
 	    
 	    $this->db->distinct();
-	    $this->db->select('a.SPKursID');
+	    $this->db->select('a.SPKursID, b.Kursname');
 	    $this->db->from('stundenplankurs as a');
 	    $this->db->join('studiengangkurs as b', 'a.KursID = b.KursID');
 	    $this->db->join('studiengang as c', 'b.StudiengangID = c.StudiengangID');
@@ -1061,9 +1061,37 @@ class Admin_model extends CI_Model {
 			}
 		return $data;
 	    }
-	    
 	}
-
+	
+	
+	/**
+	 * Returns KursIDs in a single Stundenplan
+	 * @param array $ids holding unique combination of Abk, Sem, PO
+	 * @return type
+	 */
+	function get_stdplan_course_ids($ids){
+	    $data = array();
+	    
+	    $this->db->distinct();
+	    $this->db->select('a.KursID, b.Kursname');
+	    $this->db->from('stundenplankurs as a');
+	    $this->db->join('studiengangkurs as b', 'a.KursID = b.KursID');
+	    $this->db->join('studiengang as c', 'b.StudiengangID = c.StudiengangID');
+	    $this->db->where('c.StudiengangAbkuerzung', $ids[0]);
+	    $this->db->where('b.Semester', $ids[1]);
+	    $this->db->where('c.Pruefungsordnung', $ids[2]);
+	    
+	    
+	    $q = $this->db->get();
+	    	    
+	    if($q->num_rows() > 0){
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
+		return $data;
+	    }
+	}
+	
 
 	/**
 	 * Returns all enventtypes
@@ -1109,43 +1137,6 @@ class Admin_model extends CI_Model {
 	}
 	
 	
-//	/**
-//	 * Returns all start and end times for dropdown
-//	 */
-//	function get_start_end_times(){
-//	    $data = array();
-//	    
-//	    $q = $this->db->get('stunde');
-//	    
-////	    $data[] = null;
-//	    
-//	    if($q->num_rows() > 0){
-//		foreach ($q->result() as $row){
-//		    $data[] = $row;
-//		}
-//		return $data;
-//	    }
-//	}
-//	
-//	
-//	/**
-//	 * Returns all days
-//	 */
-//	function get_days(){
-//	    $data = array();
-//	    
-//	    $q = $this->db->get('tag');
-//	    
-////	    $data[] = null;
-//	    
-//	    if($q->num_rows() > 0){
-//		foreach ($q->result() as $row){
-//		    $data[] = $row;
-//		}
-//		return $data;
-//	    }
-//	}
-	
 	/**
 	 * Returns als existing colors in Stdplan
 	 */
@@ -1165,8 +1156,8 @@ class Admin_model extends CI_Model {
 			}
 		return $data;
 	    }
-		
 	}
+	
 	
 	/**
 	 * Updates a single record in Stundenplankurs for a given SPKursID
@@ -1176,6 +1167,15 @@ class Admin_model extends CI_Model {
 	function update_stdplan_details($data, $spkurs_id){
 	    $this->db->where('SPKursID', $spkurs_id);
 	    $this->db->update('stundenplankurs', $data);
+	}
+	
+	
+	/**
+	 * 
+	 * @param array $data
+	 */
+	public function save_new_course_in_stdplan($data){
+		$this->db->insert('stundenplankurs', $data);
 	}
 	
 	
