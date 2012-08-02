@@ -1,41 +1,41 @@
 <!--  first row in stdgng-list-table  -->
-<tr id="coursetable-new-course">
+<tr>
     <!-- id - just for orientation -->
     <?php	    
-	$id_attrs = array(
-	    'id' => 'stdgng-new-course-head',
-	);
+		$id_attrs = array(
+			'id' => 'stdgng-new-course-head',
+		);
     ?>
     <td><?php print form_label('+', $id_attrs); ?> </td>
 
     <!-- Kursname -->
     <?php 
-	$kursnameData = array(
-	    'name' => 'Kursname',
-	    'id' => 'kursname',
-	    'value' => '',
-	    'placeholder' => 'Kursname'
-	);
+		$kursnameData = array(
+			'name' => 'NEW_Kursname',
+			'id' => 'new-course-coursename',
+			'value' => '',
+			'placeholder' => 'Kursname'
+		);
     ?>
     <td><?php print form_input($kursnameData); ?></td>
 
     <!-- Abk. -->
     <?php 
-	$kursnameKurzData = array(
-	    'name' => 'kurs_kurz',
-	    'id' => 'kursname-kurz',
-	    'value' => '',
-	    'class' => 'span',
-	    'placeholder' => 'Abk.'
-	);
+		$kursnameKurzData = array(
+			'name' => 'NEW_kurs_kurz',
+			'id' => 'new-course-coursename-short',
+			'value' => '',
+			'class' => 'span',
+			'placeholder' => 'Abk.'
+		);
     ?>
     <td><?php print form_input($kursnameKurzData); ?></td>
 
     <!-- CP -->
     <?php 
 	$creditpointsData = array(
-	    'name' => 'Creditpoints',
-	    'id' => 'cp',
+	    'name' => 'NEW_Creditpoints',
+	    'id' => 'new-course-cp',
 	    'value' => '',
 	    'class' => 'span',
 	    'placeholder' => 'CP'
@@ -48,8 +48,8 @@
 	// run through all 6 SWS-types and generate data-array for usage with input-field
 	// get data for Vorlesung
 	$swsDataVorl = array(
-	    'name' => 'SWS_Vorlesung',
-	    'id' => 'sws-vorl',
+	    'name' => 'NEW_SWS_Vorlesung',
+	    'id' => 'new-course-sws-vorl',
 	    'value' => '',
 	    'class' => 'span',
 	    'placeholder' => 'V'
@@ -57,8 +57,8 @@
 
 	// get data for Uebung
 	$swsDataUeb = array(
-	    'name' => 'SWS_Uebung',
-	    'id' => 'sws-ueb',
+	    'name' => 'NEW_SWS_Uebung',
+	    'id' => 'new-course-sws-ueb',
 	    'value' => '',
 	    'class' => 'span',
 	    'placeholder' => 'UE'
@@ -66,8 +66,8 @@
 
 	// get data for Praktikum
 	$swsDataPrakt = array(
-	    'name' => 'SWS_Praktikum',
-	    'id' => 'sws-prakt',
+	    'name' => 'NEW_SWS_Praktikum',
+	    'id' => 'new-course-sws-prakt',
 	    'value' => '',
 	    'class' => 'span',
 	    'placeholder' => 'P'
@@ -75,8 +75,8 @@
 
 	// get data for Projekt
 	$swsDataPro = array(
-	    'name' => 'SWS_Projekt',
-	    'id' => 'sws-pro',
+	    'name' => 'NEW_SWS_Projekt',
+	    'id' => 'new-course-sws-pro',
 	    'value' => '',
 	    'class' => 'span',
 	    'placeholder' => 'Pr'
@@ -84,8 +84,8 @@
 
 	// get data for Seminar
 	$swsDataSem = array(
-	    'name' => 'SWS_Seminar',
-	    'id' => 'sws-seminar',
+	    'name' => 'NEW_SWS_Seminar',
+	    'id' => 'new-course-sws-seminar',
 	    'value' => '',
 	    'class' => 'span',
 	    'placeholder' => 'S'
@@ -93,8 +93,8 @@
 
 	// get data for Seminarunterricht - ?? // TODO check if this field is still needed / in use?
 	$swsDataSemU = array(
-	    'name' => 'SWS_SeminarUnterricht',
-	    'id' => 'sws-seminar-u',
+	    'name' => 'NEW_SWS_SeminarUnterricht',
+	    'id' => 'new-course-sws-seminar-u',
 	    'value' => '',
 	    'class' => 'span',
 	    'placeholder' => 'SU'
@@ -111,7 +111,7 @@
 
     <!-- Semester -->
     <?php 
-	$dropdown_attributes = 'class = "span"';
+		$dropdown_attributes = 'id="new-course-semester" class = "span"';
     ?>
     <td>
 	<?php 
@@ -123,51 +123,51 @@
     <?php
 	// exam-type 1
 	$data_dropdown_ext1 = array(
-	    'name' => 'ext_1',
+	    'name' => 'NEW_ext_1',
 	    'value' => '1',
-	    'id' => 'ext-1'
+	    'id' => 'new-course-ext-1'
 	);
 	// exam-type 2
 	$data_dropdown_ext2 = array(
-	    'name' => 'ext_2',
+	    'name' => 'NEW_ext_2',
 	    'value' => '1',
-	    'id' => 'ext-2'
+	    'id' => 'new-course-ext-2'
 	);
 	// exam-type 3
 	$data_dropdown_ext3 = array(
-	    'name' => 'ext_3',
+	    'name' => 'NEW_ext_3',
 	    'value' => '1',
-	    'id' => 'ext-3'
+	    'id' => 'new-course-ext-3'
 	);
 	// exam-type 4
 	$data_dropdown_ext4 = array(
-	    'name' => 'ext_4',
+	    'name' => 'NEW_ext_4',
 	    'value' => '1',
-	    'id' => 'ext-4'
+	    'id' => 'new-course-ext-4'
 	);
 	// exam-type 5
 	$data_dropdown_ext5 = array(
-	    'name' => 'ext_5',
+	    'name' => 'NEW_ext_5',
 	    'value' => '1',
-	    'id' => 'ext-5'
+	    'id' => 'new-course-ext-5'
 	);
 	// exam-type 6
 	$data_dropdown_ext6 = array(
-	    'name' => 'ext_6',
+	    'name' => 'NEW_ext_6',
 	    'value' => '1',
-	    'id' => 'ext-6'
+	    'id' => 'new-course-ext-6'
 	);
 	// exam-type 7
 	$data_dropdown_ext7 = array(
-	    'name' => 'ext_7',
+	    'name' => 'NEW_ext_7',
 	    'value' => '1',
-	    'id' => 'ext-7'
+	    'id' => 'new-course-ext-7'
 	);
 	// exam-type 8
 	$data_dropdown_ext8 = array(
-	    'name' => 'ext_8',
+	    'name' => 'NEW_ext_8',
 	    'value' => '1',
-	    'id' => 'ext-8'
+	    'id' => 'new-course-ext-8'
 	);
     ?>
     <td nowrap>
@@ -184,8 +184,8 @@
     <!-- Beschreibung -->
     <?php 
 	$textareaData = array(
-	    'name' => 'Beschreibung',
-	    'id' => 'beschreibung',
+	    'name' => 'NEW_Beschreibung',
+	    'id' => 'new-course-description',
 	    'value' => '',
 	    'rows' => 3,
 	    'class' => 'span'
@@ -194,14 +194,15 @@
     <td><?php print form_textarea($textareaData); ?></td>
 
     <!-- add-course-button -->
-    <?php 
-	$submit_attributes = 'id=#stdgng-course-create-new class="btn-warning"';
+	<?php 
+		$buttonData = array(
+			'name' => $stdgng_id,
+			'class' => 'btn btn-warning span',
+			'id' => 'degree-program-course-create',
+			'value' => true,
+			'content' => 'Kurs hinzufügen'
+		);
     ?>
-    <td>
-	<?php
-	    print form_submit('save_new_course', 'Kurs hinzufügen', $submit_attributes);
-	    echo form_hidden('StudiengangID', $stdgng_id);
-	?>
-    </td>
+    <td><?php print form_button($buttonData); ?></td>
 
 </tr>

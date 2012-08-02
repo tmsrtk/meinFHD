@@ -29,7 +29,7 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
 	    <div id="stdgng-list">
 		    <!-- this div is dynamically filled after user chose an option from dropdown -->
 	    </div>
-	<div id="delete-dialog-container"></div>
+	<div id="confirmation-dialog-container"></div>
 
 	</div>
 <?php endblock(); ?>
@@ -88,20 +88,21 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
     
     // ##################### delete stdgng-course dialog
 
-    // show dialogs
-    $('#stdgng-list').on('click', 'button#delete-stdgng-btn', function(){
+    // show delete dialog
+    $('#stdgng-list').on('click', 'button.delete-stdgng-btn', function(){
 		var courseId = $(this).attr('name');
 
 		// open dialog and set text to show
-		var dialog = createDeleteDialog('Kurs löschen', 'Soll dieser Kurs gelöscht werden?', courseId);
-		$('#delete-dialog-container').html(dialog);
+		var dialog = createConfirmationDialog('Kurs löschen', 'Soll dieser Kurs gelöscht werden?');
+		$('#confirmation-dialog-container').html(dialog);
 
 		// function of dialog
-		$('#delete-dialog').modal({
+		$('#confirmation-dialog').modal({
 			keyboard: false
 		// !! important part: on 'show' set data-id= courseId (the one to delete)
 		}).on('show', function(){
-			$('#delete-dialog-delete').data('id', courseId);
+			$('#conf-dialog-confirm').data('id', courseId);
+			$('#conf-dialog-confirm').data('delete', 1);
 		// on hide hide ^^
 		}).on('hide', function(){
 			console.log('hidden');
@@ -109,38 +110,99 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
 
 		return false;
 	});
+	
+	
+    // show save dialog
+    $('#stdgng-list').on('click', '#degree-program-course-create', function(){
+		var degreeProgramId = $(this).attr('name');
+
+		// open dialog and set text to show
+		var dialog = createConfirmationDialog('Kurs erstellen', 'Soll der Kurs erstellt werden?');
+		$('#confirmation-dialog-container').html(dialog);
+
+		// function of dialog
+		$('#confirmation-dialog').modal({
+			keyboard: false
+		// !! important part: on 'show' set data-id= degreeProgramId (the one to delete)
+		}).on('show', function(){
+			$('#conf-dialog-confirm').data('id', degreeProgramId);
+			$('#conf-dialog-confirm').data('delete', 0);
+		// on hide hide ^^
+		}).on('hide', function(){
+			console.log('hidden');
+		}).modal('show');
+
+		return false;
+	});
+	
 
 	// create dialog element
-	function createDeleteDialog(title, text, courseId) {
+	function createConfirmationDialog(title, text) {
 		var myDeleteDialog = 
-			$('<div class="modal hide" id="delete-dialog"></div>')
+			$('<div class="modal hide" id="confirmation-dialog"></div>')
 			.html('<div class="modal-header"><button class="close" type="button" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
 			.append('<div class="modal-body"><p>'+text+'</p></div>')
-			.append('<div class="modal-footer"><a href="#" class="btn" id="delete-dialog-cancel" data-dismiss="modal">Abbrechen</a>\n\
-			<a href="" class="btn btn-primary" data-id="0" id="delete-dialog-delete" data-accept="modal">OK</a></div>');
+			.append('<div class="modal-footer"><a href="#" class="btn" id="conf-dialog-cancel" data-dismiss="modal">Abbrechen</a>\n\
+			<a href="" class="btn btn-primary" data-id="0" data-delete="0" id="conf-dialog-confirm" data-accept="modal">OK</a></div>');
 
 		return myDeleteDialog;
     };
 
     // behaviour of modal-buttons
-    $('#delete-dialog-container').on('click', '#delete-dialog-delete', function(){
-		var deleteId = ($(this).data('id'));
+    $('#confirmation-dialog-container').on('click', '#conf-dialog-confirm', function(){
+		var deleteId = ($(this).data('delete'));
+		var id = ($(this).data('id')); // delete delivers course-id; create delivers po
+		var callMethod = '';
+		var submitData = '';
 		console.log(deleteId);
 
+		if(deleteId != 0){
+			$('#confirmation-dialog-container .modal-body').html('Kurs wird gelöscht.');
+			callMethod = "<?php echo site_url();?>admin/ajax_delete_single_course_from_degree_program/";
+			submitData = {course_data : id};
+		} else {
+			$('#confirmation-dialog-container .modal-body').html('Kurs wird erstellt.');
+			callMethod = "<?php echo site_url();?>admin/ajax_create_new_course_in_degree_program/";
+			
+			// fill createData with first-row-data
+			var createData = new Array(
+				id+'-StudiengangID',
+				$('#new-course-coursename').val()+'-Kursname',
+				$('#new-course-coursename-short').val()+'-kurs_kurz',
+				$('#new-course-cp').val()+'-Creditpoints',
+				$('#new-course-sws-vorl').val()+'-SWS_Vorlesung',
+				$('#new-course-sws-ueb').val()+'-SWS_Uebung',
+				$('#new-course-sws-prakt').val()+'-SWS_Praktikum',
+				$('#new-course-sws-pro').val()+'-SWS_Projekt',
+				$('#new-course-sws-seminar').val()+'-SWS_Seminar',
+				$('#new-course-sws-seminar-u').val()+'-SWS_SeminarUnterricht',
+				$('#new-course-semester').val()+'-Semester',
+				$('#new-course-ext-1').attr('checked')+'-ext_1',
+				$('#new-course-ext-2').attr('checked')+'-ext_2',
+				$('#new-course-ext-3').attr('checked')+'-ext_3',
+				$('#new-course-ext-4').attr('checked')+'-ext_4',
+				$('#new-course-ext-5').attr('checked')+'-ext_5',
+				$('#new-course-ext-6').attr('checked')+'-ext_6',
+				$('#new-course-ext-7').attr('checked')+'-ext_7',
+				$('#new-course-ext-8').attr('checked')+'-ext_8',
+				$('#new-course-description').val()+'-Beschreibung'
+			);
+			submitData = {course_data : createData};
+		}
+		
 		// hide action-buttons on dialog
-		$('#delete-dialog-container .modal-body').html('Kurs wird gelöscht.');
-		$('#delete-dialog-container .modal-footer').hide();
+		$('#confirmation-dialog-container .modal-footer').hide();
 
 		// pass data to admin-controller to delete course - AJAX
 		// AND reload view with updated data
 		$.ajax({
 			type: 'POST',
-			url: "<?php echo site_url();?>admin/ajax_delete_single_course_from_degree_program/",
+			url: callMethod,
 			dataType: 'html',
-			data: {delete_course_id : deleteId},
+			data: submitData,
 			success: function (data){
 				$('#stdgng-list').html(data);
-				$('#delete-dialog').modal().hide();
+				$('#confirmation-dialog').modal().hide();
 				$('.modal-backdrop').hide();
 			}
 		});

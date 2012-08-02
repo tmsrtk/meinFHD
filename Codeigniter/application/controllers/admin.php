@@ -986,7 +986,7 @@ class Admin extends FHD_Controller {
 	    // make data available in view
 	    $data['stdgng_details'] = $details_of_single_stdgng;
 	    $data['stdgng_course_rows'] = $rows;
-	    $data['course_tablehead'] = $this->load->view('admin/partials/degree_program_coursetable_head', '', TRUE);
+//	    $data['course_tablehead'] = $this->load->view('admin/partials/degree_program_coursetable_head', '', TRUE);
 
 	    // return content
 	    $result = '';
@@ -1031,10 +1031,10 @@ class Admin extends FHD_Controller {
 		    $stdgng_id.'Beschreibung', 'Beschreibung fehlt', 'required');
 	    
 	    if ($this->form_validation->run() == FALSE) {
-		// reload view
-		$this->degree_program_edit($stdgng_id);
+			// reload view
+			$this->degree_program_edit($stdgng_id);
 	    } else {
-		$this->save_degree_program_details_changes();
+			$this->save_degree_program_details_changes();
 	    }
 	}
 	
@@ -1061,36 +1061,36 @@ class Admin extends FHD_Controller {
 	    if ($this->form_validation->run() == FALSE) {
 			// reload view
 			$this->degree_program_edit($stdgng_id);
-			} else {
+		} else {
 			$this->save_degree_program_course_changes();
 	    }
 	}
 	
 	
-	/**
-	 * Gets data of new course to create and validates
-	 */
-	function validate_new_degree_program_course(){
-	    $stdgng_id = $this->input->post('StudiengangID');
-	    
-	    $this->form_validation->set_rules('Kursname', 'Kursname fehlt', 'required');
-	    $this->form_validation->set_rules('kurs_kurz', 'Abkürzung fehlt', 'required');
-	    $this->form_validation->set_rules('Creditpoints', 'Creditpoints fehlen oder nicht numerisch', 'required|numeric');
-	    $this->form_validation->set_rules('SWS_Vorlesung', 'SWS-Vorlesung nicht numerisch', 'numeric');
-	    $this->form_validation->set_rules('SWS_Uebung', 'SWS-Übung nicht numerisch', 'numeric');
-	    $this->form_validation->set_rules('SWS_Praktikum', 'SWS-Praktikum nicht numerisch', 'numeric');
-	    $this->form_validation->set_rules('SWS_Projekt', 'SWS-Projekt nicht numerisch', 'numeric');
-	    $this->form_validation->set_rules('SWS_Seminar', 'SWS-Seminar nicht numerisch', 'numeric');
-	    $this->form_validation->set_rules('SWS_SeminarUnterricht', 'SWS-SeminarUnterricht nicht numerisch', 'numeric');
-	    
-	    
-	    if ($this->form_validation->run() == FALSE) {
-			// reload view
-			$this->degree_program_edit($stdgng_id);
-			} else {
-			$this->save_degree_program_new_course();
-	    }
-	}
+//	/**
+//	 * Gets data of new course to create and validates
+//	 */
+//	function validate_new_degree_program_course(){
+//	    $stdgng_id = $this->input->post('StudiengangID');
+//	    
+//	    $this->form_validation->set_rules('Kursname', 'Kursname fehlt', 'required');
+//	    $this->form_validation->set_rules('kurs_kurz', 'Abkürzung fehlt', 'required');
+//	    $this->form_validation->set_rules('Creditpoints', 'Creditpoints fehlen oder nicht numerisch', 'required|numeric');
+//	    $this->form_validation->set_rules('SWS_Vorlesung', 'SWS-Vorlesung nicht numerisch', 'numeric');
+//	    $this->form_validation->set_rules('SWS_Uebung', 'SWS-Übung nicht numerisch', 'numeric');
+//	    $this->form_validation->set_rules('SWS_Praktikum', 'SWS-Praktikum nicht numerisch', 'numeric');
+//	    $this->form_validation->set_rules('SWS_Projekt', 'SWS-Projekt nicht numerisch', 'numeric');
+//	    $this->form_validation->set_rules('SWS_Seminar', 'SWS-Seminar nicht numerisch', 'numeric');
+//	    $this->form_validation->set_rules('SWS_SeminarUnterricht', 'SWS-SeminarUnterricht nicht numerisch', 'numeric');
+//	    
+//	    
+//	    if ($this->form_validation->run() == FALSE) {
+//			// reload view
+//			$this->degree_program_edit($stdgng_id);
+//		} else {
+//			$this->save_degree_program_new_course();
+//	    }
+//	}
 	
 	/**
 	 * Saving all Values from $_POST after submit button has been clicked.
@@ -1147,24 +1147,27 @@ class Admin extends FHD_Controller {
 					case 'Semester' : $update_stdgng_data[$update_fields[$i]] = (($this->input->post($id.$update_fields[$i]) + 1) ); break;
 					default : $update_stdgng_data[$update_fields[$i]] = $this->input->post($id.$update_fields[$i]); break;
 				}
-		}
-		// call function in model to update records
-		$this->admin_model->update_degree_program_courses($update_stdgng_data, $id);
+			}
+			
+			// call function in model to update records
+//			$this->admin_model->update_degree_program_courses($update_stdgng_data, $id);
 
-		$exam_cb_data = array(); // init
-		$tmp_exam_cb_data = array(); // init
-		// handle checkboxes
-		foreach ($update_checkboxes as $value) {
-		    if($this->input->post($id.$value) === '1'){
-				$split = explode('_', $value); // second value is exam-type-id
-				$tmp_exam_cb_data['KursID'] = $id;
-				$tmp_exam_cb_data['PruefungstypID'] = $split[1];
-				// build array to save data
-				$exam_cb_data[] = $tmp_exam_cb_data;
-		    }
-		}
-		// save cb-data to db - passed array contains all checkboxes that have to be stored
-		$this->admin_model->save_exam_types_for_course($exam_cb_data, $id);
+			$exam_cb_data = array(); // init
+			$tmp_exam_cb_data = array(); // init
+			// handle checkboxes
+			foreach ($update_checkboxes as $value) {
+				if($this->input->post($id.$value) === '1'){
+					$split = explode('_', $value); // second value is exam-type-id
+					$tmp_exam_cb_data['KursID'] = $id;
+					$tmp_exam_cb_data['PruefungstypID'] = $split[1];
+					// build array to save data
+					$exam_cb_data[] = $tmp_exam_cb_data;
+				}
+			}
+		
+			// save cb-data to db - passed array contains all checkboxes that have to be stored
+			$this->admin_model->save_exam_types_for_course($exam_cb_data, $id);
+			
 	    }
 
 	    // show StudiengangDetails-List again
@@ -1201,37 +1204,37 @@ class Admin extends FHD_Controller {
 		
 	}
 	
-	/**
-	 * After validation, new course is saved here.
-	 */
-	function save_degree_program_new_course(){
-	    $new_course = array();
-	    $new_course = $this->input->post();
-	    
-	    // data
-	    $course_data = array();
-	    $exam_data = array();
-	    
-	    // run through data and prepare for saving
-	    foreach ($new_course as $key => $value) {
-			// if not submit-button-data
-			if($key != 'save_new_course'){
-				// and not exam-data
-				if(!strstr($key, 'ext')){
-				$course_data[$key] = $value;
-				} else {
-				// exam data to separate array
-				$exam_data[$key] = $value;
-				}
-			}
-	    }
-	    
-	    // insert course-data into db
-	    $this->admin_model->insert_new_course($course_data, $exam_data, $new_course['StudiengangID']);
-	    
-	    //back to view
-	    $this->degree_program_edit();
-	}
+//	/**
+//	 * After validation, new course is saved here.
+//	 */
+//	function save_degree_program_new_course(){
+//	    $new_course = array();
+//	    $new_course = $this->input->post();
+//	    
+//	    // data
+//	    $course_data = array();
+//	    $exam_data = array();
+//	    
+//	    // run through data and prepare for saving
+//	    foreach ($new_course as $key => $value) {
+//			// if not submit-button-data
+//			if($key != 'save_new_course'){
+//				// and not exam-data
+//				if(!strstr($key, 'ext')){
+//					$course_data[$key] = $value;
+//				} else {
+//					// exam data to separate array
+//					$exam_data[$key] = $value;
+//				}
+//			}
+//	    }
+//	    
+//	    // insert course-data into db
+//	    $this->admin_model->insert_new_course($course_data, $exam_data);
+//	    
+//	    // back to view
+//	    $this->degree_program_edit();
+//	}
 	
 	
 	/**
@@ -1240,7 +1243,7 @@ class Admin extends FHD_Controller {
 	 * deletion with click on OK in confirmation-dialog
 	 */
 	function ajax_delete_single_course_from_degree_program(){
-	   $delete_course_id =  $this->input->post('delete_course_id');
+	   $delete_course_id =  $this->input->post('course_data');
 	   
 	   $split = explode('_', $delete_course_id);
 	   
@@ -1249,6 +1252,42 @@ class Admin extends FHD_Controller {
 	   
 	   // call view with updated data	   
 	   echo $this->ajax_show_courses_of_degree_program($split[1]);
+	}
+	
+	
+	/**
+	 * Creates a new course for that degree program and returns updated view.
+	 */
+	public function ajax_create_new_course_in_degree_program(){
+		$new_course_data = $this->input->post('course_data');
+		$course_data_save_to_db = array();
+		$exam_data_save_to_db = array();
+		
+		// get degree-program-id for reload
+		$po_id = $new_course_data[0];
+		
+		// run through submitted course data 
+		foreach($new_course_data as $data){
+			$split = explode('-', $data);
+			if(!stristr($split[1], 'ext')){
+				// map array data (Semester) to ID (+1)
+				switch ($split[1]) {
+					case 'Semester' : $course_data_save_to_db[$split[1]] = $split[0] + 1; break; // array!! +1
+					default : $course_data_save_to_db[$split[1]] = $split[0]; break;
+				}
+			} else {
+				// !! only add data to array for exam_types that should be saved
+				if($split[0] == 'checked') {
+					$exam_data_save_to_db[$split[1]] = 1;
+				}
+			}
+		}
+		
+//		echo print_r($course_data_save_to_db).print_r($exam_data_save_to_db);
+		$this->admin_model->insert_new_course($course_data_save_to_db, $exam_data_save_to_db);
+		
+		echo $this->ajax_show_courses_of_degree_program($po_id);
+		
 	}
 	
 	/*** << edit **************************************************************
@@ -1396,9 +1435,8 @@ class Admin extends FHD_Controller {
 	    
 	    
 	    foreach($stdplan_course_ids as $id){
-		// run through all ids and generate id-specific validation-rules
-		$this->form_validation->set_rules(
-			$id->SPKursID.'_Raum', 'Fehler', 'required');
+			// run through all ids and generate id-specific validation-rules
+			$this->form_validation->set_rules($id->SPKursID.'_Raum', 'Fehler', 'required');
 	    }
 	    
 	    $stdplan_id_automatic_reload = $stdplan_id[0].'_'.$stdplan_id[1].'_'.$stdplan_id[2];
@@ -1474,7 +1512,7 @@ class Admin extends FHD_Controller {
 				
 			}
 			// update data in db - for every 
-//			$this->admin_model->update_stdplan_details($update_stdplan_data, $spc_id);
+			$this->admin_model->update_stdplan_details($update_stdplan_data, $spc_id);
 //			echo '<pre>';
 //			print_r($update_stdplan_data);
 //			echo '</pre>';
@@ -1536,7 +1574,9 @@ class Admin extends FHD_Controller {
 		
 	}
 	
-	
+	/**
+	 * Creates new event in stdplan after click on Button
+	 */
 	public function ajax_create_new_event_in_stdplan(){
 		$new_course_data = $this->input->post('course_data');
 		$save_to_db = array();

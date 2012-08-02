@@ -23,13 +23,13 @@
 
 	<!-- first row of table - add data -->
 	<tbody id="stdplan-table-first-row">
-		<tr><?php print $stdplan_first_row; ?></tr>
+		<?php print $stdplan_first_row; ?>
 	</tbody>
 
 	<!-- main-table - editable data -->
 	<tbody id="stdplan-table-main">
 		<?php foreach($stdplan_course_rows as $row) : ?>
-			<tr><?php print $row; ?></tr>
+			<?php print $row; ?>
 		<?php endforeach; ?>
 	</tbody>
 </table>

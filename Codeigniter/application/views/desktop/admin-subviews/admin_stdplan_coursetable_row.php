@@ -253,7 +253,7 @@
 			$buttonData = array(
 				'name' => $kurs_ids_split[0].'_'.$kurs_ids_split[1].'_'.$kurs_ids_split[2].'_'.$spkurs_id,
 				'id' => $spkurs_id.'delete-btn',
-				'class' => 'delete-stdpln-btn',
+				'class' => 'btn btn-danger span2 delete-stdpln-btn',
 				'data-id' => $spkurs_id,
 				'value' => true,
 				'content' => 'Löschen'
@@ -262,12 +262,11 @@
 			$buttonData = array(
 				'name' => $kurs_ids_split[0].'_'.$kurs_ids_split[1].'_'.$kurs_ids_split[2],
 				'id' => 'create-btn-stdpln',
+				'class' => 'btn btn-warning span2',
 				'value' => true,
 				'content' => 'Hinzufügen'
 			);
 		}
     ?>
-
-    <!-- TODO event for button-click - id vergeben und über AJAX-->
     <td><?php print form_button($buttonData); ?></td>
 </tr>
