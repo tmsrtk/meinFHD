@@ -85,13 +85,13 @@
 									</a>
 									<ul class="dropdown-menu level-2">
 										<?php if ( $this->authentication->has_permissions('hat_stundenplan_importieren') ) : ?>
-										<li><a href="<?php print base_url('admin/import_stdplan_view'); ?>">Stundenplan importieren</a></li>
+										<li><a href="<?php print base_url('admin/stdplan_import'); ?>">Stundenplan importieren</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_stundenplan_bearbeiten') ) : ?>
 										<li><a href="<?php print base_url('admin/show_stdplan_list'); ?>">Stundenplan bearbeiten</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_stundenplan_loeschen') ) : ?>
-										<li><a href="<?php print base_url('admin/delete_stdplan_view'); ?>">Stundenplan loeschen</a></li>
+										<li><a href="<?php print base_url('admin/stdplan_delete'); ?>">Stundenplan loeschen</a></li>
 										<?php endif ?>
 									</ul> <!-- /.nav .level-2 -->
 								</li>

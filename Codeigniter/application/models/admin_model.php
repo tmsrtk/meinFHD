@@ -1192,7 +1192,7 @@ class Admin_model extends CI_Model {
 	 */
 	function delete_stdplan_related_records($stdplan_ids){
 	    // get spkursids to delete
-	    $stdplan_course_ids = $this->get_stdplan_course_ids($stdplan_ids);
+	    $stdplan_course_ids = $this->get_stdplan_sp_course_ids($stdplan_ids);
 	    
 	    // get groupids
 	    $group_ids = '';

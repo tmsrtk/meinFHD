@@ -1523,16 +1523,17 @@ class Admin extends FHD_Controller {
 	}
 	
 	
-	function delete_stdplan_view(){
+	function stdplan_delete(){
 	    $this->data->add('delete_view_data', $this->admin_model->get_stdplan_filterdata_plus_id());
 	    
-	    $siteinfo = array(
-			'title' => 'Stundenplan löschen',
-			'main_content' => 'admin_stdplan_delete'
-	    );
-	    $this->data->add('siteinfo', $siteinfo);
+//	    $siteinfo = array(
+//			'title' => 'Stundenplan löschen',
+//			'main_content' => 'admin_stdplan_delete'
+//	    );
+//	    $this->data->add('siteinfo', $siteinfo);
 
-	    $this->load->view('includes/template', $this->data->load());
+//	    $this->load->view('includes/template', $this->data->load());
+		$this->load->view('admin/stdplan_delete', $this->data->load());
 	}
 	
 	
@@ -1549,7 +1550,7 @@ class Admin extends FHD_Controller {
 	    $this->admin_model->delete_stdplan_related_records($stdgng_ids);
 	    
 	    // reload view
-	    $this->delete_stdplan_view();
+	    $this->stdplan_delete();
 	    
 	}
 	
@@ -1641,7 +1642,7 @@ class Admin extends FHD_Controller {
 	 * 
 	 */
 	
-	function import_stdplan_view($error = ''){
+	function stdplan_import($error = ''){
 	    
 	    $this->load->helper('directory');
 	    
@@ -1658,26 +1659,26 @@ class Admin extends FHD_Controller {
 	    // prepare data for view
 	    // generate array, that contains all 
 	    foreach($stdgnge as $sg){
-		$po = $sg->Pruefungsordnung;
-		$abk = $sg->StudiengangAbkuerzung;
-		$id = $sg->StudiengangID;
-		$data['stdgng_uploads_headlines'][$id] = $abk.' - '.$po.':';
-		// run through dirs and distribute found data to view-array
-		foreach($upload_dir as $dir){
-		    $needle_po = strstr($dir, $po);
-		    $needle_abk = strstr($dir, $abk);
-		    if($needle_po != null && $needle_abk != null){
-			$data['stdgng_uploads'][$id][] = $dir;
-		    }
-		}
-		$last_id = $id;
+			$po = $sg->Pruefungsordnung;
+			$abk = $sg->StudiengangAbkuerzung;
+			$id = $sg->StudiengangID;
+			$data['stdgng_uploads_headlines'][$id] = $abk.' - '.$po;
+			// run through dirs and distribute found data to view-array
+			foreach($upload_dir as $dir){
+				$needle_po = strstr($dir, $po);
+				$needle_abk = strstr($dir, $abk);
+				if($needle_po != null && $needle_abk != null){
+					$data['stdgng_uploads'][$id][] = $dir;
+				}
+			}
+			$last_id = $id;
 	    }
 	    
 	    if($data['stdgng_uploads'] != null){
 		// prepare data to 
 		foreach($data['stdgng_uploads'] as $nested_array){
 		    foreach($nested_array as $file){
-			$files_with_po[] = $file;
+				$files_with_po[] = $file;
 		    }
 		}
 
@@ -1687,31 +1688,32 @@ class Admin extends FHD_Controller {
 
 		// one additional field for other
 		$data['stdgng_uploads_headlines'][42] = 'Andere:';
-		// check if there are dirs, that don't belong to a po
-		// i.e. not in array, that contains the files that are already shown
-		foreach($upload_dir as $dir){
-		    if(!in_array($dir, array_values($files_with_po))){
-			$data['stdgng_uploads'][42][] = $dir;
-		    }
-		}
+			// check if there are dirs, that don't belong to a po
+			// i.e. not in array, that contains the files that are already shown
+			foreach($upload_dir as $dir){
+				if(!in_array($dir, array_values($files_with_po))){
+					$data['stdgng_uploads'][42][] = $dir;
+				}
+			}
 	    }
 	    
 //	    $this->data->add('stdgng_uploads_headlines', $data['stdgng_uploads_headlines']);
 //	    $this->data->add('stdgng_uploads', $data['stdgng_uploads']);
 	    $this->data->add('stdgng_uploads_list_filelist', $this->load->view(
-		    'admin-subviews/admin_stdplan_import_filelist', $data, TRUE));
+		    'admin/partials/stdplan_import_filelist', $data, TRUE));
 	    
-	    $siteinfo = array(
-		'title' => 'Stundenplan importieren',
-		'main_content' => 'admin_stdplan_import'
-	    );
-	    $this->data->add('siteinfo', $siteinfo);
-
-	    $this->load->view('includes/template', $this->data->load());
+//	    $siteinfo = array(
+//		'title' => 'Stundenplan importieren',
+//		'main_content' => 'admin_stdplan_import'
+//	    );
+//	    $this->data->add('siteinfo', $siteinfo);
+//
+//	    $this->load->view('includes/template', $this->data->load());
+		$this->load->view('admin/stdplan_import', $this->data->load());
 	}
 	
 	
-	function import_stdplan_and_parse(){
+	function stdplan_import_parse(){
 	    $config['upload_path'] = './resources/uploads/';
 	    $config['allowed_types'] = 'xml';
 
@@ -1721,29 +1723,30 @@ class Admin extends FHD_Controller {
 	    $this->load->model('admin_model_parsing');
 
 	    if ( ! $this->upload->do_upload()){
-		// VIEW
-		$this->import_stdplan_view($this->upload->display_errors());
+			// VIEW
+			$this->stdplan_import($this->upload->display_errors());
 	    } else {
-		$upload_data = $this->upload->data();
+			$upload_data = $this->upload->data();
 		
-		$this->data->add('upload_data', $upload_data);
-		
-		// start parsing stdplan
-//		$returned = $this->stdplan_parser->parse_stdplan($data['upload_data']);
-		$this->admin_model_parsing->parse_stdplan($upload_data);
-		
-//		echo '<pre>';
-//		print_r($returned);
-//		echo '</pre>';  
+			$this->data->add('upload_data', $upload_data);
 
-		// VIEW
-		$siteinfo = array(
-		    'title' => 'Stundenplan importieren',
-		    'main_content' => 'admin_stdplan_import_success'
-		);
-		$this->data->add('siteinfo', $siteinfo);
+			// start parsing stdplan
+	//		$returned = $this->stdplan_parser->parse_stdplan($data['upload_data']);
+			$this->admin_model_parsing->parse_stdplan($upload_data);
 
-		$this->load->view('includes/template', $this->data->load());
+	//		echo '<pre>';
+	//		print_r($returned);
+	//		echo '</pre>';  
+
+	//		// VIEW
+	//		$siteinfo = array(
+	//		    'title' => 'Stundenplan importieren',
+	//		    'main_content' => 'admin_stdplan_import_success'
+	//		);
+	//		$this->data->add('siteinfo', $siteinfo);
+
+	//		$this->load->view('includes/template', $this->data->load());
+			$this->load->view('admin/partials/stdplan_import_success', $this->data->load());
 	    }
 	}
 	
@@ -1754,7 +1757,7 @@ class Admin extends FHD_Controller {
 	    // delete file
 	    unlink('./resources/uploads/'.$file_to_delete);
 	    
-	    $this->import_stdplan_view();
+	    $this->stdplan_import();
 	}
 	
 	/* 
