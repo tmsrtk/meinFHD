@@ -118,22 +118,11 @@ class Kursverwaltung extends FHD_Controller {
 				$this->data->add('offset', 0);
 			}
 
-			$siteinfo = array(
-				'title' => 'Kursverwaltung',
-				'main_content' => 'courses/courses_show'
-			);
-			$this->data->add('siteinfo', $siteinfo);
-
-			$this->load->view('includes/template', $this->data->load());
+			$this->load->view('courses/courses_show', $this->data->load());
 
 		} else {
 			// no courses assigned view
-			$siteinfo = array(
-			'title' => 'Kursverwaltung',
-			'main_content' => 'courses/courses_no'
-			);
-			$this->data->add('siteinfo', $siteinfo);
-			$this->load->view('includes/template', $this->data->load());
+			$this->load->view('courses/courses_no', $this->data->load());
 		}
     }
     
