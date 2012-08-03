@@ -1,9 +1,9 @@
 <?php 
     // checkbox data
     $cb_data = array(
-	'class' => 'email-checkbox-staff-'.$course_id.' email-checkbox-'.$course_id,
-	'value' => '',
-	'checked' => 'checked',
+		'class' => 'email-checkbox-staff-'.$course_id.' email-checkbox-'.$course_id,
+		'value' => '',
+		'checked' => 'checked',
     );
 ?>
 <!-- overview over relevant staff for this course -->
@@ -12,11 +12,11 @@
     <div class="clearfix"> <!-- FIRST line -->
 	<div class="span1"> <!-- checkbox FIRST line -->
 	    <?php
-		$cb_data['name'] = $course_id.'-1';
-		$cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-1';
-		echo form_open('');
-		echo form_checkbox($cb_data);
-		echo form_close();
+			$cb_data['name'] = $course_id.'-1';
+			$cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-1';
+			echo form_open('');
+			echo form_checkbox($cb_data);
+			echo form_close();
 	    ?>
 	</div> <!-- checkbox FIRST line ends here -->
 	<div class="span2"> <!-- label FIRST line -->
@@ -29,11 +29,11 @@
     <div class="clearfix"> <!-- SECOND line -->
 	<div class="span1"> <!-- checkbox SECOND line -->
 	    <?php
-		$cb_data['name'] = $course_id.'-2';
-		$cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-2';
-		echo form_open('');
-		echo form_checkbox($cb_data);
-		echo form_close();
+			$cb_data['name'] = $course_id.'-2';
+			$cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-2';
+			echo form_open('');
+			echo form_checkbox($cb_data);
+			echo form_close();
 	    ?>
 	</div> <!-- checkbox SECOND line ends here -->
 	<div class="span2"> <!-- label SECOND line -->
@@ -43,14 +43,14 @@
 		<?php 
 		    // print button
 		    if(!$is_tutor){
-			echo '<a class="btn btn-mini" id="labings-slider-'.$course_id.'" href="#">+</a>';
+				echo '<a class="btn btn-mini" id="labings-slider-'.$course_id.'" href="#">+</a>';
 		    }
 		    // if there are already - print
 		    foreach($current_labings as $labings){
-			foreach($labings as $l){
-			    echo '<span
-				id="added-labings-'.$course_id.'-'.$l['BenutzerID'].'"> '.$l['Vorname'].' '.$l['Nachname'].', </span>';
-			}
+				foreach($labings as $l){
+					echo '<span
+					id="added-labings-'.$course_id.'-'.$l['BenutzerID'].'"> '.$l['Vorname'].' '.$l['Nachname'].', </span>';
+				}
 		    }
 		?>
 	    </div> <!-- staff SECOND line ends here -->
@@ -61,11 +61,11 @@
     <div class="clearfix"> <!-- THIRD line -->
 	<div class="span1"> <!-- checkbox THIRD line -->
 	    <?php
-		$cb_data['name'] = $course_id.'-3';
-		$cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-3';
-		echo form_open('');
-		echo form_checkbox($cb_data);
-		echo form_close();
+			$cb_data['name'] = $course_id.'-3';
+			$cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-3';
+			echo form_open('');
+			echo form_checkbox($cb_data);
+			echo form_close();
 	    ?>
 	</div> <!-- checkbox ends here -->
 	<div class="span2"> <!-- label THIRD line -->
@@ -78,8 +78,7 @@
 		// if there are already - print
 		foreach($current_tuts as $tuts){
 		    foreach($tuts as $t){
-			echo '<span
-			    id="added-tuts-'.$course_id.'-'.$t['BenutzerID'].'"> '.$t['Vorname'].' '.$t['Nachname'].', </span>';
+				echo '<span id="added-tuts-'.$course_id.'-'.$t['BenutzerID'].'"> '.$t['Vorname'].' '.$t['Nachname'].', </span>';
 		    }
 		}
 		?>
