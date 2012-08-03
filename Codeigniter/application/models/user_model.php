@@ -156,7 +156,7 @@ class User_model extends CI_Model {
 			# PHP 5.4: illegal string offset warning 'RolleID' (jetzt) in zeile 150
 			# -> seit 5.4 wird genauer auf datentypen geachtet und $v['RolleID'] ist ein string und kein array
 			# warum und weshalb es ein array sein muss bzw der fehler auftaucht, kann ich nicht genau sagen ...
-			# laut Dokumentation erwartet in_array() eigentlich einen string.. evtl hat sich in 5.4 da was geändert
+			# laut Dokumentation erwartet in_array() eigentlich einen string.. evtl hat sich in 5.4 da was geï¿½ndert
 			# Peter Jaraczewski: ich hab das mal VOR den foreach loops gedumpt und das array hatte nur eine dimension
 			# Peter Jaraczewski: oder kann es eine 2. auch kriegen ?
 			# Frank Gottwald: ich denke ja - kontext ist immer wichtig :\
@@ -197,29 +197,29 @@ class User_model extends CI_Model {
 	    // profs
 	    if(in_array(2, $this->user_roles)){
 		$course_ids_prof = $this->_get_user_course_ids_from_spkurs();
-		if($course_ids_prof){
-		    foreach ($course_ids_prof as $cid) {
-			$ids[$cid] = 2;
-		    }
-		}
+			if($course_ids_prof){
+				foreach ($course_ids_prof as $cid) {
+					$ids[$cid] = 2;
+				}
+			}
 	    }
 	    // labings
 	    if(in_array(3, $this->user_roles)){
 		$course_ids_labing = $this->_get_user_course_ids_from_labing_tut('laboringenieur');
-		if($course_ids_labing){
-		    foreach ($course_ids_labing as $cid) {
-			$ids[$cid] = 3;
-		    }
-		}
+			if($course_ids_labing){
+				foreach ($course_ids_labing as $cid) {
+					$ids[$cid] = 3;
+				}
+			}
 	    }
 	    // tuts
 	    if(in_array(4, $this->user_roles)){
 		$course_ids_tut = $this->_get_user_course_ids_from_labing_tut('tutor');
-		if($course_ids_tut){
-		    foreach ($course_ids_tut as $cid) {
-			$ids[$cid] = 4;
-		    }
-		}
+			if($course_ids_tut){
+				foreach ($course_ids_tut as $cid) {
+					$ids[$cid] = 4;
+				}
+			}
 	    }
 	    return $ids;
 	}
@@ -239,7 +239,7 @@ class User_model extends CI_Model {
 	    $q = $this->db->get();
 	    
 	    foreach ($q->result_array() as $row) { 
-		$data[] = $row;
+			$data[] = $row;
 	    }
 
 	    $data = $this->clean_nested_array($data);
@@ -260,11 +260,11 @@ class User_model extends CI_Model {
 	    $data = ''; // init
 	    
 	    foreach ($q->result_array() as $row) { 
-		$data[] = $row;
-	    }
-	    if($data){
-		$data = $this->clean_nested_array($data);
-	    }
+			$data[] = $row;
+			}
+			if($data){
+				$data = $this->clean_nested_array($data);
+			}
 	    
 	    return $data;
 	}
@@ -278,9 +278,9 @@ class User_model extends CI_Model {
 	private function clean_nested_array($array){
 	    $clean = array();
 	    foreach ($array as $a) {
-		foreach ($a as $key => $value) {
-		    $clean[] = $value;
-		}
+			foreach ($a as $key => $value) {
+				$clean[] = $value;
+			}
 	    }
 	    return $clean;
 	}
