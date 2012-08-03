@@ -32,6 +32,12 @@
 
 <?php $event_height = 30; ?>
 
+
+
+<?php FB::log($stundenplan); ?>
+
+
+
 <!-- CONTENT -->
 <div class="container container-fluid">
 	<div class="row">

@@ -256,7 +256,14 @@
 			createDialog('Stundenplan resetten', 'Möchten Sie den Stundenplan für diesen Benutzer wirklich zurücksetzen?').dialog("open");
 		} else if (user_function === '3') {
 			$(this).attr("clicked", "true");
-			createDialog('Anmelden als...', 'Möchten Sie sich wirklich als dieser Benutzer anmelden?').dialog("open");
+
+   		   	// Edits by Christian Kundruss
+            // for the login as function the model is unneccessary in my opinion...
+            //createDialog('Anmelden als...', 'Möchten Sie sich wirklich als dieser Benutzer anmelden?').dialog("open");
+
+             // if we do not use the modal box pass the information of the choosen user to the controller
+             $("input[type=submit][clicked=true]").parents("form#edit_user_row").submit();
+             $("td.user_content_row input#save").removeAttr("clicked");
 		} else {
 
 		}
