@@ -19,7 +19,7 @@
 				.$spf->Semester.' - '
 				.$spf->Pruefungsordnung; 
 	}
-	$js = 'id="admin_stdplanfilter"';
+	$js = 'id="admin-stdplanfilter"';
 	
 ?>
 
@@ -54,9 +54,9 @@
 	
 	
 <?php startblock('customFooterJQueryCode');?>
-
+		
 		// update stdplan-view according to chosen field in dropdown
-		$('#admin_stdplanfilter').change(function() {
+		$('#admin-stdplanfilter').change(function() {
 			$("#stdplan-change-view").html('suche...');
 			// ajax
 			if($(this).val() != 0) {
@@ -68,6 +68,8 @@
 				   data : {stdplan_ids : $(this).val()},
 				   success: function (data){
 				       $('#stdplan-change-view').html(data);
+					   // get wpf-name fields and disable if checkbox unchecked
+					   disableUncheckedWpf();
 				   }
 				});
 				
@@ -99,7 +101,7 @@
 				$('#stdplan-change-view').html(data);
 			}
 	    });
-	    $('#admin_stdplanfilter').val(stdplan_ids);
+	    $('#admin-stdplanfilter').val(stdplan_ids);
 	    stdplan_ids = '';
 	}
 	
@@ -221,14 +223,22 @@
 
     });
 	
-	
-	// get all input-fields for wpf-names
-	var wpfNameInputs = $('.is-wpf-checkbox-sensible');
-	console.log(wpfNameInputs);
-	
-	$.each(wpfNameInputs, function(index, val){
-		console.log('test');
+	$('#stdplan-change-view').on('click', '.stdplan-edit-wpfcheckbox', function(){
+		var cbId = $(this).data('spcid');
+		$('#'+cbId+'-wpfname').attr('disabled', !$(this).is(':checked'));
+		
 	});
+	
+	/**
+	* Runs through all wpf-input-fields and disables them, if corresponding checkbox is not checked
+	*/
+	function disableUncheckedWpf(){
+		$('.stdplan-edit-wpfcheckbox').each(function(){
+			var cbId = $(this).data('spcid');
+			$('#'+cbId+'-wpfname').attr('disabled', !$(this).is(':checked'));
+		});
+	}
+	
 	
 <?php endblock(); ?>
 	

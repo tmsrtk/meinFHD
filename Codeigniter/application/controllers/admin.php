@@ -1444,7 +1444,7 @@ class Admin extends FHD_Controller {
 	    
 	    if ($this->form_validation->run() == FALSE) {
 			// reload view
-			$this->show_stdplan_list($stdplan_id_automatic_reload);
+			$this->stdplan_edit($stdplan_id_automatic_reload);
 		} else {
 			$this->save_stdplan_changes();
 	    }
@@ -1501,6 +1501,11 @@ class Admin extends FHD_Controller {
 					case 'EndeID' :
 					case 'TagID' : $update_stdplan_data[$field_name] = ($post_data[$spc_id.'_'.$field_name] + 1) ; break;
 					case 'Farbe' : $update_stdplan_data[$field_name] = $colors_dropdown_options[$post_data[$spc_id.'_'.$field_name]]; break;
+					case 'WPFName' :
+						if(key_exists($spc_id.'_'.$field_name, $post_data)){
+							$update_stdplan_data[$field_name] = $post_data[$spc_id.'_'.$field_name];
+						}
+						break;
 					default : $update_stdplan_data[$field_name] = $post_data[$spc_id.'_'.$field_name]; break;
 				}
 				
@@ -1520,7 +1525,7 @@ class Admin extends FHD_Controller {
 			
 		}
 		
-	    $this->show_stdplan_list();
+	    $this->stdplan_edit();
 	}
 	
 	

@@ -195,15 +195,19 @@
 		if(!$first_row){
 			$wpf_cb_data = array(
 				'name' => $spkurs_id.'_isWPF',
-				'id' => 'stdplan-list-wpfcheckbox',
+				'id' => $spkurs_id.'-wpfcheckbox',
+				'class' => 'stdplan-edit-wpfcheckbox',
 				'value' => 'accept',
+				'data-spcid' => $spkurs_id,
 				'checked' => ($wpf_flag === '1') ? true : false
 			);
 		} else {
 			$wpf_cb_data = array(
 				'name' => 'NEW_isWPF',
 				'id' => 'new-course-stdplan-list-wpfcheckbox',
+				'class' => 'stdplan-edit-wpfcheckbox',
 				'value' => '',
+				'data-spcid' => 'new-course-stdplan-list',
 				'checked' => false
 			);
 		}
@@ -217,18 +221,20 @@
 		if(!$first_row){
 			$wpf_data = array(
 				'name' => $spkurs_id.'_WPFName',
-				'id' => 'stdplan-list-wpfname',
+				'id' => $spkurs_id.'-wpfname',
 				'value' => $wpf_name,
+				'data-spcid' => $spkurs_id,
 				'placeholder' => 'WPF Name',
-				'class' => 'span is-wpf-checkbox-sensible'
+				'class' => 'span stdplan-edit-wpfname'
 			);
 		} else {
 			$wpf_data = array(
 				'name' => 'NEW_WPFName',
 				'id' => 'new-course-stdplan-list-wpfname',
 				'value' => '',
+				'data-spcid' => 'new-course-stdplan-list',
 				'placeholder' => 'WPF Name',
-				'class' => 'span is-wpf-checkbox-sensible'
+				'class' => 'span stdplan-edit-wpfname'
 			);
 		}
     ?>
