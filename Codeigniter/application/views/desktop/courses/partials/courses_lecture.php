@@ -1,10 +1,10 @@
 <?php
     // attributes
     $course_room_attrs = array(
-	'name' => $lecture_details->SPKursID.'_Raum', 
-	'id' => 'kursverwaltung-raum',
-	'class' => 'span1',
-	'value' => $lecture_details->Raum, 
+		'name' => $lecture_details->SPKursID.'_Raum', 
+		'id' => 'kursverwaltung-raum',
+		'class' => 'span1',
+		'value' => $lecture_details->Raum, 
     );
     
     $submit_button_attrs = 'id=lecture-details-save-button class ="btn-warning"';
@@ -22,19 +22,19 @@
     }
     
     $label_attrs = array(
-	'name' => 'group_label',
-	'id' => 'course-mgt-label-'.$lecture_details->SPKursID,
-	'class' => 'label label-info',
-	'for' => 'kursverwaltung-raum'
+		'name' => 'group_label',
+		'id' => 'course-mgt-label-'.$lecture_details->SPKursID,
+		'class' => 'label label-info',
+		'for' => 'kursverwaltung-raum'
     );
     
     // checkbox data
     $cb_data = array(
-	'name' => $lecture_details->SPKursID,
-	'class' => 'email-checkbox-courses-'.$course_id.' email-checkbox-'.$course_id,
-	'id' => 'email-checkbox-course-id-'.$lecture_details->SPKursID,
-	'value' => '',
-	'checked' => 'checked',
+		'name' => $lecture_details->SPKursID,
+		'class' => 'email-checkbox-courses-'.$course_id.' email-checkbox-'.$course_id,
+		'id' => 'email-checkbox-course-id-'.$lecture_details->SPKursID,
+		'value' => '',
+		'checked' => 'checked',
     );
 ?>
 
@@ -52,9 +52,9 @@
 	<?php
 	    if($lab == '1'){
 		// group-label for better overview
-		echo form_label('Gruppe '.$lecture_details->VeranstaltungsformAlternative, '', $label_attrs);
+			echo form_label('Gruppe '.$lecture_details->VeranstaltungsformAlternative, '', $label_attrs);
 	    } else {
-		echo form_label($lecture_name->kurs_kurz, '', $label_attrs);
+			echo form_label($lecture_name->kurs_kurz, '', $label_attrs);
 	    }
 	?>
     </div>
@@ -71,9 +71,9 @@
 	    // add another field for number of possible particitpants - for labs view
 	    if($lab == '1'){
 		// max participants - only relevant for labs
-		echo form_input($lab_participants_attrs);
+			echo form_input($lab_participants_attrs);
 	    } else {
-		echo 'kein Limit';
+			echo 'kein Limit';
 	    }
 	?>
     </div>
