@@ -1310,20 +1310,21 @@ class Admin extends FHD_Controller {
 	 * 
 	 */
 	
-	function show_stdplan_list($reload = 0){
+	function stdplan_edit($reload = 0){
 	    // get all stdplan-data
 	    $this->data->add('all_stdplan_filterdata', $this->admin_model->get_stdplan_filterdata());
 
 	    // no autoreload without validation
 	    $this->data->add('stdplan_id_automatic_reload', $reload);
 
-	    $siteinfo = array(
-			'title' => 'Stundenplan anzeigen',
-			'main_content' => 'admin_stdplan_edit'
-	    );
-	    $this->data->add('siteinfo', $siteinfo);
-
-	    $this->load->view('includes/template', $this->data->load());
+//	    $siteinfo = array(
+//			'title' => 'Stundenplan anzeigen',
+//			'main_content' => 'admin_stdplan_edit'
+//	    );
+//	    $this->data->add('siteinfo', $siteinfo);
+//	    $this->load->view('includes/template', $this->data->load());
+		
+		$this->load->view('admin/stdplan_edit', $this->data->load());
 	}
 	
 	
@@ -1391,7 +1392,7 @@ class Admin extends FHD_Controller {
 		$data['first_row'] = TRUE;
 		
 		// getting first row - empty fields
-		$data['stdplan_first_row'] = $this->load->view('admin-subviews/admin_stdplan_coursetable_row', $data, TRUE);
+		$data['stdplan_first_row'] = $this->load->view('admin/partials/stdplan_coursetable_row', $data, TRUE);
 	    
 	    foreach ($stdplan_events_of_id as $sp_events){
 			$data['first_row'] = FALSE;
@@ -1409,7 +1410,7 @@ class Admin extends FHD_Controller {
 			$data['farbe'] = $sp_events->Farbe;
 
 			// array holding all rows
-			$rows[] = $this->load->view('admin-subviews/admin_stdplan_coursetable_row', $data, TRUE);
+			$rows[] = $this->load->view('admin/partials/stdplan_coursetable_row', $data, TRUE);
 			
 //			echo '<pre>';
 //			echo print_r($data['eventtype_dropdown_options']);
@@ -1419,7 +1420,7 @@ class Admin extends FHD_Controller {
 	    
 	    $data['stdplan_course_rows'] = $rows;
 	    
-	    echo $this->load->view('admin-subviews/admin_stdplan_coursetable_content', $data, TRUE);
+	    echo $this->load->view('admin/partials/stdplan_coursetable_content', $data, TRUE);
 	    
 	}
 

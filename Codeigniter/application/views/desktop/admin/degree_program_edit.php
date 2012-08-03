@@ -1,6 +1,6 @@
 <?php extend('admin/index.php'); # extend main template ?>
 
-<?php startblock('title');?><?php get_extended_block();?> - Studiengangverwaltung<?php endblock(); ?>
+<?php startblock('title');?><?php get_extended_block();?> - Studiengang bearbeiten<?php endblock(); ?>
 
 <?php
 # general form setup

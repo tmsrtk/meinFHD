@@ -88,7 +88,7 @@
 										<li><a href="<?php print base_url('admin/stdplan_import'); ?>">Stundenplan importieren</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_stundenplan_bearbeiten') ) : ?>
-										<li><a href="<?php print base_url('admin/show_stdplan_list'); ?>">Stundenplan bearbeiten</a></li>
+										<li><a href="<?php print base_url('admin/stdplan_edit'); ?>">Stundenplan bearbeiten</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_stundenplan_loeschen') ) : ?>
 										<li><a href="<?php print base_url('admin/stdplan_delete'); ?>">Stundenplan loeschen</a></li>
