@@ -65,6 +65,9 @@ class Stundenplan extends FHD_Controller {
 		$plan = $this->Stundenplan_Model->get_stundenplan($this->authentication->user_id());
 		// Save the days in a seperate variable
 		$days = $plan[0];
+
+		// FB::log($plan);
+		// return;
 		
 		// Load helper classes
 		include(APPPATH . 'libraries/events/Event.php');
