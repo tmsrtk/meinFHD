@@ -31,6 +31,43 @@ class Samlauthentication {
         $this->authSource = new SimpleSAML_Auth_Simple('default-sp');
     }
 
+    /**
+     * method requires the authentication with the choosen authentication source
+     */
+    public function require_authentication () {
+        // ask for authentication at the idp
+        $this->authSource->requireAuth();
+    }
 
+    /**
+     * Checks in the existing simplesaml-object if an authentication exists
+     * @return TRUE if an authentication exists, otherwise FALSE
+     */
+    public function is_authenticated () {
+
+       return $this->authSource->isAuthenticated();
+    }
+
+    /**
+     * Method asks the idp for the attributes of the current authenticated user
+     * @return returns the attributes of the user, if someone is authenticated, otherwise false is returned
+     */
+    public function get_attributes() {
+        // if someone is authenticated return the attributes
+        if($this->authSource->isAuthenticated()) {
+            return $this->authSource->getAttributes();
+        }
+
+        // no authentication exists
+        return FALSE;
+    }
+
+    /**
+     * Method logs the user out
+     */
+    public function logout() {
+
+        $this->authSource->logout();
+    }
 }
 /* End of file Samlauthentication.php */
