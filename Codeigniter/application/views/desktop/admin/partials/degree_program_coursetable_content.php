@@ -5,8 +5,8 @@
 		$change_data_form_attributes = array('id' => 'stdgng-save-button');
 		print form_open('admin/validate_degree_program_course_changes', $change_data_form_attributes); //save_stdgng_course_changes
     ?>
-	<table class="table" id="degree-program-table">
-	    <thead id="dp-table-head">
+	<table class="table table-fixed-header" id="degree-program-table">
+		<thead id="dp-table-head" class="header">
 			<tr>
 				<th>ID:</hd>
 				<th>Kursname:</hd>

@@ -3,21 +3,21 @@
 	print form_open('admin/validate_stdplan_changes');
 ?>
 
-<table class="table table-striped" id="stdplan-table">
-	<thead>
+<table class="table table-striped table-fixed-header">
+	<thead class="header">
 		<tr>
-		<th>Veranstaltungsname:<br />
-		verantw. Lehrkörper:</th>
-		<th>Veranstaltungsform:<br />
-		Alternative:<br />
-		Raum:</th>
-		<th>Beginn:<br />
-		Ende:<br />
-		Tag:</th>
-		<th>WPF?:<br />
-		WPF-Name:</th>
-		<th>Farbe:</th>
-		<th>Aktion:</th>
+			<th>Veranstaltungsname:<br />
+			verantw. Lehrkörper:</th>
+			<th>Veranstaltungsform:<br />
+			Alternative:<br />
+			Raum:</th>
+			<th>Beginn:<br />
+			Ende:<br />
+			Tag:</th>
+			<th>WPF?:<br />
+			WPF-Name:</th>
+			<th>Farbe:</th>
+			<th>Aktion:</th>
 		</tr>
 	</thead>
 

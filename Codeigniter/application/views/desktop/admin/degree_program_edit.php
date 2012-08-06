@@ -47,6 +47,7 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
 			    function(response) {
 					// returns view into div
 					$('#stdgng-list').html(response);
+					bindFixedHeader();
 			    });
 	    } else {
 		    $("#stdgng-list").html('');
@@ -69,18 +70,18 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
     console.log("dp-id from controller - preselect dropdown?: "+ stdgng_id);
     // TODO antoher flag that asks for save-button-click
     if(stdgng_id != "0"){
-	console.log(" != 0");
-	// auto_load_data_for_id($(this));
-	$("#stdgng-list").html('suche...');
+		console.log(" != 0");
+		// auto_load_data_for_id($(this));
+		$("#stdgng-list").html('suche...');
 	    // reload view
 	    $.get(
-		"<?php echo site_url();?>admin/ajax_show_courses_of_degree_program/",
-		// send stdgng_id AND a flag to signalize that default-values for input-fields should be empty
-		{stdgng_id: stdgng_id},
-		function(response) {
-		    // 
-		    $('#stdgng-list').html(response);
-		});
+			"<?php echo site_url();?>admin/ajax_show_courses_of_degree_program/",
+			// send stdgng_id AND a flag to signalize that default-values for input-fields should be empty
+			{stdgng_id: stdgng_id},
+			function(response) {
+				// 
+				$('#stdgng-list').html(response);
+			});
 	    // set correct dropdown-value
 	    $("#admin-stdgngfilter").val(stdgng_id);
 	    stdgng_id = "";
@@ -211,6 +212,14 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
 		return false;
 
     });
+	
+	// make table-header fixed
+	function bindFixedHeader(){
+		var stdplanTable = $('.table-fixed-header');
+		
+		// add fixed header to table
+		stdplanTable.fixedHeader();
+	}
     
         
     
