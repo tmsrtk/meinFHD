@@ -3,7 +3,7 @@
 	print form_open('admin/validate_stdplan_changes');
 ?>
 
-<table class="table table-striped">
+<table class="table table-striped" id="stdplan-table">
 	<thead>
 		<tr>
 		<th>Veranstaltungsname:<br />
