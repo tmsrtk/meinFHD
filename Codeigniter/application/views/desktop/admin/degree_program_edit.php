@@ -217,6 +217,8 @@ $params = 'class="input-xxxlarge" id="admin-stdgngfilter"';
 	function bindFixedHeader(){
 		var stdplanTable = $('.table-fixed-header');
 		
+		console.log('test');
+		
 		// add fixed header to table
 		stdplanTable.fixedHeader();
 	}

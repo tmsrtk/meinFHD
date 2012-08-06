@@ -51,30 +51,3 @@
     ?>
 
 </div>
-
-<script>
-
-(function() {
-
-//    var table = $('#degree-program-table');
-//    var thead = $('#dp-table-head');
-//    var tbodyFirst = $('#dp-table-body-first');
-////    console.log('offset: '+table.offset().top);
-////    console.log('pos: '+table.position().top);
-//    
-//    $(window).scroll(function(){
-//	var windowTop = $(window).scrollTop();
-//	var tableTop = $(table).offset().top;
-////	console.log(windowTop);
-////	console.log(tableTop);
-//	if(windowTop > tableTop){
-//	    $(thead).css('position', 'absolute').css('top', windowTop);
-//	} else {
-//	    $(thead).css('position', 'absolute').css('top', windowTop);
-//	}
-//	
-//    });
-    
-})(); 
-    
-</script>
