@@ -32,7 +32,8 @@ class Samlauthentication {
     }
 
     /**
-     * method requires the authentication with the choosen authentication source
+     * Method requires the authentication with the choosen authentication source,
+     * if no authentication exists.
      */
     public function require_authentication () {
         // ask for authentication at the idp
@@ -61,6 +62,14 @@ class Samlauthentication {
         // no authentication exists
         return FALSE;
     }
+
+    /**
+     * Method provides the basic login functionality.
+     * Each call of the function starts an new authentication process.
+     */
+     public function login () {
+        $this->authSource->login();
+     }
 
     /**
      * Method logs the user out
