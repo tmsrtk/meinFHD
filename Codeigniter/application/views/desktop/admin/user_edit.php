@@ -242,7 +242,7 @@
 	// to open the prompt dialog 
 	$("#user_content").on("click", "input#save", function() {
 		// determine which function was selected from the dropdown
-		// 0 = speichern, 1 = pw resetten, 2 = Stundenplan resetten, 3 = Als..anmelden
+		// 0 = speichern, 1 = pw resetten, 2 = Studienplan resetten, 3 = Als..anmelden
 		var user_function =  $(this).parents("form#edit_user_row").find("#user_function").val();
 
 		if (user_function === '0') {
@@ -253,7 +253,7 @@
 			createDialog('Passwort resetten', 'Möchten Sie das Passwort für diesen Benutzer wirklich zurücksetzen?').dialog("open");
 		} else if (user_function === '2') {
 			$(this).attr("clicked", "true");
-			createDialog('Stundenplan resetten', 'Möchten Sie den Stundenplan für diesen Benutzer wirklich zurücksetzen?').dialog("open");
+			createDialog('Studienplan resetten', 'Möchten Sie den Studienplan für diesen Benutzer wirklich zurücksetzen?').dialog("open");
 		} else if (user_function === '3') {
 			$(this).attr("clicked", "true");
 
