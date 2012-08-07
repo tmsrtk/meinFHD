@@ -904,20 +904,18 @@ class Admin extends FHD_Controller {
 
 	    // if parameter is 0 - method called from within view
 	    if($stdgng_id === '0'){
-		// get submitted data - AJAX
-		$stdgng_chosen_id = $this->input->get('stdgng_id');
-	    // otherwise methode called from within controller (delete course)
-	    // id is passed
+			// get submitted data - AJAX
+			$stdgng_chosen_id = $this->input->get('stdgng_id');
+		// otherwise methode called from within controller (delete course)
+		// id is passed
 	    } else {
-		$stdgng_chosen_id = $stdgng_id;
+			$stdgng_chosen_id = $stdgng_id;
 	    }
 		
 	    $courses_of_single_stdgng = array();
-	    $courses_of_single_stdgng = $this->admin_model->
-		    get_degree_program_courses($stdgng_chosen_id);
+	    $courses_of_single_stdgng = $this->admin_model->get_degree_program_courses($stdgng_chosen_id);
 
-	    $details_of_single_stdgng = $this->admin_model->
-		    get_degree_program_details_asrow($stdgng_chosen_id);
+	    $details_of_single_stdgng = $this->admin_model->get_degree_program_details_asrow($stdgng_chosen_id);
 
 	    // get number of semesters and prepare data for dropdown
 	    $regelsemester = $details_of_single_stdgng->Regelsemester;
@@ -1006,7 +1004,7 @@ class Admin extends FHD_Controller {
 	    // make data available in view
 	    $data['stdgng_details'] = $details_of_single_stdgng;
 	    $data['stdgng_course_rows'] = $rows;
-	    $data['course_tablehead'] = $this->load->view('admin/partials/degree_program_coursetable_head', '', TRUE);
+//	    $data['course_tablehead'] = $this->load->view('admin/partials/degree_program_coursetable_head', '', TRUE);
 
 	    // return content
 	    $result = '';
@@ -1051,10 +1049,10 @@ class Admin extends FHD_Controller {
 		    $stdgng_id.'Beschreibung', 'Beschreibung fehlt', 'required');
 	    
 	    if ($this->form_validation->run() == FALSE) {
-		// reload view
-		$this->degree_program_edit($stdgng_id);
+			// reload view
+			$this->degree_program_edit($stdgng_id);
 	    } else {
-		$this->save_degree_program_details_changes();
+			$this->save_degree_program_details_changes();
 	    }
 	}
 	
@@ -1069,48 +1067,48 @@ class Admin extends FHD_Controller {
 	    $stdgng_course_ids = $this->admin_model->get_degree_program_course_ids($stdgng_id);
 	    
 	    foreach($stdgng_course_ids as $id){
-		// run through all ids and generate id-specific validation-rules
-		$this->form_validation->set_rules(
-			$id->KursID.'Kursname', 'Kursname fehlt - ID: '.$id->KursID, 'required');
-		$this->form_validation->set_rules(
-			$id->KursID.'kurs_kurz', 'Kurzbezeichnung fehlt - ID: '.$id->KursID, 'required');
-		$this->form_validation->set_rules(
-			$id->KursID.'Creditpoints', 'Creditpoints fehlen oder nicht numerisch - ID: '.$id->KursID, 'required|numeric');
+			// run through all ids and generate id-specific validation-rules
+			$this->form_validation->set_rules(
+				$id->KursID.'Kursname', 'Kursname fehlt - ID: '.$id->KursID, 'required');
+			$this->form_validation->set_rules(
+				$id->KursID.'kurs_kurz', 'Kurzbezeichnung fehlt - ID: '.$id->KursID, 'required');
+			$this->form_validation->set_rules(
+				$id->KursID.'Creditpoints', 'Creditpoints fehlen oder nicht numerisch - ID: '.$id->KursID, 'required|numeric');
 	    }
 	    
 	    if ($this->form_validation->run() == FALSE) {
-		// reload view
-		$this->degree_program_edit($stdgng_id);
-	    } else {
-		$this->save_degree_program_course_changes();
+			// reload view
+			$this->degree_program_edit($stdgng_id);
+		} else {
+			$this->save_degree_program_course_changes();
 	    }
 	}
 	
 	
-	/**
-	 * Gets data of new course to create and validates
-	 */
-	function validate_new_degree_program_course(){
-	    $stdgng_id = $this->input->post('StudiengangID');
-	    
-	    $this->form_validation->set_rules('Kursname', 'Kursname fehlt', 'required');
-	    $this->form_validation->set_rules('kurs_kurz', 'Abkürzung fehlt', 'required');
-	    $this->form_validation->set_rules('Creditpoints', 'Creditpoints fehlen oder nicht numerisch', 'required|numeric');
-	    $this->form_validation->set_rules('SWS_Vorlesung', 'SWS-Vorlesung nicht numerisch', 'numeric');
-	    $this->form_validation->set_rules('SWS_Uebung', 'SWS-Übung nicht numerisch', 'numeric');
-	    $this->form_validation->set_rules('SWS_Praktikum', 'SWS-Praktikum nicht numerisch', 'numeric');
-	    $this->form_validation->set_rules('SWS_Projekt', 'SWS-Projekt nicht numerisch', 'numeric');
-	    $this->form_validation->set_rules('SWS_Seminar', 'SWS-Seminar nicht numerisch', 'numeric');
-	    $this->form_validation->set_rules('SWS_SeminarUnterricht', 'SWS-SeminarUnterricht nicht numerisch', 'numeric');
-	    
-	    
-	    if ($this->form_validation->run() == FALSE) {
-		// reload view
-		$this->degree_program_edit($stdgng_id);
-	    } else {
-		$this->save_degree_program_new_course();
-	    }
-	}
+//	/**
+//	 * Gets data of new course to create and validates
+//	 */
+//	function validate_new_degree_program_course(){
+//	    $stdgng_id = $this->input->post('StudiengangID');
+//	    
+//	    $this->form_validation->set_rules('Kursname', 'Kursname fehlt', 'required');
+//	    $this->form_validation->set_rules('kurs_kurz', 'Abkürzung fehlt', 'required');
+//	    $this->form_validation->set_rules('Creditpoints', 'Creditpoints fehlen oder nicht numerisch', 'required|numeric');
+//	    $this->form_validation->set_rules('SWS_Vorlesung', 'SWS-Vorlesung nicht numerisch', 'numeric');
+//	    $this->form_validation->set_rules('SWS_Uebung', 'SWS-Übung nicht numerisch', 'numeric');
+//	    $this->form_validation->set_rules('SWS_Praktikum', 'SWS-Praktikum nicht numerisch', 'numeric');
+//	    $this->form_validation->set_rules('SWS_Projekt', 'SWS-Projekt nicht numerisch', 'numeric');
+//	    $this->form_validation->set_rules('SWS_Seminar', 'SWS-Seminar nicht numerisch', 'numeric');
+//	    $this->form_validation->set_rules('SWS_SeminarUnterricht', 'SWS-SeminarUnterricht nicht numerisch', 'numeric');
+//	    
+//	    
+//	    if ($this->form_validation->run() == FALSE) {
+//			// reload view
+//			$this->degree_program_edit($stdgng_id);
+//		} else {
+//			$this->save_degree_program_new_course();
+//	    }
+//	}
 	
 	/**
 	 * Saving all Values from $_POST after submit button has been clicked.
@@ -1153,34 +1151,41 @@ class Admin extends FHD_Controller {
 
 	    // get values of nested object - KursIds - to run through the ids and update records
 	    foreach ($stdgng_ids as $si){
-		$stdgng_id_values[] = $si->KursID;
+			$stdgng_id_values[] = $si->KursID;
 	    }
 
 	    // run through all course-ids that belong to a single Studiengang, build data-array for updating records in db
 	    // AND update data for every id
 	    foreach($stdgng_id_values as $id){
-		$update_stdgng_data = array(); // init
-		// produces an array holding db-keys as keys and data as values
-		for ($i = 0; $i < count($update_fields); $i++){
-		    $update_stdgng_data[$update_fields[$i]] = $this->input->post($id.$update_fields[$i]);
-		}
-		// call function in model to update records
-		$this->admin_model->update_degree_program_courses($update_stdgng_data, $id);
+			$update_stdgng_data = array(); // init
+			// produces an array holding db-keys as keys and data as values
+			for ($i = 0; $i < count($update_fields); $i++){
+				// data from dropdown represents position in array - has to be mapped to real ID (+1)
+				switch ($update_fields[$i]) {
+					case 'Semester' : $update_stdgng_data[$update_fields[$i]] = (($this->input->post($id.$update_fields[$i]) + 1) ); break;
+					default : $update_stdgng_data[$update_fields[$i]] = $this->input->post($id.$update_fields[$i]); break;
+				}
+			}
+			
+			// call function in model to update records
+//			$this->admin_model->update_degree_program_courses($update_stdgng_data, $id);
 
-		$exam_cb_data = array(); // init
-		$tmp_exam_cb_data = array(); // init
-		// handle checkboxes
-		foreach ($update_checkboxes as $value) {
-		    if($this->input->post($id.$value) === '1'){
-			$split = explode('_', $value); // second value is exam-type-id
-			$tmp_exam_cb_data['KursID'] = $id;
-			$tmp_exam_cb_data['PruefungstypID'] = $split[1];
-			// build array to save data
-			$exam_cb_data[] = $tmp_exam_cb_data;
-		    }
-		}
-		// save cb-data to db - passed array contains all checkboxes that have to be stored
-		$this->admin_model->save_exam_types_for_course($exam_cb_data, $id);
+			$exam_cb_data = array(); // init
+			$tmp_exam_cb_data = array(); // init
+			// handle checkboxes
+			foreach ($update_checkboxes as $value) {
+				if($this->input->post($id.$value) === '1'){
+					$split = explode('_', $value); // second value is exam-type-id
+					$tmp_exam_cb_data['KursID'] = $id;
+					$tmp_exam_cb_data['PruefungstypID'] = $split[1];
+					// build array to save data
+					$exam_cb_data[] = $tmp_exam_cb_data;
+				}
+			}
+		
+			// save cb-data to db - passed array contains all checkboxes that have to be stored
+			$this->admin_model->save_exam_types_for_course($exam_cb_data, $id);
+			
 	    }
 
 	    // show StudiengangDetails-List again
@@ -1193,12 +1198,12 @@ class Admin extends FHD_Controller {
 	 */
 	function save_degree_program_details_changes(){
 	    $updateFields = array(
-		'Pruefungsordnung',
-		'StudiengangName',
-		'StudiengangAbkuerzung',
-		'Regelsemester',
-		'Creditpoints',
-		'Beschreibung'
+			'Pruefungsordnung',
+			'StudiengangName',
+			'StudiengangAbkuerzung',
+			'Regelsemester',
+			'Creditpoints',
+			'Beschreibung'
 	    );
 
 	    // get value via hidden field
@@ -1206,7 +1211,7 @@ class Admin extends FHD_Controller {
 
 	    // run through fields and produce an associative array holding keys and values - $_POST
 	    for($i = 0; $i < count($updateFields); $i++){
-		$updateStdgngDescriptionData[$updateFields[$i]] = $_POST[$stdgngId.$updateFields[$i]];
+			$updateStdgngDescriptionData[$updateFields[$i]] = $_POST[$stdgngId.$updateFields[$i]];
 	    }
 
 	    // save data
@@ -1217,37 +1222,37 @@ class Admin extends FHD_Controller {
 		
 	}
 	
-	/**
-	 * After validation, new course is saved here.
-	 */
-	function save_degree_program_new_course(){
-	    $new_course = array();
-	    $new_course = $this->input->post();
-	    
-	    // data
-	    $course_data = array();
-	    $exam_data = array();
-	    
-	    // run through data and prepare for saving
-	    foreach ($new_course as $key => $value) {
-		// if not submit-button-data
-		if($key != 'save_new_course'){
-		    // and not exam-data
-		    if(!strstr($key, 'ext')){
-			$course_data[$key] = $value;
-		    } else {
-			// exam data to separate array
-			$exam_data[$key] = $value;
-		    }
-		}
-	    }
-	    
-	    // insert course-data into db
-	    $this->admin_model->insert_new_course($course_data, $exam_data, $new_course['StudiengangID']);
-	    
-	    //back to view
-	    $this->degree_program_edit();
-	}
+//	/**
+//	 * After validation, new course is saved here.
+//	 */
+//	function save_degree_program_new_course(){
+//	    $new_course = array();
+//	    $new_course = $this->input->post();
+//	    
+//	    // data
+//	    $course_data = array();
+//	    $exam_data = array();
+//	    
+//	    // run through data and prepare for saving
+//	    foreach ($new_course as $key => $value) {
+//			// if not submit-button-data
+//			if($key != 'save_new_course'){
+//				// and not exam-data
+//				if(!strstr($key, 'ext')){
+//					$course_data[$key] = $value;
+//				} else {
+//					// exam data to separate array
+//					$exam_data[$key] = $value;
+//				}
+//			}
+//	    }
+//	    
+//	    // insert course-data into db
+//	    $this->admin_model->insert_new_course($course_data, $exam_data);
+//	    
+//	    // back to view
+//	    $this->degree_program_edit();
+//	}
 	
 	
 	/**
@@ -1256,7 +1261,7 @@ class Admin extends FHD_Controller {
 	 * deletion with click on OK in confirmation-dialog
 	 */
 	function ajax_delete_single_course_from_degree_program(){
-	   $delete_course_id =  $this->input->post('delete_course_id');
+	   $delete_course_id =  $this->input->post('course_data');
 	   
 	   $split = explode('_', $delete_course_id);
 	   
@@ -1265,6 +1270,42 @@ class Admin extends FHD_Controller {
 	   
 	   // call view with updated data	   
 	   echo $this->ajax_show_courses_of_degree_program($split[1]);
+	}
+	
+	
+	/**
+	 * Creates a new course for that degree program and returns updated view.
+	 */
+	public function ajax_create_new_course_in_degree_program(){
+		$new_course_data = $this->input->post('course_data');
+		$course_data_save_to_db = array();
+		$exam_data_save_to_db = array();
+		
+		// get degree-program-id for reload
+		$po_id = $new_course_data[0];
+		
+		// run through submitted course data 
+		foreach($new_course_data as $data){
+			$split = explode('-', $data);
+			if(!stristr($split[1], 'ext')){
+				// map array data (Semester) to ID (+1)
+				switch ($split[1]) {
+					case 'Semester' : $course_data_save_to_db[$split[1]] = $split[0] + 1; break; // array!! +1
+					default : $course_data_save_to_db[$split[1]] = $split[0]; break;
+				}
+			} else {
+				// !! only add data to array for exam_types that should be saved
+				if($split[0] == 'checked') {
+					$exam_data_save_to_db[$split[1]] = 1;
+				}
+			}
+		}
+		
+//		echo print_r($course_data_save_to_db).print_r($exam_data_save_to_db);
+		$this->admin_model->insert_new_course($course_data_save_to_db, $exam_data_save_to_db);
+		
+		echo $this->ajax_show_courses_of_degree_program($po_id);
+		
 	}
 	
 	/*** << edit **************************************************************
@@ -1287,108 +1328,78 @@ class Admin extends FHD_Controller {
 	 * 
 	 */
 	
-	function show_stdplan_list($reload = 0){
+	function stdplan_edit($reload = 0){
 	    // get all stdplan-data
 	    $this->data->add('all_stdplan_filterdata', $this->admin_model->get_stdplan_filterdata());
 
 	    // no autoreload without validation
 	    $this->data->add('stdplan_id_automatic_reload', $reload);
 
-	    $siteinfo = array(
-		'title' => 'Stundenplan anzeigen',
-		'main_content' => 'admin_stdplan_edit'
-	    );
-	    $this->data->add('siteinfo', $siteinfo);
-
-	    $this->load->view('includes/template', $this->data->load());
+//	    $siteinfo = array(
+//			'title' => 'Stundenplan anzeigen',
+//			'main_content' => 'admin_stdplan_edit'
+//	    );
+//	    $this->data->add('siteinfo', $siteinfo);
+//	    $this->load->view('includes/template', $this->data->load());
+		
+		$this->load->view('admin/stdplan_edit', $this->data->load());
 	}
 	
 	
 	/**
 	 * Returns an div holding the stdgng-table for a specified stdgng >> $this->input->get('stdplan_id')
 	 * !! combined id: StudiengangAbkuerzung, Semester, PO
+	 * @param array $reload_ids holding unique abk, sem, po combination - passed when called from within controller >> reload view (dropdown)
 	 */
-	function ajax_show_events_of_stdplan(){
-	    $ids = $this->input->post('stdplan_ids');
+	function ajax_show_events_of_stdplan($reload_ids = ''){
+	    if(!$reload_ids){
+			$ids = $this->input->post('stdplan_ids');
+			$splitted_ids = explode("_", "$ids");
+		} else {
+			$splitted_ids = $reload_ids;
+		}
 //	    $ids = "BMI_2_2010";
 	    
 	    // get all events of a stundenplan specified by stdgng-abk., semester, po
-	    $splitted_ids = explode("_", "$ids");
 	    $data['kurs_ids_split'] = $splitted_ids;
 	    $stdplan_events_of_id = $this->admin_model->get_stdplan_data($splitted_ids);
 	    
 	    // get dropdown-data: all event-types, profs, times, days
 	    $eventtypes = $this->admin_model->get_eventtypes();
 	    $all_profs = $this->admin_model->get_profs_for_stdplan_list();
-		$times = $this->admin_model->get_start_end_times(); // also used to select active option
-	    $days = $this->admin_model->get_days(); // also used to select active option
 	    $colors = $this->admin_model->get_colors_from_stdplan();
+	    $course_ids = $this->admin_model->get_stdplan_course_ids($splitted_ids);
 		
 		// getting data directly from helper_model - not implemented for all dropdowns
 		$starttimes_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
-		$endtimes_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
-		$days_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
+		$endtimes_dropdown_options = $this->helper_model->get_dropdown_options('endtimes');
+		$days_dropdown_options = $this->helper_model->get_dropdown_options('days');
 		
-	    // save dropdown-data into $data
-	    $data['eventtypes'] = $eventtypes;
-	    $data['all_profs'] = $all_profs;
-	    $data['times'] = $times;
-	    $data['days'] = $days;
-	    $data['colors'] = $colors;
-	    
 //	    echo '<pre>';
 //	    print_r($all_profs[$i]->DozentID);
 //	    echo '</pre>';
 	    
 	    // and prepare for dropdowns
-	    // evenettypes
+		// courses
+	    for($i = 0; $i < count($course_ids); $i++){
+			$courses_dropdown_options[$i] = $course_ids[$i]->Kursname;
+	    }
+	    // eventtypes
 	    for($i = 0; $i < count($eventtypes); $i++){
-		if($i != 0){
 			$eventtype_dropdown_options[$i] = $eventtypes[$i]->VeranstaltungsformName;
-		} else {
-			$eventtype_dropdown_options[$i] = '';
-		}
 	    }
 	    // profs
 	    for($i = 0; $i < count($all_profs); $i++){
-		if($i != 0){
-			$profs_dropdown_options[$all_profs[$i]->DozentID] =
-				$all_profs[$i]->Nachname.', '.$all_profs[$i]->Vorname;
-		} else {
-			$profs_dropdown_options[$i] = '';
-		}
-		}
-		
-		// start/endtimes
-		for($i = 0; $i < count($times); $i++){
-			if($i != 0){
-				$starttimes_dropdown_options[$i] = $times[$i]->Beginn;
-				$endtimes_dropdown_options[$i] = $times[$i]->Ende;
-			} else {
-				$starttimes_dropdown_options[$i] = '';
-				$endtimes_dropdown_options[$i] = '';
-			}
-		}
-		
-		// days
-		for($i = 0; $i < count($days); $i++){
-			if($i != 0){
-				$days_dropdown_options[$i] = $days[$i]->TagName;
-			} else {
-				$days_dropdown_options[$i] = '';
-			}
+			$profs_dropdown_options[$all_profs[$i]->DozentID] = $all_profs[$i]->Nachname.', '.$all_profs[$i]->Vorname;
 		}
 		
 	    // colors
 	    for($i = 0; $i < count($colors); $i++){
-		if($i != 0){
 			$colors_dropdown_options[$i] = $colors[$i]->Farbe;
-		} else {
-			$colors_dropdown_options[$i] = '';
-		}
 	    }
 
 	    // save dropdown options into $data
+	    $data['courses_dropdown_options'] = $courses_dropdown_options;
 	    $data['eventtype_dropdown_options'] = $eventtype_dropdown_options;
 	    $data['profs_dropdown_options'] = $profs_dropdown_options;
 	    $data['starttimes_dropdown_options'] = $starttimes_dropdown_options;
@@ -1396,29 +1407,38 @@ class Admin extends FHD_Controller {
 	    $data['days_dropdown_options'] = $days_dropdown_options;
 	    $data['colors_dropdown_options'] = $colors_dropdown_options;
 	    
+		$data['first_row'] = TRUE;
+		
+		// getting first row - empty fields
+		$data['stdplan_first_row'] = $this->load->view('admin/partials/stdplan_coursetable_row', $data, TRUE);
 	    
 	    foreach ($stdplan_events_of_id as $sp_events){
-		$data['spkurs_id'] = $sp_events->SPKursID;
-		$data['kursname'] = $sp_events->Kursname;
-		$data['veranstaltungsform_id'] = $sp_events->VeranstaltungsformID;
-		$data['alternative'] = $sp_events->VeranstaltungsformAlternative;
-		$data['raum'] = $sp_events->Raum;
-		$data['dozent_id'] = $sp_events->DozentID;
-		$data['beginn_id'] = $sp_events->StartID;
-		$data['ende_id'] = $sp_events->EndeID;
-		$data['tag_id'] = $sp_events->TagID;
-		$data['wpf_flag'] = $sp_events->isWPF;
-		$data['wpf_name'] = $sp_events->WPFName;
-		$data['farbe'] = $sp_events->Farbe;
-		
-		// array holding all rows
-		$rows[] = $this->load->view('admin-subviews/admin_stdplan_coursetable_row', $data, TRUE);
+			$data['first_row'] = FALSE;
+			$data['spkurs_id'] = $sp_events->SPKursID;
+			$data['kursname'] = $sp_events->Kursname;
+			$data['veranstaltungsform_id'] = $sp_events->VeranstaltungsformID;
+			$data['alternative'] = $sp_events->VeranstaltungsformAlternative;
+			$data['raum'] = $sp_events->Raum;
+			$data['dozent_id'] = $sp_events->DozentID;
+			$data['beginn_id'] = $sp_events->StartID;
+			$data['ende_id'] = $sp_events->EndeID;
+			$data['tag_id'] = $sp_events->TagID;
+			$data['wpf_flag'] = $sp_events->isWPF;
+			$data['wpf_name'] = $sp_events->WPFName;
+			$data['farbe'] = $sp_events->Farbe;
+
+			// array holding all rows
+			$rows[] = $this->load->view('admin/partials/stdplan_coursetable_row', $data, TRUE);
+			
+//			echo '<pre>';
+//			echo print_r($data['eventtype_dropdown_options']);
+//			echo '</pre>';
 		
 	    }
 	    
 	    $data['stdplan_course_rows'] = $rows;
 	    
-	    echo $this->load->view('admin-subviews/admin_stdplan_coursetable_content', $data, TRUE);
+	    echo $this->load->view('admin/partials/stdplan_coursetable_content', $data, TRUE);
 	    
 	}
 
@@ -1430,37 +1450,21 @@ class Admin extends FHD_Controller {
 		$this->input->post('stdplan_id_sem'),
 		$this->input->post('stdplan_id_po'));
 	    
-	    $stdplan_course_ids = $this->admin_model->get_stdplan_course_ids($stdplan_id);
+	    $stdplan_course_ids = $this->admin_model->get_stdplan_sp_course_ids($stdplan_id);
 	    
-//	    echo '<pre>';
-//	    echo print_r($stdplan_course_ids);
-//	    echo '</pre>';
 	    
 	    foreach($stdplan_course_ids as $id){
-		// run through all ids and generate id-specific validation-rules
-		$this->form_validation->set_rules(
-			$id->SPKursID.'_VeranstaltungsformID', 'Fehler', 'greater_than[0]');
-		$this->form_validation->set_rules(
-			$id->SPKursID.'_Raum', 'Fehler', 'required');
-		$this->form_validation->set_rules(
-			$id->SPKursID.'_DozentID', 'Fehler', 'greater_than[0]');
-		$this->form_validation->set_rules(
-			$id->SPKursID.'_StartID', 'Fehler', 'greater_than[0]');
-		$this->form_validation->set_rules(
-			$id->SPKursID.'_EndeID', 'Fehler', 'greater_than[0]');
-		$this->form_validation->set_rules(
-			$id->SPKursID.'_TagID', 'Fehler', 'greater_than[0]');
-		$this->form_validation->set_rules(
-			$id->SPKursID.'_Farbe', 'Fehler', 'greater_than[0]');
+			// run through all ids and generate id-specific validation-rules
+			$this->form_validation->set_rules($id->SPKursID.'_Raum', 'Fehler', 'required');
 	    }
 	    
 	    $stdplan_id_automatic_reload = $stdplan_id[0].'_'.$stdplan_id[1].'_'.$stdplan_id[2];
 	    
 	    if ($this->form_validation->run() == FALSE) {
-		// reload view
-		$this->show_stdplan_list($stdplan_id_automatic_reload);
-	    } else {
-		$this->save_stdplan_changes();
+			// reload view
+			$this->stdplan_edit($stdplan_id_automatic_reload);
+		} else {
+			$this->save_stdplan_changes();
 	    }
 	}
 	
@@ -1469,66 +1473,91 @@ class Admin extends FHD_Controller {
 	 */
 	function save_stdplan_changes(){
 	    // build an array, containing all keys that have to be updated in db
-	    $updateFields = array(
-		'VeranstaltungsformID',
-		'VeranstaltungsformAlternative',
-		'WPFName',
-		'Raum',
-		'DozentID',
-		'StartID',
-		'EndeID',
-		'isWPF',
-		'TagID',
-		'Farbe');
-	    
-//	    // get data to convert $_POST-data into ids
-//	    $eventtypes = $this->admin_model->get_eventtypes();
-//	    $all_profs = $this->admin_model->get_profs_for_stdplan_list();
-//	    $times = $this->admin_model->get_start_end_times();
-//	    $days = $this->admin_model->get_days();
-//	    $colors = $this->admin_model->get_colors_from_stdplan();
+	    $update_fields = array(
+			'VeranstaltungsformID',
+			'VeranstaltungsformAlternative',
+			'WPFName',
+			'Raum',
+			'DozentID',
+			'StartID',
+			'EndeID',
+//			'isWPF', // has to be handled separately
+			'TagID',
+			'Farbe'
+		);
 	    
 	    // get data from form-submission
 	    $post_data = $this->input->post();
-	    
-	    $update_data = null;
-	    
-	    // run through data and generate a associative array per id
-	    // holding collumns as keys and data as values
-	    foreach($post_data as $key => $value){
-		if($key != 'savestdplanchanges'){
-		    // don't save name of submit-button
-		    $split = explode('_', $key);
-		    // don't save color >>>>>>>>>> TODO
-		    if($split[1] != 'Farbe'){
-			$update_data[$split[0]][$split[1]] = $value;
-		    }
-		    if ($split[1] == 'isWPF'){
-			$update_data[$split[0]][$split[1]] = 1;
-		    }
-		}
-		// update data in db - for every 
-		$this->admin_model->update_stdplan_details($update_data[$split[0]], $split[0]);
+		
+//		echo '<pre>';
+//		print_r($post_data);
+//		echo '</pre>';
+		
+		// get spcourse_ids for stdplan that has been saved
+		// 1. get id from submission | 2. get ids from db
+		$stdplan_ids[] = $post_data['stdplan_id_abk'];
+		$stdplan_ids[] = $post_data['stdplan_id_sem'];
+		$stdplan_ids[] = $post_data['stdplan_id_po'];
+		$sp_course_ids = $this->admin_model->get_stdplan_sp_course_ids($stdplan_ids);
+		
+		// getting additonal data for colors - necessaray to map from array
+	    $colors = $this->admin_model->get_colors_from_stdplan();
+	    for($i = 0; $i < count($colors); $i++){
+			$colors_dropdown_options[$i] = $colors[$i]->Farbe;
 	    }
-//	    
-//	    echo '<pre>';
-//	    print_r($update_data);
-//	    echo '</pre>';
-	    
-	    $this->show_stdplan_list();
+		
+		// run through ids to save submitted data
+		foreach ($sp_course_ids as $id) {
+			$spc_id = $id->SPKursID; // save id from object
+			$update_stdplan_data = array(); // array for data to save
+			// run through array with fields to update
+			foreach ($update_fields as $field_name) {
+				// different behaviour depending on field-typ (cb has to be mapped from array-index to ID (+1))
+				switch($field_name){
+					case 'VeranstaltungsformID' :
+					case 'StartID' :
+					case 'EndeID' :
+					case 'TagID' : $update_stdplan_data[$field_name] = ($post_data[$spc_id.'_'.$field_name] + 1) ; break;
+					case 'Farbe' : $update_stdplan_data[$field_name] = $colors_dropdown_options[$post_data[$spc_id.'_'.$field_name]]; break;
+					case 'WPFName' :
+						if(key_exists($spc_id.'_'.$field_name, $post_data)){
+							$update_stdplan_data[$field_name] = $post_data[$spc_id.'_'.$field_name];
+						}
+						break;
+					default : $update_stdplan_data[$field_name] = $post_data[$spc_id.'_'.$field_name]; break;
+				}
+				
+				// handling of checkbox
+				if(array_key_exists($spc_id.'_isWPF', $post_data)){
+					$update_stdplan_data['isWPF'] = 1;
+				} else {
+					$update_stdplan_data['isWPF'] = 0;
+				}
+				
+			}
+			// update data in db - for every 
+			$this->admin_model->update_stdplan_details($update_stdplan_data, $spc_id);
+//			echo '<pre>';
+//			print_r($update_stdplan_data);
+//			echo '</pre>';
+			
+		}
+		
+	    $this->stdplan_edit();
 	}
 	
 	
-	function delete_stdplan_view(){
+	function stdplan_delete(){
 	    $this->data->add('delete_view_data', $this->admin_model->get_stdplan_filterdata_plus_id());
 	    
-	    $siteinfo = array(
-		'title' => 'Stundenplan löschen',
-		'main_content' => 'admin_stdplan_delete'
-	    );
-	    $this->data->add('siteinfo', $siteinfo);
+//	    $siteinfo = array(
+//			'title' => 'Stundenplan löschen',
+//			'main_content' => 'admin_stdplan_delete'
+//	    );
+//	    $this->data->add('siteinfo', $siteinfo);
 
-	    $this->load->view('includes/template', $this->data->load());
+//	    $this->load->view('includes/template', $this->data->load());
+		$this->load->view('admin/stdplan_delete', $this->data->load());
 	}
 	
 	
@@ -1536,17 +1565,90 @@ class Admin extends FHD_Controller {
 	    
 	    // get data from post
 	    $stdgng_ids = array(
-		$this->input->post('stdplan_abk'),
-		$this->input->post('stdplan_semester'),
-		$this->input->post('stdplan_po'),
+			$this->input->post('stdplan_abk'),
+			$this->input->post('stdplan_semester'),
+			$this->input->post('stdplan_po'),
 	    );
 
 	    // delete all data related to chosen stdplan
 	    $this->admin_model->delete_stdplan_related_records($stdgng_ids);
 	    
 	    // reload view
-	    $this->delete_stdplan_view();
+	    $this->stdplan_delete();
 	    
+	}
+	
+	
+	/**
+	 * Deletes a single line from stdplan-table-view - after button-click
+	 */
+	public function ajax_delete_single_event_from_stdplan(){
+		// get id from post
+		$sp_course_id = $this->input->post('course_data');
+		// split ids >> abk, sem, po, SP_COURSE_ID
+		$split_ids = explode('_', $sp_course_id);
+		
+		// delete data DB
+		$this->admin_model->delete_single_event_from_stdplan($split_ids[3]);
+		
+		// delete spcourse_id from array
+		unset($split_ids[3]);
+		
+		// reload view with unique abk, sem, po combination
+		echo $this->ajax_show_events_of_stdplan($split_ids);		
+		
+	}
+	
+	/**
+	 * Creates new event in stdplan after click on Button
+	 */
+	public function ajax_create_new_event_in_stdplan(){
+		$new_course_data = $this->input->post('course_data');
+		$save_to_db = array();
+		$stdplan_ids = explode('_', $new_course_data[0]);
+		
+		// delete first key from array
+		unset($new_course_data[0]);
+		
+//		echo print_r($new_course_data); // DEBUG
+		
+		// additional data of courses - mapping values to ids
+	    $courses = $this->admin_model->get_stdplan_course_ids($stdplan_ids);
+	    for($i = 0; $i < count($courses); $i++){
+			$courses_dropdown_options[$i] = $courses[$i]->KursID;
+	    }
+		
+		// getting additonal data for colors - necessaray to map from array
+	    $colors = $this->admin_model->get_colors_from_stdplan();
+	    for($i = 0; $i < count($colors); $i++){
+			$colors_dropdown_options[$i] = $colors[$i]->Farbe;
+	    }
+		
+		// run through course-data and prepare for saving
+		foreach($new_course_data as $data){
+			$split_data = explode('_', $data);
+			// prepare data for saving
+			// - eventtype, starttime, endtime, day has to be mapped from array-index to id
+			// - isWPF: checked = 1 , undefined = 0
+			// - color need additional data >> array
+			// - KursID same as color
+			switch($split_data[1]) {
+				case 'VeranstaltungsformID' :
+				case 'StartID' :
+				case 'EndeID' :
+				case 'TagID' : $save_to_db[$split_data[1]] = ($split_data[0] + 1); break; // !! +1
+				case 'isWPF' : $save_to_db[$split_data[1]] = (($split_data[0] === 'checked') ? 1 : 0); break;
+				case 'Farbe' : $save_to_db[$split_data[1]] = $colors_dropdown_options[$split_data[0]]; break;
+				case 'KursID' : $save_to_db[$split_data[1]] = $courses_dropdown_options[$split_data[0]]; break;
+				default : $save_to_db[$split_data[1]] = ($split_data[0]); break;
+			}
+		}
+		
+//		echo print_r($save_to_db);
+		$this->admin_model->save_new_course_in_stdplan($save_to_db);
+		
+		// return updated view
+		echo $this->ajax_show_events_of_stdplan($stdplan_ids);
 	}
 	
 	/* 
@@ -1564,7 +1666,7 @@ class Admin extends FHD_Controller {
 	 * 
 	 */
 	
-	function import_stdplan_view($error = ''){
+	function stdplan_import($error = ''){
 	    
 	    $this->load->helper('directory');
 	    
@@ -1581,26 +1683,26 @@ class Admin extends FHD_Controller {
 	    // prepare data for view
 	    // generate array, that contains all 
 	    foreach($stdgnge as $sg){
-		$po = $sg->Pruefungsordnung;
-		$abk = $sg->StudiengangAbkuerzung;
-		$id = $sg->StudiengangID;
-		$data['stdgng_uploads_headlines'][$id] = $abk.' - '.$po.':';
-		// run through dirs and distribute found data to view-array
-		foreach($upload_dir as $dir){
-		    $needle_po = strstr($dir, $po);
-		    $needle_abk = strstr($dir, $abk);
-		    if($needle_po != null && $needle_abk != null){
-			$data['stdgng_uploads'][$id][] = $dir;
-		    }
-		}
-		$last_id = $id;
+			$po = $sg->Pruefungsordnung;
+			$abk = $sg->StudiengangAbkuerzung;
+			$id = $sg->StudiengangID;
+			$data['stdgng_uploads_headlines'][$id] = $abk.' - '.$po;
+			// run through dirs and distribute found data to view-array
+			foreach($upload_dir as $dir){
+				$needle_po = strstr($dir, $po);
+				$needle_abk = strstr($dir, $abk);
+				if($needle_po != null && $needle_abk != null){
+					$data['stdgng_uploads'][$id][] = $dir;
+				}
+			}
+			$last_id = $id;
 	    }
 	    
 	    if($data['stdgng_uploads'] != null){
 		// prepare data to 
 		foreach($data['stdgng_uploads'] as $nested_array){
 		    foreach($nested_array as $file){
-			$files_with_po[] = $file;
+				$files_with_po[] = $file;
 		    }
 		}
 
@@ -1610,31 +1712,32 @@ class Admin extends FHD_Controller {
 
 		// one additional field for other
 		$data['stdgng_uploads_headlines'][42] = 'Andere:';
-		// check if there are dirs, that don't belong to a po
-		// i.e. not in array, that contains the files that are already shown
-		foreach($upload_dir as $dir){
-		    if(!in_array($dir, array_values($files_with_po))){
-			$data['stdgng_uploads'][42][] = $dir;
-		    }
-		}
+			// check if there are dirs, that don't belong to a po
+			// i.e. not in array, that contains the files that are already shown
+			foreach($upload_dir as $dir){
+				if(!in_array($dir, array_values($files_with_po))){
+					$data['stdgng_uploads'][42][] = $dir;
+				}
+			}
 	    }
 	    
 //	    $this->data->add('stdgng_uploads_headlines', $data['stdgng_uploads_headlines']);
 //	    $this->data->add('stdgng_uploads', $data['stdgng_uploads']);
 	    $this->data->add('stdgng_uploads_list_filelist', $this->load->view(
-		    'admin-subviews/admin_stdplan_import_filelist', $data, TRUE));
+		    'admin/partials/stdplan_import_filelist', $data, TRUE));
 	    
-	    $siteinfo = array(
-		'title' => 'Stundenplan importieren',
-		'main_content' => 'admin_stdplan_import'
-	    );
-	    $this->data->add('siteinfo', $siteinfo);
-
-	    $this->load->view('includes/template', $this->data->load());
+//	    $siteinfo = array(
+//		'title' => 'Stundenplan importieren',
+//		'main_content' => 'admin_stdplan_import'
+//	    );
+//	    $this->data->add('siteinfo', $siteinfo);
+//
+//	    $this->load->view('includes/template', $this->data->load());
+		$this->load->view('admin/stdplan_import', $this->data->load());
 	}
 	
 	
-	function import_stdplan_and_parse(){
+	function stdplan_import_parse(){
 	    $config['upload_path'] = './resources/uploads/';
 	    $config['allowed_types'] = 'xml';
 
@@ -1644,29 +1747,30 @@ class Admin extends FHD_Controller {
 	    $this->load->model('admin_model_parsing');
 
 	    if ( ! $this->upload->do_upload()){
-		// VIEW
-		$this->import_stdplan_view($this->upload->display_errors());
+			// VIEW
+			$this->stdplan_import($this->upload->display_errors());
 	    } else {
-		$upload_data = $this->upload->data();
+			$upload_data = $this->upload->data();
 		
-		$this->data->add('upload_data', $upload_data);
-		
-		// start parsing stdplan
-//		$returned = $this->stdplan_parser->parse_stdplan($data['upload_data']);
-		$this->admin_model_parsing->parse_stdplan($upload_data);
-		
-//		echo '<pre>';
-//		print_r($returned);
-//		echo '</pre>';  
+			$this->data->add('upload_data', $upload_data);
 
-		// VIEW
-		$siteinfo = array(
-		    'title' => 'Stundenplan importieren',
-		    'main_content' => 'admin_stdplan_import_success'
-		);
-		$this->data->add('siteinfo', $siteinfo);
+			// start parsing stdplan
+	//		$returned = $this->stdplan_parser->parse_stdplan($data['upload_data']);
+			$this->admin_model_parsing->parse_stdplan($upload_data);
 
-		$this->load->view('includes/template', $this->data->load());
+	//		echo '<pre>';
+	//		print_r($returned);
+	//		echo '</pre>';  
+
+	//		// VIEW
+	//		$siteinfo = array(
+	//		    'title' => 'Stundenplan importieren',
+	//		    'main_content' => 'admin_stdplan_import_success'
+	//		);
+	//		$this->data->add('siteinfo', $siteinfo);
+
+	//		$this->load->view('includes/template', $this->data->load());
+			$this->load->view('admin/partials/stdplan_import_success', $this->data->load());
 	    }
 	}
 	
@@ -1677,7 +1781,7 @@ class Admin extends FHD_Controller {
 	    // delete file
 	    unlink('./resources/uploads/'.$file_to_delete);
 	    
-	    $this->import_stdplan_view();
+	    $this->stdplan_import();
 	}
 	
 	/* 

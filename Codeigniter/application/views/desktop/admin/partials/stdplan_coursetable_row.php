@@ -1,6 +1,6 @@
 <?php 
     // common dropdown attrs
-    $dropdown_attributes = 'class = "span2"';
+    $dropdown_attributes = 'class = "span"';
 ?>
 	    
 
@@ -11,12 +11,15 @@
 		// !! important: to save changed data correctly, name has to consist of SPKursID and the collumn-name in database
 		$course_name_attrs = array(
 			'id' => 'stdplan-list-coursename',
+			'class' => 'label label-info'
 		);
     ?>
     <td>
 		<?php
 			if(!$first_row){
-				print form_label($kursname, $course_name_attrs);
+//				print form_label($kursname, $course_name_attrs);
+				print '<p class="label label-info">'.$kursname.'</p>';
+				print '<br />';
 			} else {
 				$new_course_courses_dropdown_attrs = $dropdown_attributes.' id="new-course-courses-dropdown"';
 				print form_dropdown(
@@ -27,70 +30,11 @@
 				);
 			}
 		?>
-	</td>
-
-    <!-- dropdown for event-types-->
-    <td>
-		<?php 
-			if(!$first_row){
-				print form_dropdown(
-					$spkurs_id.'_VeranstaltungsformID',
-					$eventtype_dropdown_options,
-					$veranstaltungsform_id-1, // !! ARRAY - minus 1
-					$dropdown_attributes);
-			} else {
-				$new_course_event_dropdown_attrs = $dropdown_attributes.' id = "new-course-eventtype-dropdown"';
-				print form_dropdown(
-					'NEW_VeranstaltungsformID',
-					$eventtype_dropdown_options,
-					0,
-					$new_course_event_dropdown_attrs);
-			}
-		?>
-    </td>
-
-    <!-- input-field for alternatives-->
-    <?php
-		if(!$first_row){
-			$eventy_alt_data = array(
-				'name' => $spkurs_id.'_VeranstaltungsformAlternative',
-				'id' => 'stdplan-list-alternative',
-				'value' => $alternative,
-				'class' => 'span1'
-			);
-		} else {
-			$eventy_alt_data = array(
-				'name' => 'NEW_VeranstaltungsformAlternative',
-				'id' => 'new-course-stdplan-list-alternative',
-				'value' => '',
-				'class' => 'span1'
-			);
-		}
-    ?>
-    <td><?php print form_input($eventy_alt_data); ?></td>
-
-    <!-- room-->
-    <?php
-		if(!$first_row){
-			$room_data = array(
-				'name' => $spkurs_id.'_Raum',
-				'id' => 'stdplan-list-room',
-				'value' => $raum,
-				'class' => 'span2'
-			);
-		} else {
-			$room_data = array(
-				'name' => 'NEW_Raum',
-				'id' => 'new-course-stdplan-list-room',
-				'value' => '',
-				'class' => 'span2'
-			);
-		}
-    ?>
-    <td><?php print form_input($room_data); ?></td>
-
-    <!-- dropdown for profs-->
-    <td>
+<!--	</td>
+	
+	
+     dropdown for profs
+    <td>-->
 		<?php 
 			if(!$first_row){
 				print form_dropdown(
@@ -110,6 +54,75 @@
 			}
 		?>
     </td>
+
+    <!-- dropdown for event-types-->
+    <td>
+		<?php 
+			if(!$first_row){
+				print form_dropdown(
+					$spkurs_id.'_VeranstaltungsformID',
+					$eventtype_dropdown_options,
+					$veranstaltungsform_id-1, // !! ARRAY - minus 1
+					$dropdown_attributes);
+			} else {
+				$new_course_event_dropdown_attrs = $dropdown_attributes.' id = "new-course-eventtype-dropdown"';
+				print form_dropdown(
+					'NEW_VeranstaltungsformID',
+					$eventtype_dropdown_options,
+					0,
+					$new_course_event_dropdown_attrs);
+			}
+		?>
+<!--    </td>-->
+
+    <!-- input-field for alternatives-->
+    <?php
+		if(!$first_row){
+			$eventy_alt_data = array(
+				'name' => $spkurs_id.'_VeranstaltungsformAlternative',
+				'id' => 'stdplan-list-alternative',
+				'value' => $alternative,
+				'class' => 'span',
+				'placeholder' => 'Alternative'
+			);
+		} else {
+			$eventy_alt_data = array(
+				'name' => 'NEW_VeranstaltungsformAlternative',
+				'id' => 'new-course-stdplan-list-alternative',
+				'value' => '',
+				'class' => 'span',
+				'placeholder' => 'Alternative'
+			);
+		}
+    ?>
+<!--    <td>-->
+		<?php print form_input($eventy_alt_data); ?>
+<!--	</td>-->
+
+    <!-- room-->
+    <?php
+		if(!$first_row){
+			$room_data = array(
+				'name' => $spkurs_id.'_Raum',
+				'id' => 'stdplan-list-room',
+				'value' => $raum,
+				'class' => 'span',
+				'placeholder' => 'Raum'
+			);
+		} else {
+			$room_data = array(
+				'name' => 'NEW_Raum',
+				'id' => 'new-course-stdplan-list-room',
+				'value' => '',
+				'class' => 'span',
+				'placeholder' => 'Raum'
+			);
+		}
+    ?>
+<!--    <td>-->
+		<?php print form_input($room_data); ?>
+	</td>
+
 
     <!-- dropdown for starttime-->
     <td>
@@ -131,10 +144,10 @@
 				);
 			}
 		?>
-    </td>
+<!--    </td>
 
-    <!-- dropdown for endtime-->
-    <td>
+     dropdown for endtime
+    <td>-->
 		<?php
 		 	if(!$first_row){
 				print form_dropdown(
@@ -153,10 +166,10 @@
 				);
 			}
 		?>
-    </td>
+<!--    </td>
 
-    <!-- dropdown for day-->
-    <td>
+     dropdown for day
+    <td>-->
 		<?php
 		 	if(!$first_row){
 				print form_dropdown(
@@ -182,40 +195,52 @@
 		if(!$first_row){
 			$wpf_cb_data = array(
 				'name' => $spkurs_id.'_isWPF',
-				'id' => 'stdplan-list-wpfcheckbox',
+				'id' => $spkurs_id.'-wpfcheckbox',
+				'class' => 'stdplan-edit-wpfcheckbox',
 				'value' => 'accept',
+				'data-spcid' => $spkurs_id,
 				'checked' => ($wpf_flag === '1') ? true : false
 			);
 		} else {
 			$wpf_cb_data = array(
 				'name' => 'NEW_isWPF',
 				'id' => 'new-course-stdplan-list-wpfcheckbox',
+				'class' => 'stdplan-edit-wpfcheckbox',
 				'value' => '',
+				'data-spcid' => 'new-course-stdplan-list',
 				'checked' => false
 			);
 		}
     ?>
-    <td><?php print form_checkbox($wpf_cb_data); ?></td>
+    <td>
+		<?php print '<p>'.form_checkbox($wpf_cb_data).'</p><br />'; ?>
+<!--	</td>-->
 
     <!-- inputfield for wpf-name-->
     <?php 
 		if(!$first_row){
 			$wpf_data = array(
 				'name' => $spkurs_id.'_WPFName',
-				'id' => 'stdplan-list-wpfname',
+				'id' => $spkurs_id.'-wpfname',
 				'value' => $wpf_name,
-				'class' => 'span2'
+				'data-spcid' => $spkurs_id,
+				'placeholder' => 'WPF Name',
+				'class' => 'span stdplan-edit-wpfname'
 			);
 		} else {
 			$wpf_data = array(
 				'name' => 'NEW_WPFName',
 				'id' => 'new-course-stdplan-list-wpfname',
 				'value' => '',
-				'class' => 'span2'
+				'data-spcid' => 'new-course-stdplan-list',
+				'placeholder' => 'WPF Name',
+				'class' => 'span stdplan-edit-wpfname'
 			);
 		}
     ?>
-    <td><?php print form_input($wpf_data); ?></td>
+<!--    <td>-->
+		<?php print form_input($wpf_data); ?>
+	</td>
 
     <!-- dropdown for color - at first: find out key-->
     <td>
@@ -253,7 +278,7 @@
 			$buttonData = array(
 				'name' => $kurs_ids_split[0].'_'.$kurs_ids_split[1].'_'.$kurs_ids_split[2].'_'.$spkurs_id,
 				'id' => $spkurs_id.'delete-btn',
-				'class' => 'btn btn-danger span2 delete-stdpln-btn',
+				'class' => 'btn btn-danger span delete-stdpln-btn',
 				'data-id' => $spkurs_id,
 				'value' => true,
 				'content' => 'Löschen'
@@ -262,7 +287,7 @@
 			$buttonData = array(
 				'name' => $kurs_ids_split[0].'_'.$kurs_ids_split[1].'_'.$kurs_ids_split[2],
 				'id' => 'create-btn-stdpln',
-				'class' => 'btn btn-warning span2',
+				'class' => 'btn btn-warning span',
 				'value' => true,
 				'content' => 'Hinzufügen'
 			);
