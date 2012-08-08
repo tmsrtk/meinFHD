@@ -227,7 +227,7 @@ class Admin_model extends CI_Model {
 	/**
 	 *
 	 */
-	private function _delete_invitation($invitation_id)
+	public function _delete_invitation($invitation_id)
 	{
 		$this->db->where('AnfrageID', $invitation_id);
 		$this->db->delete('anfrage'); 
@@ -261,6 +261,29 @@ class Admin_model extends CI_Model {
 		return $my_result;
 	}
 
+	public function clear_userroles($user_id)
+	{
+		if ( ! empty($user_id) )
+		{
+			$this->db->delete('benutzer_mm_rolle', array('BenutzerID' => $user_id));
+		}
+	}
+
+	public function save_userrole($user_id, $role)
+	{
+		if ( ! empty($user_id) && ! empty($role) )
+		{
+			$data = array(
+				'BenutzerID' => $user_id,
+				'RolleID' => $role
+				);
+			// $this->db->where('BenutzerID', $user_id);
+			// $this->db->update('benutzer_mm_rolle', $data);
+
+			$this->db->insert('benutzer_mm_rolle', $data);
+		}
+	}
+
 	/**
 	 *
 	 */
@@ -286,9 +309,11 @@ class Admin_model extends CI_Model {
 	// get all user
 	function get_all_user_raw()
 	{
-		$this->db->select('*')  // !!!!!!!!!!!!!!!!!!! LIMIT
+		$this->db->select('*')
 					->from('benutzer')
-					->join('benutzer_mm_rolle', 'benutzer_mm_rolle.BenutzerID = benutzer.BenutzerID');
+					// ->join('benutzer_mm_rolle', 'benutzer_mm_rolle.BenutzerID = benutzer.BenutzerID')
+					// ->limit(50)
+					;
 
 		return $this->db->get();
 	}
@@ -391,6 +416,35 @@ class Admin_model extends CI_Model {
 		$result_clean = $this->clean_permissions_array($result_raw);
 
 		return $result_clean;
+	}
+
+	/** */
+	public function get_all_userroles($user_id)
+	{
+		$this->db->select('RolleID')
+				 ->from('benutzer_mm_rolle')
+				 ->where('BenutzerID', $user_id)
+				 ;
+		$q = $this->db->get();
+		return $q->result_array();
+	}
+
+	/** */
+	public function get_all_user_with_roles()
+	{
+		$result = array();
+		$all_user = $this->get_all_user_raw()->result_array();
+
+		foreach ($all_user as $key => $value) {
+
+			// get user specific roles
+			$value['roles'] = $this->get_all_userroles($value['BenutzerID']);
+			// add to result array
+			$result[] = $value;
+
+		}
+
+		return $result;
 	}
 
 	// checks array for duplicates and deletes these. creates a 1dim array
