@@ -1,20 +1,7 @@
 <?php
-    $submit_button_attrs = 'id = #stdgng-course-details-save-button class = "btn-warning"';
-    
-    $dropdown_attrs = 'class = "span1"';
-    
-    if($lab == '1'){
-	$lab_participants_attrs = array(
-	    'name' => 'teilnehmer', 
-	    'id' => 'kursverwaltung-tn',
-	    'value' => $lecture_details->TeilnehmerMax, 
-	    'class' => 'span1'
-	);
-    }
-    
     $label_attrs = array(
 		'name' => 'group_label',
-		'id' => 'kursverwaltung-tn',
+		'id' => 'course-mgt-label-'.$lecture_details->SPKursID,
 		'class' => 'label label-info',
 		'for' => 'kursverwaltung-raum'
     );
@@ -46,16 +33,16 @@
 	    }
 	?>
     </div>
-    <div class="span1">
+    <div class="span2">
 		<?php echo $lecture_details->Raum; ?>
     </div>
-    <div class="span1">
+    <div class="span2">
 		<?php   
 			// starttime
 			echo $starttime_options[$lecture_details->StartID-1];
 		?>
     </div>
-    <div class="span1">
+    <div class="span2">
 		<?php
 			// endtime
 			echo $endtime_options[$lecture_details->EndeID-1];
@@ -71,10 +58,10 @@
 		<?php
 			// add another field for number of possible participants - for labs view
 			if($lab == '1'){
-			// max participants - only relevant for labs
-			echo $lecture_details->TeilnehmerMax;
+				// max participants - only relevant for labs
+				echo $lecture_details->TeilnehmerMax;
 			} else {
-			echo 'kein Limit';
+				echo '-';
 			}
 	//	    echo form_close();
 		?>
