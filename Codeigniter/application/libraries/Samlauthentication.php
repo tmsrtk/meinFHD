@@ -78,5 +78,6 @@ class Samlauthentication {
 
         $this->authSource->logout();
     }
+
 }
 /* End of file Samlauthentication.php */
