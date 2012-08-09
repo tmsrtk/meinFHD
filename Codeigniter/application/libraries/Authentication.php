@@ -121,6 +121,41 @@ class Authentication {
         return FALSE;
     }
 	
+    /**
+     * This is the login function for the Single-Sign-On process.
+     *
+     * The information of the local account, which is linked with the idp user are assigned as parameters
+     * and will be used for establishing the local session.
+     *
+     * @author Christian Kundruss (CK), 2012
+     * @access public
+     * @param string $username
+     * @param string $hashed_password
+     * @return bool TRUE if the login was successful, otherwise FALSE
+     */
+    public function sso_login($username, $hashed_password) {
+
+        // select the needed uid of the local user
+        $this->CI->db->select('BenutzerID');
+        $this->CI->db->from('benutzer');
+        $this->CI->db->where('LoginName', $username);
+        $this->CI->db->where('Passwort', $hashed_password);
+
+        $query = $this->CI->db->get();
+        // if there is one user that matches the parameter -> establish the session
+        if($query->num_rows() == 1) {
+            // store the user id in the authentication object
+            $this->uid = $query->row()->BenutzerID;
+
+            // establish the session
+            $this->CI->session->set_userdata('uid', $this->uid);
+
+            return TRUE; // session is established
+        }
+
+        return FALSE; // session is not established
+    }
+
 	/**
 	 * Loads all roles for the current user.
 	 * 
