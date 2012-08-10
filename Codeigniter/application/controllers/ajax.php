@@ -21,6 +21,13 @@ class Ajax extends CI_Controller {
 	{
 		parent::__construct();
 		$this->load->model('ajax_model');
+
+        // --- EDIT BY Christian Kundruss (CK) for sso authentication ---
+        // check if the user is logged in, if he is not logged in he can`t access the requested site
+        if(!$this->authentication->is_logged_in()) { // the user is not logged in -> redirect him to the login page
+            redirect('app/login');
+        }
+        // --- END EDIT --
 	}
 
 	public function index()

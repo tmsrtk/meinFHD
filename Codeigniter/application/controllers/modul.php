@@ -27,6 +27,13 @@ class Modul extends FHD_Controller {
 		parent::__construct();
 		$this->data->add('titel', "Stundenplan");
 		$this->load->model('Modul_Model');
+
+        // --- EDIT BY Christian Kundruss (CK) for sso authentication ---
+        // check if the user is logged in, if he is not logged in he can`t access the requested site
+        if(!$this->authentication->is_logged_in()) { // the user is not logged in -> redirect him to the login page
+            redirect('app/login');
+        }
+        // --- END EDIT --
 	}
 	
 	

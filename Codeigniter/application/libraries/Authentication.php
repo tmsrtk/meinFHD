@@ -149,6 +149,7 @@ class Authentication {
 
             // establish the session
             $this->CI->session->set_userdata('uid', $this->uid);
+            $this->CI->session->set_userdata('SSO-Login', 'TRUE');
 
             return TRUE; // session is established
         }
@@ -185,12 +186,29 @@ class Authentication {
 	/**
 	 * Determines whether the user is logged in or not.
 	 *
+     * Edit by Christian Kundruss (CK):
+     * Checks also whether the initial authentication comes from an sso login or not. If it comes from an sso login it checks, if
+     * the global session exists. If the global session doesn`t exists anylonger an local logout will be called.
+     *
 	 * @access public
 	 * @return bool
 	 */
 	public function is_logged_in()
 	{
-		return (bool) $this->uid;
+        // --- EDIT BY Christian Kundruss (CK) for checking if the global session still exists, when the login was provided by sso --
+        if ($this->CI->session->userdata('SSO-Login') == 'TRUE') { // local authentication from an global session?
+            // is the global session still active?
+
+            if(!$this->CI->samlauthentication->is_authenticated()) { // the global session is not active anylonger
+                $this->CI->session->unset_userdata('SSO-Login'); // remove the sso flag from the session object
+                $this->logout(); // perform the logout
+
+                return FALSE;
+            }
+        }
+        // --- END EDIT BY CK ---
+
+        return (bool) $this->uid;
 	}
 	
 	/**
@@ -206,31 +224,31 @@ class Authentication {
 		// Do we have an action?
 		if ( ! empty($action) && is_string($action))
 		{
-			// Select all roles that have the permission to
-			// perform the given action.
-			$sql = 'SELECT
-						r.bezeichnung
-					FROM
-						berechtigung b, rolle_mm_berechtigung rb, rolle r
-					WHERE
-						b.BerechtigungID = rb.BerechtigungID AND
-						r.RolleID = rb.RolleID AND
-						b.bezeichnung = ?';
-						
-			// Perform the query
-			$result = $this->CI->db->query($sql, array($action));
-			
-			// This array holds all roles, that have permissions
-			// for the given action.
-			$allowed = array();
-			// Save all roles for lookup
-			foreach ($result->result() as $row)
-			{
-				$allowed[] = $row->bezeichnung;
-			}
-			
-			// Check if the current user has one of the roles
-			return $this->_user_can_access($allowed, $this->roles);
+            // Select all roles that have the permission to
+            // perform the given action.
+            $sql = 'SELECT
+                        r.bezeichnung
+                    FROM
+                        berechtigung b, rolle_mm_berechtigung rb, rolle r
+                    WHERE
+                        b.BerechtigungID = rb.BerechtigungID AND
+                        r.RolleID = rb.RolleID AND
+                        b.bezeichnung = ?';
+
+            // Perform the query
+            $result = $this->CI->db->query($sql, array($action));
+
+            // This array holds all roles, that have permissions
+            // for the given action.
+            $allowed = array();
+            // Save all roles for lookup
+            foreach ($result->result() as $row)
+            {
+                $allowed[] = $row->bezeichnung;
+            }
+
+            // Check if the current user has one of the roles
+            return $this->_user_can_access($allowed, $this->roles);
 		}
 		
 		return FALSE;
@@ -296,7 +314,6 @@ class Authentication {
      */
     public function get_name() {
        return $this->name;
-        //return 'TEST';
     }
 	/**
 	 * The firewall detects access controled routes and determines,
