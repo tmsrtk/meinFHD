@@ -62,7 +62,7 @@ class SSO extends FHD_Controller {
             // the user has no linked account -> give him the possibility to link or create an account
             // otherwise request for linking: 2 alternatives -> user has got an account and links; -> user requests an account that is automatically linked
             else {
-
+                $this->load->view('sso/link_account', $this->data->load());
             }
         }
 
@@ -83,7 +83,6 @@ class SSO extends FHD_Controller {
             $this->message->set(sprintf($message_body));
             redirect('dashboard/index');
         }
-
     }
 
     /**
@@ -101,27 +100,6 @@ class SSO extends FHD_Controller {
         }
 
         return FALSE;
-    }
-
-    /**
-     * Function is called from the login form / startpage if an global session already exists and the global uid is linked
-     * to an local account, so start a local session with the linked account.
-     * It checks if the global authenticated uid is linked to an local account.
-     * If not return the user to the login page, otherwise establish a local session.
-     * This function is called when the user opens the startpage and an global session exists
-     */
-    public function authenticate_linked_account() {
-        // get and save the information for the linked user in the appropriate class variable
-        if ($this->linked_user) { // there is an linked account
-            // establish a local session...
-            $this->establish_local_session();
-        }
-
-        // there is no linked account for the actual global user-id
-        else {
-          // return to the login page
-          redirect('app/login');
-        }
     }
 }
 /* End of file sso.php */

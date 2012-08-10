@@ -46,7 +46,8 @@ class App extends FHD_Controller {
         // a global session exists and the user has got an linked account -> log him in
         if ($this->samlauthentication->is_authenticated()) {
             // redirect zum sso controller
-            redirect('sso/authenticate_linked_account');
+            //redirect('sso/authenticate_linked_account');
+            redirect('sso/establish_local_session');
         }
         // --- Modification End ---
 
