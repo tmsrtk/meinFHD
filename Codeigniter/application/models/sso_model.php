@@ -48,7 +48,6 @@ class SSO_model extends CI_Model {
                 'Nachname' => $query->row()->Nachname,
                 'FHD_IdP_UID' => $query->row()->FHD_IdP_UID
             );
-            print_r($linked_user);
             // return the selected row
             return $linked_user;
         }
