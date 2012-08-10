@@ -351,7 +351,8 @@ class Kursverwaltung extends FHD_Controller {
 	//	print_r($input_data_filtered);
 	//	echo '</pre>';
 
-		$this->show_coursemgt();
+//		$this->show_coursemgt();
+		redirect('kursverwaltung/show_coursemgt');
     }
     
     

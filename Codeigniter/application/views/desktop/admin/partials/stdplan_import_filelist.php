@@ -1,6 +1,7 @@
 <div class="well well-small">
 	<?php
-		$btn_delete_attrs = 'class = "btn-danger"';
+		$btn_delete_attrs = 'class = "btn btn-danger"';
+		$btn_open_attrs = 'class = "btn btn-info"';
 		// show files in directory
 		foreach($stdgng_uploads as $key => $entry) :?>
 		<div> <!-- area that shows all files belonging to a single po -->
@@ -11,6 +12,7 @@
 				<thead>
 					<th>Dateiname:</th>
 					<th>Löschen:</th>
+					<th>Öffnen:</th>
 				</thead>
 				<tbody>
 					<?php foreach($entry as $filename) : ?>
@@ -24,6 +26,15 @@
 								echo form_hidden('std_file_to_delete', $filename);
 								echo form_close();
 							?>
+						</td>
+						<td>
+							<?php
+								echo form_open('admin/open_stdplan_file');
+								echo form_submit('open_file', 'Öffnen!', $btn_open_attrs);
+								echo form_hidden('std_file_to_open', $filename);
+								echo form_close();
+							?>
+						</td>
 					</tr>
 					<?php endforeach; ?>
 				</tbody>
