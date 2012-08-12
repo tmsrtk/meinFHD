@@ -612,10 +612,11 @@ class Admin extends FHD_Controller {
 	/**/
 	private function _reset_semesterplan()
 	{
-		$this->load->model('Studienplan_Model');
-		$this->Studienplan_Model->deleteAll();
+		// get the id of which user the semesterplan should be deleted
+		$input_data = $this->input->post();
+		$this->admin_model->reconstruct_semesterplan($input_data['user_id']);
 
-		redirect(site_url().'admin/edit_user_mask');
+		// redirect(site_url().'admin/edit_user_mask');
 	}
 
 	/*
