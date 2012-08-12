@@ -609,6 +609,15 @@ class Admin extends FHD_Controller {
 		redirect(site_url().'admin/edit_user_mask');
 	}
 
+	/**/
+	private function _reset_semesterplan()
+	{
+		$this->load->model('Studienplan_Model');
+		$this->Studienplan_Model->deleteAll();
+
+		redirect(site_url().'admin/edit_user_mask');
+	}
+
 	/*
 	* deletes an user by his id
 	*/
