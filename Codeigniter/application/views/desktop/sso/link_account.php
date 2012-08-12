@@ -44,8 +44,9 @@ $submitLinkAccountButtonAttributes = array(
                         Hallo, <br/>
                         vielen Dank f&uuml;r deine Anmeldung. Du hast dich &uuml;ber den Shibboleth IdP der FH D&uuml;sseldorf angemeldet, aber leider konnte keine passende
                         lokale Identit&auml;t gefunden werden.<br/>
-                        Wenn du bereits eine lokale Identit&auml; besitzt kannst du diese jetzt verkn&uuml;pfen, oder fordere dir einen Zugang an.
+                        Wenn du bereits eine lokale Identit&auml;t besitzt kannst du diese jetzt verkn&uuml;pfen, oder fordere dir einen Zugang an.
                     </p>
+                    <p>
                 </div>
 
                 <!-- Hier jetzt 2 Accordions drunter hauen für Verknüpfen und Anfordern, oder separate links. Das muss ich mir noch überlegen.... -->
@@ -90,6 +91,7 @@ $submitLinkAccountButtonAttributes = array(
 <?php endblock(); ?>
 
 <?php startblock('customFooterJQueryCode');?>
+
 
 <?php endblock(); ?>
 

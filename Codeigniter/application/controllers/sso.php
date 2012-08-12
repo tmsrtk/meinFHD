@@ -36,7 +36,6 @@ class SSO extends FHD_Controller {
         $idp_attributes = $this->samlauthentication->get_attributes();
         // save the uid provided by the idp for further access -> the array needs to be splitted to hold only the uid in the variable
         $this->idp_auth_uid = $idp_attributes['uid']['0'];
-
         // get all information of the linked user and save them in the appropriate class variable
         $this->linked_user = $this->get_linked_user();
     }
@@ -108,6 +107,10 @@ class SSO extends FHD_Controller {
      */
     public function link_account() {
 
+        // --- protect the link account for calls without having a global session --
+        if (!$this->samlauthentication->is_authenticated()) {
+            redirect('app/login');
+        }
         // read the post parameters
         $username = $this->input->post('username');
         $password = $this->input->post('password');
@@ -141,11 +144,14 @@ class SSO extends FHD_Controller {
             else { // link was not successful
                 // show message and redirect back to the link account page
                 $message_body = 'Beim verknüpfen der angebenen Identität ist ein Fehler aufgetreten. Vermutlich ist der Benutzername oder das Passwort falsch.' .
-                    'Bitte überprüfe deine Eingaben und starte den Prozess erneut';
+                                'Bitte überprüfe deine Eingaben und starte den Prozess erneut';
+                echo $message_body;
                 $this->message->set(sprintf($message_body));
-                $this->load->view('sso/link_account', $this->data->load());
+                redirect('sso/link_account'); // reload controller for displaying the error message
             }
         }
+        // load the link account view
+        $this->load->view('sso/link_account', $this->data->load());
     }
 }
 /* End of file sso.php */
