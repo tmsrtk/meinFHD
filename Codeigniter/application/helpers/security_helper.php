@@ -32,3 +32,28 @@ if ( ! function_exists('check_for_authentication'))
         }
     }
 }
+
+/**
+ * Function checks if the global authenticated user has got an local linked identity
+ * @return bool TRUE if the user is linked, otherwise FALSE
+ */
+if ( ! function_exists('has_linked_account'))
+{
+    function has_linked_account () {
+        $CI = & get_instance(); // get the ci-instance to access other elements of the application
+        $CI->load->model('SSO_model');
+
+        // get the global uid of the authentication source
+        $idp_attributes = $CI->samlauthentication->get_attributes();
+        // save the uid provided by the idp for further access -> the array needs to be splitted to hold only the uid in the variable
+        $idp_auth_uid = $idp_attributes['uid']['0'];
+
+        // check with the sso_model if the user is linked
+        if($CI->SSO_model->get_linked_user($idp_auth_uid)) {
+            return TRUE;
+        }
+
+        return FALSE;
+
+    }
+}
