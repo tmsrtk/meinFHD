@@ -20,10 +20,8 @@ class Admin extends FHD_Controller {
 		$data['allStdgnge'] = $this->admin_model->getAllStdgnge();
 
         // --- EDIT BY Christian Kundruss (CK) for sso authentication ---
-        // check if the user is logged in, if he is not logged in he can`t access the requested site
-        if(!$this->authentication->is_logged_in()) { // the user is not logged in -> redirect him to the login page
-            redirect('app/login');
-        }
+        // call the security_helper and check if the user is authenticated an allowed to call the controller
+        check_for_authenticaton();
         // --- END EDIT --
 	}
 	
