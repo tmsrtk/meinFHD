@@ -47,7 +47,9 @@ class SSO extends FHD_Controller {
     public function authenticate() {
 
         // ask for authentication at the sso idp -> redirect to the idp`s login page automatically if no global session exists
-        $this->samlauthentication->require_authentication();
+        if(!$this->samlauthentication->is_authenticated()) {
+            $this->samlauthentication->require_authentication(); // ask for global authentication
+        }
 
         // check if the authentication was successful (and if there is an linked account) -> then establish a local session. otherwise not....
         if ($this->samlauthentication->is_authenticated()) {
@@ -61,7 +63,7 @@ class SSO extends FHD_Controller {
             // the user has no linked account -> give him the possibility to link or create an account
             // otherwise request for linking: 2 alternatives -> user has got an account and links; -> user requests an account that is automatically linked
             else {
-                $this->load->view('sso/link_account', $this->data->load());
+                redirect('sso/link_account');
             }
         }
 
@@ -143,9 +145,9 @@ class SSO extends FHD_Controller {
 
             else { // link was not successful
                 // show message and redirect back to the link account page
-                $message_body = 'Beim verknüpfen der angebenen Identität ist ein Fehler aufgetreten. Vermutlich ist der Benutzername oder das Passwort falsch.' .
-                                'Bitte überprüfe deine Eingaben und starte den Prozess erneut';
-                echo $message_body;
+                $message_body = 'Beim Verknüpfen der angegebenen Identität ist ein Fehler aufgetreten. Vermutlich ist die eingegebene Kombination aus Benutzername' .
+                                ' und Passwort falsch, oder die angegebene Identität wurde bereits verknüpft.' .' Bitte überprüfe deine Eingaben und starte den Prozess' .
+                                ' erneut. Sollte der Fehler weiterhin auftreten kontaktiere bitte den Support.';
                 $this->message->set(sprintf($message_body));
                 redirect('sso/link_account'); // reload controller for displaying the error message
             }

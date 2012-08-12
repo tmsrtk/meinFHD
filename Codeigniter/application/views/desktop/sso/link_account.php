@@ -49,8 +49,6 @@ $submitLinkAccountButtonAttributes = array(
                     <p>
                 </div>
 
-                <!-- Hier jetzt 2 Accordions drunter hauen für Verknüpfen und Anfordern, oder separate links. Das muss ich mir noch überlegen.... -->
-
                 <!-- Account linking Accordion -->
                 <div id="accordion-app" class="accordion">
                     <div class="accordion-group">
@@ -85,10 +83,11 @@ $submitLinkAccountButtonAttributes = array(
                             </div>
                         </div>
                     </div>
-
                 </div>
+                <!-- End Account linking Accordion -->
 
-                <!-- End Account linking modal -->
+                <!-- Account anfordern als Accordion, oder was anderes...-->
+
 <?php endblock(); ?>
 
 <?php startblock('customFooterJQueryCode');?>
