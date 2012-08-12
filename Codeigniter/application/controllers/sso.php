@@ -101,6 +101,52 @@ class SSO extends FHD_Controller {
 
         return FALSE;
     }
+
+    /**
+     * Links an global authenticated account with an local identity in. The local identity that should be linked is submitted
+     * by the user.
+     */
+    public function link_account() {
+
+        // read the post parameters
+        $username = $this->input->post('username');
+        $password = $this->input->post('password');
+
+        // check if we have values for the username and password
+        if ($username && $password) {
+
+            // query the user table to check if the given identity is correct and not linked
+            $this->db->select('BenutzerID, LoginName, Passwort, Vorname, Nachname');
+            $this->db->from('benutzer');
+            $this->db->where('LoginName', $username);
+            $this->db->where('Passwort', MD5($password));
+            $this->db->where('FHD_IdP_UID',''); // account is not linked
+
+            $query = $this->db->get();
+
+            // there should be only 1 row in the db
+            if($query->num_rows() == 1) {
+                // get the inputted userid
+                $local_uid = $query->row()->BenutzerID;
+
+                // link account
+                if($this->SSO_model->link_account($local_uid, $this->idp_auth_uid)) { // link was successful
+                    // update data of the linked user
+                    $this->linked_user = $this->get_linked_user();
+                    // establish local session / login
+                    $this->establish_local_session();
+                }
+            }
+
+            else { // link was not successful
+                // show message and redirect back to the link account page
+                $message_body = 'Beim verknüpfen der angebenen Identität ist ein Fehler aufgetreten. Vermutlich ist der Benutzername oder das Passwort falsch.' .
+                    'Bitte überprüfe deine Eingaben und starte den Prozess erneut';
+                $this->message->set(sprintf($message_body));
+                $this->load->view('sso/link_account', $this->data->load());
+            }
+        }
+    }
 }
 /* End of file sso.php */
 /* Location: ./application/controllers/sso.php */

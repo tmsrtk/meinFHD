@@ -54,6 +54,28 @@ class SSO_model extends CI_Model {
 
         return NULL;
     }
+
+    /**
+     * Links an account with the local uid to the uid of the global authenticated user
+     * @param $local_uid UID of the local account that should be linked
+     * @param $idp_uid global UID where the local account should be linked to
+     * @return bool returns TRUE if update is okay, otherwise false
+     */
+    public function link_account($local_uid, $idp_uid) {
+        $update_data = array (
+            'FHD_IdP_UID'   => $idp_uid
+        );
+
+        // only the identity with the local_uid should be updated
+        $this->db->where('BenutzerID', $local_uid);
+
+        // check if the update was successfull
+        if (!$this->db->update('benutzer', $update_data)) {
+            return FALSE; // update was not successful
+        }
+
+        return TRUE;
+    }
 }
 /* End of file sso_model.php */
 /* Location: ./application/models/sso_model.php */
