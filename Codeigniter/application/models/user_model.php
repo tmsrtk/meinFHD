@@ -19,6 +19,7 @@ class User_model extends CI_Model {
 	private $semesterplan_id = 0;
 	private $act_semester = 0;
 	private $studienbeginn_jahr = 0;
+	private $studienbeginn_typ = '';
 	private $studiengang_data = array();
 
 	/**
@@ -49,10 +50,14 @@ class User_model extends CI_Model {
 			$this->user_roles = $this->_query_all_roles();
 			$this->user_permissions_all = $this->_query_all_permissions();
 
-			$this->semesterplan_id = $this->_query_semesterplanid();
-			$this->act_semester = $this->_query_user_singlecolumndata('Semester');
 			$this->studienbeginn_jahr = $this->_query_user_singlecolumndata('StudienbeginnJahr');
-			$this->studienbeginn_semestertyp = $this->_query_user_singlecolumndata('StudienbeginnSemestertyp');
+			$this->studienbeginn_typ = $this->_query_user_singlecolumndata('StudienbeginnSemestertyp');
+
+			$this->semesterplan_id = $this->_query_semesterplanid();
+			// get actual Semester every time when the user connects
+			$this->act_semester = $this->adminhelper->getSemester($this->studienbeginn_typ, $this->studienbeginn_jahr);
+			// $this->act_semester = $this->_query_user_singlecolumndata('Semester');
+
 			$this->studiengang_id = $this->_query_studiengang_id();
 			$this->studiengang_data = $this->_query_studiengang_data();
 
@@ -70,7 +75,7 @@ class User_model extends CI_Model {
 	                'roles' 					=> $this->user_roles,
 	                'act_semester'				=> $this->act_semester,
 	                'studienbeginn_jahr' 		=> $this->studienbeginn_jahr,
-	                'studienbeginn_semestertyp'	=> $this->studienbeginn_semestertyp,
+	                'studienbeginn_semestertyp'	=> $this->studienbeginn_typ,
 	                'semesterplan_id'			=> $this->semesterplan_id,
 	                'studiengang_data'			=> $this->studiengang_data
 	            );
