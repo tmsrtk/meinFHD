@@ -83,11 +83,11 @@
 								// echo '<input type="radio" name="semesteranfang" value="SoSe"'.set_radio('semesteranfang', 'SoSe', FALSE).' />';
 								// echo 'SoSe'; echo '<br />';
 
-								echo '<input type="radio" name="semesteranfang" value="WiSe"'.set_radio('semesteranfang', 'WiSe', TRUE).' />';
-								echo 'WiSe';
+								echo '<input type="radio" name="semesteranfang" value="WS"'.set_radio('semesteranfang', 'WS', TRUE).' />';
+								echo 'WS';
 								// echo form_radio('semesteranfang', 'SS', FALSE);
-								echo '<input type="radio" name="semesteranfang" value="SoSe"'.set_radio('semesteranfang', 'SoSe', FALSE).' />';
-								echo 'SoSe'; echo '<br />';
+								echo '<input type="radio" name="semesteranfang" value="SS"'.set_radio('semesteranfang', 'SS', FALSE).' />';
+								echo 'SS'; echo '<br />';
 							?>
 							<?php echo form_dropdown('studiengang', $studiengaenge, /*standard value*/'', $data_studiengang); ?>
 						</fieldset>
