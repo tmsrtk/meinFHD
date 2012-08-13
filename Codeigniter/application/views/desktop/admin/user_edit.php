@@ -11,12 +11,17 @@
 	// add as first element
 	array_unshift($data_role, 'Bitte wählen');
 	$data_role_ext = 'class="user_change_rolle_dd" id="user_cr_role"';
+
+	$searchbox_content = '';
+	(!empty($_POST['email']))?$searchbox_content=$_POST['email']:'';
+
 	$data_search = array(
 		'id' => 'user_cr_search',
 		'class' => 'search-query',
 		'name' => 'search_user',
-		'placeholder' => 'Benutzer suchen'
-	);
+		'placeholder' => 'Benutzer suchen',
+		'value' => $searchbox_content
+		);
 	//--------------------------------------------------------------------------
 ?>
 	<div class="row-fluid">
@@ -51,6 +56,10 @@
 		</table>
 	</div>
 
+	<div id="modalcontent"></div>
+
+	<?php FB::log($_POST);FB::log($_GET) ?>
+
 <?php endblock(); ?>
 
 
@@ -63,7 +72,7 @@
 		init : function( config ) {
 			this.config = config;
 			this.bindEvents();
-			// this.requestBySearch();
+			this.requestSearch(this.config.roleDropdown, this.config.searchInput);
 		},
 		
 		bindEvents : function() {
@@ -215,27 +224,71 @@
 	/**
 	 * 
 	 */
-	function createDialog(title, text) {
-		var $mydialog = $('<div id="dialog-confirm" title="'+title+'"></div>')
-					.html('<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>'+text+'</p>')
-					.dialog({
-						autoOpen: false,
-						resizable: false,
-						height: 200,
-						modal: true,
-						buttons: {
-							OK: function() {
-								$("input[type=submit][clicked=true]").parents("form#edit_user_row").submit();
-								$("td.user_content_row input#save").removeAttr("clicked");
-								$( this ).dialog( "close" );
-							},
-							Abbrechen: function() {
-								$("td.user_content_row input#save").removeAttr("clicked");
-								$( this ).dialog( "close" );
-							}
-						}
-					});
-		return $mydialog;
+	// function createDialog(title, text) {
+	// 	var $mydialog = $('<div id="dialog-confirm" title="'+title+'"></div>')
+	// 				.html('<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>'+text+'</p>')
+	// 				.dialog({
+	// 					autoOpen: false,
+	// 					resizable: false,
+	// 					height: 200,
+	// 					modal: true,
+	// 					buttons: {
+	// 						OK: function() {
+	// 							$("input[type=submit][clicked=true]").parents("form#edit_user_row").submit();
+	// 							$("td.user_content_row input#save").removeAttr("clicked");
+	// 							$( this ).dialog( "close" );
+	// 						},
+	// 						Abbrechen: function() {
+	// 							$("td.user_content_row input#save").removeAttr("clicked");
+	// 							$( this ).dialog( "close" );
+	// 						}
+	// 					}
+	// 				});
+	// 	return $mydialog;
+	// }
+
+	function createModalDialog(title, text, withOK) {
+		myModalDialog = 
+			$('<div class="modal hide" id="myModal"></div>')
+			.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
+			.append('<div class="modal-body"><p>'+text+'</p></div>')
+			.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Schließen</a>');
+			if (withOK) myModalDialog.find('.modal-footer').append('<a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
+			// <a href="" class="btn btn-primary" data-accept="modal">OK</a></div>
+		return myModalDialog;
+	}
+
+	function _showModal(title, text, withOK) {
+		mm = createModalDialog(title, text, withOK);
+		$('#modalcontent').html(mm);
+
+		$('#myModal').modal({
+			keyboard: false
+		}).on('hide', function () {
+			$("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
+		}).modal('show');
+
+		if (withOK) {
+			// if there are any click listener, remove them
+			$('#modalcontent').off('click');
+			// add new
+			$("#modalcontent").on( 'click', 'button, a', function(event) {
+				event.preventDefault();
+
+				if ( $(this).attr("data-accept") === 'modal' ) {
+					console.log("accept");
+
+					$(event.target).parent().parent().find("div.modal-body").html("Bitte warten, der Befehl wird ausgeführt");
+					$(event.target).parent().parent().find("div.modal-footer").hide();
+
+					$("input[type=submit][data-clicked=true]").parents("form#edit_user_row").submit();
+
+				} else {
+					console.log("cancel");
+				}
+
+			});
+		}
 	}
 
 	// live click listener (because of ajax and new content) to override default submit button function
@@ -246,24 +299,26 @@
 		var user_function =  $(this).parents("form#edit_user_row").find("#user_function").val();
 
 		if (user_function === '0') {
-			$(this).attr("clicked", "true");
-			createDialog('Änderungen speichern', 'Sollen die Änderungen wirklich gespeichert werden?').dialog("open");
+			$(this).attr("data-clicked", "true");
+			// createDialog('Änderungen speichern', 'Sollen die Änderungen wirklich gespeichert werden?').dialog("open");
+			_showModal('Änderungen speichern', 'Sollen die Änderungen wirklich gespeichert werden?', true);
 		} else if (user_function === '1') {
-			$(this).attr("clicked", "true");
-			createDialog('Passwort resetten', 'Möchten Sie das Passwort für diesen Benutzer wirklich zurücksetzen?').dialog("open");
+			// $(this).attr("data-clicked", "true");
+			// createDialog('Passwort resetten', 'Möchten Sie das Passwort für diesen Benutzer wirklich zurücksetzen?').dialog("open");
 		} else if (user_function === '2') {
-			$(this).attr("clicked", "true");
-			createDialog('Studienplan resetten', 'Möchten Sie den Studienplan für diesen Benutzer wirklich zurücksetzen?').dialog("open");
+			$(this).attr("data-clicked", "true");
+			// createDialog('Studienplan resetten', 'Möchten Sie den Studienplan für diesen Benutzer wirklich zurücksetzen?').dialog("open");
+			_showModal('Studienplan resetten', 'Möchten Sie den Studienplan für diesen Benutzer wirklich zurücksetzen?', true);
 		} else if (user_function === '3') {
-			$(this).attr("clicked", "true");
+			$(this).attr("data-clicked", "true");
 
    		   	// Edits by Christian Kundruss
             // for the login as function the model is unneccessary in my opinion...
             //createDialog('Anmelden als...', 'Möchten Sie sich wirklich als dieser Benutzer anmelden?').dialog("open");
 
              // if we do not use the modal box pass the information of the choosen user to the controller
-             $("input[type=submit][clicked=true]").parents("form#edit_user_row").submit();
-             $("td.user_content_row input#save").removeAttr("clicked");
+             $("input[type=submit][data-clicked=true]").parents("form#edit_user_row").submit();
+             $("td.user_content_row input#save").removeAttr("data-clicked");
 		} else {
 
 		}
