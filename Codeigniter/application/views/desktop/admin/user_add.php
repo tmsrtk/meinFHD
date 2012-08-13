@@ -62,7 +62,7 @@
 					<hr>
 					<?php echo form_open('admin/validate_create_user_form/', $data_formopen); // main inputs for all users ?>
 						<fieldset id="user-info">
-							<?php echo form_dropdown('role', $all_roles, /*standard value*/'', $data_roles); ?>
+							<?php echo form_dropdown('role', $all_roles, /*standard value*/set_value('role'), $data_roles); ?>
 							<?php echo form_input($data_loginname); ?>
 							<?php echo form_input($data_email); ?>
 							<?php echo form_input($data_forename); ?>
@@ -107,7 +107,7 @@
 		init : function( config ) {
 			this.config = config;
 			this.bindEvents();
-			this.toggleStudentsdata();
+			this.toggleStudentsdata(this.config.roleDropdown);
 		},
 		
 		bindEvents : function() {
