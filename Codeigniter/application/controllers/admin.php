@@ -369,6 +369,8 @@ class Admin extends FHD_Controller {
 	*/
 	public function validate_create_user_form()
 	{
+		$this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+
 		$rules = array();
 
 		$rules[] = $this->adminhelper->get_formvalidation_role();
@@ -440,6 +442,8 @@ class Admin extends FHD_Controller {
 		$rules[] = $this->adminhelper->get_formvalidation_forename();
 		$rules[] = $this->adminhelper->get_formvalidation_lastname();
 		$rules[] = $this->adminhelper->get_formvalidation_email();
+		$rules[] = $this->adminhelper->get_formvalidation_erstsemestler();
+
 		// set the rules
 		$this->form_validation->set_rules($rules);
 
@@ -512,7 +516,7 @@ class Admin extends FHD_Controller {
 	private function _validate_edits()
 	{
 		// set custom delimiter for validation errors
-		$this->form_validation->set_error_delimiters('<div class="val_error">', '</div>');
+		$this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
 
 
 		$rules = array();
@@ -522,6 +526,9 @@ class Admin extends FHD_Controller {
 
 		// current user data in db
 		$current_user_data = $this->admin_model->get_user_by_id($this->input->post('user_id'));
+
+		// search empty validation, to get the value, to put it in the searchbox after invalid validation
+		// $rules[] = $this->adminhelper->get_formvalidation_searchbox();
 
 		// check if current value is different from the value in db
 		if ($current_user_data['LoginName'] != $new_form_values['loginname']) 
@@ -590,7 +597,8 @@ class Admin extends FHD_Controller {
 			// save in db
 			$this->save_user_changes();
 
-			redirect(site_url().'admin/edit_user_mask');
+			$this->edit_user_mask();
+			// redirect(site_url().'admin/edit_user_mask');
 		}
 	}
 
