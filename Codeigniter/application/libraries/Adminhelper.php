@@ -122,6 +122,25 @@ class Adminhelper {
 			);
 	}
 
+	/***/
+	function get_formvalidation_searchbox()
+	{
+		return array(
+			'field' => 'search_user',
+			'label' => 'search_user',
+			'rules' => ''
+			);
+	}
+
+	function get_formvalidation_erstsemestler()
+	{
+		return array(
+			'field' => 'erstsemestler',
+			'label' => 'erstsemestler',
+			'rules' => ''
+			);
+	}
+
 	/************************************************************************
 	 *	printSemesterInteger()												*
 	 *																		*
