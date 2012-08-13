@@ -1785,7 +1785,7 @@ class Admin extends FHD_Controller {
 	    
 		$file = './resources/uploads/'.$file_to_open;
 		
-	    // delete file
+	    // open file
 	    shell_exec('start '.$file);
 	    
 //	    $this->stdplan_import();

@@ -12,13 +12,13 @@
     $dropdown_attrs = 'class = "span"';
     $dropdown_attrs2 = 'class = "span"';
     
-    if($lab == '1'){
-	$lab_participants_attrs = array(
-	    'name' => $lecture_details->SPKursID.'_TeilnehmerMax', 
-	    'id' => 'kursverwaltung-tn',
-	    'class' => 'span',
-	    'value' => $lecture_details->TeilnehmerMax, 
-	);
+    if($is_lab){
+		$lab_participants_attrs = array(
+			'name' => $lecture_details->SPKursID.'_TeilnehmerMax', 
+			'id' => 'kursverwaltung-tn',
+			'class' => 'span',
+			'value' => $lecture_details->TeilnehmerMax, 
+		);
     }
     
     $label_attrs = array(
@@ -50,7 +50,7 @@
 		?>
     <div class="span2">
 		<?php
-			if($lab == '1'){
+			if($is_lab){
 			// group-label for better overview
 				echo form_label('Gruppe '.$lecture_details->VeranstaltungsformAlternative, '', $label_attrs);
 			} else {
@@ -59,7 +59,7 @@
 		?>
     </div>
     <!-- building table >> content-->
-    <div class="span2"><?php echo form_input($course_room_attrs); ?></div>
+    <div class="span1"><?php echo form_input($course_room_attrs); ?></div>
     <div class="span2"><?php echo form_dropdown(
 	    $lecture_details->SPKursID.'_StartID', $starttime_options, $lecture_details->StartID-1, $dropdown_attrs); ?></div>
     <div class="span2"><?php echo form_dropdown(
@@ -69,14 +69,36 @@
     <div class="span1">
 		<?php
 			// add another field for number of possible particitpants - for labs view
-			if($lab == '1'){
+			if($is_lab){
 			// max participants - only relevant for labs
 				echo form_input($lab_participants_attrs);
+				
 			} else {
 				echo '-';
 			}
 		?>
     </div>
+	<div class="span1">
+		<?php 
+			// only visible for non-tuts
+			if(!$is_tut){
+				// download-button labe depends on eventtype
+				$download_button_label = '';
+				if($is_lab){
+					// labs show number of participants and max. possible participants
+					$download_button_label = $current_participants.'/'.$lecture_details->TeilnehmerMax;
+				} else {
+					// lectures show current attendees
+					$download_button_label = 'todo';
+				}
+				$anchor_attrs = 'class="btn btn-mini btn-info download-tn-button-'.$course_id.'" data-id="'.$lecture_details->SPKursID.'"';
+				echo anchor('kursverwaltung/show_coursemgt#', '<i class="icon-download"></i> '.$download_button_label, $anchor_attrs);
+//				echo '<a class="btn btn-mini download-tn-button" id="'.$lecture_details->SPKursID.'-tn-download" href="#"><i class="icon-hdd"></i></a>'; 
+			} else {
+				echo '-';
+			}
+		?>
+	</div>
 <!--    <div class="span2"><?php // echo form_submit('', 'Speichern', $submit_button_attrs); ?></div>-->
     <?php // echo form_close(); ?>
 </div>

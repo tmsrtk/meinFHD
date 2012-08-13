@@ -73,9 +73,11 @@ class Kursverwaltung extends FHD_Controller {
 			foreach($this->course_ids as $id => $role){
 				$name = array(); // init
 
+				// save course_id and course_description for partial view
 				$staff_view_data['course_id'] = $id;
-				// get staff-overview view
+				$staff_view_data['course_description'] = $course_names_ids[$id]->Beschreibung;
 
+				// get staff-overview view
 				// get active staff
 				$name = $this->kursverwaltung_model->get_profname_for_course($id);
 				if($name){
@@ -108,13 +110,16 @@ class Kursverwaltung extends FHD_Controller {
 				// get view for each eventtype
 				$eventtypes = $this->kursverwaltung_model->get_eventtypes_for_course($id);
 				foreach($eventtypes as $e){
-					// must be an array because (final) view runs data in foreach loop 
+					// must be an array because (final) view (courses_show.php) runs data in foreach loop 
 					$course_data[$id][] = $this->get_course_event_view($id, $e, $subview_data, $subview_lecture_to_load);
 				}
-
+				
+				// getting description depending on role
+				$description_field = $this->load->view('courses/partials/courses_description', $staff_view_data, TRUE);
 
 				$this->data->add('staff', $staff);
 				$this->data->add('course_details', $course_data);
+				$this->data->add('description', $description_field);
 				$this->data->add('offset', 0);
 			}
 
@@ -139,40 +144,40 @@ class Kursverwaltung extends FHD_Controller {
     private function get_course_event_view($course_id, $eventtype, $subview_data, $subview_to_load){
 	
 		// init
-		$subview_data['lab'] = '';
+		$subview_data['is_lab'] = FALSE;
+		$subview_data['is_tut'] = FALSE;
 		$subview_data['lecture_name'] = $this->kursverwaltung_model->get_lecture_name($course_id);
 		$subview_data['course_id'] = $course_id;
 
 		switch($eventtype) {
 			case Kursverwaltung::LECTURE :
-			// data for subviews
-			$subview_data['lab'] = '0';
-			$subview_data['tut'] = '0';
-			$subview_data['headline'] = 'Vorlesung';
+				// data for subviews
+				$subview_data['headline'] = 'Vorlesung';
 
-			//get lecture-data - only changable for NO-tuts
-			$subview_data['lecture_details'] = $this->kursverwaltung_model->get_lecture_details($course_id, $eventtype);
-			$lecture = $this->load->view('courses/partials/courses_tablehead', $subview_data, TRUE);
-			$lecture .= $this->load->view($subview_to_load, $subview_data, TRUE);
-			return $lecture;
+				//get lecture-data - only changable for NO-tuts
+				$subview_data['lecture_details'] = $this->kursverwaltung_model->get_lecture_details($course_id, $eventtype);
+				$lecture = $this->load->view('courses/partials/courses_tablehead', $subview_data, TRUE);
+				$lecture .= $this->load->view($subview_to_load, $subview_data, TRUE);
+				return $lecture;
 			case Kursverwaltung::LAB_SEM :
-			$subview_data['headline'] = 'Seminar';
-			return $this->get_lab_view($course_id, $eventtype, $subview_to_load, $subview_data);
+				$subview_data['headline'] = 'Seminar';
+				return $this->get_lab_view($course_id, $eventtype, $subview_to_load, $subview_data);
 			case Kursverwaltung::LAB_UEB :
-			$subview_data['headline'] = 'Übung';
-			return $this->get_lab_view($course_id, $eventtype, $subview_to_load, $subview_data);
+				$subview_data['headline'] = 'Übung';
+				return $this->get_lab_view($course_id, $eventtype, $subview_to_load, $subview_data);
 			case Kursverwaltung::LAB_PRA :
-			$subview_data['headline'] = 'Praktikum';
-			return $this->get_lab_view($course_id, $eventtype, $subview_to_load, $subview_data);
+				$subview_data['is_lab'] = TRUE;
+				$subview_data['headline'] = 'Praktikum';
+				return $this->get_lab_view($course_id, $eventtype, $subview_to_load, $subview_data);
 			case Kursverwaltung::TUT :
-			$subview_data['tut'] = '1';
-			$subview_data['headline'] = 'Tutorium';
-			// get tut data view - always visible to every role
-			$subview_data['lecture_details'] = $this->kursverwaltung_model->get_lecture_details($course_id, $eventtype);
-			$tut = $this->load->view('courses/partials/courses_tablehead', $subview_data, TRUE);
-			// !! view has to be courses_lecture because tut should be able to save changes in tut
-			$tut .= $this->load->view('courses/partials/courses_lecture', $subview_data, TRUE);
-			return $tut;
+				$subview_data['is_tut'] = TRUE;
+				$subview_data['headline'] = 'Tutorium';
+				// get tut data view - always visible to every role
+				$subview_data['lecture_details'] = $this->kursverwaltung_model->get_lecture_details($course_id, $eventtype);
+				$tut = $this->load->view('courses/partials/courses_tablehead', $subview_data, TRUE);
+				// !! view has to be courses_lecture because tut should be able to save changes in tut
+				$tut .= $this->load->view('courses/partials/courses_lecture', $subview_data, TRUE);
+				return $tut;
 		}
 	
     }
@@ -190,12 +195,25 @@ class Kursverwaltung extends FHD_Controller {
 		//get lab-data-view (
 		// get data from db - array containing lab-data
 		$lab_details = $this->kursverwaltung_model->get_lab_details($course_id, $eventtype);
+//				echo '<pre>';
+//				echo '<div>LABING</div>';
+//				print_r($lab_details);
+//				echo '</pre>';
 		$lab[] = $this->load->view('courses/partials/courses_tablehead', $subview_data, TRUE);
 		foreach($lab_details as $details){
 	//	    echo '<pre>';
 	//	    print_r($l);
 	//	    echo '</pre>';
+			// getting all participants and count them to show current participants
+			$participants = array();
+			$participants = $this->kursverwaltung_model->get_participants_for_single_sp_course($details->SPKursID);
+			$counter = 0;
+			foreach ($participants as $part) {
+				$counter++;
+			}
+			// pass data into view
 			$subview_data['lecture_details'] = $details;
+			$subview_data['current_participants'] = $counter;
 			$lab[] = $this->load->view($subview_to_load, $subview_data, TRUE);
 		}
 		return $lab;
@@ -222,47 +240,47 @@ class Kursverwaltung extends FHD_Controller {
     
 //    ############################################################## SAVING DATA
     
-    /**
-     * 
-     */
-    public function save_course_details(){
-
-		// update database with new data
-		// !! >> number of participants has to be store in gruppe
-		$input_data = $this->input->post();
-	//	echo '<pre>';
-	//	echo '<div>POST</div>';
-	//	print_r($input_data);
-	//	echo '</pre>';
-
-		$save_course_details_to_db = array(); // init
-		$save_group_details_to_db = array(); // init
-		$sp_course_id = ''; // init
-		$t = '';
-
-		// run through input
-		foreach ($input_data as $key => $value) {
-			// get key and field-name
-			$split_key = explode('_', $key);
-			// save spkursid
-			$sp_course_id = $split_key[0];
-			
-			// prepare data for saving - starttime, endtime and day has to be mapped from array-index to ID (+1)
-			switch ($split_key[1]) {
-				case 'TeilnehmerMax' : $save_group_details_to_db['TeilnehmerMax'] = $value; break;
-				case 'Raum' : $save_course_details_to_db[$split_key[1]] = $value; break;
-				default : $save_course_details_to_db[$split_key[1]] = $value+1; break;
-			}
-		}
-
-		// save that data
-		$this->kursverwaltung_model->save_course_details(
-			$sp_course_id, $save_course_details_to_db, $save_group_details_to_db);
-
-
-		$this->show_coursemgt();
-	
-    }
+//    /**
+//     * outdated / needed, if just one course should be saved
+//     */
+//    public function save_course_details(){
+//
+//		// update database with new data
+//		// !! >> number of participants has to be store in gruppe
+//		$input_data = $this->input->post();
+//		echo '<pre>';
+//		echo '<div>POST</div>';
+//		print_r($input_data);
+//		echo '</pre>';
+//
+//		$save_course_details_to_db = array(); // init
+//		$save_group_details_to_db = array(); // init
+//		$sp_course_id = ''; // init
+//		$t = '';
+//
+//		// run through input
+//		foreach ($input_data as $key => $value) {
+//			// get key and field-name
+//			$split_key = explode('_', $key);
+//			// save spkursid
+//			$sp_course_id = $split_key[0];
+//			
+//			// prepare data for saving - starttime, endtime and day has to be mapped from array-index to ID (+1)
+//			switch ($split_key[1]) {
+//				case 'TeilnehmerMax' : $save_group_details_to_db['TeilnehmerMax'] = $value; break;
+//				case 'Raum' : $save_course_details_to_db[$split_key[1]] = $value; break;
+//				default : $save_course_details_to_db[$split_key[1]] = $value+1; break;
+//			}
+//		}
+//
+//		// save that data
+//		$this->kursverwaltung_model->save_course_details(
+//			$sp_course_id, $save_course_details_to_db, $save_group_details_to_db);
+//
+//
+//		$this->show_coursemgt();
+//	
+//    }
     
     /**
      * Alternative function to save all details at once.
@@ -270,6 +288,10 @@ class Kursverwaltung extends FHD_Controller {
      */
     public function save_course_details_all_at_once(){
 		$input_data = $this->input->post();
+//		echo '<pre>';
+//		echo '<div>POST</div>';
+//		print_r($input_data);
+//		echo '</pre>';
 
 		// init
 		$input_data_filtered = array();
@@ -293,7 +315,7 @@ class Kursverwaltung extends FHD_Controller {
 				} else {
 					$desc_split = explode('_', $key);
 					$course_id = $desc_split[0];
-					$description = $desc_split[1];
+					$description = $value;
 				}
 			}
 		}
@@ -332,18 +354,21 @@ class Kursverwaltung extends FHD_Controller {
 			}
 		}
 
-		// save that data - one last time
-		// >> last data won't be detected by change of course_id (there is no new course-id)
+		// save that data - a last time
+		// >> because last data won't be detected by change of course_id (there is no new course-id)
 		$this->kursverwaltung_model->save_course_details(
 			$sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
-	//	echo '<pre>';
-	//	echo '<div>course</div>';
-	//	print_r($save_course_details_to_db);
-	//	echo '<div>group</div>';
-	//	print_r($save_group_details_to_db);
-	//	echo '<div>id+desc</div>';
-	//	print_r($course_id.' '.$description);
-	//	echo '</pre>';
+		
+		$this->kursverwaltung_model->save_course_description($course_id, $description);
+		
+//		echo '<pre>';
+//		echo '<div>course</div>';
+//		print_r($save_course_details_to_db);
+//		echo '<div>group</div>';
+//		print_r($save_group_details_to_db);
+//		echo '<div>id+desc</div>';
+//		print_r($course_id.' '.$description);
+//		echo '</pre>';
 
 
 	//	echo '<pre>';
@@ -395,11 +420,11 @@ class Kursverwaltung extends FHD_Controller {
 	//	    echo 'else'; // DEBUG
 			// run through all incoming data
 			foreach ($staff as $key => $value) {
-			// ignore first element
-			if($value != 'Speichern'){
-				$course_id = $value;
-				$current_labings_tuts[] = $key;
-			}
+				// ignore first element
+				if($value != 'Speichern'){
+					$course_id = $value;
+					$current_labings_tuts[] = $key;
+				}
 			}
 		}	
 
@@ -413,6 +438,82 @@ class Kursverwaltung extends FHD_Controller {
     
 
 
+	/**
+	 * TODO - not working at the moment
+	 * Returns participants of a sp_course group!! (via POST) to show in any dom-element.
+	 */
+	public function ajax_get_participants_of_sp_course(){
+		$sp_course_id = $this->input->post('sp_course_id');
+		
+		echo $sp_course_id;
+		
+	}
+	
+	
+	
+	/**
+	 * Create file with participants for SP!! Course
+	 */
+	public function ajax_create_participants_file_sp_course(){
+		$id = $this->input->post('sp_course_id');
+		echo $this->download_course_participants($id, TRUE);
+	}
+	
+	/**
+	 * Create file with participants for Course
+	 */
+	public function ajax_create_participants_file_course(){
+		$id = $this->input->post('course_id');
+		echo $this->download_course_participants($id, FALSE);
+	}
+	
+	
+	/**
+	 * Depending on the method the call comes from a file with sp_course/ course-participants will be created
+	 * @param type $id
+	 * @param type $is_spcourse
+	 */
+	private function download_course_participants($id, $is_spcourse){
+		
+		// create file
+		$data = $this->kursverwaltung_model->create_file_with_participants_for_course($id, $is_spcourse);
+		
+		$file = '';
+		$file_name = 'test.csv';
+		$file_path = './resources/downloads/'.$file_name;
+		
+		if(file_exists($file_path)){
+			unlink($file_path);
+		}
+		
+		// create file
+		$file = fopen($file_path, 'a+');
+		
+		// fill
+//		if(is_writable($file_name)){
+		fwrite($file, $data);
+//			}
+		
+		// close
+		fclose($file);
+
+//		chmod('file_path', 0640);
+
+		// open file
+		shell_exec('start '.$file_path);
+			
+//		}
+		
+		
+//		echo $data;test.csv'
+		
+		
+		
+		// and open download-window
+		
+		
+	}
+	
 
 
     /**

@@ -314,7 +314,7 @@ class Kursverwaltung_model extends CI_Model {
 			$this->db->update('gruppe', $group_data);
 		}
     }
-    
+	
     
     /**
      * Helper to get group_id for given sp_course_id
@@ -336,6 +336,17 @@ class Kursverwaltung_model extends CI_Model {
 		}
 		return $data;
     }
+	
+	
+	/**
+	 * Saves the description typed into textfield on my courses view.
+	 * @param type $cid
+	 * @param type $desc
+	 */
+	public function save_course_description($cid, $desc){
+		$this->db->where('KursID', $cid);
+		$this->db->update('studiengangkurs', array('Beschreibung' => $desc));
+	}
     
     
     public function save_staff_to_db($course_id, $new_staff_ids, $table){
@@ -515,6 +526,89 @@ class Kursverwaltung_model extends CI_Model {
 		}
 		return $ids;
     }
+	
+	
+	
+	
+	public function create_file_with_participants_for_course($course_id, $is_spcourse){
+		$course_data = array();
+		$participants_data = array();
+		
+		// getting course-details
+		$this->db->select('a.Kursname, a.kurs_kurz, b.VeranstaltungsformAlternative, t.TagName, s.Beginn, r.Ende, g.TeilnehmerMax');
+		$this->db->from('studiengangkurs as a');
+		$this->db->join('stundenplankurs as b', 'a.KursID = b.KursID');
+		$this->db->join('gruppe as g', 'b.GruppeID = g.GruppeID');
+		$this->db->join('tag as t', 'b.TagID = t.TagID');
+		$this->db->join('stunde as s', 'b.StartID = s.StundeID');
+		$this->db->join('stunde as r', 'b.EndeID = r.StundeID');
+		$this->db->where('b.SPKursID', $course_id);
+		$q_course = $this->db->get();
+		
+		if($q_course->num_rows()  === 1){
+			foreach($q_course->result() as $row){
+				$course_data = $row;
+			}
+		}		
+		
+		// init
+		$file_data = '';
+		
+		// store some genereal course data to put into file
+		$file_data .= 'Fach:;'.$course_data->Kursname.' ('.$course_data->kurs_kurz.');\r';
+		$file_data .= 'Gruppe:;'.$course_data->VeranstaltungsformAlternative.';\r';
+		$file_data .= 'Tag:;'.$course_data->TagName.';\r';
+		$file_data .= 'Beginn:;'.$course_data->Beginn.';\r';
+		$file_data .= 'Ende:;'.$course_data->Ende.';\r';
+		$file_data .= 'Teilnehmer:;'.$course_data->TeilnehmerMax.';\r';
+		$file_data .= 'Nachname:;Vorname:;Emailadresse:;\r';
+		
+		
+		// getting participants of a single sp_course group!!
+		$participants_data = $this->get_participants_of_single_sp_course();
+		
+		// save data to 'file'
+		foreach ($participants_data as $key => $value) {
+			$file_data .= $value->Nachname.';';
+			$file_data .= $value->Vorname.';';
+			$file_data .= $value->Email.';\r';
+		}
+		
+		return $file_data;
+		
+	}
+	
+	
+	/**
+	 * Returns participants for a single sp_course
+	 * @param type $course_id
+	 * @return type
+	 */
+	public function get_participants_for_single_sp_course($course_id){
+		$participants_data = array();
+		
+		$this->db->select('Nachname, Vorname, Email');
+		$this->db->from('benutzer as a');
+		$this->db->join('gruppenteilnehmer as b', 'a.BenutzerID = b.BenutzerID');
+		$this->db->join('stundenplankurs as c', 'b.GruppeID = c.GruppeID');
+		$this->db->where('c.SPKursID', $course_id);
+//		} else {
+//			// TODO - how do you know a user is attending that course?
+//			// benutzerkurs >> semesterid?
+//		}
+		$q_part = $this->db->get();
+
+		if($q_part->num_rows() > 0){
+			foreach($q_part->result() as $row){
+				$participants_data[] = $row;
+			}
+		}
+		
+		return $participants_data;
+	}
+	
+	
+	
     
     
     

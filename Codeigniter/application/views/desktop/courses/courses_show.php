@@ -3,8 +3,8 @@
 <?php startblock('title');?><?php get_extended_block();?> - Kursverwaltung<?php endblock(); ?>
 
 <?php startblock('preCodeContent'); # additional markup before content ?>
-	<div class="span1"></div>
-		<div class="span10 well well-small">
+<!--	<div class="span1"></div>-->
+		<div class="span12 well well-small">
 <?php endblock(); ?>
 	
 <?php
@@ -117,43 +117,31 @@
 						}
 					}
 				}
-				echo '<hr>';
-				echo form_submit($submit_data_save_all);
-				echo '</div>';
 
-
-				// course-description
-				$course_description_textarea_data = array(
-					'name' => $c_id.'_description',
-					'id' => 'input-course-description',
-					'class' => 'input-xlarge',
-					'value' => $value->Beschreibung,
-					'rows' => 7,
-					'cols' => 40
-				);
 			?>
-
 				<div>
-					<h3>Beschreibung </h3>
-					<div>
-					<?php echo form_textarea($course_description_textarea_data); ?>
-					</div>
-					<?php echo form_close(); // end of form ?>
-				</div>
+					<?php
+						echo '<hr>';
+						echo $description;
+						echo form_submit($submit_data_save_all);
+						echo '</div>';
+						echo form_close(); // end of form 
+					?></div>
 				</div><!-- end of tab -->
 			<?php endforeach; ?>    
 			</div>
+			<div id="testing"></div>
 		</div>
 
 <?php endblock(); ?>
 <?php startblock('postCodeContent'); # additional markup before content ?>
 	</div>
-	<div class="span1"></div>
+<!--	<div class="span1"></div>-->
 <?php endblock(); ?>
 	
 <?php startblock('customFooterJQueryCode');?>
-	
-    // initialize active tab
+
+	// initialize active tab
     $('.tab-content div:first-child').addClass("active");
     $('#course-details-navi li:first-child').addClass("active");
     
@@ -358,9 +346,42 @@
 				};
 			});
 		});
+		
+		
+		// ################ handle download-tn-buttons
+		var downloadTnButtons = $('.download-tn-button-'+courseId);
+		console.log(downloadTnButtons);
+		
+		$.each(downloadTnButtons, function(index, value){
+			$(value).click(function(){
+				var sp_course_id = $(this).data('id');
+				$.ajax({
+					type: "POST",
+					url: "<?php echo site_url();?>kursverwaltung/ajax_create_participants_file_sp_course/",
+					dataType: 'html',
+					data : {sp_course_id : sp_course_id},
+					success: function (data){
+						$('#testing').html(data);
+					}
+				});
+			});
+		});
 
 
     }); // end tab-views - all elements has to be prepared for all ids
+	
+	
+	// create dialog element
+	function createModal(title, text) {
+		var myDialog = 
+			$('<div class="modal hide" id="participants-modal"></div>')
+			.html('<div class="modal-header"><button class="close" type="button" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
+			.append('<div class="modal-body" id="modal-body"><p>'+text+'</p></div>')
+			.append('<div class="modal-footer"><a href="#" class="btn" id="part-modal-cancel" data-dismiss="modal">Abbrechen</a>\n\
+			<a href="" class="btn btn-primary" data-id="0" data-delete="0" id="part-modal-confirm" data-accept="modal">Herunterladen</a></div>');
+
+		return myDialog;
+    };
     
 //    
 //    // handle button to add tuts to benutzer_mm_rolle
