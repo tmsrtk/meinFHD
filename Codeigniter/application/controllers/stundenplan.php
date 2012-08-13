@@ -118,4 +118,19 @@ class Stundenplan extends FHD_Controller {
 	    $this->load->view('stundenplan/tabview_desktop', $this->data->load());
 	}
 
+
+
+
+
+
+
+
+
+	public function register_in_course()
+	{
+		$data = $this->input->post();
+		
+		
+	}
+
 }
