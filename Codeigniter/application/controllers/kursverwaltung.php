@@ -211,7 +211,12 @@ class Kursverwaltung extends FHD_Controller {
 			foreach ($participants as $part) {
 				$counter++;
 			}
+			// create location of potential downloaded file
+			$dl_file = '';
+			$dl_file = './resources/downloads/participants/gruppe-'.md5($details->SPKursID);
+			
 			// pass data into view
+			$subview_data['download_file'] = $dl_file;
 			$subview_data['lecture_details'] = $details;
 			$subview_data['current_participants'] = $counter;
 			$lab[] = $this->load->view($subview_to_load, $subview_data, TRUE);
@@ -479,8 +484,8 @@ class Kursverwaltung extends FHD_Controller {
 		$data = $this->kursverwaltung_model->create_file_with_participants_for_course($id, $is_spcourse);
 		
 		$file = '';
-		$file_name = 'test.csv';
-		$file_path = './resources/downloads/'.$file_name;
+		$file_name = 'gruppe-'.md5($id).'.csv';
+		$file_path = './resources/userfiles/downloads/'.$file_name;
 		
 		if(file_exists($file_path)){
 			unlink($file_path);
@@ -489,29 +494,21 @@ class Kursverwaltung extends FHD_Controller {
 		// create file
 		$file = fopen($file_path, 'a+');
 		
-		// fill
-//		if(is_writable($file_name)){
-		fwrite($file, $data);
-//			}
+		// and fill
+		if(is_writable($file_path)){
+			fwrite($file, $data);
+		}
 		
 		// close
 		fclose($file);
+		chmod($file_path, 0640);
 
-//		chmod('file_path', 0640);
+//		// prompt user to download file
+//		header('Content-type: application/csv');
+//		header('Content-Disposition: attachment; filename="download.csv"');
+//		readfile($file_path);
 
-		// open file
 		shell_exec('start '.$file_path);
-			
-//		}
-		
-		
-//		echo $data;test.csv'
-		
-		
-		
-		// and open download-window
-		
-		
 	}
 	
 

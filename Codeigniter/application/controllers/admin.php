@@ -1321,14 +1321,6 @@ class Admin extends FHD_Controller {
 
 	    // no autoreload without validation
 	    $this->data->add('stdplan_id_automatic_reload', $reload);
-
-//	    $siteinfo = array(
-//			'title' => 'Stundenplan anzeigen',
-//			'main_content' => 'admin_stdplan_edit'
-//	    );
-//	    $this->data->add('siteinfo', $siteinfo);
-//	    $this->load->view('includes/template', $this->data->load());
-		
 		$this->load->view('admin/stdplan_edit', $this->data->load());
 	}
 	

@@ -555,23 +555,23 @@ class Kursverwaltung_model extends CI_Model {
 		$file_data = '';
 		
 		// store some genereal course data to put into file
-		$file_data .= 'Fach:;'.$course_data->Kursname.' ('.$course_data->kurs_kurz.');\r';
-		$file_data .= 'Gruppe:;'.$course_data->VeranstaltungsformAlternative.';\r';
-		$file_data .= 'Tag:;'.$course_data->TagName.';\r';
-		$file_data .= 'Beginn:;'.$course_data->Beginn.';\r';
-		$file_data .= 'Ende:;'.$course_data->Ende.';\r';
-		$file_data .= 'Teilnehmer:;'.$course_data->TeilnehmerMax.';\r';
-		$file_data .= 'Nachname:;Vorname:;Emailadresse:;\r';
+		$file_data .= "Fach:;".$course_data->Kursname." (".$course_data->kurs_kurz.");\r";
+		$file_data .= 'Gruppe:;'.$course_data->VeranstaltungsformAlternative.";\r";
+		$file_data .= "Tag:;".$course_data->TagName.";\r";
+		$file_data .= "Beginn:;".$course_data->Beginn.";\r";
+		$file_data .= "Ende:;".$course_data->Ende.";\r";
+		$file_data .= "Teilnehmer:;".$course_data->TeilnehmerMax.";\r";
+		$file_data .= "Nachname:;Vorname:;Emailadresse:;\r";
 		
 		
 		// getting participants of a single sp_course group!!
-		$participants_data = $this->get_participants_of_single_sp_course();
+		$participants_data = $this->get_participants_for_single_sp_course($course_id);
 		
 		// save data to 'file'
 		foreach ($participants_data as $key => $value) {
-			$file_data .= $value->Nachname.';';
-			$file_data .= $value->Vorname.';';
-			$file_data .= $value->Email.';\r';
+			$file_data .= $value->Nachname.";";
+			$file_data .= $value->Vorname.";";
+			$file_data .= $value->Email.";\r";
 		}
 		
 		return $file_data;
