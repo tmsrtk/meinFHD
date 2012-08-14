@@ -115,7 +115,7 @@ class Kursverwaltung extends FHD_Controller {
 				}
 				
 				// getting description depending on role
-				$description_field = $this->load->view('courses/partials/courses_description', $staff_view_data, TRUE);
+				$description_field[$id] = $this->load->view('courses/partials/courses_description', $staff_view_data, TRUE);
 
 				$this->data->add('staff', $staff);
 				$this->data->add('course_details', $course_data);
@@ -148,6 +148,7 @@ class Kursverwaltung extends FHD_Controller {
 		$subview_data['is_tut'] = FALSE;
 		$subview_data['lecture_name'] = $this->kursverwaltung_model->get_lecture_name($course_id);
 		$subview_data['course_id'] = $course_id;
+		$subview_data['current_participants'] = '';
 
 		switch($eventtype) {
 			case Kursverwaltung::LECTURE :
@@ -156,6 +157,7 @@ class Kursverwaltung extends FHD_Controller {
 
 				//get lecture-data - only changable for NO-tuts
 				$subview_data['lecture_details'] = $this->kursverwaltung_model->get_lecture_details($course_id, $eventtype);
+				$subview_data['current_participants'] = $this->kursverwaltung_model->count_participants_for_course($subview_data['lecture_details']->SPKursID, FALSE);
 				$lecture = $this->load->view('courses/partials/courses_tablehead', $subview_data, TRUE);
 				$lecture .= $this->load->view($subview_to_load, $subview_data, TRUE);
 				return $lecture;
@@ -192,6 +194,8 @@ class Kursverwaltung extends FHD_Controller {
 		$lab = array(); // init/clean
 		// data for subviews
 		$subview_data['lab'] = '1';
+		$subview_data['current_participants'] = '';
+		$subview_data['download_file'] = '';
 		//get lab-data-view (
 		// get data from db - array containing lab-data
 		$lab_details = $this->kursverwaltung_model->get_lab_details($course_id, $eventtype);
@@ -205,12 +209,8 @@ class Kursverwaltung extends FHD_Controller {
 	//	    print_r($l);
 	//	    echo '</pre>';
 			// getting all participants and count them to show current participants
-			$participants = array();
-			$participants = $this->kursverwaltung_model->get_participants_for_single_sp_course($details->SPKursID);
-			$counter = 0;
-			foreach ($participants as $part) {
-				$counter++;
-			}
+			$count_participants = 0;
+			$count_participants = $this->kursverwaltung_model->count_participants_for_course($details->SPKursID, TRUE);
 			// create location of potential downloaded file
 			$dl_file = '';
 			$dl_file = './resources/downloads/participants/gruppe-'.md5($details->SPKursID);
@@ -218,7 +218,7 @@ class Kursverwaltung extends FHD_Controller {
 			// pass data into view
 			$subview_data['download_file'] = $dl_file;
 			$subview_data['lecture_details'] = $details;
-			$subview_data['current_participants'] = $counter;
+			$subview_data['current_participants'] = $count_participants;
 			$lab[] = $this->load->view($subview_to_load, $subview_data, TRUE);
 		}
 		return $lab;
@@ -468,7 +468,7 @@ class Kursverwaltung extends FHD_Controller {
 	 * Create file with participants for Course
 	 */
 	public function ajax_create_participants_file_course(){
-		$id = $this->input->post('course_id');
+		$id = $this->input->post('sp_course_id');
 		echo $this->download_course_participants($id, FALSE);
 	}
 	

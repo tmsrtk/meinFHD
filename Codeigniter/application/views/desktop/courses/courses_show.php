@@ -122,7 +122,7 @@
 				<div>
 					<?php
 						echo '<hr>';
-						echo $description;
+						echo $description[$c_id];
 						echo form_submit($submit_data_save_all);
 						echo '</div>';
 						echo form_close(); // end of form 
@@ -349,10 +349,10 @@
 		
 		
 		// ################ handle download-tn-buttons
-		var downloadTnButtons = $('.download-tn-button-'+courseId);
-		console.log(downloadTnButtons);
+		var downloadTnButtonsLab = $('.download-tn-button-'+courseId);
+		var downloadTnButtonCourse = $('.download-tn-button-course-'+courseId);
 		
-		$.each(downloadTnButtons, function(index, value){
+		$.each(downloadTnButtonsLab, function(index, value){
 			$(value).click(function(){
 				var sp_course_id = $(this).data('id');
 				$.ajax({
@@ -364,6 +364,19 @@
 						$('#testing').html(data);
 					}
 				});
+			});
+		});
+		
+		$(downloadTnButtonCourse).click(function(){
+			var sp_course_id = $(this).data('id');
+			$.ajax({
+				type: "POST",
+				url: "<?php echo site_url();?>kursverwaltung/ajax_create_participants_file_course/",
+				dataType: 'html',
+				data : {sp_course_id : sp_course_id},
+				success: function (data){
+					$('#testing').html(data);
+				}
 			});
 		});
 

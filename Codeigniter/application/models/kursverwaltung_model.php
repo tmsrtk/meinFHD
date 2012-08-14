@@ -563,9 +563,10 @@ class Kursverwaltung_model extends CI_Model {
 		$file_data .= "Teilnehmer:;".$course_data->TeilnehmerMax.";\r";
 		$file_data .= "Nachname:;Vorname:;Emailadresse:;\r";
 		
+//		$file_data .= "COURSE_ID:; ".$course_id.";\r";
 		
-		// getting participants of a single sp_course group!!
-		$participants_data = $this->get_participants_for_single_sp_course($course_id);
+		// getting participants of a single sp_course - if course or sp_course depending on passed bool-flag
+		$participants_data = $this->get_participants_for_single_sp_course($course_id, $is_spcourse);
 		
 		// save data to 'file'
 		foreach ($participants_data as $key => $value) {
@@ -580,22 +581,26 @@ class Kursverwaltung_model extends CI_Model {
 	
 	
 	/**
-	 * Returns participants for a single sp_course
-	 * @param type $course_id
+	 * Returns participants for a single course depending on bool that's passed
+	 * @param type $sp_course_id
 	 * @return type
 	 */
-	public function get_participants_for_single_sp_course($course_id){
+	public function get_participants_for_single_sp_course($sp_course_id, $is_sp_course){
 		$participants_data = array();
 		
 		$this->db->select('Nachname, Vorname, Email');
 		$this->db->from('benutzer as a');
-		$this->db->join('gruppenteilnehmer as b', 'a.BenutzerID = b.BenutzerID');
-		$this->db->join('stundenplankurs as c', 'b.GruppeID = c.GruppeID');
-		$this->db->where('c.SPKursID', $course_id);
-//		} else {
-//			// TODO - how do you know a user is attending that course?
-//			// benutzerkurs >> semesterid?
-//		}
+		// if querying for participants of SP_course >> 
+		if($is_sp_course){
+			$this->db->join('gruppenteilnehmer as b', 'a.BenutzerID = b.BenutzerID');
+			$this->db->join('stundenplankurs as c', 'b.GruppeID = c.GruppeID');
+			$this->db->where('c.SPKursID', $sp_course_id);
+			echo '#############test';
+		// else: querying for participants of course >> 
+		} else {
+			$this->db->join('benutzerkurs as b', 'a.BenutzerID = b.BenutzerID');
+			$this->db->where('b.SPKursID', $sp_course_id);
+		}
 		$q_part = $this->db->get();
 
 		if($q_part->num_rows() > 0){
@@ -605,6 +610,26 @@ class Kursverwaltung_model extends CI_Model {
 		}
 		
 		return $participants_data;
+		
+	}
+	
+	/**
+	 * Counts all participants belonging to a single sp_course
+	 * courses and sp_courses (differentiation necessary for labs) depending on passed boolean
+	 * @param int $id always sp_course_id
+	 * @param boolean $is_sp_course sp_course or course
+	 * @return int
+	 */
+	public function count_participants_for_course($id, $is_sp_course){
+		// getting participants
+		$data = $this->get_participants_for_single_sp_course($id, $is_sp_course);
+		
+		$counter = 0;
+		foreach ($data as $value) {
+			$counter++;
+		}
+		
+		return $counter;
 	}
 	
 	

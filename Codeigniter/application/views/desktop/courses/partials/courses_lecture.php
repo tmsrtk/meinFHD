@@ -87,11 +87,12 @@
 				if($is_lab){
 					// labs show number of participants and max. possible participants
 					$download_button_label = $current_participants.'/'.$lecture_details->TeilnehmerMax;
+					$anchor_attrs = 'class="btn btn-mini btn-info download-tn-button-'.$course_id.'" data-id="'.$lecture_details->SPKursID.'"';
 				} else {
 					// lectures show current attendees
-					$download_button_label = 'todo';
+					$download_button_label = $current_participants;
+					$anchor_attrs = 'class="btn btn-mini btn-info download-tn-button-course-'.$course_id.'" data-id="'.$lecture_details->SPKursID.'"';
 				}
-				$anchor_attrs = 'class="btn btn-mini btn-info download-tn-button-'.$course_id.'" data-id="'.$lecture_details->SPKursID.'"';
 				echo anchor('kursverwaltung/show_coursemgt#', '<i class="icon-download"></i> '.$download_button_label, $anchor_attrs);
 //				echo '<a class="btn btn-mini download-tn-button" id="'.$lecture_details->SPKursID.'-tn-download" href="#"><i class="icon-hdd"></i></a>'; 
 			} else {
