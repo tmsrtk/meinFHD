@@ -7,7 +7,9 @@
     );
 ?>
 <!-- overview over relevant staff for this course -->
-<h3>Personen:</h3><br />
+<div class="span1"></div>
+<div class="span2"><h3>Personen:</h3></div>
+<div class="span9"></div>
 <div> <!-- staff part starts here -->
     <div class="clearfix"> <!-- FIRST line -->
 	<div class="span1"> <!-- checkbox FIRST line -->

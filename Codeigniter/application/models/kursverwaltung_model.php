@@ -8,7 +8,7 @@ class Kursverwaltung_model extends CI_Model {
      * @return type
      */
     public function get_lecture_details($course_id, $eventtype){
-	$this->db->select('SPKursID, Raum, StartID, EndeID, TagID');
+	$this->db->select('SPKursID, Raum, StartID, EndeID, TagID, GruppeID');
 	$this->db->where('KursID', $course_id);
 	$this->db->where('VeranstaltungsformID', $eventtype);
 	$q = $this->db->get('stundenplankurs');
@@ -595,7 +595,6 @@ class Kursverwaltung_model extends CI_Model {
 			$this->db->join('gruppenteilnehmer as b', 'a.BenutzerID = b.BenutzerID');
 			$this->db->join('stundenplankurs as c', 'b.GruppeID = c.GruppeID');
 			$this->db->where('c.SPKursID', $sp_course_id);
-			echo '#############test';
 		// else: querying for participants of course >> 
 		} else {
 			$this->db->join('benutzerkurs as b', 'a.BenutzerID = b.BenutzerID');
@@ -633,6 +632,9 @@ class Kursverwaltung_model extends CI_Model {
 	}
 	
 	
+	public function update_benutzerkurs_activation($id, $enable){
+		
+	}
 	
     
     

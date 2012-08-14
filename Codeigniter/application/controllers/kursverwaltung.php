@@ -9,8 +9,8 @@ class Kursverwaltung extends FHD_Controller {
     
     // eventtype_ids
     const LECTURE = 1;
-    const LAB_SEM = 2;
-    const LAB_UEB = 3;
+    const LAB_SEM = 3;
+    const LAB_UEB = 2;
     const LAB_PRA = 4;
     const TUT = 6;
     
@@ -162,9 +162,11 @@ class Kursverwaltung extends FHD_Controller {
 				$lecture .= $this->load->view($subview_to_load, $subview_data, TRUE);
 				return $lecture;
 			case Kursverwaltung::LAB_SEM :
+				$subview_data['is_lab'] = TRUE;
 				$subview_data['headline'] = 'Seminar';
 				return $this->get_lab_view($course_id, $eventtype, $subview_to_load, $subview_data);
 			case Kursverwaltung::LAB_UEB :
+				$subview_data['is_lab'] = TRUE;
 				$subview_data['headline'] = 'Übung';
 				return $this->get_lab_view($course_id, $eventtype, $subview_to_load, $subview_data);
 			case Kursverwaltung::LAB_PRA :
@@ -192,17 +194,15 @@ class Kursverwaltung extends FHD_Controller {
      */
     private function get_lab_view($course_id, $eventtype, $subview_to_load, $subview_data){
 		$lab = array(); // init/clean
+		
 		// data for subviews
 		$subview_data['lab'] = '1';
 		$subview_data['current_participants'] = '';
 		$subview_data['download_file'] = '';
+		
 		//get lab-data-view (
 		// get data from db - array containing lab-data
 		$lab_details = $this->kursverwaltung_model->get_lab_details($course_id, $eventtype);
-//				echo '<pre>';
-//				echo '<div>LABING</div>';
-//				print_r($lab_details);
-//				echo '</pre>';
 		$lab[] = $this->load->view('courses/partials/courses_tablehead', $subview_data, TRUE);
 		foreach($lab_details as $details){
 	//	    echo '<pre>';
@@ -509,6 +509,25 @@ class Kursverwaltung extends FHD_Controller {
 //		readfile($file_path);
 
 		shell_exec('start '.$file_path);
+	}
+	
+	
+	public function ajax_toggle_activation_of_spcourse(){
+		// TODO
+		$data = '';
+		$data = $this->input->post('course_id_status');
+		// sp_course_id = $data[0]; status (enabled/disabled) = $data[1]
+		
+		
+		// update benutzerkurs
+		if($data[1] == 'enabled'){
+			// means before it was ENABLED >> DISABLE registration
+			$this->kursverwaltung_model->update_benutzerkurs_activation($data[0], FALSE);
+		} else {
+			// means before it was DISABLED >> ENABLE registration
+			$this->kursverwaltung_model->update_benutzerkurs_activation($data[0], TRUE);
+		}
+		
 	}
 	
 
