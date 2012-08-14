@@ -15,7 +15,12 @@ class User_model extends CI_Model {
 	// course_ids (mapped with roles)
 	private $user_course_ids = array();
 	// studienplan
+	private $studiengang_id = 0;
 	private $semesterplan_id = 0;
+	private $act_semester = 0;
+	private $studienbeginn_jahr = 0;
+	private $studienbeginn_typ = '';
+	private $studiengang_data = array();
 
 	/**
 	 * 
@@ -45,7 +50,17 @@ class User_model extends CI_Model {
 			$this->user_roles = $this->_query_all_roles();
 			$this->user_permissions_all = $this->_query_all_permissions();
 
+			$this->studienbeginn_jahr = $this->_query_user_singlecolumndata('StudienbeginnJahr');
+			$this->studienbeginn_typ = $this->_query_user_singlecolumndata('StudienbeginnSemestertyp');
+
 			$this->semesterplan_id = $this->_query_semesterplanid();
+			// get actual Semester every time when the user connects
+			$this->act_semester = $this->adminhelper->getSemester($this->studienbeginn_typ, $this->studienbeginn_jahr);
+			// $this->act_semester = $this->_query_user_singlecolumndata('Semester');
+
+			$this->studiengang_id = $this->_query_studiengang_id();
+			$this->studiengang_data = $this->_query_studiengang_data();
+
 			
 			// course_ids
 			$this->user_course_ids = $this->get_course_ids_with_roles();
@@ -54,10 +69,15 @@ class User_model extends CI_Model {
 
 		// global data
 		$userdata = array(
-	                'userid' => $this->user_id,
-	                'loginname' => $this->loginname,
-	                'userpermissions' => $this->user_permissions_all,
-	                'roles' => $this->user_roles
+	                'userid' 					=> $this->user_id,
+	                'loginname' 				=> $this->loginname,
+	                'userpermissions' 			=> $this->user_permissions_all,
+	                'roles' 					=> $this->user_roles,
+	                'act_semester'				=> $this->act_semester,
+	                'studienbeginn_jahr' 		=> $this->studienbeginn_jahr,
+	                'studienbeginn_semestertyp'	=> $this->studienbeginn_typ,
+	                'semesterplan_id'			=> $this->semesterplan_id,
+	                'studiengang_data'			=> $this->studiengang_data
 	            );
 
 		// write userdata in global $data
@@ -74,6 +94,27 @@ class User_model extends CI_Model {
 		$q = $this->db->get()->row_array();
 
 		return ($q[$columnname]);
+	}
+
+	public function _query_studiengang_id()
+	{
+		$this->db->select('StudiengangID')
+				->from('benutzer')
+				->where('BenutzerID', $this->user_id)
+				;
+		$q = $this->db->get()->row_array();
+		return $q['StudiengangID'];
+	}
+
+
+	public function _query_studiengang_data()
+	{
+		$this->db->select('*')
+				->from('studiengang')
+				->where('StudiengangID', $this->studiengang_id)
+				;
+		$q = $this->db->get()->row_array();
+		return $q;
 	}
 
 	private function _query_semesterplanid()
@@ -324,6 +365,14 @@ class User_model extends CI_Model {
 		if ( ! empty($this->semesterplan_id) )
 		{
 			return $this->semesterplan_id;
+		}
+	}
+
+	public function get_actsemester()
+	{
+		if ( ! empty($this->act_semester) )
+		{
+			return $this->act_semester;
 		}
 	}
 	

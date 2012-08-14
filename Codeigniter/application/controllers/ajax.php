@@ -50,10 +50,16 @@ class Ajax extends CI_Controller {
 		// frage übergebene Daten ab (veränderte Reihenfolge der Module)
 		// serialisiert
 		$neue_reihenfolge = $this->input->get('module');
+		$hoeren = $this->input->get('hoeren');
+		$pruefen = $this->input->get('pruefen');
+		$mark = $this->input->get('mark');
 		$semesternr = $this->input->get('semester');
 
+		// FB::log($semesternr);
+		// FB::log($hoeren);
+
 		// speichere die neue Reihenfolge in die Datenbank
-		$this->ajax_model->set_reihenfolge($neue_reihenfolge, $semesternr);
+		$this->ajax_model->set_reihenfolge($neue_reihenfolge, $semesternr, $hoeren, $pruefen, $mark);
 	}
 
 

@@ -387,6 +387,139 @@ class Admin_model extends CI_Model {
 		$this->db->update('benutzer', $data);
 	}
 
+	public function reconstruct_semesterplan($user_id)
+	{
+		// get the needed data to execute this job
+		// 1. SemesterplanID, 2. StudycourseID
+
+		// 1.
+		$this->db->select('SemesterplanID')
+				 ->from('semesterplan')
+				 ->where('BenutzerID', $user_id);
+		$q = $this->db->get()->row_array();
+		$semesterplan_id = $q['SemesterplanID'];
+
+		// 2.
+		$studycourse_id = $this->_query_studycourseid_of_user($user_id);
+
+
+
+		// --
+
+		// delete all entries in semesterkurs
+		$this->db->where('SemesterplanID', $semesterplan_id);
+		$this->db->delete('semesterkurs');
+		
+		// delete all entries in semesterplan
+		$this->db->where('SemesterplanID', $semesterplan_id);
+		$this->db->where('BenutzerID', $user_id);
+		$this->db->delete('semesterplan');
+		
+		// deletes all entries in benutzerkurs
+		$this->db->where('BenutzerID', $user_id);
+		$this->db->delete('benutzerkurs');
+		
+		// --
+
+		// create the freshly new stuff for the user
+
+		// query DB for the Regelsemester
+		$this->db->select('Regelsemester');
+		$this->db->from('studiengang');
+		$this->db->where('StudiengangID', $studycourse_id);
+		$regelsemester_result = $this->db->get();
+
+		
+
+		foreach($regelsemester_result->result() as $regel)
+		{
+		    // create a new semsterplan and insert the Regelsemester
+		    $dataarray = array(
+		        'BenutzerID'    => $user_id,
+		        'Semesteranzahl'=> $regel->Regelsemester
+		    );
+
+		    $this->db->insert('semesterplan', $dataarray);
+
+		    // query DB for all courses for the studycourse
+		    $this->db->select('KursID, Semester');
+		    $this->db->from('studiengangkurs');
+		    $this->db->where('StudiengangID', $studycourse_id);
+		    $kurs_semester = $this->db->get();
+
+		    // get new semesterplan_id
+		    $this->db->select('SemesterplanID')
+		    		 ->from('semesterplan')
+		    		 ->where('BenutzerID', $user_id);
+		    $q = $this->db->get()->row_array();
+		    $semesterplan_id = $q['SemesterplanID'];
+
+		    // insert all courses of the studycourse in semesterkurs
+		    foreach($kurs_semester->result() as $ks)
+		    {
+		        $dataarray = array(
+		            'SemesterplanID'    => $semesterplan_id,
+		            'KursID'            => $ks->KursID,
+		            'Semester'          => $ks->Semester,
+		            'KursHoeren'        => 1,
+		            'KursSchreiben'     => 1,
+		            'PruefungsstatusID' => 1,
+		            'VersucheBislang'   => 0,
+		            'Notenpunkte'       => 101
+		        );
+
+		        $this->db->insert('semesterkurs', $dataarray);
+		    }
+		}
+
+		// Eexecute createTimetableCourses method
+		$this->db->select('stundenplankurs.*, semesterkurs.Semester');
+		$this->db->from('stundenplankurs');
+		$this->db->join('kursreferenz', 'kursreferenz.ReferenzKursID = stundenplankurs.KursID');
+		$this->db->join('semesterkurs', 'semesterkurs.KursID = kursreferenz.KursID');
+		$this->db->join('semesterplan', 'semesterplan.SemesterplanID = semesterkurs.SemesterplanID');
+		$this->db->where('semesterplan.BenutzerID', $user_id);
+		$this->db->where('semesterplan.SemesterplanID', $semesterplan_id);
+		$timetable_result = $this->db->get();
+
+		// insert in benutzerkurs all data from the query above => new timetable
+		foreach($timetable_result->result() as $time)
+		{
+		    $dataarray = array(
+		        'BenutzerID'    => $user_id,
+		        'KursID'        => $time->KursID,
+		        'SPKursID'      => $time->SPKursID,
+		        'SemesterID'    => $time->Semester,
+		        'aktiv'         => ($time->VeranstaltungsformID == 1 || $time->VeranstaltungsformID == 6) ? '1' : '0',
+		        'changed_at'    => 'studienplan_semesterplan: create benutzerkurs',
+		        'edited_by'     => $user_id
+		    );
+
+		    $this->db->insert('benutzerkurs', $dataarray); 
+		}
+	}
+
+	private function _query_studycourseid_of_user($user_id)
+	{
+	    $id = 0;
+	    
+	    $this->db->select('StudiengangID');
+	    $this->db->from('benutzer');
+	    $this->db->where('BenutzerID', $user_id);
+	    $studycourseID = $this->db->get();
+	    $numRows = $studycourseID->num_rows();
+
+	    foreach($studycourseID->result() as $row)
+	    {
+	        if($numRows != null)
+	        {
+	            $id = $row->StudiengangID;
+	        }
+	    }
+	        
+	    return $id;
+	}
+
 	// get all permissions
 	public function get_all_permissions()
 	{
@@ -492,7 +625,48 @@ class Admin_model extends CI_Model {
 	*/	
 	public function model_delete_user($user_id)
 	{
-		$this->db->delete('benutzer', array('BenutzerID' => $user_id)); 
+		$this->_delete_all_user_dependencies($user_id);
+	}
+
+	private function _query_semesterplanid_of_user($user_id=0)
+	{
+		$this->db->select('SemesterplanID')
+				 ->from('semesterplan')
+				 ->where('BenutzerID', $user_id);
+		$q = $this->db->get()->row_array();
+		return $q['SemesterplanID'];
+	}
+
+	private function _delete_all_user_dependencies($user_id=0)
+	{
+		// get the needed data to execute this job
+		// 1. SemesterplanID, 2. StudycourseID
+
+		// 1.
+		$semesterplan_id = $this->_query_semesterplanid_of_user($user_id);
+		// 2.
+		$studycourse_id = $this->_query_studycourseid_of_user($user_id);
+
+		// --
+
+		// delete all entries in semesterkurs
+		$this->db->where('SemesterplanID', $semesterplan_id);
+		$this->db->delete('semesterkurs');
+		
+		// delete all entries in semesterplan
+		$this->db->where('SemesterplanID', $semesterplan_id);
+		$this->db->where('BenutzerID', $user_id);
+		$this->db->delete('semesterplan');
+		
+		// deletes all entries in benutzerkurs
+		$this->db->where('BenutzerID', $user_id);
+		$this->db->delete('benutzerkurs');
+
+		// delete all entries in rolle_mm_benutzer
+		$this->db->delete('benutzer_mm_rolle', array('BenutzerID' => $user_id));
+
+		// delete all entries in benutzer
+		$this->db->delete('benutzer', array('BenutzerID' => $user_id));
 	}
 
 	/*
@@ -1175,7 +1349,19 @@ class Admin_model extends CI_Model {
 	 * @param array $data
 	 */
 	public function save_new_course_in_stdplan($data){
+		// create new group
+		
+		// fetch new highest group_id
+		
+		// what about gruppenteilnehmer?!?!!?!
+		
+		// insert new record in stundenplankurs
 		$this->db->insert('stundenplankurs', $data);
+		
+		// fetch new highest spcourse_id
+		
+		// update all users in benutzerkurs who
+		
 	}
 	
 	

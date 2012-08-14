@@ -369,6 +369,8 @@ class Admin extends FHD_Controller {
 	*/
 	public function validate_create_user_form()
 	{
+		$this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+
 		$rules = array();
 
 		$rules[] = $this->adminhelper->get_formvalidation_role();
@@ -440,6 +442,8 @@ class Admin extends FHD_Controller {
 		$rules[] = $this->adminhelper->get_formvalidation_forename();
 		$rules[] = $this->adminhelper->get_formvalidation_lastname();
 		$rules[] = $this->adminhelper->get_formvalidation_email();
+		$rules[] = $this->adminhelper->get_formvalidation_erstsemestler();
+
 		// set the rules
 		$this->form_validation->set_rules($rules);
 
@@ -499,7 +503,7 @@ class Admin extends FHD_Controller {
 				$this->_reset_semesterplan();
 				break;
 			case '3':
-				$this->_login_as();			
+				$this->_login_as_user();
 				break;
 
 			default:
@@ -512,7 +516,7 @@ class Admin extends FHD_Controller {
 	private function _validate_edits()
 	{
 		// set custom delimiter for validation errors
-		$this->form_validation->set_error_delimiters('<div class="val_error">', '</div>');
+		$this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
 
 
 		$rules = array();
@@ -522,6 +526,9 @@ class Admin extends FHD_Controller {
 
 		// current user data in db
 		$current_user_data = $this->admin_model->get_user_by_id($this->input->post('user_id'));
+
+		// search empty validation, to get the value, to put it in the searchbox after invalid validation
+		// $rules[] = $this->adminhelper->get_formvalidation_searchbox();
 
 		// check if current value is different from the value in db
 		if ($current_user_data['LoginName'] != $new_form_values['loginname']) 
@@ -590,7 +597,8 @@ class Admin extends FHD_Controller {
 			// save in db
 			$this->save_user_changes();
 
-			redirect(site_url().'admin/edit_user_mask');
+			$this->edit_user_mask();
+			// redirect(site_url().'admin/edit_user_mask');
 		}
 	}
 
@@ -609,6 +617,16 @@ class Admin extends FHD_Controller {
 		redirect(site_url().'admin/edit_user_mask');
 	}
 
+	/**/
+	private function _reset_semesterplan()
+	{
+		// get the id of which user the semesterplan should be deleted
+		$input_data = $this->input->post();
+		$this->admin_model->reconstruct_semesterplan($input_data['user_id']);
+
+		// redirect(site_url().'admin/edit_user_mask');
+	}
+
 	/*
 	* deletes an user by his id
 	*/
@@ -620,6 +638,23 @@ class Admin extends FHD_Controller {
 
 		redirect(site_url().'admin/delete_user_mask');
 	}
+
+    /*
+     *  authenticates the admin under the account of the seleccted user
+     *  by Christian Kundruss (c) 2012
+     */
+    public function _login_as_user() {
+        $user_information = $this->input->post(); // get the whole information of the selected user
+
+        if($this->authentication->login_as_user($user_information)) { // authentication was successful
+            $message_body = 'Eingeloggt als ' . $this->authentication->get_name() .  ' (User-ID:  ' . $this->authentication->user_id() . ')';
+            // print a message to get to know as who you are logged in, and to show that the authentication was succesful
+            $this->message->set(sprintf($message_body));
+
+            // redirect the user to the dashboard
+            redirect(site_url().'dashboard/index');
+        }
+    }
 
 	/*
 	* builds the needed html markup an content (db) from incoming ajax request
@@ -649,6 +684,7 @@ class Admin extends FHD_Controller {
 	 */
 	public function ajax_show_user()
 	{
+
 		$result = '';
 
 

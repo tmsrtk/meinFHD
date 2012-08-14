@@ -120,6 +120,18 @@ class Studienplan extends FHD_Controller
     }
     
     
+
+    /**
+     * Remove a coloumn in semesterplan
+     */
+    public function spalteLoeschen()
+    {
+        $this->load->model('Studienplan_Model');
+        $this->Studienplan_Model->delete_last_semesterplan_coloumn();
+
+        // header('Location: /meinFHD/Codeigniter/studienplan/');
+    }
+
     
     
     
@@ -191,7 +203,16 @@ class Studienplan extends FHD_Controller
         $this->message->set(sprintf('Der Studienplan wurde erfolgreich zurükgesetzt.'));
     }
     
-    
+    /**
+     * Deletes and recreates the whole studyplan and dependencies
+     */
+    public function studienplanRekonstruieren()
+    {
+        $this->load->model('Studienplan_Model');
+        $this->Studienplan_Model->deleteAll();
+        
+        $this->message->set(sprintf('Der Studienplan wurde erfolgreich rekonstruiert.'));
+    }
     
     
     /**

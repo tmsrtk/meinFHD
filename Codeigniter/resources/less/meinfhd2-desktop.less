@@ -14,19 +14,19 @@
 
 #studienplan {
 
-	table {
-		td {
-			vertical-align: top;
+	// table {
+	// 	td {
+	// 		vertical-align: top;
 
-			padding-right: 5px;
-			padding-left: 5px;
-			border-right: 1px solid #85da85;
-		}
-	}
+	// 		padding-right: 5px;
+	// 		padding-left: 5px;
+	// 		border-right: 1px solid #85da85;
+	// 	}
+	// }
 
-	li {
-		// border-bottom: 1px solid #85da85;
-	}
+	// li {
+	// 	// border-bottom: 1px solid #85da85;
+	// }
 	
 }
 
@@ -34,14 +34,21 @@
 
 /* ul for every semester */
 .semesterplanspalte {
-	width: @stupla-modul_width + 30;
-	float: left;
+	// width: @stupla-modul_width + 30;
+	// // float: left;
+	padding-bottom: @stupla-modul_height;
+
+}
+// --------------------------------------------------------
+
+#studienplaneinstellungen {
+	// margin-bottom: 30px;
 }
 
 // --------------------------------------------------------
 
 @stupla-modul_color-grey: #AAAAAA;
-@stupla-modul_color-placeholder: #99CC99;
+@stupla-modul_color-placeholder: #bbb;
 
 @stupla-modul_width: 110px;
 @stupla-modul_height: 40px;
@@ -141,23 +148,28 @@
 }
 
 .sm_red {
-	.buttonBackground(#D95B44, #FF0000);
+	.buttonBackground(#d67f6b, #d72c04);
+	// .buttonBackground(#D95B44, #FF0000);
 }
 
 .sm_orange {
-	.buttonBackground(#FFA500, #D95B44);
+	.buttonBackground(#d6a26b, #d77104);
+	// .buttonBackground(#FFA500, #D95B44);
 }
 
 .sm_yellow {
-	.buttonBackground(#FFA500, #FFFF00);
+	.buttonBackground(#d6ba6b, #d79e04);
+	// .buttonBackground(#FFA500, #FFFF00);
 }
 
 .sm_yellow-green {
-	.buttonBackground(#FFFF00, #A7CC28);
+	.buttonBackground(#d6cd6b, #d7c604);
+	// .buttonBackground(#FFFF00, #A7CC28);
 }
 
 .sm_green {
-	.buttonBackground(#A7CC28, #448844);
+	.buttonBackground(#c1d66b, #acd704);
+	// .buttonBackground(#A7CC28, #448844);
 }
 
 .semestermodul_placeholder {
@@ -166,6 +178,7 @@
 	background-color: @stupla-modul_color-placeholder;
 	margin-top: 5px;
 	margin-bottom: 5px;
+	.border-radius(4px);
 }
 
 // --------------------------------------------------------
