@@ -28,8 +28,7 @@
 		    				<i class="icon-arrow-right icon-white"></i>
 		    				 Dozent
 		    			</a>
-		    		</div>
-		    				<?php krumo($courseinfo); ?>		    		    	   
+		    		</div>	    		    	   
 		    		<!--Bar-Widget-->
 		    		<h4>Anwesenheit dieses Semester</h4>
 		    		<div class="progress progress-striped">
