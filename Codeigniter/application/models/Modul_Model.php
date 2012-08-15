@@ -178,7 +178,7 @@ class Modul_Model extends CI_Model {
 
 		$courselist = $this->courselist_add_userinfo($courselist, $user_id);
 
-		$this->krumo->dump($courselist);
+	//	$this->krumo->dump($courselist);
 
 		return $courselist;
 	}
