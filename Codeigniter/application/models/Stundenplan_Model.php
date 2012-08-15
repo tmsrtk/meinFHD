@@ -1,6 +1,4 @@
-
-<?php   if (!defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class Stundenplan_Model extends CI_Model {
 
 	private $user;//Debug

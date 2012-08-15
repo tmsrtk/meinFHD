@@ -21,20 +21,20 @@ class Studienplan extends FHD_Controller
         $this->load->model('admin_model');
 
         // userdata
-        $session_userid = $this->authentication->user_id();
+        // $session_userid = $this->authentication->user_id();
 
-        $loginname = $this->admin_model->get_loginname($session_userid);
-        $user_permissions = $this->admin_model->get_all_userpermissions($session_userid);
-        $roles = $this->admin_model->get_all_roles();
+        // $loginname = $this->admin_model->get_loginname($session_userid);
+        // $user_permissions = $this->admin_model->get_all_userpermissions($session_userid);
+        // $roles = $this->admin_model->get_all_roles();
         
-        $userdata = array(
-                'userid' => $session_userid,
-                'loginname' => $loginname['LoginName'],
-                'userpermissions' => $user_permissions,
-                'roles' => $roles
-            );
+        // $userdata = array(
+        //         'userid' => $session_userid,
+        //         'loginname' => $loginname['LoginName'],
+        //         'userpermissions' => $user_permissions,
+        //         'roles' => $roles
+        //     );
 
-        $this->data->add('userdata', $userdata);
+        // $this->data->add('userdata', $userdata);
     }
 
 
@@ -120,6 +120,18 @@ class Studienplan extends FHD_Controller
     }
     
     
+
+    /**
+     * Remove a coloumn in semesterplan
+     */
+    public function spalteLoeschen()
+    {
+        $this->load->model('Studienplan_Model');
+        $this->Studienplan_Model->delete_last_semesterplan_coloumn();
+
+        // header('Location: /meinFHD/Codeigniter/studienplan/');
+    }
+
     
     
     
@@ -191,7 +203,16 @@ class Studienplan extends FHD_Controller
         $this->message->set(sprintf('Der Studienplan wurde erfolgreich zurükgesetzt.'));
     }
     
-    
+    /**
+     * Deletes and recreates the whole studyplan and dependencies
+     */
+    public function studienplanRekonstruieren()
+    {
+        $this->load->model('Studienplan_Model');
+        $this->Studienplan_Model->deleteAll();
+        
+        $this->message->set(sprintf('Der Studienplan wurde erfolgreich rekonstruiert.'));
+    }
     
     
     /**

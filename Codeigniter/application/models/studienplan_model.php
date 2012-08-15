@@ -380,6 +380,37 @@ class Studienplan_Model extends CI_Model
         $this->db->update('semesterplan', $dataarray);
     }
     
+
+
+    /**
+     * Deletes last coloumn
+     */
+    public function delete_last_semesterplan_coloumn()
+    {
+        $semester = 0;
+        
+        // query DB for semestercount from semesterplan
+        $this->db->select('Semesteranzahl');
+        $this->db->from('semesterplan');
+        $this->db->where('SemesterplanID', $this->studyplanID);
+        $semestercount = $this->db->get();
+
+        foreach($semestercount->result() as $semcount)
+        {
+            $semester = $semcount->Semesteranzahl;
+        }
+
+        // raise the count
+        $semester--;
+
+        // and update the coloumn Semesteranzahl
+        $dataarray = array(
+            'Semesteranzahl' => $semester
+        );
+
+        $this->db->where('SemesterplanID', $this->studyplanID);
+        $this->db->update('semesterplan', $dataarray);
+    }
     
     
     

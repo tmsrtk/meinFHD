@@ -60,21 +60,33 @@
 	echo form_open('admin/validate_request_user_invitation_form/', $data_formopen);
 ?>
 
+<?php 
+$v = set_radio('role', '5', TRUE);
+$b = set_radio('role', '2');
+$radio_val1 = FALSE;
+$radio_val2 = FALSE;
+
+if( ! empty( $v ) ) $radio_val1 = TRUE;
+if( ! empty( $b ) ) $radio_val2 = TRUE;
+
+?>
+
 <div class="control-group">
 	<?php echo form_label('Ich bin ein', 'role', $data_labelattrs); ?>
 	<div class="controls">
 		<label class="radio">
-			<?php echo form_radio('role', '4', TRUE) ?>
+			
+			<?php echo form_radio('role', '5', $radio_val1) ?>
 			Student
 		</label>
 		<label class="radio">
-			<?php echo form_radio('role', '2', FALSE) ?>
+			<?php echo form_radio('role', '2', $radio_val2) ?>
 			Dozent
 		</label>
 	</div>
 </div>
 
-<div class="alert">
+<div id="additional-info" class="alert">
 	Gib bitte die folgenden Daten an, damit wir feststellen können, dass Du ein Student an diesem Fachbereich bist. 
 	Die Emailadresse wird für die Kommunikation mit meinFHD, den Dozenten und Studierenden verwendet.
 </div>
@@ -88,7 +100,7 @@
 	</div>
 </div>
 
-<div class="control-group error">
+<div class="control-group">
 	<?php echo form_label('E-Mail', 'email', $data_labelattrs); ?>
 	<div class="controls docs-input-sizes">
 		<?php echo form_input($data_email); ?>
@@ -103,7 +115,8 @@
 	<div class="control-group">
 		<?php echo form_label('Ich bin Erstsemestler!', 'erstsemestler', $data_labelattrs); ?>
 		<div class="controls docs-input-sizes">
-			<?php echo form_checkbox('erstsemestler', 'accept', FALSE) ?>
+			<?php # echo form_checkbox('erstsemestler', 'accept') ?>
+			<input type="checkbox" value="accept" name="erstsemestler" <?php echo set_checkbox('erstsemestler', 'accept'); ?> >
 		</div>
 	</div>
 
@@ -135,9 +148,9 @@
 	</div>
 
 	<div class="control-group">
-		<?php echo form_label('Studiengang', 'semesteranfang', $data_labelattrs); ?>
+		<?php echo form_label('Studiengang', 'studiengang', $data_labelattrs); ?>
 		<div class="controls docs-input-sizes">
-			<?php echo form_dropdown('studiengang_dd', $studiengaenge, '0', $class_dd); ?>
+			<?php echo form_dropdown('studiengang', $studiengaenge, '', $class_dd); ?>
 		</div>
 	</div>
 
@@ -158,11 +171,14 @@
 
 
 
-<h3>Uebersicht aller Einladungsaufforderungen</h3>
+<div class="row-fluid">
+	<h2>Übersicht aller Einladungsaufforderungen</h2>
+</div>
+<hr>
 <?php
-	$data_formopen2 = array('class' => 'form-horizontal', 'id' => 'accept_invitation');
+	$data_formopen2 = array('id' => 'accept_invitation');
 	$data_dropdown = array('Erstellen', 'Loeschen');
-	$attrs_dropdown = 'id="user_function" class="span2"';
+	$attrs_dropdown = 'id="user_function" class="input-xxlarge"';
 	$submit_data = array(
 			'id' 			=> 'save',
 			'name'			=> 'los',
@@ -171,80 +187,247 @@
 ?>
 
 
-<div class="row">
-	<div class="span2">Test</div>
-	<div class="span2">Test</div>
-	<div class="span2">Test</div>
-	<div class="span2">Test</div>
-	<div class="span2">Test</div>
-	<div class="span2">Test</div>
+<div class="row-fluid">
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>
+					<div class="span2">Test</div>
+					<div class="span2"><strong>Nachname</strong></div>
+					<div class="span2"><strong>Vorname</strong></div>
+					<div class="span2"><strong>E-Mail</strong></div>
+					<div class="span2"><strong>Funktion</strong></div>
+					<div class="span2"><strong>Los</strong></div>
+				</th>
+			</tr>
+		</thead>
+		<tbody id="content_invitations">
+			<?php foreach ($user_invitations as $key => $value) : ?>
+			<tr>
+				<td>
+					<?php echo form_open('admin/create_user_from_invitation/', $data_formopen2); ?>
+					<?php echo form_hidden('request_id', $value['AnfrageID']); ?>
+
+					<div class="span2">leer</div>
+					<div class="span2"><?php echo $value['Nachname']; ?></div>
+					<div class="span2"><?php echo $value['Vorname']; ?></div>
+					<div class="span2"><?php echo $value['Emailadresse']; ?></div>
+
+					<?php echo "<div class=\"span2\">".form_dropdown('user_function', $data_dropdown, '0', $attrs_dropdown)."</div>"; ?>
+					<?php echo "<div class=\"span1\">".form_submit($submit_data, 'LOS!')."</div>"; ?>
+					<div class="clearfix"></div>
+					<?php echo form_close(); ?>
+				</td>
+			</tr>
+			<?php endforeach ?>
+				
+		</tbody>
+	</table>
 </div>
 
-	<?php foreach ($user_invitations as $key => $value) : ?>
-	<?php // FB::log($value); ?>
+<div id="modalcontent"></div>
 
-<div class="row">
-	<?php echo form_open('admin/create_user_from_invitation/', $data_formopen2); ?>
-	<?php echo form_hidden('request_id', $value['AnfrageID']); ?>
-
-	<div class="span2">leer</div>
-	<div class="span2"><?php echo $value['Nachname']; ?></div>
-	<div class="span2"><?php echo $value['Vorname']; ?></div>
-	<div class="span2"><?php echo $value['Emailadresse']; ?></div>
-
-	<?php echo "<div class=\"span2\">".form_dropdown('user_function', $data_dropdown, '0', $attrs_dropdown)."</div>"; ?>
-	<?php echo "<div class=\"span2\">".form_submit($submit_data, 'LOS!')."</div>"; ?>
-	<?php echo form_close(); ?>
-</div>
-<?php endforeach ?>
 <?php endblock(); ?>
 
 <?php startblock('customFooterJQueryCode');?>
+
+	var AdditionalInfo = {
+		init : function(config) {
+			this.config = config;
+			this.bindEvents();
+			this.build();
+
+			this.changeToStudent();
+		},
+		bindEvents : function() {
+			context = this;
+			this.config.roleInput.change(function() {
+				context.toggle_studentdata($(this));
+			});
+			this.config.erstsemestler.change(function() {
+				context.toggle_erstsemestlerdata($(this));
+			});
+		},
+		build : function() {
+			// console.log();
+			this.toggle_studentdata($("label[for='role']").parent().find("input:checked"));
+			this.toggle_erstsemestlerdata($("label[for='erstsemestler']").parent().find("input"));
+		},
+		toggle_studentdata : function(c) {
+			additional_student_data = $("div#studentendaten");
+
+			// c jQuery object of toggle button
+			if (c.val() === '5') {
+				// show additional student da
+				additional_student_data.slideDown('slow');
+				this.changeToStudent();
+			}
+			else {
+				additional_student_data.slideUp('slow');
+				this.changeToDozent();
+			}
+		},
+		toggle_erstsemestlerdata : function(c) {
+			var erstsemestler_data = $("div#erstsemestler");
+
+			if (c.attr('checked')) {
+				erstsemestler_data.slideUp('slow');
+			}
+			else {
+				erstsemestler_data.slideDown('slow');
+			}
+		},
+		changeToStudent : function() {
+			// this.config.additionalInfoContent = this.studentenInfo;
+			this.config.additionalInfoContent.html(this.studentenInfo);
+		},
+		changeToDozent : function() {
+			this.config.additionalInfoContent.html(this.dozentenInfo);
+		},
+		studentenInfo : "Gib bitte die folgenden Daten an, damit wir feststellen können, dass Du ein Student an diesem Fachbereich bist. Die Emailadresse wird für die Kommunikation mit meinFHD, den Dozenten und Studierenden verwendet.",
+		dozentenInfo : "Geben Sie bitte hier Ihren vollen Namen an, da dieser für die Kommunikation mit den Studierenden gebraucht wird. Die Emailadresse wird für die Kommunikation mit meinFHD und den Studierenden verwendet. "
+	};
+
+	AdditionalInfo.init({
+		additionalInfoContent : $("div#additional-info"),
+		roleInput : $("input[name='role']"),
+		erstsemestler : $("input[name='erstsemestler']")
+	});
+
+	// ####################
+
 	// onchange for radiobuttons 
-	$("input[name='role']").change(function() {
-		toggle_studentdata($(this));
-	});
+	// $("input[name='role']").change(function() {
+	// 	toggle_studentdata($(this));
+	// });
 
-	$("input[name='erstsemestler']").change(function() {
-		toggle_erstsemestlerdata($(this));
-	});
+	// onchange for erstsemestler
+	// $("input[name='erstsemestler']").change(function() {
+	// 	toggle_erstsemestlerdata($(this));
+	// });
 
-	var $mydialog = $('<div id="dialog-confirm" title="Einladung löschen"></div>')
-					.html('<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Die Einladungsaufforderung wird endgültig gelöscht. OK?</p>')
-					.dialog({
-						autoOpen: false,
-						resizable: false,
-						height: 200,
-						modal: true,
-						buttons: {
-							"Ja, löschen": function() {
-								$("#accept_invitation input#save").removeAttr("clicked");
-								$("input[type=submit][clicked=true]").parents("form").submit();
-								$( this ).dialog( "close" );
-							},
-							Abbrechen: function() {
-								$("#accept_invitation input#save").removeAttr("clicked");
-								$mydialog.dialog( "close" );
-							}
-						}
-					});
 
-	$("#accept_invitation input#save").click(function() {
+	/* toggles additional student data when user selected 'student' from the dropdown */
+	// function toggle_studentdata(c) {
+	// 	var additional_student_data = $("div#studentendaten");
 
+	// 	// c jQuery object of toggle button
+	// 	if (c.val() === '5') {
+	// 		// show additional student da
+	// 		additional_student_data.slideDown('slow');
+	// 		AdditionalInfo.changeToStudent();
+	// 	}
+	// 	else {
+	// 		additional_student_data.slideUp('slow');
+	// 		AdditionalInfo.changeToDozent();
+	// 	}
+	// }
+
+	/* toggles additional semester data when user checked 'Erstsemester' */
+	// function toggle_erstsemestlerdata(c) {
+	// 	var erstsemestler_data = $("div#erstsemestler");
+
+	// 	if (c.attr('checked')) {
+	// 		erstsemestler_data.slideUp('slow');
+	// 	}
+	// 	else {
+	// 		erstsemestler_data.slideDown('slow');
+	// 	}
+	// }
+
+	// prompt dialogs
+	/**
+	 * 
+	 */
+	// function createDialog(title, text) {
+	// 	var $mydialog = $('<div id="dialog-confirm" title="'+title+'"></div>')
+	// 				.html('<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>'+text+'</p>')
+	// 				.dialog({
+	// 					autoOpen: false,
+	// 					resizable: false,
+	// 					height: 200,
+	// 					modal: true,
+	// 					buttons: {
+	// 						OK: function() {
+	// 							$("input[type=submit][clicked=true]").parents("form#accept_invitation").submit();
+	// 							$("#content_invitations input#save").removeAttr("clicked");
+	// 							$( this ).dialog( "close" );
+	// 						},
+	// 						Abbrechen: function() {
+	// 							$("#content_invitations input#save").removeAttr("clicked");
+	// 							$( this ).dialog( "close" );
+	// 						}
+	// 					}
+	// 				});
+	// 	return $mydialog;
+	// }
+
+
+
+
+
+	function createModalDialog(title, text, withOK) {
+		myModalDialog = 
+			$('<div class="modal hide" id="myModal"></div>')
+			.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
+			.append('<div class="modal-body"><p>'+text+'</p></div>')
+			.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Schließen</a>');
+			if (withOK) myModalDialog.find('.modal-footer').append('<a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
+			// <a href="" class="btn btn-primary" data-accept="modal">OK</a></div>
+		return myModalDialog;
+	}
+
+	function _showModal(title, text, withOK) {
+		mm = createModalDialog(title, text, withOK);
+		$('#modalcontent').html(mm);
+
+		$('#myModal').modal({
+			keyboard: false
+		}).on('hide', function () {
+			$("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
+		}).modal('show');
+
+		if (withOK) {
+			// if there are any click listener, remove them
+			$('#modalcontent').off('click');
+			// add new
+			$("#modalcontent").on( 'click', 'button, a', function(event) {
+				event.preventDefault();
+
+				if ( $(this).attr("data-accept") === 'modal' ) {
+					console.log("accept");
+
+					$(event.target).parent().parent().find("div.modal-body").html("Bitte warten, der Befehl wird ausgeführt");
+					$(event.target).parent().parent().find("div.modal-footer").hide();
+
+					$("input[type=submit][data-clicked=true]").parents("form#accept_invitation").submit();
+
+				} else {
+					console.log("cancel");
+				}
+
+			});
+		}
+	}
+
+
+	$("#content_invitations").on("click", "input#save", function() {
+		// e.preventDefault();
 		// determine which function was selected from the dropdown
 		// 0 = erstellen, 1 = löschen
-		var user_function = $("#user_function").val();
+		var user_function =  $(this).parents("form#accept_invitation").find("#user_function").val();
+
+		// console.log(user_function);
+		// return false;
 
 		if (user_function === '0') {
-
-			return true;
-
+			$(this).attr("data-clicked", "true");
+			// createDialog('User erstellen', 'Sollen der User wirklich erstellt werden?').dialog("open");
+			_showModal('User erstellen', 'Sollen der User wirklich erstellt werden?', true);
 		} else if (user_function === '1') {
-			// add custom attribute to determine later
-			$(this).attr("clicked", "true");
-
-			$mydialog.dialog("open");
-
+			$(this).attr("data-clicked", "true");
+			// createDialog('Einladung löschen', 'Soll die Einladung wirklch gelöscht werden?').dialog("open");
+			_showModal('Einladung löschen', 'Soll die Einladung wirklch gelöscht werden?', true);
 		} else {
 
 		}
@@ -252,33 +435,9 @@
 		// prevent default submit behaviour
 		return false;
 	});
-})();
 
-/* toggles additional student data when user selected 'student' from the dropdown */
-function toggle_studentdata(c) {
-	var additional_student_data = $("div#studentendaten");
 
-	// c jQuery object of toggle button
-	if (c.val() === '4') {
-		// show additional student da
-		additional_student_data.slideDown('slow');
-	}
-	else {
-		additional_student_data.slideUp('slow');
-	}
-}
 
-/* toggles additional semester data when user checked 'Erstsemester' */
-function toggle_erstsemestlerdata(c) {
-	var erstsemestler_data = $("div#erstsemestler");
-
-	if (c.attr('checked')) {
-		erstsemestler_data.slideUp('slow');
-	}
-	else {
-		erstsemestler_data.slideDown('slow');
-	}
-}
 <?php endblock(); ?>
 
 <?php end_extend(); ?>

@@ -1,3 +1,13 @@
+<?php extend('admin/index.php'); # extend main template ?>
+
+<?php startblock('title');?><?php get_extended_block();?> - Studiengangverwaltung<?php endblock(); ?>
+
+<?php
+# general form setup
+?>
+
+<?php startblock('content'); # additional markup before content ?>
+
 <div class="well">
 	<table> 
 		<!-- tablehead -->
@@ -39,3 +49,7 @@
 		</tbody>
 	</table>	
 </div>
+
+<?php endblock(); ?>
+
+<?php end_extend(); ?>

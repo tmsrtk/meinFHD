@@ -122,6 +122,76 @@ class Adminhelper {
 			);
 	}
 
+	/***/
+	function get_formvalidation_searchbox()
+	{
+		return array(
+			'field' => 'search_user',
+			'label' => 'search_user',
+			'rules' => ''
+			);
+	}
+
+	function get_formvalidation_erstsemestler()
+	{
+		return array(
+			'field' => 'erstsemestler',
+			'label' => 'erstsemestler',
+			'rules' => ''
+			);
+	}
+
+	/************************************************************************
+	 *	printSemesterInteger()												*
+	 *																		*
+	 *	Gibt anhand der übergebenen persönlichen Daten das aktuelle 		*
+	 *	Semester des Studenten zurück.										*
+	 *																		*
+	 *	@param	$semestertyp	zweistelliger String des Semestertyps 		*
+	 *							(WS oder SS) des Startjahres.				*
+	 *	@param	$studienbehinn	vierstellige Jahreszahl des Studienbeginns.	*
+	 *																		*
+	 *	@return	$semester 		Aktuelles Semester als String.				*
+	 ************************************************************************/
+	function getSemester( $semestertyp, $studienbeginn ) 
+	{
+		// definiere R�ckgabewert
+		$semester = "";
+		
+		// ermittel semestertyp
+		$errechneter_semestertyp = $this->getSemesterTyp();
+		
+		// stimmt aktueller Semestertyp mit Studienbeginn-Semestertyp �berein?
+		$gleicher_semestertyp = ($errechneter_semestertyp == $semestertyp) ? true : false;
+		
+		// Errechne aktuelles Semester
+		$semester = (($gleicher_semestertyp) ? 1 : 0) + 2 * ((($gleicher_semestertyp && date("n") < 3) ? date("Y")-1 : date("Y")) - $studienbeginn + ((date("n")>2) ? 1 : 0));
+		
+		/* 
+		======= Version vor dem 16.02.2012
+		$semester = (($gleicher_semestertyp) ? 1 : 0) + 2 * ((($gleicher_semestertyp && date("n") < 3) ? date("Y")-1 : date("Y")) - $studienbeginn + ((!$gleicher_semestertyp) ? 1 : 0));
+		
+		======= Version vor dem 12.01.2011
+		$semester = ((((date("n")>=3 && date("n")<=8) ? "SS" : "WS") == $benutzer_daten["StudienbeginnSemestertyp"]) ? 1 : 0) + 2*(date("Y") - $benutzer_daten["StudienbeginnJahr"]);
+		*/
+		
+		// Gebe String zur�ck
+		return $semester;
+	}
+
+	/************************************************************************
+	 *	getSemesterTyp()													*
+	 *																		*
+	 *	Gibt den aktuellen Semestertyp zur�ck.								*
+	 *																		*
+	 *	@return	 	Aktueller Semestertyp als String.						*
+	 ************************************************************************/
+	function getSemesterTyp() 
+	{
+		// Errechne aktuellen Semestertyp
+		return (date("n") >= 3 && date("n") <= 8) ? "SS" : "WS";		
+	}
+
 }
 
 
