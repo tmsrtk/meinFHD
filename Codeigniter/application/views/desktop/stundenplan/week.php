@@ -44,7 +44,7 @@
 
 
 <!-- CONTENT -->
-<div class="well well-small admin">
+<div class="well well-small">
 
 	<div class="row-fluid">
 		<div class="span4">
