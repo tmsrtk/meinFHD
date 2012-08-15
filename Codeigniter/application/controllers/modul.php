@@ -48,9 +48,9 @@ class Modul extends FHD_Controller {
 	{	
 		$user_id = $this->authentication->user_id();
 		$courseinfo = $this->Modul_Model->get_courseinfo($user_id, $course_id);
+		$this->data->add('courseinfo', $courseinfo);
 
-
-		$this->load->view('modul', $this->data->load());
+		$this->load->view('modul/index.php', $this->data->load());
 	}
 
 }
