@@ -1,4 +1,6 @@
-<?php include('header.php'); ?>
+<?php extend('base/template.php'); # extend main template ?>
+<?php startblock('title');?><?php get_extended_block();?> - Modul<?php endblock(); ?>
+<?php startblock('content'); # content for this view ?>
 
 
 	<!- ------------------------------------------------ -->
@@ -188,5 +190,5 @@
    	</div><!-- /.fluid container-->
    	
 	<!-- CONTENT ENDE-->
-
-<?php include('footer.php'); ?>
+<?php endblock(); ?>
+<?php end_extend(); ?>
