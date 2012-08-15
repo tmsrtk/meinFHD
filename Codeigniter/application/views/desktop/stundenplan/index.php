@@ -47,7 +47,7 @@
 									<tbody>
 										<tr>
 											<td width="45%"><p><small><?php echo $course['Beginn']; ?> - <?php echo $course['Ende']; ?></small></p></td>
-											<td width="55%"><?php echo $course['kurs_kurz']; ?>&nbsp;<?php echo utf8_decode($course['VeranstaltungsformName']); ?></td>
+											<td width="55%"><?php echo $course['kurs_kurz']; ?>&nbsp;<?php echo $course['VeranstaltungsformName']; ?></td>
 											<td>
 												<a class="btn accordion-toggle pull-right" data-toggle="collapse" data-parent="#accordion<?php echo $dayname;?>" href="#target<?php echo $course['SPKursID']; ?>">
 														<i class="icon-plus"></i>
