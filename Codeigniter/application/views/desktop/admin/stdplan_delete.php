@@ -14,7 +14,7 @@
 <?php startblock('content'); # additional markup before content ?>
 
 		<div class="row-fluid">
-			<h2>Studiengang löschen</h2>
+			<h2>Stundenplan löschen</h2>
 		</div>
 		<hr>
 

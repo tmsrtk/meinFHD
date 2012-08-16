@@ -29,6 +29,12 @@ class Admin_model_parsing extends CI_Model {
     
     private $admin_model;
     
+	/**
+	 * Parsing-Skript from Jochen (meinFHD 1.0) - only slightly modified
+	 * explaining comments inline
+	 * @param type $file_data data from parsed xml-file
+	 * @return boolean
+	 */
     function parse_stdplan($file_data){
 	
 		// array zum pr�fen ob ein Eintrag bereits darin enthalten ist.

@@ -994,6 +994,7 @@ class Admin_model extends CI_Model {
 	    
 	    // alter name of degree program and delete old id!!
 	    $data['StudiengangName'] .= ' - [KOPIE]';
+	    $data['StudiengangAbkuerzung'] .= ' - [KOPIE]';
 	    unset($data['StudiengangID']);
 	    
 	    // inserting new degree program into db 'studiengang'
@@ -1039,6 +1040,9 @@ class Admin_model extends CI_Model {
 
 			} // endforeach courses
 	    }
+		
+		// return new id for reload edit-view
+		return $max_dp_id;
 	}// end
 	
 	/**

@@ -14,7 +14,7 @@
 <?php startblock('content'); # additional markup before content ?>
 		
 		<div class="row-fluid">
-			<h2>Studiengang importieren</h2>
+			<h2>Stundenplan importieren</h2>
 		</div>
 		<hr>
 
@@ -24,7 +24,8 @@
 				$btn_send_attrs = 'class = "btn-warning"';
 				$input_attrs = array(
 					'name' => 'userfile',
-					'type' => 'file'
+					'type' => 'file',
+					'value' => ''
 				);
 
 			?>

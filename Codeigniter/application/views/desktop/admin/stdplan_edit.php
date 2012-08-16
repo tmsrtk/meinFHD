@@ -26,7 +26,7 @@
 <?php startblock('content'); # additional markup before content ?>
 
 		<div class="row-fluid">
-			<div class="span8"><h2>Studiengang bearbeiten</h2></div>
+			<div class="span8"><h2>Stundenplan bearbeiten</h2></div>
 			<div class="span4">
 				<h5>Filter</h5>
 				<!-- build array for Studiengang-Filter -->
