@@ -276,25 +276,6 @@ class Kursverwaltung_model extends CI_Model {
 //  ################################################################ SAVING DATA
     
     /**
-     * 
-     * @param type $profs
-     * @param type $labings
-     * @param type $tuts
-     */
-    public function add_person_to_course($profs = '', $labings = '', $tuts = ''){
-		if($profs){
-			// when adding profs as labings >> that relation has to be inserted into benutzer_mm_rolle (>> gets betreuer-role)
-			// when removing persons from course_mgt (OR !!!DELETING courses) the other way round - delete entry from benutzer_mm_rolle
-		}
-		if($labings){
-
-		}
-		if($tuts){
-
-		}
-    }
-    
-    /**
      * Saves course and group-data to db.
      * SPKursID passed separately.
      * Each data passed in separate arrays, too.
@@ -394,7 +375,7 @@ class Kursverwaltung_model extends CI_Model {
 
 		// role-modifications only relevant for labings - roles set/revoked implicitly
 		// note: tut-roles has to be set by admin
-		if($table == 'laboringenieur'){
+		if($table == 'kursbetreuer'){
 			$this->update_roles();	    
 		}
 
@@ -411,7 +392,7 @@ class Kursverwaltung_model extends CI_Model {
 		// get profs with role_id 3 >> i.e. labings
 		$former_prof_ids = $this->get_ids_of_profs_who_have_labing_role();
 
-		// get profs from laboringenieur
+		// get profs from *kurs*betreuer - (laboringenieur table deprecated)
 		$current_prof_ids = $this->get_ids_of_profs_from_labing_table();
 
 
@@ -507,7 +488,7 @@ class Kursverwaltung_model extends CI_Model {
     private function get_ids_of_profs_from_labing_table(){
 		$this->db->distinct();
 		$this->db->select('a.BenutzerID');
-		$this->db->from('laboringenieur as a');
+		$this->db->from('kursbetreuer as a');
 		$this->db->join('benutzer_mm_rolle as b', 'a.BenutzerID = b.BenutzerID');
 		$this->db->where('b.RolleID', 2);
 		$q = $this->db->get();

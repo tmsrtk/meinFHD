@@ -15,8 +15,8 @@ class Kursverwaltung extends FHD_Controller {
     const TUT = 6;
     
     // tables to switch between data
-    const LABING = 'laboringenieur';
-    const TUTOR = 'tutor';
+    const LABING = 'kursbetreuer';
+    const TUTOR = 'kurstutor';
     
 
     function __construct(){
@@ -58,6 +58,7 @@ class Kursverwaltung extends FHD_Controller {
 
 			// init variables
 			$staff_view_data['is_tutor'] = false;
+			$subview_data['is_tut'] = false;
 			$subview_lecture_to_load = '';
 
 			// switch view - depends on if user is tutor or not
@@ -66,6 +67,7 @@ class Kursverwaltung extends FHD_Controller {
 				$subview_lecture_to_load = 'courses/partials/courses_lecture';
 			} else {
 				$staff_view_data['is_tutor'] = true;
+				$subview_data['is_tut'] = true;
 				$subview_lecture_to_load = 'courses/partials/courses_lecture_tut';
 			}
 
@@ -145,7 +147,7 @@ class Kursverwaltung extends FHD_Controller {
 	
 		// init
 		$subview_data['is_lab'] = FALSE;
-		$subview_data['is_tut'] = FALSE;
+//		$subview_data['is_tut'] = FALSE;
 		$subview_data['lecture_name'] = $this->kursverwaltung_model->get_lecture_name($course_id);
 		$subview_data['course_id'] = $course_id;
 		$subview_data['current_participants'] = '';
@@ -387,22 +389,22 @@ class Kursverwaltung extends FHD_Controller {
     
     
     /**
-     * Switch: calls correct method to save to LABORINGENIEUR-table
+     * Switch: calls correct method to save to *KURS*BETRUER-table (laboringenieur-table deprecated)
      */
     public function save_labings_for_course(){
 		// get incoming data
 		$staff_to_save = $this->input->post();
-		$this->save_staff_to_db('laboringenieur', $staff_to_save);
+		$this->save_staff_to_db(Kursverwaltung::LABING, $staff_to_save);
     }
     
     
     /**
-     * Switch: calls correct method to save to TUTOR-table
+     * Switch: calls correct method to save to *KURS*TUTOR-table (tutor table is deprecated)
      */
     public function save_tuts_for_course(){
 		// get incoming data
 		$staff_to_save = $this->input->post();
-		$this->save_staff_to_db('tutor', $staff_to_save);
+		$this->save_staff_to_db(Kursverwaltung::TUTOR, $staff_to_save);
     }
 
     /**

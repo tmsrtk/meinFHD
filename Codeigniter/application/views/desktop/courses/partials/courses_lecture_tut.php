@@ -25,7 +25,7 @@
     <?php // echo form_open(); ?>
     <div class="span2">
 	<?php
-	    if($lab == '1'){
+	    if($is_lab){
 		// group-label for better overview
 			echo form_label('Gruppe '.$lecture_details->VeranstaltungsformAlternative, '', $label_attrs);
 	    } else {
@@ -33,7 +33,7 @@
 	    }
 	?>
     </div>
-    <div class="span2">
+    <div class="span1">
 		<?php echo $lecture_details->Raum; ?>
     </div>
     <div class="span2">
@@ -57,7 +57,7 @@
     <div class="span1">
 		<?php
 			// add another field for number of possible participants - for labs view
-			if($lab == '1'){
+			if($is_lab){
 				// max participants - only relevant for labs
 				echo $lecture_details->TeilnehmerMax;
 			} else {
@@ -67,6 +67,5 @@
 		?>
     </div>
     <!-- placeholder for submitbutton - not in tut-view -->
-    <div class="span2">
-    </div>
+    <div class="span1">-</div>
 </div>

@@ -1354,13 +1354,17 @@ class Admin_model extends CI_Model {
 		// fetch new highest group_id
 		
 		// what about gruppenteilnehmer?!?!!?!
+		// shouldn't be critical >> as soon as course is in benutzerkurs there's one new group for each student
+		// gruppenteilnehmer is populated whiles students register in timetable
+		// 
 		
 		// insert new record in stundenplankurs
 		$this->db->insert('stundenplankurs', $data);
 		
 		// fetch new highest spcourse_id
 		
-		// update all users in benutzerkurs who
+		// update all users in benutzerkurs who got this course-id in semesterplan where semester = semester?
+		
 		
 	}
 	
