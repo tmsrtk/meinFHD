@@ -936,9 +936,22 @@ class Admin_model extends CI_Model {
 	/**
 	 * Creates new Studiengang in db
 	 * @param array $data
+	 * @return new created degree_program_id
 	 */
-	function create_new_stdgng($data){
+	function create_new_degree_program($data){
 	    $this->db->insert('studiengang', $data);
+		
+		// get new created dp_id
+		$this->db->select_max('StudiengangID');
+		$q = $this->db->get('studiengang');
+		
+	    if($q->num_rows() == 1){
+			foreach ($q->result_array() as $row){
+				return $row['StudiengangID'];
+			}
+	    }
+				
+		return 0;
 	}
 	
 	/**

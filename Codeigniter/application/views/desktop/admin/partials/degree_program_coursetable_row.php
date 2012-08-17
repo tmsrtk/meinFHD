@@ -3,7 +3,7 @@
     <!-- id - just for orientation -->
     <?php	    
 		$id_attrs = array(
-			'id' => 'stdgng-table-id',
+			'id' => 'degree-program-table-id',
 		);
     ?>
     <td><?php print form_label($KursID, $id_attrs); ?> </td>
@@ -231,7 +231,7 @@
     <?php 
 		$buttonData = array(
 			'name' => $KursID.'_'.$stdgng_id,
-			'class' => 'btn btn-danger span delete-stdgng-btn',
+			'class' => 'btn btn-danger span delete-degree-program-btn',
 			'data-id' => $KursID,
 			'value' => true,
 			'content' => 'Löschen'
