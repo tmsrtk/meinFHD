@@ -773,11 +773,6 @@ class Admin_model_parsing extends CI_Model {
 		$this->db->insert('benutzerkurs', $benutzerkurs_record);
     } 
     
-    
-    ///////////// DEBUG
-    function pre($var){
-		return '<pre>'.print_r($var).'</pre>';
-    }
 }
 
 ?>

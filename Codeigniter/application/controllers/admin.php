@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Admin Controller
+ * 
+ * @version 0.0.1
+ * @copyright Fachhochschule Duesseldorf, 2012
+ * @link http://www.fh-duesseldorf.de
+ * @author Konstantin Voth, <konstantin.voth@fh-duesseldorf.de>
+ * @author Frank Gottwald, <frank.gottwald@fh-duesseldorf.de>
+ */
+
 class Admin extends FHD_Controller {
 	
 	private $permissions;
@@ -27,7 +37,7 @@ class Admin extends FHD_Controller {
 	}
 	
 	
-	function show_role_permissions(){
+	public function show_role_permissions(){
 			
 		// Alle RoleIDs durchlaufen und in einem verschachtelten Array speichern
 		// >> je RoleID ein Array aller zugeordneter Permissions (array([roleid] => array([index] => permissions)...)
@@ -996,35 +1006,35 @@ class Admin extends FHD_Controller {
 	    
 	    // if there are courses - otherwise only course-details has been created
 	    if($courses_of_single_stdgng){
-		//for each record - print out table-row with form-fields
-		foreach($courses_of_single_stdgng as $sd){
-		    // build a table-row for each course
-		    $data['KursID'] = $sd['KursID'];
-		    $data['Kursname'] = $sd['Kursname'];
-		    $data['kurs_kurz'] = $sd['kurs_kurz'];
-		    $data['Creditpoints'] = $sd['Creditpoints'];
-		    $data['SWS_Vorlesung'] = $sd['SWS_Vorlesung'];
-		    $data['SWS_Uebung'] = $sd['SWS_Uebung'];
-		    $data['SWS_Praktikum'] = $sd['SWS_Praktikum'];
-		    $data['SWS_Projekt'] = $sd['SWS_Projekt'];
-		    $data['SWS_Seminar'] = $sd['SWS_Seminar'];
-		    $data['SWS_SeminarUnterricht'] = $sd['SWS_SeminarUnterricht'];
-		    $data['SemesterDropdown'] = $semester_dropdown_options;	// array holding all dropdown-options
-		    $data['Semester'] = $sd['Semester'];
-		    $data['Beschreibung'] = $sd['Beschreibung'];
-		    // if there will be more exam-types added: this is the place to add them too!!
-		    $data['pruefungstyp_1'] = (($sd['pruefungstyp_1'] == '1') ? TRUE : FALSE); // convert data (1/0) to boolean
-		    $data['pruefungstyp_2'] = (($sd['pruefungstyp_2'] == '1') ? TRUE : FALSE);
-		    $data['pruefungstyp_3'] = (($sd['pruefungstyp_3'] == '1') ? TRUE : FALSE);
-		    $data['pruefungstyp_4'] = (($sd['pruefungstyp_4'] == '1') ? TRUE : FALSE);
-		    $data['pruefungstyp_5'] = (($sd['pruefungstyp_5'] == '1') ? TRUE : FALSE);
-		    $data['pruefungstyp_6'] = (($sd['pruefungstyp_6'] == '1') ? TRUE : FALSE);
-		    $data['pruefungstyp_7'] = (($sd['pruefungstyp_7'] == '1') ? TRUE : FALSE);
-		    $data['pruefungstyp_8'] = (($sd['pruefungstyp_8'] == '1') ? TRUE : FALSE);
+			//for each record - print out table-row with form-fields
+			foreach($courses_of_single_stdgng as $sd){
+				// build a table-row for each course
+				$data['KursID'] = $sd['KursID'];
+				$data['Kursname'] = $sd['Kursname'];
+				$data['kurs_kurz'] = $sd['kurs_kurz'];
+				$data['Creditpoints'] = $sd['Creditpoints'];
+				$data['SWS_Vorlesung'] = $sd['SWS_Vorlesung'];
+				$data['SWS_Uebung'] = $sd['SWS_Uebung'];
+				$data['SWS_Praktikum'] = $sd['SWS_Praktikum'];
+				$data['SWS_Projekt'] = $sd['SWS_Projekt'];
+				$data['SWS_Seminar'] = $sd['SWS_Seminar'];
+				$data['SWS_SeminarUnterricht'] = $sd['SWS_SeminarUnterricht'];
+				$data['SemesterDropdown'] = $semester_dropdown_options;	// array holding all dropdown-options
+				$data['Semester'] = $sd['Semester'];
+				$data['Beschreibung'] = $sd['Beschreibung'];
+				// if there will be more exam-types added: this is the place to add them too!!
+				$data['pruefungstyp_1'] = (($sd['pruefungstyp_1'] == '1') ? TRUE : FALSE); // convert data (1/0) to boolean
+				$data['pruefungstyp_2'] = (($sd['pruefungstyp_2'] == '1') ? TRUE : FALSE);
+				$data['pruefungstyp_3'] = (($sd['pruefungstyp_3'] == '1') ? TRUE : FALSE);
+				$data['pruefungstyp_4'] = (($sd['pruefungstyp_4'] == '1') ? TRUE : FALSE);
+				$data['pruefungstyp_5'] = (($sd['pruefungstyp_5'] == '1') ? TRUE : FALSE);
+				$data['pruefungstyp_6'] = (($sd['pruefungstyp_6'] == '1') ? TRUE : FALSE);
+				$data['pruefungstyp_7'] = (($sd['pruefungstyp_7'] == '1') ? TRUE : FALSE);
+				$data['pruefungstyp_8'] = (($sd['pruefungstyp_8'] == '1') ? TRUE : FALSE);
 
-		    // array holding all rows
-		    $rows[] = $this->load->view('admin/partials/degree_program_coursetable_row', $data, TRUE);
-		}
+				// array holding all rows
+				$rows[] = $this->load->view('admin/partials/degree_program_coursetable_row', $data, TRUE);
+			}
 	    }
 	    
 	    // make data available in view
@@ -1691,13 +1701,33 @@ class Admin extends FHD_Controller {
 	 * Shows view with upload and all uploaded files till now
 	 * @param String $error upload error
 	 */
-	function stdplan_import($error = ''){
-	    
+	function stdplan_import(){
+	    // inits
 		$uplaod_dir = array();
+		$parsing_result = '';
+		$this->load->helper('directory');
 		
-	    $this->load->helper('directory');
-	    
-	    $this->data->add('error', $error);
+		// getting parsing_result - if there is any
+		$parsing_result = $this->session->flashdata('parsing_result');
+		
+		if($parsing_result){
+			if(is_array($parsing_result)){
+				$data_for_dialog = '<ul>';
+				// run through array and build string for dialog
+				foreach ($parsing_result as $item => $value){
+					$data_for_dialog .= '<li>'.$item.': '.$value.'</li>';
+				}
+				$data_for_dialog .= '</ul>';
+				$this->data->add('view_feedback_dialog', $data_for_dialog);
+			} else {
+				// error
+				$this->data->add('view_feedback_dialog', 'error');
+			}
+		} else {
+			// default-value: no data was parsed
+			$this->data->add('view_feedback_dialog', '');
+		}
+		
 	    // get files from upload-folder
 	    $upload_dir = directory_map('./resources/uploads');
 	    // get stdgnge
@@ -1761,7 +1791,10 @@ class Admin extends FHD_Controller {
 	}
 	
 	
-	function stdplan_import_parse(){
+	/**
+	 * Starts parsing of a xml-file with a new timetable
+	 */
+	public function stdplan_import_parse(){
 		// init path and type
 	    $config['upload_path'] = './resources/uploads/';
 	    $config['allowed_types'] = 'xml';
@@ -1798,13 +1831,15 @@ class Admin extends FHD_Controller {
 			// if parser returns error-message (PO not found in DB) show message
 			// to user and delete temporary stored file
 			if($delete_file){
-				echo 'Datei wurde nicht hochgeladen - PO noch nicht angelegt.';
+				$this->session->set_flashdata('parsing_result', 'Datei wurde nicht hochgeladen - PO noch nicht angelegt.');
 				unlink($config['upload_path'].$upload_data['file_name']);
 
 			// else rediret to view
 			} else {
-				$this->load->view('admin/partials/stdplan_import_success', $this->data->load());
+				$this->session->set_flashdata('parsing_result', $upload_data);
 			}
+			redirect('admin/stdplan_import');
+//			$this->load->view('admin/partials/stdplan_import_success', $this->data->load());
 	    }
 	}
 	
