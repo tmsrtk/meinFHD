@@ -199,7 +199,8 @@ class Authentication {
         if ($this->CI->session->userdata('SSO-Login') == 'TRUE') { // local authentication from an global session?
             // is the global session still active?
 
-            if(!$this->CI->samlauthentication->is_authenticated()) { // the global session is not active anylonger
+            // if the global session does not exists any longer, or the linking of the local user account is not provided any longer the session should be destroyed
+            if(!$this->CI->samlauthentication->is_authenticated() || !$this->CI->samlauthentication->has_linked_account() ) {
                 $this->CI->session->unset_userdata('SSO-Login'); // remove the sso flag from the session object
                 $this->logout(); // perform the logout
 

@@ -110,7 +110,7 @@ class SSO extends FHD_Controller {
     public function link_account() {
 
         // --- protect the link account for calls without having a global session --
-        if (!$this->samlauthentication->is_authenticated()) {
+        if (!$this->samlauthentication->is_authenticated() || $this->samlauthentication->has_linked_account()) {
             redirect('app/login');
         }
         // read the post parameters
