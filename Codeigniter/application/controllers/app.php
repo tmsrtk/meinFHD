@@ -44,8 +44,8 @@ class App extends FHD_Controller {
 	{
         // --- Modification for automatic authentication if an global session exists Begin ---
         // a global session exists and the user has got an linked account -> log him in
-        if ($this->samlauthentication->is_authenticated() && has_linked_account()) {
-
+        //if ($this->samlauthentication->is_authenticated() && has_linked_account()) {
+        if ($this->samlauthentication->is_authenticated() & $this->samlauthentication->has_linked_account()) {
             redirect('sso/establish_local_session');
         }
         // --- Modification End ---

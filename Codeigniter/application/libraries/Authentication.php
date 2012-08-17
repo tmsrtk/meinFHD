@@ -403,6 +403,23 @@ class Authentication {
 
         return FALSE;
     }
+
+    /**
+     * Functions checks for authentication. If no authentication exists it redirects the user to the login page.
+     * Function is usually used to protect views, that should not be accessed from guest users.
+     * @author Christian Kundruss
+     * @access public
+     *
+     */
+    public function check_for_authenticaton () {
+
+        $CI = & get_instance(); // get the ci-instance to access other elements of the application
+
+        // check if the user is logged in, if he is not logged in he can`t access the requested site
+        if(!$CI->authentication->is_logged_in()) { // the user is not logged in -> redirect him to the login page
+            redirect('app/login');
+        }
+    }
 }
 /* End of file Authentication.php */
 /* Location: ./application/libraries/Authentication.php */

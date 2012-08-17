@@ -79,5 +79,28 @@ class Samlauthentication {
         $this->authSource->logout();
     }
 
+
+    /**
+     * Function checks if the global authenticated user has got an already linked local identity
+     * @return bool TRUE if the user has an linked account, otherwise FALSE
+     */
+    public function has_linked_account () {
+        $CI = & get_instance(); // get the ci-instance to access other elements of the application
+        $CI->load->model('SSO_model');
+
+        if ($this->is_authenticated()) {
+            // get the global uid of the authentication source
+            $idp_attributes = $this->get_attributes();
+            // save the uid provided by the idp for further access -> the array needs to be splitted to hold only the uid in the variable
+            $idp_auth_uid = $idp_attributes['uid']['0'];
+
+            // check with the sso_model if the user is linked
+            if($CI->SSO_model->get_linked_user($idp_auth_uid)) {
+                return TRUE;
+            }
+        }
+        return FALSE;
+    }
+
 }
 /* End of file Samlauthentication.php */
