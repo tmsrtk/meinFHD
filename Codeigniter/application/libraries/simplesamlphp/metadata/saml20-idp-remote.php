@@ -92,7 +92,6 @@ iLC5QkJG1V/W/8slZ/DPwDrL+g6PKvbXHrg6x1HmcY8BLV/hDioQGBA/qmd0xdsA
         0 => 'example.org',
     ),
 
-    /* Enable the authproc filter below to add URN Prefixces to all attributes */
     /*
      * Enable the authproc filter to remove oid and urn prefixes from all attributes to have cleartext attributnames
      * For further information of the attribute names see /attributemap/oid2name.php.
