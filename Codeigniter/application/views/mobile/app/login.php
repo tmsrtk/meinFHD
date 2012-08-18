@@ -141,6 +141,10 @@ $submitForgotPasswordButtonAttributes = array(
 									</div>
 								<?php echo form_close(); // close the whole login form ?>
 								</div>
+                                <hr>
+                                <div class="row-fluid">
+                                    <a href="<?php echo site_url(); ?>sso/authenticate">Login &uuml;ber Shibboleth</a>
+                                </div>
 							</div>
 						</div>
 					</div>
