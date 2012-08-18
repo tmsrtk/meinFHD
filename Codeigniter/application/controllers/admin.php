@@ -760,7 +760,7 @@ class Admin extends FHD_Controller {
 	 */
 	function degree_program_add(){
 				
-	    // get all stdgnge for the view
+	    // get all degree programs for the view
 	    $this->data->add('all_degree_programs', $this->admin_model->get_all_degree_programs());
 	    $this->load->view('admin/degree_program_add', $this->data->load());
 
@@ -825,7 +825,7 @@ class Admin extends FHD_Controller {
 		$new_id = 0;
 	    $new_id = $this->admin_model->create_new_degree_program($insert_new_dp);
 
-	    // pass new id via flashdata - load stdgng view with dropdown
+	    // pass new id via flashdata - load degree programs view with dropdown
 		$this->session->set_flashdata('reload', $new_id);
 	    redirect('admin/degree_program_edit');
 	}
@@ -861,7 +861,7 @@ class Admin extends FHD_Controller {
 	 * Shows list of all degree programs to give the opportunity to delete/copy them.
 	 */
 	private function degree_program_copy_delete($delete){
-	    // get all stdgnge for the view
+	    // get all degree programs for the view
 	    $this->data->add('all_degree_programs', $this->admin_model->get_all_degree_programs());
 	    $this->data->add('delete', $delete);
 
@@ -905,53 +905,50 @@ class Admin extends FHD_Controller {
 	**************************************************************************/
 	
 	/**
-	 * Get all data for a selectable (dropdown) list of Studiengänge
+	 * Shows view with dropdown for degree programs
+	 * If there is something passed (via flashdata) view loads a specific degree-program
+	 * if not: user will see the empty view
 	 */
-	public function degree_program_edit($reload = 0){
+	public function degree_program_edit(){
 		$reload = $this->session->flashdata('reload');
 		if(!$reload){
-			$reload = 0;
+			$reload = 0; // if nothing is passed
 		}
 
-	    // get all stdgnge for filter-view
+	    // get all degree programs for filter-view
 	    $this->data->add('all_stdgnge', $this->admin_model->get_all_degree_programs());
-	    // set stdgng_id to 0 - indicates, that view has been loaded directly from controller
+	    // set degree_program_id to 0 - indicates, that view has been loaded directly from controller
 	    // no autoreload without validation
 	    $this->data->add('degree_program_id_automatic_reload', $reload);
-
-//	    $siteinfo = array(
-//		'title' => 'Studiengangverwaltung',
-//		'main_content' => 'admin_stdgng_edit'
-//	    );
-//	    $this->data->add('siteinfo', $siteinfo);
 
 	    $this->load->view('admin/degree_program_edit', $this->data->load());
 	}
 	
 	
 	/**
-	 * Returns an div holding the stdgng-table for a passed stdgng
-	 * >> $this->input->get('stdgng_id')
+	 * Returns an div holding the degree-program-table for a passed degree-program-id
+	 * either passed via GET >> $this->input->get('degree_program_id')
+	 * or if called from within controller (deleting, adding one course) as parameter
 	 */
-	public function ajax_show_courses_of_degree_program($stdgng_id = '0'){
+	public function ajax_show_courses_of_degree_program($degree_program_id = '0'){
 
 	    // if parameter is 0 - method called from within view
-	    if($stdgng_id === '0'){
+	    if($degree_program_id === '0'){
 			// get submitted data - AJAX
-			$stdgng_chosen_id = $this->input->get('degree_program_id');
-		// otherwise methode called from within controller (delete course)
+			$degree_program_chosen_id = $this->input->get('degree_program_id');
+		// otherwise method called from within controller (delete/add  course)
 		// id is passed
 	    } else {
-			$stdgng_chosen_id = $stdgng_id;
+			$degree_program_chosen_id = $degree_program_id;
 	    }
 		
-	    $courses_of_single_stdgng = array();
-	    $courses_of_single_stdgng = $this->admin_model->get_degree_program_courses($stdgng_chosen_id);
+	    $courses_of_single_degree_program = array();
+	    $courses_of_single_degree_program = $this->admin_model->get_degree_program_courses($degree_program_chosen_id);
 
-	    $details_of_single_stdgng = $this->admin_model->get_degree_program_details_asrow($stdgng_chosen_id);
+	    $details_of_single_degree_program = $this->admin_model->get_degree_program_details_asrow($degree_program_chosen_id);
 
 	    // get number of semesters and prepare data for dropdown
-	    $regelsemester = $details_of_single_stdgng->Regelsemester;
+	    $regelsemester = $details_of_single_degree_program->Regelsemester;
 	    for($i = 0; $i < $regelsemester; $i++){
 //		if($i != 0){
 			$semester_dropdown_options[$i] = $i+1;
@@ -960,12 +957,12 @@ class Admin extends FHD_Controller {
 //		}
 	    }
 
-	    // stdgng_id is already needed here to generate unique ids for delete-buttons
-	    $data['stdgng_id'] = $stdgng_chosen_id;
+	    // degree_program_id is already needed here to generate unique ids for delete-buttons
+	    $data['stdgng_id'] = $degree_program_chosen_id;
 	    $data['semester_dropdown'] = $semester_dropdown_options;
 
 //		echo '<pre>';
-//		print_r($courses_of_single_stdgng);
+//		print_r($courses_of_single_degree_program);
 //		echo '</pre>';
 
 	    // fill first element of object-array with default-values -
@@ -973,27 +970,27 @@ class Admin extends FHD_Controller {
 	    // for creation of new courses
 	    // only KursID is needed, because creation of input-fields grabs
 	    // KursID to generate unique names => array[0]
-//	    $courses_of_single_stdgng[0]['KursID'] = '0';
-//	    $courses_of_single_stdgng[0]['Kursname'] = '';
-//	    $courses_of_single_stdgng[0]['kurs_kurz'] = '';
-//	    $courses_of_single_stdgng[0]['Creditpoints'] = '';
-//	    $courses_of_single_stdgng[0]['SWS_Vorlesung'] = '';
-//	    $courses_of_single_stdgng[0]['SWS_Uebung'] = '';
-//	    $courses_of_single_stdgng[0]['SWS_Praktikum'] = '';
-//	    $courses_of_single_stdgng[0]['SWS_Projekt'] = '';
-//	    $courses_of_single_stdgng[0]['SWS_Seminar'] = '';
-//	    $courses_of_single_stdgng[0]['SWS_SeminarUnterricht'] = '';
-//	    $courses_of_single_stdgng[0]['Semester'] = '0';
-//	    $courses_of_single_stdgng[0]['Beschreibung'] = '';
+//	    $courses_of_single_degree_program[0]['KursID'] = '0';
+//	    $courses_of_single_degree_program[0]['Kursname'] = '';
+//	    $courses_of_single_degree_program[0]['kurs_kurz'] = '';
+//	    $courses_of_single_degree_program[0]['Creditpoints'] = '';
+//	    $courses_of_single_degree_program[0]['SWS_Vorlesung'] = '';
+//	    $courses_of_single_degree_program[0]['SWS_Uebung'] = '';
+//	    $courses_of_single_degree_program[0]['SWS_Praktikum'] = '';
+//	    $courses_of_single_degree_program[0]['SWS_Projekt'] = '';
+//	    $courses_of_single_degree_program[0]['SWS_Seminar'] = '';
+//	    $courses_of_single_degree_program[0]['SWS_SeminarUnterricht'] = '';
+//	    $courses_of_single_degree_program[0]['Semester'] = '0';
+//	    $courses_of_single_degree_program[0]['Beschreibung'] = '';
 //	    // if there will be more exam-types added: this is the place to add them too!!
-//	    $courses_of_single_stdgng[0]['pruefungstyp_1'] = FALSE;
-//	    $courses_of_single_stdgng[0]['pruefungstyp_2'] = FALSE;
-//	    $courses_of_single_stdgng[0]['pruefungstyp_3'] = FALSE;
-//	    $courses_of_single_stdgng[0]['pruefungstyp_4'] = FALSE;
-//	    $courses_of_single_stdgng[0]['pruefungstyp_5'] = FALSE;
-//	    $courses_of_single_stdgng[0]['pruefungstyp_6'] = FALSE;
-//	    $courses_of_single_stdgng[0]['pruefungstyp_7'] = FALSE;
-//	    $courses_of_single_stdgng[0]['pruefungstyp_8'] = FALSE;
+//	    $courses_of_single_degree_program[0]['pruefungstyp_1'] = FALSE;
+//	    $courses_of_single_degree_program[0]['pruefungstyp_2'] = FALSE;
+//	    $courses_of_single_degree_program[0]['pruefungstyp_3'] = FALSE;
+//	    $courses_of_single_degree_program[0]['pruefungstyp_4'] = FALSE;
+//	    $courses_of_single_degree_program[0]['pruefungstyp_5'] = FALSE;
+//	    $courses_of_single_degree_program[0]['pruefungstyp_6'] = FALSE;
+//	    $courses_of_single_degree_program[0]['pruefungstyp_7'] = FALSE;
+//	    $courses_of_single_degree_program[0]['pruefungstyp_8'] = FALSE;
 
 	    
 	    // building a first line to save a new course to db
@@ -1002,9 +999,9 @@ class Admin extends FHD_Controller {
 	    $rows = array(); // init
 	    
 	    // if there are courses - otherwise only course-details has been created
-	    if($courses_of_single_stdgng){
+	    if($courses_of_single_degree_program){
 			//for each record - print out table-row with form-fields
-			foreach($courses_of_single_stdgng as $sd){
+			foreach($courses_of_single_degree_program as $sd){
 				// build a table-row for each course
 				$data['KursID'] = $sd['KursID'];
 				$data['Kursname'] = $sd['Kursname'];
@@ -1035,7 +1032,7 @@ class Admin extends FHD_Controller {
 	    }
 	    
 	    // make data available in view
-	    $data['stdgng_details'] = $details_of_single_stdgng;
+	    $data['stdgng_details'] = $details_of_single_degree_program;
 	    $data['stdgng_course_rows'] = $rows;
 //	    $data['course_tablehead'] = $this->load->view('admin/partials/degree_program_coursetable_head', '', TRUE);
 
@@ -1121,32 +1118,6 @@ class Admin extends FHD_Controller {
 	}
 	
 	
-//	/**
-//	 * Gets data of new course to create and validates
-//	 * DEPRECATED 
-//	 */
-//	function validate_new_degree_program_course(){
-//	    $stdgng_id = $this->input->post('StudiengangID');
-//	    
-//	    $this->form_validation->set_rules('Kursname', 'Kursname fehlt', 'required');
-//	    $this->form_validation->set_rules('kurs_kurz', 'Abkürzung fehlt', 'required');
-//	    $this->form_validation->set_rules('Creditpoints', 'Creditpoints fehlen oder nicht numerisch', 'required|numeric');
-//	    $this->form_validation->set_rules('SWS_Vorlesung', 'SWS-Vorlesung nicht numerisch', 'numeric');
-//	    $this->form_validation->set_rules('SWS_Uebung', 'SWS-Übung nicht numerisch', 'numeric');
-//	    $this->form_validation->set_rules('SWS_Praktikum', 'SWS-Praktikum nicht numerisch', 'numeric');
-//	    $this->form_validation->set_rules('SWS_Projekt', 'SWS-Projekt nicht numerisch', 'numeric');
-//	    $this->form_validation->set_rules('SWS_Seminar', 'SWS-Seminar nicht numerisch', 'numeric');
-//	    $this->form_validation->set_rules('SWS_SeminarUnterricht', 'SWS-SeminarUnterricht nicht numerisch', 'numeric');
-//	    
-//	    
-//	    if ($this->form_validation->run() == FALSE) {
-//			// reload view
-//			$this->session->set_flashdata('reload', $stdgng_id);
-//			$this->degree_program_edit();
-//		} else {
-//			$this->save_degree_program_new_course();
-//	    }
-//	}
 	
 	/**
 	 * Saving all Values from $_POST after submit button has been clicked.
@@ -1271,9 +1242,36 @@ class Admin extends FHD_Controller {
 	    redirect('admin/degree_program_edit');
 		
 	}
-	
+//	/**
+//	 * Gets data of new course to create and validates
+//	 * DEPRECATED - use these functions when there is one single line (1! form) for adding new course
+//	 */
+//	function validate_new_degree_program_course(){
+//	    $stdgng_id = $this->input->post('StudiengangID');
+//	    
+//	    $this->form_validation->set_rules('Kursname', 'Kursname fehlt', 'required');
+//	    $this->form_validation->set_rules('kurs_kurz', 'Abkürzung fehlt', 'required');
+//	    $this->form_validation->set_rules('Creditpoints', 'Creditpoints fehlen oder nicht numerisch', 'required|numeric');
+//	    $this->form_validation->set_rules('SWS_Vorlesung', 'SWS-Vorlesung nicht numerisch', 'numeric');
+//	    $this->form_validation->set_rules('SWS_Uebung', 'SWS-Übung nicht numerisch', 'numeric');
+//	    $this->form_validation->set_rules('SWS_Praktikum', 'SWS-Praktikum nicht numerisch', 'numeric');
+//	    $this->form_validation->set_rules('SWS_Projekt', 'SWS-Projekt nicht numerisch', 'numeric');
+//	    $this->form_validation->set_rules('SWS_Seminar', 'SWS-Seminar nicht numerisch', 'numeric');
+//	    $this->form_validation->set_rules('SWS_SeminarUnterricht', 'SWS-SeminarUnterricht nicht numerisch', 'numeric');
+//	    
+//	    
+//	    if ($this->form_validation->run() == FALSE) {
+//			// reload view
+//			$this->session->set_flashdata('reload', $stdgng_id);
+//			$this->degree_program_edit();
+//		} else {
+//			$this->save_degree_program_new_course();
+//	    }
+//	}
+//	
 //	/**
 //	 * After validation, new course is saved here.
+//	 * DEPRECATED - use these functions when there is one single line (1! form) for adding new course
 //	 */
 //	function save_degree_program_new_course(){
 //	    $new_course = array();
@@ -1307,16 +1305,18 @@ class Admin extends FHD_Controller {
 	
 	/**
 	 * Deletes single course from studiengangkurs-table
-	 * called from stdgng_edit view after user confirmed
+	 * called from degree_program_edit view after user confirmed
 	 * deletion with click on OK in confirmation-dialog
+	 * After altering db, ajax_show_course_of_degree_program
+	 * is called (passed parameter indicates dp to load)
 	 */
 	public function ajax_delete_single_course_from_degree_program(){
 	   $delete_course_id =  $this->input->post('course_data');
 	   
 	   $split = explode('_', $delete_course_id);
 	   
-	   // TODO delete course with $split[0] - course id
-	   $this->admin_model->delete_stdgng_single_course($split[0]);
+	   // $split[0] = course id
+	   $this->admin_model->delete_degree_program_single_course($split[0]);
 	   
 	   // call view with updated data	   
 	   echo $this->ajax_show_courses_of_degree_program($split[1]);
@@ -1325,6 +1325,8 @@ class Admin extends FHD_Controller {
 	
 	/**
 	 * Creates a new course for that degree program and returns updated view.
+	 * After altering db, ajax_show_course_of_degree_program
+	 * is called (passed parameter indicates dp to load)
 	 */
 	public function ajax_create_new_course_in_degree_program(){
 		$new_course_data = $this->input->post('course_data');
@@ -1332,7 +1334,7 @@ class Admin extends FHD_Controller {
 		$exam_data_save_to_db = array();
 		
 		// get degree-program-id for reload
-		$po_id = $new_course_data[0];
+		$dp_id = $new_course_data[0];
 		
 		// run through submitted course data 
 		foreach($new_course_data as $data){
@@ -1351,10 +1353,10 @@ class Admin extends FHD_Controller {
 			}
 		}
 		
-//		echo print_r($course_data_save_to_db).print_r($exam_data_save_to_db);
+//		echo print_r($course_data_save_to_db).print_r($exam_data_save_to_db); // DEBUG
 		$this->admin_model->insert_new_course($course_data_save_to_db, $exam_data_save_to_db);
 		
-		echo $this->ajax_show_courses_of_degree_program($po_id);
+		echo $this->ajax_show_courses_of_degree_program($dp_id);
 		
 	}
 	
@@ -1378,8 +1380,14 @@ class Admin extends FHD_Controller {
 	 * 
 	 */
 	
-	function stdplan_edit($reload = 0){
-	    // get all stdplan-data
+	public function stdplan_edit(){
+	    $reload = $this->session->flashdata('reload');
+		echo $reload;
+		if(!$reload){
+			$reload = 0; // if nothing is passed
+		}
+
+		// get all stdplan-data
 	    $this->data->add('all_stdplan_filterdata', $this->admin_model->get_stdplan_filterdata());
 
 	    // no autoreload without validation
@@ -1393,10 +1401,13 @@ class Admin extends FHD_Controller {
 	 * !! combined id: StudiengangAbkuerzung, Semester, PO
 	 * @param array $reload_ids holding unique abk, sem, po combination - passed when called from within controller >> reload view (dropdown)
 	 */
-	function ajax_show_events_of_stdplan($reload_ids = ''){
-	    if(!$reload_ids){
+	public function ajax_show_events_of_stdplan($reload_ids = ''){
+	    // if reload_ids is empty function has been called from view
+		if(!$reload_ids){
 			$ids = $this->input->post('stdplan_ids');
 			$splitted_ids = explode("_", "$ids");
+		// otherwise function called from within controller
+		// >> delete or add single row
 		} else {
 			$splitted_ids = $reload_ids;
 		}
@@ -1504,16 +1515,18 @@ class Admin extends FHD_Controller {
 	    
 	    if ($this->form_validation->run() == FALSE) {
 			// reload view
-			$this->stdplan_edit($stdplan_id_automatic_reload);
+			$this->session->set_flashdata('reload', $stdplan_id_automatic_reload);
+			redirect('admin/stdplan_edit');
 		} else {
-			$this->save_stdplan_changes();
+			$this->save_stdplan_changes($stdplan_id_automatic_reload);
 	    }
 	}
 	
 	/**
 	 * Updates data of Stdplan
 	 */
-	function save_stdplan_changes(){
+	function save_stdplan_changes($reload = 0){
+		
 	    // build an array, containing all keys that have to be updated in db
 	    $update_fields = array(
 			'VeranstaltungsformID',
@@ -1585,25 +1598,25 @@ class Admin extends FHD_Controller {
 			
 		}
 		
-	    $this->stdplan_edit();
+		$this->session->set_flashdata('reload', $reload);
+	    redirect('admin/stdplan_edit');
 	}
 	
 	
-	function stdplan_delete(){
+	/**
+	 * Calls view to delete single stdplans
+	 */
+	public function stdplan_delete(){
 	    $this->data->add('delete_view_data', $this->admin_model->get_stdplan_filterdata_plus_id());
-	    
-//	    $siteinfo = array(
-//			'title' => 'Stundenplan löschen',
-//			'main_content' => 'admin_stdplan_delete'
-//	    );
-//	    $this->data->add('siteinfo', $siteinfo);
-
-//	    $this->load->view('includes/template', $this->data->load());
 		$this->load->view('admin/stdplan_delete', $this->data->load());
 	}
 	
 	
-	function delete_stdplan(){
+	/**
+	 * Deletes single stdplan.
+	 * Called from within view - button.
+	 */
+	public function delete_stdplan(){
 	    
 	    // get data from post
 	    $stdgng_ids = array(

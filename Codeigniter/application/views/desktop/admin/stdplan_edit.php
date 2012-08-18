@@ -92,20 +92,26 @@
 	    
 		
 	// autoreload after submission AND validation-errors
-	var stdplan_ids = "<?php echo $stdplan_id_automatic_reload; ?>"
-	if(stdplan_ids != '0'){
+	var stdplanId = "<?php echo $stdplan_id_automatic_reload; ?>"
+	if(stdplanId != '0'){
+		reloadStdplan(stdplanId);
+	}
+	
+	// reloads a stdplan - the one that has been selected via dropdown before
+	function reloadStdplan(id){
 	    $.ajax({
 			type: "POST",
 			url: "<?php echo site_url();?>admin/ajax_show_events_of_stdplan/",
 			dataType: 'html',
-			data : {stdplan_ids : stdplan_ids},
+			data : {stdplan_ids : id},
 			success: function (data){
 				$('#stdplan-change-view').html(data);
 				bindFixedHeader();
+				
+				// set correct drowdown
+				$('#admin-stdplanfilter').val(id);
 			}
 	    });
-	    $('#admin-stdplanfilter').val(stdplan_ids);
-	    stdplan_ids = '';
 	}
 	
 	
@@ -219,6 +225,7 @@
 				$('#stdplan-change-view').html(data);
 				$('#confirmation-dialog').modal().hide();
 				$('.modal-backdrop').hide();
+				bindFixedHeader(); // must call - lost on the way
 			}
 		});
 
