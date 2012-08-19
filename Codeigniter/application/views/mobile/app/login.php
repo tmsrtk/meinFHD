@@ -121,6 +121,10 @@ $submitForgotPasswordButtonAttributes = array(
 							<?php echo form_button($submitLoginButtonAttributes); // render the submit button ?>
 						<?php echo form_fieldset_close(); // close the fieldset ?>
 					<?php echo form_close(); // close the whole login form ?>
+                    <hr>
+                    <div class="row-fluid">
+                        <a href="<?php echo site_url(); ?>sso/authenticate">Login &uuml;ber Shibboleth</a>
+                    </div>
 				</div>
 				<div id="accordion-app" class="accordion">
 					<div class="accordion-group">
@@ -141,10 +145,6 @@ $submitForgotPasswordButtonAttributes = array(
 									</div>
 								<?php echo form_close(); // close the whole login form ?>
 								</div>
-                                <hr>
-                                <div class="row-fluid">
-                                    <a href="<?php echo site_url(); ?>sso/authenticate">Login &uuml;ber Shibboleth</a>
-                                </div>
 							</div>
 						</div>
 					</div>
