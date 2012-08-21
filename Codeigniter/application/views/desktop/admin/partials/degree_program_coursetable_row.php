@@ -1,4 +1,4 @@
-<!--  single row in stdgng-list-table  -->
+<!--  single row in degree-program-list-table  -->
 <tr style="clear:both">
     <!-- id - just for orientation -->
     <?php	    
@@ -230,7 +230,7 @@
     <!-- Aktion - Button -->
     <?php 
 		$buttonData = array(
-			'name' => $KursID.'_'.$stdgng_id,
+			'name' => $KursID.'_'.$dp_id,
 			'class' => 'btn btn-danger span delete-degree-program-btn',
 			'data-id' => $KursID,
 			'value' => true,

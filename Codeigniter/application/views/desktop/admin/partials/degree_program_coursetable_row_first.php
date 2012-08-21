@@ -196,7 +196,7 @@
     <!-- add-course-button -->
 	<?php 
 		$buttonData = array(
-			'name' => $stdgng_id,
+			'name' => $dp_id,
 			'class' => 'btn btn-warning span',
 			'id' => 'degree-program-course-create',
 			'value' => true,

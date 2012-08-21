@@ -7,7 +7,7 @@
 	$degree_program_filter[0] = 'Bitte auswählen';
 
 	// prepare dropdown options
-	foreach($all_stdgnge as $dp ){ 
+	foreach($all_degree_programs as $dp ){ 
 		$degree_program_filter[$dp->StudiengangID] = $dp->StudiengangAbkuerzung . ' ' . $dp->Pruefungsordnung . ' ' . $dp->StudiengangName; 
 	}
 	// setup js for dropdown
