@@ -31,6 +31,7 @@ class SSO extends FHD_Controller {
 
         // load the sso model
         $this->load->model('SSO_model');
+        $this->load->model('admin_model');
 
         // at first get the attributes of the authenticated user
         $idp_attributes = $this->samlauthentication->get_attributes();
@@ -60,7 +61,7 @@ class SSO extends FHD_Controller {
                 $this->establish_local_session();
             }
 
-            // the user has no linked account -> give him the possibility to link or create an account
+            // the user has no linked account and is not blacklisted -> give him the possibility to link or create an account
             // otherwise request for linking: 2 alternatives -> user has got an account and links; -> user requests an account that is automatically linked
             else {
                 redirect('sso/link_account');
@@ -109,26 +110,36 @@ class SSO extends FHD_Controller {
      */
     public function link_account() {
 
-        // --- protect the link account for calls without having a global session --
+        // --- protect the link account function for calls without having a global session --
         if (!$this->samlauthentication->is_authenticated() || $this->samlauthentication->has_linked_account()) {
             redirect('app/login');
         }
+
         // read the post parameters
         $username = $this->input->post('username');
         $password = $this->input->post('password');
 
+
         // check if we have values for the username and password
         if ($username && $password) {
+
+            // check if the global account is on the blacklist
+            if($this->SSO_model->is_blacklisted($this->idp_auth_uid)){
+                // show message and redirect back to the link account page
+                $message_body = 'Sorry, deine globale BenutzerID steht auf der Blacklist. Bitte kontaktiere den Support unter' .
+                    ' meinfhd.medien@fh-duesseldorf.de.';
+                $this->message->set(sprintf($message_body));
+                redirect('app/login'); // reload controller for displaying the error message
+            }
 
             // query the user table to check if the given identity is correct and not linked
             $this->db->select('BenutzerID, LoginName, Passwort, Vorname, Nachname');
             $this->db->from('benutzer');
             $this->db->where('LoginName', $username);
             $this->db->where('Passwort', MD5($password));
-            $this->db->where('FHD_IdP_UID',''); // account is not linked
+            $this->db->where('FHD_IdP_UID',NULL); // account is not linked
 
             $query = $this->db->get();
-
             // there should be only 1 row in the db
             if($query->num_rows() == 1) {
                 // get the inputted userid
@@ -146,14 +157,133 @@ class SSO extends FHD_Controller {
             else { // link was not successful
                 // show message and redirect back to the link account page
                 $message_body = 'Beim Verknüpfen der angegebenen Identität ist ein Fehler aufgetreten. Vermutlich ist die eingegebene Kombination aus Benutzername' .
-                                ' und Passwort falsch, oder die angegebene Identität wurde bereits verknüpft.' .' Bitte überprüfe deine Eingaben und starte den Prozess' .
-                                ' erneut. Sollte der Fehler weiterhin auftreten kontaktiere bitte den Support.';
+                    ' und Passwort falsch, oder die angegebene Identität wurde bereits verknüpft.' .' Bitte überprüfe deine Eingaben und starte den Prozess' .
+                    ' erneut. Sollte der Fehler weiterhin auftreten kontaktiere bitte den Support unter meinfhd.medien@fh-duesseldorf.de.';
                 $this->message->set(sprintf($message_body));
                 redirect('sso/link_account'); // reload controller for displaying the error message
             }
         }
+
+
+        // add all needed data to the view
+        $this->data->add('all_departments', $this->SSO_model->get_all_departments()); // add all departments
+        $this->data->add('all_stdgnge', $this->admin_model->getAllStdgnge());
+
         // load the link account view
         $this->load->view('sso/link_account', $this->data->load());
+    }
+
+    /**
+     * Checks if all inputes in the create account form are correct
+     * @return bool
+     */
+    public function validate_create_account_form() {
+        // set custom delimiter for validation errors
+        $this->form_validation->set_error_delimiters('<div id="createAccountErrors" class="alert alert-error">', '</div>');
+
+        // prepare the validation rules array
+        $rules = array();
+
+        $rules[] = $this->adminhelper->get_formvalidation_role();
+        $rules[] = $this->adminhelper->get_formvalidation_email();
+        $rules[] = $this->adminhelper->get_formvalidation_forename();
+        $rules[] = $this->adminhelper->get_formvalidation_lastname();
+        // set the validation rules
+        $this->form_validation->set_rules($rules);
+
+        // get the role that was selected
+        $role = $this->input->post('role');
+
+        // different validation rules if the user wants to create a student or dozent account
+
+        // student validation
+        if ($role === '5'/*student*/)
+        {
+            // prepare the student validation rules
+            $rules = array();
+
+            $rules[] = $this->adminhelper->get_formvalidation_studiengang();
+            $rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
+
+            // set the student validation rules
+            $this->form_validation->set_rules($rules);
+
+            // query if erstsemestler checkbox was checked or not
+            if ( empty($form_values['erstsemestler']) )
+            {
+                // if not checked, -> invitation for non erstsemestler, -> more inputs to fill out
+                $rules[] = $this->adminhelper->get_formvalidation_startjahr();
+                $rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
+
+                $this->form_validation->set_rules($rules);
+            }
+        }
+
+        // run the validation and check if everything is alright
+        if ($this->form_validation->run() == FALSE) {
+            // something is wrong -> call the mask again
+            $this->link_account();
+        }
+        else { // the inputs are correct
+
+            // get the user inputs
+            $form_data = $this->input->post();
+
+            // is global uid blacklisted?
+            if($this->SSO_model->is_blacklisted($this->idp_auth_uid)) {
+                // save an user invitation
+                $this->_save_user_request($form_data);
+
+                // show a message -> contact admin and redirect back to the login page
+                $message_body = 'Beim Anlegen des Accounts ist ein Fehler aufgetreten. Deine Informationen wurden als Einladung gespeichert. Bitte wende dich' .
+                    ' an den Support unter meinfhd.medien@fh-duesseldorf.de';
+                $this->message->set(sprintf($message_body));
+                // redirect to login-form
+                redirect('app/login');
+
+                // TODO: send email to admin, that a new request has been saved
+                // TODO: send mail to user, that he has to wait
+            }
+            else { // user is not blacklisted -> create his account
+                $this->_create_user($form_data);
+                // establish local session for the created user
+                redirect('sso/establish_local_session');
+
+                // TODO: send email to user that the account was successfully created
+            }
+        }
+    }
+
+    /**
+     *  Creates a new user and links him to his global uid.
+     * @param $form_data
+     */
+    private function _create_user ($form_data) {
+        // generate a custom password
+        $password = $this->adminhelper->passwort_generator();
+        $form_data['password'] = $password;
+        $form_data['FHD_IdP_UID'] = $this->idp_auth_uid;
+
+        // add the right 'benutzertyp' to the array
+        if ($form_data['role'] == '2') { // user is a dozent
+            $form_data['TypID'] = '5';
+        }
+        else if($form_data['role'] == '5') { // user is a student
+            $form_data['TypID'] = '7';
+        }
+
+        // insert the user into the database and link his account
+        $this->SSO_model->save_new_user($form_data);
+    }
+
+    /**
+     * Saves a new user request with the global UID to link the account directly
+     * @param $form_data
+     */
+    private function _save_user_request ($form_data) {
+        // add the global uid to the user input
+        $form_data['FHD_IdP_UID'] = $this->idp_auth_uid;
+        $this->SSO_model->save_user_invitation($form_data);
     }
 }
 /* End of file sso.php */
