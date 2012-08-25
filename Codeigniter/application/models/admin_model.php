@@ -200,7 +200,8 @@ class Admin_model extends CI_Model {
 				'Email' 					=> $q['Emailadresse'],
 				'StudienbeginnJahr'		 	=> $q['Semester'],
 				'StudiengangID' 			=> $q['Studiengang'],
-				'Passwort'					=> md5($password)
+				'Passwort'					=> md5($password),
+                'FHD_IdP_UID'               => $q['FHD_IdP_UID'] # edit by CK; Establish global linking
 			);
 
 		$this->db->insert('benutzer', $data);
@@ -222,6 +223,11 @@ class Admin_model extends CI_Model {
 
 		// delete requested invitation
 		$this->_delete_invitation($invitation_id);
+
+        // -- EDIT by CK --
+        // remove global uid from blacklist, if the id is on it
+        $this->db->where('FHD_IdP_UID', $q['FHD_IdP_UID']);
+        $this->db->delete('shibbolethblacklist');
 	}
 
 	/**
@@ -490,14 +496,67 @@ class Admin_model extends CI_Model {
 	* 
 	* Konstantin Voth
 	***************************************************************************/
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+    /**
+    * global Account blacklisting
+    *
+    * Christian Kundruss (CK)
+    */
+
+    /**
+     * Checks in the user table, if the user identity with the given uid is already linked to an global
+     * shibboleth account
+     *
+     * @author Christian Kundruss (CK)
+     * @param $uid
+     * @return mixed array with the global uid and username if the user has an linked account, otherwise FALSE
+     */
+    public function is_user_linked($uid) {
+
+        // check if the given uid is linked to an global id
+        $this->db->select('FHD_IdP_UID, Vorname, Nachname');
+        $this->db->from('benutzer');
+        $this->db->where('BenutzerID',$uid);
+        $this->db->where('FHD_IdP_UID IS NOT NULL'); // FHD_IdP_UID is NOT NULL
+
+        $query = $this->db->get(); // query the table
+
+        // is there an matching entry in the database? -> the user is linked -> return selected information
+        if ($query->num_rows() == 1) {
+            return $query->row_array();
+        }
+
+        return FALSE; // the user is not linked
+    }
+
+    /**
+     * Adds an global user to the shibbolethblacklist.
+     * @author Christian Kundruss (CK)
+     * @param $user_data array with the user data of the user that should be blacklisted (FHD_IdP_UID, Vorname, Nachname)
+     */
+    public function add_user_to_blacklist($user_data) {
+        // add the user to the shibbolethblacklist
+        $this->db->insert('shibbolethblacklist', $user_data);
+    }
+
+    /**
+     * Removes the global user from the blacklist.
+     * @param $idp_uid
+     */
+    public function remove_user_from_blacklist($idp_uid) {
+        $this->db->where('FHD_IdP_UID', $idp_uid);
+        $this->db->delete('shibbolethblacklist');
+    }
+
+    /**
+     * end global Account blacklisting
+     *
+     * Christian Kundruss (CK)
+     */
+
+
+
 	/* *****************************************************
 	 * ************** Studiengangverwaltung Anfang *********
 	 * *****************************************************/
@@ -977,7 +1036,8 @@ class Admin_model extends CI_Model {
 	    $this->db->where('SPKursID', $spk_id);
 	    $this->db->delete('stundenplankurs');
 	}
-	
-	
+
+
+
 	
 }
