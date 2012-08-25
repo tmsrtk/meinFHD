@@ -61,7 +61,7 @@ class Authentication {
 	public function login($name, $pass)
 	{
 		// Load the user ID that matches the username and password
-		$query = $this->CI->db->query('SELECT BenutzerID 
+		$query = $this->CI->db->query('SELECT BenutzerID
 									FROM benutzer 
 									WHERE LoginName = ? AND Passwort = MD5(?)', array($name, $pass));
 		
@@ -136,7 +136,7 @@ class Authentication {
     public function sso_login($username, $hashed_password) {
 
         // select the needed uid of the local user
-        $this->CI->db->select('BenutzerID');
+        $this->CI->db->select('BenutzerID, Vorname, Nachname');
         $this->CI->db->from('benutzer');
         $this->CI->db->where('LoginName', $username);
         $this->CI->db->where('Passwort', $hashed_password);
@@ -146,6 +146,9 @@ class Authentication {
         if($query->num_rows() == 1) {
             // store the user id in the authentication object
             $this->uid = $query->row()->BenutzerID;
+
+            // save the name of the logged in user for further displays
+            $this->name = $query->row()->Vorname . ' ' . $query->row()->Nachname;
 
             // establish the session
             $this->CI->session->set_userdata('uid', $this->uid);
