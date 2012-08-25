@@ -621,6 +621,15 @@ class Admin extends FHD_Controller {
 	{
 		$user_id = $this->input->post('user_id');
 
+        // modifications for blacklisting by CK
+        // if the users account is already linked to an global identity -> blacklist the global userid before deleting his identity
+        $linked_userdata = $this->admin_model->is_user_linked($user_id);
+        if ($linked_userdata) { // the user is linked
+            // add him to the blacklist
+            $this->admin_model->add_user_to_blacklist($linked_userdata);
+        }
+        // end modifications by CK
+
 		$this->admin_model->model_delete_user($user_id);
 
 		redirect(site_url().'admin/delete_user_mask');
