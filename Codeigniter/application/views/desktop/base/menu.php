@@ -128,6 +128,20 @@
 									</ul> <!-- /.nav .level-2 -->
 								</li>
 								<?php endif ?>
+                                <?php if( $this->authentication->has_permissions('hat_logbuch') ) :?>
+                                <li class="dropdown">
+                                    <a href="<?php print base_url('#'); ?>" class="dropdown-toggle" data-toggle="dropdown">
+                                        Logbuch
+                                    </a>
+                                </li>
+                                <?php endif ?>
+                                <?php if( $this->authentication->has_permissions('hat_logbuch_verwaltung') ) :?>
+                                <li class="dropdown">
+                                    <a href="<?php print base_url('#'); ?>" class="dropdown-toggle" data-toggle="dropdown">
+                                        Logbuchverwaltung
+                                    </a>
+                                </li>
+                                <?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_faq') ) : ?>
 								<li><a href="<?php print base_url('faq/index'); ?>">FAQ</a></li>
 								<?php endif ?>
