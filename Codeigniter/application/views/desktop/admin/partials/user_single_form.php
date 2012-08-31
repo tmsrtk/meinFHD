@@ -4,7 +4,7 @@ $data_formopen = array(
 	'id' => 'edit_user_row'
 	);
 
-$data_dropdown = array('Speichern', 'Passwort resetten', 'Stundenplan resetten', 'Als ... anmelden');
+$data_dropdown = array('Speichern', 'Passwort resetten', 'Studienplan resetten', 'Als ... anmelden');
 $data_dropdown_attrs = 'id="user_function" class="input-xxlarge"';
 
 $submit_data = array(

@@ -208,7 +208,16 @@ class Studienplan extends FHD_Controller
         $this->message->set(sprintf('Der Studienplan wurde erfolgreich zurükgesetzt.'));
     }
     
-    
+    /**
+     * Deletes and recreates the whole studyplan and dependencies
+     */
+    public function studienplanRekonstruieren()
+    {
+        $this->load->model('Studienplan_Model');
+        $this->Studienplan_Model->deleteAll();
+        
+        $this->message->set(sprintf('Der Studienplan wurde erfolgreich rekonstruiert.'));
+    }
     
     
     /**

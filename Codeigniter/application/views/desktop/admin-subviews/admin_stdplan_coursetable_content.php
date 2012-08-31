@@ -1,12 +1,11 @@
-   
-    <?php 
+<?php 
 	// open form
 	print form_open('admin/validate_stdplan_changes');
-    ?>
-    
-    <table class="table table-striped table-bordered table-condensed">
+?>
+
+<table class="table table-striped">
 	<thead>
-	    <tr>
+		<tr>
 		<th>Veranstaltungsname:</th>
 		<th>Veranstaltungsform:</th>
 		<th>Alternative:</th>
@@ -19,28 +18,30 @@
 		<th>WPF-Name:</th>
 		<th>Farbe:</th>
 		<th>Aktion:</th>
-	    </tr>
+		</tr>
 	</thead>
-	
-	<tbody>
-	    
-	    <!-- build first row static - empty values TODO-->
-	
-	    <?php foreach($stdplan_course_rows as $row) : ?>
-		    <tr><?php print $row; ?></tr>
-	    <?php endforeach; ?>
-	
+
+	<!-- first row of table - add data -->
+	<tbody id="stdplan-table-first-row">
+		<?php print $stdplan_first_row; ?>
 	</tbody>
-    </table>
-	    
-    <?php 
+
+	<!-- main-table - editable data -->
+	<tbody id="stdplan-table-main">
+		<?php foreach($stdplan_course_rows as $row) : ?>
+			<?php print $row; ?>
+		<?php endforeach; ?>
+	</tbody>
+</table>
+
+<?php 
 	// hidden field to transmit the stdgng-id
 	print form_hidden('stdplan_id_abk', $kurs_ids_split[0]);
 	print form_hidden('stdplan_id_sem', $kurs_ids_split[1]);
 	print form_hidden('stdplan_id_po', $kurs_ids_split[2]);
-	
+
 	// submitbutton and close form
 	$btn_attributes = 'class = "btn-warning"';
 	print form_submit('savestdplanchanges', 'Änderungen speichern', $btn_attributes);
 	print form_close();
-    ?>
+?>

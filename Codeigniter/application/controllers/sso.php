@@ -119,7 +119,6 @@ class SSO extends FHD_Controller {
         $username = $this->input->post('username');
         $password = $this->input->post('password');
 
-
         // check if we have values for the username and password
         if ($username && $password) {
 
@@ -167,7 +166,7 @@ class SSO extends FHD_Controller {
 
         // add all needed data to the view
         $this->data->add('all_departments', $this->SSO_model->get_all_departments()); // add all departments
-        $this->data->add('all_stdgnge', $this->admin_model->getAllStdgnge());
+        $this->data->add('all_stdgnge', $this->admin_model->get_all_degree_programs()); // add all degree programs
 
         // load the link account view
         $this->load->view('sso/link_account', $this->data->load());

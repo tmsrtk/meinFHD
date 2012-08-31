@@ -109,8 +109,8 @@
 								<?php foreach($semester as $modul): ?>
 									<?php if($i != 0) : # Anerkennungssemester ?>
 										<td <?php if($i==$userdata['act_semester']) echo 'style="background-color: #dee4c5";' ?> >
-											<p>SWS: <span class="badge badge-success pull-right"><?php echo $swsCp[$i]['SWS_Summe'] ?></span></p>
-											<p>CP: <span class="badge badge-info pull-right"><?php echo $swsCp[$i]['CP_Summe']?></span></p>
+											<p>SWS: <span class="badge badge-success pull-right"><?php if( ! empty($swsCp[$i]['SWS_Summe'])) echo $swsCp[$i]['SWS_Summe'] ?></span></p>
+											<p>CP: <span class="badge badge-info pull-right"><?php if( ! empty($swsCp[$i]['CP_Summe'])) echo $swsCp[$i]['CP_Summe']?></span></p>
 										</td>
 									<?php endif; ?>
 									<?php $i++ ?>
@@ -692,21 +692,61 @@
 
 				// reset the studienplan
 				reset.click(function() {
-					self.config.semesterplanspalten.each(function(index, semester) {
-						// cache semester
-						$semester = $(semester);
 
-						// modules per semester
-						$semestermodule = $semester.find('.semestermodul');
+					// modal, yes or no
+					self._showModal('Studienplan resetten', 'Alle Kurse werden zurückgesetzt und Sie werden aus allen Gruppen ausgetragen! Sicher?', true);
 
-						// for each module in a semester
-						($semestermodule).each(function(index, module) {
-							// cache jquery object of each module
-							$module = $(module);
-							// reset the actual module
-							self._resetModule($module);
-						});
+					// if there are any click listener, remove them
+					$('#modalcontent').off('click');
+					// add new
+					$("#modalcontent").on( 'click', 'button, a', function(event) {
+						event.preventDefault();
+
+						if ( $(this).attr("data-accept") === 'modal' ) {
+							console.log("accept");
+
+							$(event.target).parent().parent().find("div.modal-body").html("Bitte warten, der Befehl wird ausgeführt");
+							$(event.target).parent().parent().find("div.modal-footer").hide();
+
+							// complete reset with all dependencies
+							return $.ajax({
+							  url: "<?php echo site_url();?>studienplan/studienplanRekonstruieren"
+							}).promise().done(function() {
+								// reload page
+								location.reload();
+							});
+
+						} else {
+							console.log("cancel");
+						}
+
 					});
+
+
+					// complete reset with all dependencies
+					// return $.ajax({
+					//   url: "<?php echo site_url();?>studienplan/studienplanRekonstruieren"
+					// }).promise().done(function() {
+					// 	// reload page
+					// 	location.reload();
+					// });
+
+					// // old version, where the studienplan is resetting live, but not everything in the db
+					// self.config.semesterplanspalten.each(function(index, semester) {
+					// 	// cache semester
+					// 	$semester = $(semester);
+
+					// 	// modules per semester
+					// 	$semestermodule = $semester.find('.semestermodul');
+
+					// 	// for each module in a semester
+					// 	($semestermodule).each(function(index, module) {
+					// 		// cache jquery object of each module
+					// 		$module = $(module);
+					// 		// reset the actual module
+					// 		self._resetModule($module);
+					// 	});
+					// });
 				});
 			},
 
@@ -715,18 +755,19 @@
 			// helper methods --------------------------------------------------------------------------
 
 			// modals ---------------------------------------
-			createModalDialog : function(title, text) {
+			createModalDialog : function(title, text, withOK) {
 				myModalDialog = 
 					$('<div class="modal hide" id="myModal"></div>')
 					.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
 					.append('<div class="modal-body"><p>'+text+'</p></div>')
 					.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Schließen</a>');
+					if (withOK) myModalDialog.find('.modal-footer').append('<a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
 					// <a href="" class="btn btn-primary" data-accept="modal">OK</a></div>
 				return myModalDialog;
 			},
 
-			_showModal : function(title, text) {
-				mm = this.createModalDialog(title, text);
+			_showModal : function(title, text, withOK) {
+				mm = this.createModalDialog(title, text, withOK);
 				this.config.modalWrapper.html(mm);
 
 				$('#myModal').modal({

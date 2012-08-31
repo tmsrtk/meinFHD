@@ -62,7 +62,7 @@
 					<hr>
 					<?php echo form_open('admin/validate_create_user_form/', $data_formopen); // main inputs for all users ?>
 						<fieldset id="user-info">
-							<?php echo form_dropdown('role', $all_roles, /*standard value*/'', $data_roles); ?>
+							<?php echo form_dropdown('role', $all_roles, /*standard value*/set_value('role'), $data_roles); ?>
 							<?php echo form_input($data_loginname); ?>
 							<?php echo form_input($data_email); ?>
 							<?php echo form_input($data_forename); ?>
@@ -83,11 +83,11 @@
 								// echo '<input type="radio" name="semesteranfang" value="SoSe"'.set_radio('semesteranfang', 'SoSe', FALSE).' />';
 								// echo 'SoSe'; echo '<br />';
 
-								echo '<input type="radio" name="semesteranfang" value="WiSe"'.set_radio('semesteranfang', 'WiSe', TRUE).' />';
-								echo 'WiSe';
+								echo '<input type="radio" name="semesteranfang" value="WS"'.set_radio('semesteranfang', 'WS', TRUE).' />';
+								echo 'WS';
 								// echo form_radio('semesteranfang', 'SS', FALSE);
-								echo '<input type="radio" name="semesteranfang" value="SoSe"'.set_radio('semesteranfang', 'SoSe', FALSE).' />';
-								echo 'SoSe'; echo '<br />';
+								echo '<input type="radio" name="semesteranfang" value="SS"'.set_radio('semesteranfang', 'SS', FALSE).' />';
+								echo 'SS'; echo '<br />';
 							?>
 							<?php echo form_dropdown('studiengang', $studiengaenge, /*standard value*/'', $data_studiengang); ?>
 						</fieldset>
@@ -107,7 +107,7 @@
 		init : function( config ) {
 			this.config = config;
 			this.bindEvents();
-			this.toggleStudentsdata();
+			this.toggleStudentsdata(this.config.roleDropdown);
 		},
 		
 		bindEvents : function() {

@@ -70,6 +70,9 @@ class Stundenplan extends FHD_Controller {
 		$plan = $this->Stundenplan_Model->get_stundenplan($this->authentication->user_id());
 		// Save the days in a seperate variable
 		$days = $plan[0];
+
+		// FB::log($plan);
+		// return;
 		
 		// Load helper classes
 		include(APPPATH . 'libraries/events/Event.php');
@@ -106,6 +109,33 @@ class Stundenplan extends FHD_Controller {
 		$this->data->add('aktivekurse', $plan[3]);
 
 		$this->load->view('stundenplan/week', $this->data->load());
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	public function timetable_show(){
+	    // TODO pass roles-specific data to view
+	    $this->load->view('stundenplan/tabview_desktop', $this->data->load());
+	}
+
+
+
+
+
+
+
+
+
+	public function register_in_course()
+	{
+		$data = $this->input->post();
+		
+		
 	}
 
 }
