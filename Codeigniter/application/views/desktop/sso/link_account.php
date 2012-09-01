@@ -30,7 +30,7 @@ $submitLinkAccountButtonAttributes = array(
     'name'			=> 'submit',
     'type'			=> 'submit',
     'id'			=> 'submitLoginForm',
-    'content'			=> 'Account verkn&uuml;pfen',
+    'content'			=> 'Verkn&uuml;pfen',
     'class'			=> 'btn btn-primary btn-medium pull-right'
 );
 
@@ -146,22 +146,32 @@ $submitCreateAccountButton = array(
 
 <?php startblock('content'); # content for this view ?>
                 <div class="well well-small clearfix">
-                    <h2>Sorry kein Account gefunden</h2>
+                    <h2>Bitte Account verkn&uuml;pfen</h2>
                     <hr>
                     <p>
-                        Hallo, <br/>
-                        vielen Dank f&uuml;r deine Anmeldung. Du hast dich &uuml;ber den Shibboleth IdP der FH D&uuml;sseldorf angemeldet, aber leider konnte keine passende
-                        lokale Identit&auml;t gefunden werden.<br/>
-                        Wenn du bereits eine lokale Identit&auml;t besitzt kannst du diese jetzt verkn&uuml;pfen, oder fordere dir einen Zugang an.
+                        Du hast dich bei meinFHD &uuml;ber den zentralen Shibboleth-Server der Fachhochschule D&uuml;sseldorf angemeldet.
                     </p>
                     <p>
+                        F&uuml;r den Zugang zu meinFHD ben&ouml;tigst Du auch einen Benutzeraccount lokal in meinFHD. Diese beiden Accounts m&uuml;ssen miteinander
+                        verkn&uuml;pft werden, um Deine Daten konsistent zu halten.
+                    </p>
+                    <p>
+                        Wenn Du bereits einen lokalen Account besitzt, kannst du diesen jetzt dauerhaft mit deinem zentralen Account verkn&uuml;pfen, um jederzeit Zugriff
+                        auf meinFHD zu erhalten. Gib daf&uuml;r <a id="openLinkingForm" href="#">hier</a> deine lokale Zugangsdaten an und best&auml;stige diese mit dem Button verkn&uuml;pfen.
+                    </p>
+                    <p>
+                        Wenn Du noch keinen lokalen meinFHD-Account hast, kannst Du ihn <a id="openCreateForm" href="#">hier</a> erstellen und sofort mit dem zentralen Account verkn&uuml;pfen.
+                    </p>
+                    <p>
+                        Solltest Du R&uuml;ckfragen oder Probleme haben kontaktiere bitte das Support-Team unter <a href="mailto:meinfhd.medien@fh-duesseldorf.de">meinfhd.medien@fh-duesseldorf.de</a>.
+                    </p>
                 </div>
 
                 <!-- account linking accordion -->
                 <div id="accordion-app" class="accordion">
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <h4 class="accordion-toggle" data-parent="#accordion-app" data-toggle="collapse" data-target="#request-accountlinking">Ja, ich besitze einen Account und m&ouml;chte diesen jetzt verkn&uuml;pfen<i class="icon-plus pull-right"></i></h4>
+                            <h4 class="accordion-toggle" data-parent="#accordion-app" data-toggle="collapse" data-target="#request-accountlinking">Account verkn&uuml;pfen<i class="icon-plus pull-right"></i></h4>
                         </div>
                         <div id="request-accountlinking" class="accordion-body collapse">
                             <div class="accordion-inner">
@@ -196,7 +206,7 @@ $submitCreateAccountButton = array(
                     <!-- create account accordion -->
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <h4 class="accordion-toggle" data-parent="#accordion-app" data-toggle="collapse" data-target="#request-createaccount">Nein, ich besitze keinen Account und m&ouml;chte mir jetzt einen erstellen<i class="icon-plus pull-right"></i></h4>
+                            <h4 class="accordion-toggle" data-parent="#accordion-app" data-toggle="collapse" data-target="#request-createaccount">Account erstellen<i class="icon-plus pull-right"></i></h4>
                         </div>
                         <div id="request-createaccount" class="accordion-body collapse">
                            <div class="accordion-inner">
@@ -428,6 +438,15 @@ $submitCreateAccountButton = array(
         additionalInfoContent : $("div#additional-info2")
     });
 
+    // open up account linking accordion
+    $("#openLinkingForm").click(function() {
+        $("#request-accountlinking").collapse('show');
+    });
+
+    // open up create account accordion
+    $("#openCreateForm").click(function() {
+        $("#request-createaccount").collapse('show');
+    });
 <?php endblock(); ?>
 
 <?php end_extend(); ?>

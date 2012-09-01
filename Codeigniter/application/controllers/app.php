@@ -15,7 +15,7 @@
  * Description...
  */
 class App extends FHD_Controller {
-	
+
 	// default constructor to prepare all needed stuff
 	function __construct(){
 		parent::__construct();
@@ -97,7 +97,15 @@ class App extends FHD_Controller {
             redirect('admin/edit_user_mask');
         }
         // --- Main Modification End ---
-
+        // --- Modifications to check if the user is logged in via an global session by CK ---
+        else if ($this->samlauthentication->has_linked_account()){
+            $message = 'Da Du dich mit Deinem zentralen Account angemeldet hast bist du in meinFHD so lange angemeldet, '.
+                       'wie deine globale Session im Browser besteht. Sobald Du Deinen Browser beendest wirst Du aus meinFHD ausgeloggt.';
+            $this->message->set(sprintf($message));
+            // redirect user to dashboard
+            redirect('dashboard/index');
+        }
+        // --- Modifaction End ---
         else { // otherwise perform a regular logut
             $this->message->set(sprintf('Ausgeloggt! (ID: %s)', $this->authentication->user_id()));
             $this->authentication->logout();

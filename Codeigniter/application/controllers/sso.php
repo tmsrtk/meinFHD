@@ -125,8 +125,8 @@ class SSO extends FHD_Controller {
             // check if the global account is on the blacklist
             if($this->SSO_model->is_blacklisted($this->idp_auth_uid)){
                 // show message and redirect back to the link account page
-                $message_body = 'Sorry, deine globale BenutzerID steht auf der Blacklist. Bitte kontaktiere den Support unter' .
-                    ' meinfhd.medien@fh-duesseldorf.de.';
+                $message_body = '<p>Beim Verknüpfen Deines lokalen Accounts mit dem zentralen Account ist ein Fehler aufgetreten. Dein zentraler'.
+                    ' Account ist für meinFHD gesperrt. Bitte kontaktiere den Support unter <a href="mailto:meinfhd.medien@fh-duesseldorf.de">meinfhd.medien@fh-duesseldorf.de</></p>';
                 $this->message->set(sprintf($message_body));
                 redirect('app/login'); // reload controller for displaying the error message
             }
@@ -155,10 +155,10 @@ class SSO extends FHD_Controller {
 
             else { // link was not successful
                 // show message and redirect back to the link account page
-                $message_body = 'Beim Verknüpfen der angegebenen Identität ist ein Fehler aufgetreten. Vermutlich ist die eingegebene Kombination aus Benutzername' .
-                    ' und Passwort falsch, oder die angegebene Identität wurde bereits verknüpft.' .' Bitte überprüfe deine Eingaben und starte den Prozess' .
-                    ' erneut. Sollte der Fehler weiterhin auftreten kontaktiere bitte den Support unter meinfhd.medien@fh-duesseldorf.de.';
-                $this->message->set(sprintf($message_body));
+                $message_body = '<p>Beim Verknüpfen Deines lokalen Accounts mit dem zentralen Account ist ein Fehler aufgetreten. Bitte überprüfe die von dir '.
+                                'eingegebene Kombination aus Benutzername und Passwort.</p> <p>Sollte der Fehler weiterhin auftreten kontaktiere bitte den Support unter' .
+                                ' <a href="mailto:meinfhd.medien@fh-duesseldorf.de">meinfhd.medien@fh-duesseldorf.de</a></p>';
+                $this->message->set(sprintf($message_body),'error');
                 redirect('sso/link_account'); // reload controller for displaying the error message
             }
         }
@@ -202,7 +202,7 @@ class SSO extends FHD_Controller {
             $rules = array();
 
             $rules[] = $this->adminhelper->get_formvalidation_studiengang();
-            $rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
+            //$rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
 
             // set the student validation rules
             $this->form_validation->set_rules($rules);
@@ -228,15 +228,26 @@ class SSO extends FHD_Controller {
             // get the user inputs
             $form_data = $this->input->post();
 
+            // check if the given matrikelnummer has an account or not
+            if($this->SSO_model->check_matrikelnummer_has_account($form_values['matrikelnummer'])){ // the inputted matrikelnummer has already an account
+                echo 'huhu';
+                // do nothing, but show the user a message
+                $message_body = '<p>Für die von dir angegebene Matrikelnummer existiert bereits ein lokaler Account. Solltest du dein Passwort vergessen haben,' .
+                    ' so kannst du dir auf der <a href=" <?php print base_url()?>'.'/app/login">Startseite</a> ein neues anfordern.</p>
+                                <p>Andernfalls nehme bitte Kontakt mit dem Support unter <a href="mailto:meinfhd.medien@fh-duesseldorf.de">meinfhd.medien@fh-duesseldorf.de</a> auf.</p>';
+                $this->message->set(sprintf($message_body),'error');
+                // load the form again
+                redirect('sso/validate_create_account_form');
+            }
             // is global uid blacklisted?
-            if($this->SSO_model->is_blacklisted($this->idp_auth_uid)) {
+            else if($this->SSO_model->is_blacklisted($this->idp_auth_uid)) {
                 // save an user invitation
                 $this->_save_user_request($form_data);
 
                 // show a message -> contact admin and redirect back to the login page
-                $message_body = 'Beim Anlegen des Accounts ist ein Fehler aufgetreten. Deine Informationen wurden als Einladung gespeichert. Bitte wende dich' .
-                    ' an den Support unter meinfhd.medien@fh-duesseldorf.de';
-                $this->message->set(sprintf($message_body));
+                $message_body = '<p>Beim Anlegen des lokalen Accounts ist ein Fehler aufgetreten. Deine Informationen wurden als Einladung gespeichert und der Support'.
+                                ' darüber informiert. Solltest du keine Rückmeldung erhalten kontaktiere bitte den Support unter <a href="mailto:meinfhd.medien@fh-duesseldorf.de">meinfhd.medien@fh-duesseldorf.de</a></p>';
+                $this->message->set(sprintf($message_body),'error');
                 // redirect to login-form
                 redirect('app/login');
 

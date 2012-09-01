@@ -166,6 +166,26 @@ class SSO_model extends CI_Model {
         // insert the invitation to the database
         $this->db->insert('anfrage', $input_data);
     }
+
+    /**
+     * Checks if there is already an useraccount for the given matrikelnummer
+     * @param $matr_nr matrikelnummer to check
+     * @return bool TRUE if the matrikelnummer has got an account, otherwise FALSE
+     * @access public
+     */
+    public function check_matrikelnummer_has_account($matr_nr) {
+        $this->db->select('*');
+        $this->db->from('benutzer');
+        $this->db->where('Matrikelnummer',$matr_nr);
+
+        $q = $this->db->get();
+
+        if ($q->num_rows >= 1) { // matrikelnummer has got an account
+            return TRUE;
+        }
+
+        return FALSE;
+    }
 }
 /* End of file sso_model.php */
 /* Location: ./application/models/sso_model.php */
