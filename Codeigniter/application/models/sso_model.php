@@ -30,7 +30,7 @@ class SSO_model extends CI_Model {
      */
     public function get_linked_user($idp_uid) {
         // query the user table and scan for the idp uid in the appropriate coloumn
-        $this->db->select('BenutzerID, LoginName, Passwort, Vorname, Nachname, FHD_IdP_UID');
+        $this->db->select('BenutzerID, LoginName, Passwort, Email, Vorname, Nachname, FHD_IdP_UID');
         $this->db->from('benutzer');
         $this->db->where('FHD_Idp_UID', $idp_uid);
 
@@ -46,7 +46,8 @@ class SSO_model extends CI_Model {
                 'Passwort' => $query->row()->Passwort,
                 'Vorname' =>$query->row()->Vorname,
                 'Nachname' => $query->row()->Nachname,
-                'FHD_IdP_UID' => $query->row()->FHD_IdP_UID
+                'FHD_IdP_UID' => $query->row()->FHD_IdP_UID,
+                'Email' => $query->row()->Email
             );
             // return the selected row
             return $linked_user;

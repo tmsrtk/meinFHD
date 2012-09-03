@@ -148,6 +148,17 @@ class SSO extends FHD_Controller {
                 if($this->SSO_model->link_account($local_uid, $this->idp_auth_uid)) { // link was successful
                     // update data of the linked user
                     $this->linked_user = $this->get_linked_user();
+
+                    // TODO: send the user a mail, that his local account is linked
+                    $email_reciever = $this->linked_user['Email'];
+
+                    $email_subject = '[meinFHD] Account erfolgreich verkn&uuml;pft';
+
+                    $email_message_body = '<p>Dein lokaler Account wurde erfolgreich mit dem globalen Benutzeraccount' . $this->linked_user['FHD_IdP_UID'] .
+                        ' verkn&uuml;pft</p><p>Du kannst dich nun zu jeder Zeit &uuml;ber das Shibboleth-Verfahren anmelden!</p>';
+
+                    // call the send mail method
+
                     // establish local session / login
                     $this->establish_local_session();
                 }
@@ -230,7 +241,6 @@ class SSO extends FHD_Controller {
 
             // check if the given matrikelnummer has an account or not
             if($this->SSO_model->check_matrikelnummer_has_account($form_values['matrikelnummer'])){ // the inputted matrikelnummer has already an account
-                echo 'huhu';
                 // do nothing, but show the user a message
                 $message_body = '<p>Für die von dir angegebene Matrikelnummer existiert bereits ein lokaler Account. Solltest du dein Passwort vergessen haben,' .
                     ' so kannst du dir auf der <a href=" <?php print base_url()?>'.'/app/login">Startseite</a> ein neues anfordern.</p>
@@ -244,22 +254,58 @@ class SSO extends FHD_Controller {
                 // save an user invitation
                 $this->_save_user_request($form_data);
 
+                // TODO: send email to admin, that a new request has been saved
+
+                $email_reciever = 'meinfhd.medien@fh-duesseldorf.de'; // where to get the email address from?!
+
+                $email_subject = '[meinFHD] Einladungs-Anforderung einer geblacklisteten Benutzer-ID';
+
+
+                $email_message_body = '<h2>Einladungs-Anfoderung</h2><p>Es existiert eine Anfrage f&uuml;r Benutzereintragung mit der globalen Benutzer-ID: ' .
+                                       $this->idp_auth_uid . ', die auf der Blacklist steht.</p><p>Bitte &uuml;berpr&uuml;fe die vorliegende Anfrage.</p>';
+
+                // TODO: send mail to user, that he has to wait
+
+                // use the same variables
+                $email_reciever = $form_data['email']; // the user email address
+
+                $email_subject = '[meinFHD] Deine Anfrage wurde gespeichert';
+
+                $email_message_body = '<p>Deine Anfrage wurde als Einladung gespeichert. Bitte habe Verst&auml;ndnis, dass die Freischaltung nicht sofort erfolgen kann, ' .
+                    'sondern erst durch einen Administrator pers&ouml;nlich freigeschaltet werden muss. In der Regel dauert das nicht l&auml;nger als einen Tag.</p>';
+
+               // call the sendmail method
+
+
                 // show a message -> contact admin and redirect back to the login page
                 $message_body = '<p>Beim Anlegen des lokalen Accounts ist ein Fehler aufgetreten. Deine Informationen wurden als Einladung gespeichert und der Support'.
-                                ' darüber informiert. Solltest du keine Rückmeldung erhalten kontaktiere bitte den Support unter <a href="mailto:meinfhd.medien@fh-duesseldorf.de">meinfhd.medien@fh-duesseldorf.de</a></p>';
+                    ' darüber informiert. Solltest du keine Rückmeldung erhalten kontaktiere bitte den Support unter <a href="mailto:meinfhd.medien@fh-duesseldorf.de">meinfhd.medien@fh-duesseldorf.de</a></p>';
                 $this->message->set(sprintf($message_body),'error');
                 // redirect to login-form
                 redirect('app/login');
-
-                // TODO: send email to admin, that a new request has been saved
-                // TODO: send mail to user, that he has to wait
             }
             else { // user is not blacklisted -> create his account
                 $this->_create_user($form_data);
+
+                // TODO: send email to user that the account was successfully createdget_
+
+                $email_reciever = $form_data['email'];
+
+                $email_subject = '[meinFHD] Herzlich Willkommen';
+
+                $email_message_body = '<h2>Herzlich Willkommen auf meinFHD - Deiner Studienplanungs-Plattform!</h2><br/>' .
+                                      '<p>Du hast dich erfolgreich bei meinFHD angemeldet. Der erstellte lokale Account wurde mit deinem zentralen Account ' .
+                                      'erfolgreich verkn&uuml;pft. Du kannst dich jederzeit problemlos &uuml;ber das Shibboleth-Verfahren bei meinFHD einloggen.</p>' .
+                                      '<p>Solltest du dich lokal anmelden wollen, so musst du dir ein Passwort auf <a href="<?php print base_url(); ?>">meinFHD</a> '.
+                                      'anfordern. Dein lokaler Account hat folgenden Benutzernamen: ' . $form_data['email'] .'</p>' .
+                                      '<p>F&uuml;r den schnellen Einstieg findest Du unter FAQ und Hilfe Antworten auf h&auml;fig auftretende Fragen und eine '.
+                                      '&Uuml;bersicht &uuml;ber Deine M&ouml:glichkeiten in meinFHD. Bis bald, bei meinFHD!</p>'.
+                                      '<p>Dein meinFHD-Team</p>';
+
+                // call the send mail method
+
                 // establish local session for the created user
                 redirect('sso/establish_local_session');
-
-                // TODO: send email to user that the account was successfully created
             }
         }
     }
