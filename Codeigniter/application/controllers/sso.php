@@ -155,7 +155,7 @@ class SSO extends FHD_Controller {
                     $email_subject = '[meinFHD] Account erfolgreich verkn&uuml;pft';
 
                     $email_message_body = '<p>Dein lokaler Account wurde erfolgreich mit dem globalen Benutzeraccount' . $this->linked_user['FHD_IdP_UID'] .
-                        ' verkn&uuml;pft</p><p>Du kannst dich nun zu jeder Zeit &uuml;ber das Shibboleth-Verfahren anmelden!</p>';
+                        ' verkn&uuml;pft.</p><p>Du kannst dich jeder Zeit &uuml;ber das Shibboleth-Verfahren anmelden!</p>';
 
                     // call the send mail method
 
@@ -287,7 +287,7 @@ class SSO extends FHD_Controller {
             else { // user is not blacklisted -> create his account
                 $this->_create_user($form_data);
 
-                // TODO: send email to user that the account was successfully createdget_
+                // TODO: send email to user that the account was successfully created
 
                 $email_reciever = $form_data['email'];
 
