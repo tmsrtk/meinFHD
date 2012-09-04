@@ -240,7 +240,7 @@ class SSO extends FHD_Controller {
             $form_data = $this->input->post();
 
             // check if the given matrikelnummer has an account or not
-            if($this->SSO_model->check_matrikelnummer_has_account($form_values['matrikelnummer'])){ // the inputted matrikelnummer has already an account
+            if($this->SSO_model->check_matrikelnummer_has_account($form_data['matrikelnummer'])){ // the inputted matrikelnummer has already an account
                 // do nothing, but show the user a message
                 $message_body = '<p>Für die von dir angegebene Matrikelnummer existiert bereits ein lokaler Account. Solltest du dein Passwort vergessen haben,' .
                     ' so kannst du dir auf der <a href=" <?php print base_url()?>'.'/app/login">Startseite</a> ein neues anfordern.</p>
@@ -304,8 +304,8 @@ class SSO extends FHD_Controller {
 
                 // call the send mail method
 
-                // establish local session for the created user
-                redirect('sso/establish_local_session');
+                // load the user welcome view
+                $this->load->view('sso/user_welcome', $this->data->load());
             }
         }
     }
