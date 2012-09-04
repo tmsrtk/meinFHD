@@ -192,7 +192,7 @@ if( ! empty( $b ) ) $radio_val2 = TRUE;
 		<thead>
 			<tr>
 				<th>
-					<div class="span2">Test</div>
+					<div class="span2">Anfragende globale Benutzer-ID auf der Blacklist?</div>
 					<div class="span2"><strong>Nachname</strong></div>
 					<div class="span2"><strong>Vorname</strong></div>
 					<div class="span2"><strong>E-Mail</strong></div>
@@ -208,7 +208,7 @@ if( ! empty( $b ) ) $radio_val2 = TRUE;
 					<?php echo form_open('admin/create_user_from_invitation/', $data_formopen2); ?>
 					<?php echo form_hidden('request_id', $value['AnfrageID']); ?>
 
-					<div class="span2">leer</div>
+					<div class="span2"><?php echo ($value['FHD_IdP_UID']) ? 'Ja' : 'Nein'; ?></div>
 					<div class="span2"><?php echo $value['Nachname']; ?></div>
 					<div class="span2"><?php echo $value['Vorname']; ?></div>
 					<div class="span2"><?php echo $value['Emailadresse']; ?></div>
