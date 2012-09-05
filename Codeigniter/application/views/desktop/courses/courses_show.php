@@ -133,6 +133,9 @@
 					<?php
 //						echo '<hr>';
 						echo $description[$c_id];
+                        echo '<hr>'; # modification by CK to
+                        echo $topics[$c_id]; # modification by CK to show topics
+                        echo '<hr>';
 						echo form_submit($submit_data_save_all);
 						echo '</div>';
 						echo form_close(); // end of form 
