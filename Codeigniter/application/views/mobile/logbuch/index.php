@@ -11,7 +11,7 @@
 <div class="well well-small">
     <div class="row-fluid">
         <div class="span2">
-            <a href="<?php print base_url('dashboard/index'); ?>" class="btn btn-mediuma btn-danger" style="font-weight: bold;" ><i class="icon-arrow-left icon-white"></i>&nbsp;Dashboard</a>
+            <a href="<?php print base_url('dashboard/index'); ?>" class="btn btn-medium btn-danger" style="font-weight: bold;" ><i class="icon-arrow-left icon-white"></i>&nbsp;Dashboard</a>
             <hr>
         </div>
     </div><!-- END Logbuch Header -->
