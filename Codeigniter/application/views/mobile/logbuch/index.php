@@ -10,7 +10,7 @@
 
 <div class="well well-small">
     <div class="row-fluid">
-        <div class="span2">
+        <div class="span12">
             <a href="<?php print base_url('dashboard/index'); ?>" class="btn btn-medium btn-danger" style="font-weight: bold;" ><i class="icon-arrow-left icon-white"></i>&nbsp;Dashboard</a>
             <hr>
         </div>
@@ -19,8 +19,8 @@
     <div class="row-fluid">
         <div class="span12">
             <img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_log_book.png" alt="Logbuecher" width="20" height="20"/>&nbsp;
-            <a href="#" class="btn btn-link pull-right" style="font-weight: bold;">&gt;</a>
-            <a href="<?php print base_url('logbuch/index'); ?>"><strong>Meine Logb&uuml;cher</strong></a><br/>
+            <a href="<?php print base_url('logbuch/show_logbooks'); ?>" class="btn btn-link pull-right" style="font-weight: bold;">&gt;</a>
+            <a href="<?php print base_url('logbuch/show_logbooks'); ?>"><strong>Meine Logb&uuml;cher</strong></a><br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>&Uuml;bersicht &uuml;ber alle<br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;anglegten Logbücher</em>
         </div>
@@ -31,7 +31,7 @@
         <div class="span12">
             <img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_circle_plus.png" alt="Logbuch hinzufuegen" width="20" height="20"/>&nbsp;
             <a href="#" class="btn btn-link pull-right" style="font-weight: bold;">&gt;</a>
-            <a href="<?php print base_url('logbuch/index'); ?>"><strong>Logbuch anlegen</strong></a><br/>
+            <a href="<?php print base_url('logbuch/add_logbook'); ?>"><strong>Logbuch anlegen</strong></a><br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>Lege dir jetzt ein Logbuch an</em>
         </div>
     </div>

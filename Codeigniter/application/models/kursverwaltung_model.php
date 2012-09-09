@@ -193,7 +193,9 @@ class Kursverwaltung_model extends CI_Model {
 		$this->db->select('a.Vorname, a.Nachname, a.BenutzerID');
 		$this->db->from('benutzer as a');
 		$this->db->join($table.' as b', 'a.BenutzerID = b.BenutzerID');
-		$this->db->where('b.KursID', $course_id);
+        // $this->db->where('b.KursID',$course_id);
+        // EDIT by CK, due to databse errors, name of col KursID in labing and tutor table is SPKursID not KursID
+        $this->db->where('b.SPKursID', $course_id);
 		$q = $this->db->get();
 
 		$data = array(); // init
