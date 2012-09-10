@@ -16,33 +16,37 @@
     </div>
     <hr><!-- END Logbuch Bibliothek Header -->
 
-    <!-- FOREACH LOGBUCH IN ARRAY SHOW THE FOLLOWING // DYNAMIC GENERATION -->
+    <!-- dynamic content foreach logbuch -->
+    <?php foreach($logbooks as $book => $book_attr) :?>
     <div class="row-fluid">
-        <div class="span12">
+        <div class="span12" data-id="<?php echo $book_attr['LogbuchID']; ?>">
             <img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_notes_2.png" alt="Logbuecher" width="20" height="27"/>
             <a href="#" class="btn pull-right"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_thin_right_arrow.png" alt="delete" width="11" height="15"/></a>
-             <span class="pull-right" style="margin-right: 15%;">
-                <a href="#"  id="deleteLogbook" class="btn"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_bin.png" alt="delete" width="11" height="15"/></a>
-            </span>
-            <a href="<?php print base_url('logbuch/show_logbooks'); ?>" style="margin-left: 4%;"><strong>Dummy Fach</strong></a>
+                <span class="pull-right" style="margin-right: 15%;">
+                    <a href="#" class="btn deleteLogbook"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_bin.png" alt="delete" width="11" height="15"/></a>
+                </span>
+            <a href="<?php print base_url('logbuch/show_logbooks'); ?>" style="margin-left: 4%;"><strong><?php echo $book_attr['kurs_kurz']; ?></strong></a>
         </div>
     </div>
     <div class="row-fluid"> <!-- second row for success bar -->
         <div class="span12">
-            <div class="progress progress-danger progress-striped active" style="width: 30%; margin-left: 13%; margin-bottom: 0%; " >
-                <div class="bar" style="width: 20%;"></div
+            <div class="progress progress-danger progress-striped active" style="width: 30%; margin-left: 13%; margin-bottom: 0%; ">
+                <div class="bar" style="width: 20%;"></div>
             </div>
         </div>
     </div>
     <hr>
-    <!-- END FOREACH -->
+    <?php endforeach ?>
+    <!-- end foreach content -->
 
-    <div class="row-fluid"><!-- start last row to add logbooks -->
+    <!-- start last row to add logbooks -->
+    <div class="row-fluid">
         <div class="span12 pagination-centered">
             <a href="<?php print base_url('logbuch/add_logbook'); ?>"><img src="<?php print base_url(''); ?>resources/img/logbuch-icons/glyphicons_circle_plus.png" alt="delete" width="26" height="26"/></a>
         </div>
-    </div><!-- end last row -->
-</div>
+    </div>
+    <!-- end last row -->
+</div><!-- /div well well -->
 
 <div id="modalcontent"></div>
 
@@ -54,19 +58,21 @@
 <?php startblock('customFooterJQueryCode');?>
 
     // function to create a modal dialog
-    function createModalDialog(title, text) {
+    function createDeleteLogbookModalDialog(title, text, logbook_id) {
         var $myModalDialog = $('<div class="modal hide" id="myModal"></div>')
             .html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
             .append('<div class="modal-body"><p>'+text+'</p></div>')
-            .append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Abbrechen</a><a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
+            .append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Nein</a><a href="<?php print base_url('logbuch/delete_logbook');?>/'+logbook_id+'" class="btn btn-primary" data-accept="modal">Ja</a></div>');
         return $myModalDialog;
     }
 
-    // prompt modal - delte logbook
-    $("#deleteLogbook").click(function() {
+    // prompt modal - delete logbook
+    $(".deleteLogbook").click(function() {
         $(this).attr("data-clicked", "true");
+        // get the id of the logbook to delete
+        var logbook_to_delete = $(this).parent().parent().data("id");
 
-        var myModal = createModalDialog('Logbuch löschen', 'Soll das Logbuch wirkklich gelöscht werden?');
+        var myModal = createDeleteLogbookModalDialog('Logbuch löschen', 'Möchtest du das ausgewählte Logbuch wirklich löschen? Alle im Logbuch hinterlegten Einträge werden ebenfalls gelöscht und können nicht wiederhergestellt werden.', logbook_to_delete);
         $("#modalcontent").html(myModal);
 
         $('#myModal').modal({
@@ -78,15 +84,6 @@
         return false;
     });
 
-    // start delete process, if user has clicked OK - events when elements in modal are clicked
-    $("#modalcontent").on('click', 'button, a', function(event) {
-        if ($(this).attr("data-accept") === 'modal'){ // delete the selected logbook
-            console.log('delete');
-
-        }
-
-        return false;
-    });
 
 <?php endblock(); ?>
 

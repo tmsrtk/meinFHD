@@ -125,4 +125,43 @@ class Logbuch_Model extends CI_Model {
         // return the inserted id
         return mysql_insert_id();
     }
+
+    /**
+     * Returns all logbooks for a given user id to display them in the view.
+     * @param $user_id user_id of the logbooks owner to search for
+     */
+    public function get_all_logbooks($user_id){
+
+        // select all logbooks for the given user_id
+        $query = $this->db->query("
+            SELECT logbuch.LogbuchID, logbuch.KursID, studiengangkurs.kurs_kurz, studiengangkurs.Kursname
+            FROM logbuch
+            JOIN studiengangkurs ON logbuch.KursID = studiengangkurs.KursID
+            WHERE logbuch.BenutzerID = ".$user_id
+        );
+
+        $logbooks = array();
+
+        // if there are results construct the array
+        if ($query->num_rows() > 0) {
+            // prepare the data to return
+            foreach ($query->result() as $row) { // foreach result row
+                $logbooks[$row->LogbuchID]['LogbuchID'] = $row->LogbuchID;
+                $logbooks[$row->LogbuchID]['kurs_kurz'] = $row->kurs_kurz;
+                $logbooks[$row->LogbuchID]['Kursname'] = $row->kurs_kurz;
+            }
+        }
+
+        return $logbooks;
+    }
+
+    /**
+     * Deletes an logbook by his id.
+     * @param $logbook_id ID of the logbook that should be deleted
+     */
+    public function delete_logbook($logbook_id){
+        // delete the logbook with the given id
+        $this->db->where('LogbuchID',$logbook_id);
+        $this->db->delete('logbuch');
+    }
 }

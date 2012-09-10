@@ -46,8 +46,9 @@ class Logbuch extends FHD_Controller {
      * @access public
      */
     public function show_logbooks() {
-        // collect all necessary data, that is needed to display the logbooks
-        // add the data to the view
+
+        // collect all logbooks from the database and add them to the view
+        $this->data->add('logbooks',$this->logbuch_model->get_all_logbooks($this->authentication->user_id()));
         // load the view
         $this->load->view('logbuch/logbook_library', $this->data->load());
     }
@@ -125,5 +126,19 @@ class Logbuch extends FHD_Controller {
         else {
             return TRUE;
         }
+    }
+
+    /**
+     * Deletes the logbook with the given id, and reloads the logbook library afterwards.
+     * Function is usually called from the logbook library
+     * @access public
+     * @param $logbook_id id of the logbook that should be deleted
+     */
+    public function delete_logbook($logbook_id) {
+        // delete the specified logbook from the database
+        $this->logbuch_model->delete_logbook($logbook_id);
+
+        // reload the logbook library view
+        $this->show_logbooks();
     }
 }
