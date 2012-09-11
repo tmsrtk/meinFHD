@@ -21,11 +21,11 @@
     <div class="row-fluid">
         <div class="span12" data-id="<?php echo $book_attr['LogbuchID']; ?>">
             <img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_notes_2.png" alt="Logbuecher" width="20" height="27"/>
-            <a href="#" class="btn pull-right"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_thin_right_arrow.png" alt="delete" width="11" height="15"/></a>
+            <a href="<?php print base_url('logbuch/show_logbook_content'); ?>/<?php echo $book_attr['LogbuchID']; ?>" class="btn pull-right"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_thin_right_arrow.png" alt="delete" width="11" height="15"/></a>
                 <span class="pull-right" style="margin-right: 15%;">
                     <a href="#" class="btn deleteLogbook"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_bin.png" alt="delete" width="11" height="15"/></a>
                 </span>
-            <a href="<?php print base_url('logbuch/show_logbooks'); ?>" style="margin-left: 4%;"><strong><?php echo $book_attr['kurs_kurz']; ?></strong></a>
+            <a href="<?php print base_url('logbuch/show_logbook_content'); ?>/<?php echo $book_attr['LogbuchID']; ?>" style="margin-left: 4%;"><strong><?php echo $book_attr['kurs_kurz']; ?></strong></a>
         </div>
     </div>
     <div class="row-fluid"> <!-- second row for success bar -->
@@ -72,19 +72,22 @@
         // get the id of the logbook to delete
         var logbook_to_delete = $(this).parent().parent().data("id");
 
+        // before prompting the modal scroll view to the top -> modal is presented on top of the page
+        $(document).scrollTop(1);
+
         var myModal = createDeleteLogbookModalDialog('Logbuch löschen', 'Möchtest du das ausgewählte Logbuch wirklich löschen? Alle im Logbuch hinterlegten Einträge werden ebenfalls gelöscht und können nicht wiederhergestellt werden.', logbook_to_delete);
         $("#modalcontent").html(myModal);
-
+        console.log(myModal);
         $('#myModal').modal({
             keyboard: false
         }).on('hide', function () {
             $("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
         }).modal('show');
 
+
         return false;
     });
-
-
+    
 <?php endblock(); ?>
 
 
