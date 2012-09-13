@@ -156,13 +156,6 @@ $submitCreateAccountButton = array(
                         verkn&uuml;pft werden, um Deine Daten konsistent zu halten.
                     </p>
                     <p>
-                        Wenn Du bereits einen lokalen Account besitzt, kannst du diesen jetzt dauerhaft mit deinem zentralen Account verkn&uuml;pfen, um jederzeit Zugriff
-                        auf meinFHD zu erhalten. Gib daf&uuml;r <a id="openLinkingForm" href="#">hier</a> deine lokale Zugangsdaten an und best&auml;stige diese mit dem Button verkn&uuml;pfen.
-                    </p>
-                    <p>
-                        Wenn Du noch keinen lokalen meinFHD-Account hast, kannst Du ihn <a id="openCreateForm" href="#">hier</a> erstellen und sofort mit dem zentralen Account verkn&uuml;pfen.
-                    </p>
-                    <p>
                         Solltest Du R&uuml;ckfragen oder Probleme haben kontaktiere bitte das Support-Team unter <a href="mailto:meinfhd.medien@fh-duesseldorf.de">meinfhd.medien@fh-duesseldorf.de</a>.
                     </p>
                 </div>
@@ -171,12 +164,15 @@ $submitCreateAccountButton = array(
                 <div id="accordion-app" class="accordion">
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <h4 class="accordion-toggle" data-parent="#accordion-app" data-toggle="collapse" data-target="#request-accountlinking">Account verkn&uuml;pfen<i class="icon-plus pull-right"></i></h4>
+                            <h4 class="accordion-toggle" data-parent="#accordion-app" data-toggle="collapse" data-target="#request-accountlinking">Ich habe einen Account und m&ouml;chte diesen jetzt verkn&uuml;pfen<i class="icon-plus pull-right"></i></h4>
                         </div>
                         <div id="request-accountlinking" class="accordion-body collapse">
                             <div class="accordion-inner">
                                 <div class="row-fluid">
-                                    <p>Bitte trage deinen Loginnamen und dein Passwort ein. Anschließend wird der angegebene lokale Zugang mit deiner globalen Identit&auml;t verkn&uuml;pft und du wirst eingeloggt.</p>
+                                    <p>
+                                        Wenn Du bereits einen lokalen Account besitzt, kannst du diesen jetzt dauerhaft mit deinem zentralen Account verkn&uuml;pfen, um jederzeit Zugriff
+                                        auf meinFHD zu erhalten. Trage daf&uuml;r deine lokale Zugangsdaten ein und best&auml;tige diese mit dem Button Verkn&uuml;pfen. Dein lokaler Account wird dann mit deinem zentralen Account verknüpft. Anschlie&szlig;end wirst du eingeloggt.
+                                    </p>
                                     <?php echo form_open('sso/link_account', $linkAccountFormAttributes); // create opening tag of login form ?>
                                         <?php echo form_fieldset(); // wrap elements ina a fieldset due to semantics ?>
                                             <div class="control-group">
@@ -206,13 +202,14 @@ $submitCreateAccountButton = array(
                     <!-- create account accordion -->
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <h4 class="accordion-toggle" data-parent="#accordion-app" data-toggle="collapse" data-target="#request-createaccount">Account erstellen<i class="icon-plus pull-right"></i></h4>
+                            <h4 class="accordion-toggle" data-parent="#accordion-app" data-toggle="collapse" data-target="#request-createaccount">Ich m&ouml;chte mir jetzt einen Account erstellen<i class="icon-plus pull-right"></i></h4>
                         </div>
                         <div id="request-createaccount" class="accordion-body collapse">
                            <div class="accordion-inner">
                                 <div class="row-fluid">
+
                                     <p>
-                                        Du hast noch keinen Account? Dann kannst du hier einen anlegen:
+                                        Wenn Du noch keinen lokalen meinFHD-Account hast, kannst Du dir hier einen anlegen und sofort mit dem zentralen Account verkn&uuml;pfen.
                                     </p>
                                     <?php echo form_open('sso/validate_create_account_form/', $createAccountFormAttributes);?>
                                     <div id="additional-info" class="alert">
@@ -269,7 +266,7 @@ $submitCreateAccountButton = array(
                                         <!-- only needed input for students -->
                                         <div id="studentdata">
                                             <div class="control-group">
-                                                <?php echo form_label('Ich bin Erstsemestler!', 'erstsemestler_cb', $createAccountLabelAttributes); ?>
+                                                <?php echo form_label('Ich bin Erstsemester!', 'erstsemestler_cb', $createAccountLabelAttributes); ?>
                                                 <div class="controls docs-input-sizes">
                                                     <?php echo form_checkbox($createAccountErstsemestlerCheck, 'accept', FALSE) ?>
                                                 </div>
@@ -309,6 +306,7 @@ $submitCreateAccountButton = array(
                                                 </div>
                                             </div>
                                         </div>
+                                        <hr/>
                                         <?php echo form_button($submitCreateAccountButton); // render the submit button ?>
                                     </div>
                                     <?php echo form_close(); ?>

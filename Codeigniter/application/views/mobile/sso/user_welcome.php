@@ -20,7 +20,7 @@
                     </p>
                     <ol>
                         <li>Du gibst in Deinen pers&ouml;nlichen Daten Deinen Studiengang und Dein Startsemester an.</li>
-                        <li>Du l&auml;sst einen neuen Semesterplan f&uuml;r dein Stidum anlegen.</li>
+                        <li>Du l&auml;sst einen neuen Semesterplan f&uuml;r dein Studium anlegen.</li>
                         <li>Du kannst Dich f&uuml;r die Veranstaltungen des ersten Semesters im Stundenplan anmelden.</li>
                     </ol>
                     <p>

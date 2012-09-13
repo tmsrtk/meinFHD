@@ -197,7 +197,6 @@ class SSO extends FHD_Controller {
         $rules[] = $this->adminhelper->get_formvalidation_role();
         $rules[] = $this->adminhelper->get_formvalidation_email();
         $rules[] = $this->adminhelper->get_formvalidation_forename();
-        $rules[] = $this->adminhelper->get_formvalidation_lastname();
         // set the validation rules
         $this->form_validation->set_rules($rules);
 
