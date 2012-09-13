@@ -122,8 +122,10 @@ class Logbuch_Model extends CI_Model {
 
         $this->db->insert('logbuch',$data_to_add);
 
+        // query for the inserted id and return it
+        $inserted_id = mysql_insert_id();
         // return the inserted id
-        return mysql_insert_id();
+        return $inserted_id;
     }
 
     /**
@@ -303,4 +305,85 @@ class Logbuch_Model extends CI_Model {
         return $avg_rating;
     }
 
+    /**
+     * Fetches all base topics for the given course id and returns them in an array.
+     * @access public
+     * @param $course_id ID of the course, where the topics should be selected for
+     * @return ARRAY Array with all base topics, if there are no base topics an empty array will be returned
+     */
+    public function get_all_base_topics_for_course($course_id){
+        $this->db->select('Thema, Erlaeuterung');
+        $this->db->from('basislogbucheintrag');
+        $this->db->where('KursID', $course_id);
+
+        $query = $this->db->get();
+
+        $base_topics = array();
+
+        if ($query->num_rows > 0) { // there are base topics for the given course id
+            // generate query result and prepare the data
+            foreach($query->result() as $row) {
+                $entry = array(
+                    'Thema' => $row->Thema,
+                    'Erlaeuterung' => $row->Erlaeuterung
+                );
+                $base_topics[] = $entry;
+            }
+        }
+        return $base_topics;
+    }
+
+    /**
+     * Returns the newest course_id, that has got the same name as the given "old_course_id" (input course_id) and has got the
+     * highest degree program.
+     * @access public
+     * @param $old_course_id ID of the "old course"
+     */
+    public function get_newest_course_id($old_course_id){
+
+        // query for the coursename
+        $this->db->select('Kursname');
+        $this->db->from('studiengangkurs');
+        $this->db->where('KursID', $old_course_id);
+
+        $course_name = $this->db->get()->row()->Kursname;
+
+        // query for the newes corse
+        $query = $this->db->query("
+                        SELECT KursID, studiengangkurs.Kursname, studiengangkurs.StudiengangID
+                        FROM studiengangkurs
+                        WHERE studiengangkurs.Kursname IN (
+                                                           SELECT studiengangkurs.Kursname
+                                                           FROM studiengangkurs
+                                                           WHERE studiengangkurs.Kursname = '".$course_name."')
+                       AND studiengangkurs.StudiengangID = (SELECT max(studiengangkurs.StudiengangID)
+                                                             FROM studiengangkurs
+                                                             WHERE studiengangkurs.Kursname='".$course_name."')
+                        LIMIT 1");
+
+        // generate the result and return it
+        $newest_course_id = $query->row()->KursID;
+
+        return $newest_course_id;
+    }
+
+    /**
+     * Inserts / copies the given base topics to the specified logbook.
+     * @access public
+     * @param $logbook_id ID of the logbook, where the topics should be inserted
+     * @param $base_topics Array with alle Base topics -> Structure per entry Thema => VALUE, Erlaeuterung => Value
+     */
+    public function insert_base_topics_into_logbook($logbook_id, $base_topics){
+         // prepare the data for being inserted
+         foreach($base_topics as $single_topic){
+            $data_to_insert = array(
+                'Thema' => $single_topic['Thema'],
+                'Erlaeuterung' => $single_topic['Erlaeuterung'],
+                'LogbuchID' => $logbook_id
+            );
+
+             // insert it
+            $this->db->insert('logbucheintrag', $data_to_insert);
+        }
+    }
 }

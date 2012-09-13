@@ -101,12 +101,11 @@ class Logbuch extends FHD_Controller {
         }
         else {
             // add a new logbook to the database (seleected course, and id of the current user)
-            $logbook_id = $this->logbuch_model->insert_new_logbook($selected_course, $this->authentication->user_id());
-
-            // TODO
-            // copy the base topics
+           $logbook_id = $this->logbuch_model->insert_new_logbook($selected_course, $this->authentication->user_id());
+           $this->copy_all_base_topics_for_course($selected_course, $logbook_id);
 
             // load the logbook content view
+            $this->show_logbook_content($logbook_id);
         }
     }
 
@@ -258,5 +257,30 @@ class Logbuch extends FHD_Controller {
         $this->show_logbook_content($logbook_id); // reload the topic overview
     }
 
+    /**
+     * Copys all base topics for the given course id to the given logbook_id. If there are no topics, it looks for the newest 'studiengangkurs'(PO) to copy the base topics.
+     * If there are also no base topics, the logbook stays empty.
+     * @param $ourse_id ID of the course that corresponds to the logbook
+     * @param $logbook_id ID of the logbook, where the topics should be inserted.
+     */
+    public function copy_all_base_topics_for_course($course_id, $logbook_id) {
 
+        // get all base topics for the given course id
+        $base_topics = $this->logbuch_model->get_all_base_topics_for_course($course_id);
+        // if there are no topics, look for the newest course id
+        if (count($base_topics) == 0){
+            $newest_course_id = $this->logbuch_model->get_newest_course_id($course_id);
+
+            // get all base topics of the given course id
+            $topics_new_course = $this->logbuch_model->get_all_base_topics_for_course($newest_course_id);
+            // look if there are any topics for the newest course
+            if (count($topics_new_course) > 0) {
+                $base_topics = $topics_new_course;
+            }
+
+            // if there are topics -> copy them to the logbook
+            $this->logbuch_model->insert_base_topics_into_logbook($logbook_id, $base_topics);
+            // otherwise the logbook stays empty
+        }
+    }
 }
