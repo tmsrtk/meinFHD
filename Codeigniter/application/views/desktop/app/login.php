@@ -124,7 +124,6 @@ $submitForgotPasswordButtonAttributes = array(
                     <div class="row-fluid">
                         <a href="<?php echo site_url(); ?>sso/authenticate" class="btn btn-primary btn-medium pull-right">Login &uuml;ber Shibboleth</a>
                     </div>
-                    <hr>
 				</div>
 				<div id="accordion-app" class="accordion">
 					<div class="accordion-group">
