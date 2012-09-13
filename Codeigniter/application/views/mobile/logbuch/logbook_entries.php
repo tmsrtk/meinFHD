@@ -6,7 +6,7 @@
 <div class="well well-small">
     <div class="row-fluid">
         <div class="span12">
-            <a href="<?php print base_url('logbuch/show_logbooks'); ?>" class="btn btn-medium btn-danger" style="font-weight: bold;"><i class="icon-arrow-left icon-white"></i>&nbsp;zur&uuml;ck</a>
+            <a href="<?php print base_url('logbuch/show_logbooks'); ?>" class="btn btn-medium btn-danger" style="font-weight: bold;"><i class="icon-arrow-left icon-white"></i>&nbsp;Logbuch&uuml;bersicht</a>
         </div>
     </div>
     <hr><!-- END Logbuch Bibliothek Header -->

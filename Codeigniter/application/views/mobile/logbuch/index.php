@@ -30,7 +30,7 @@
     <div class="row-fluid">
         <div class="span12">
             <img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_circle_plus.png" alt="Logbuch hinzufuegen" width="20" height="20"/>&nbsp;
-            <a href="#" class="btn btn-link pull-right" style="font-weight: bold;">&gt;</a>
+            <a href="<?php print base_url('logbuch/add_logbook'); ?>" class="btn btn-link pull-right" style="font-weight: bold;">&gt;</a>
             <a href="<?php print base_url('logbuch/add_logbook'); ?>"><strong>Logbuch anlegen</strong></a><br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>Lege dir jetzt ein Logbuch an</em>
         </div>

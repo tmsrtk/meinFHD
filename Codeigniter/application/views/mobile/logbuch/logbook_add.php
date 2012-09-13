@@ -25,7 +25,7 @@ $data_labelattrs = array(
 <div class ="well well-small">
     <div class="row-fluid">
         <div class="span12">
-            <a href="javascript:history.back()" class="btn btn-medium btn-danger" style="font-weight: bold;"><i class="icon-arrow-left icon-white"></i>&nbsp;zur&uuml;ck</a>
+            <a href="javascript:history.back()" class="btn btn-medium btn-danger" style="font-weight: bold;"><i class="icon-arrow-left icon-white"></i>&nbsp;Logbuchmen&uuml;</a>
         </div>
     </div><!-- end add logbook header-->
     <hr>
