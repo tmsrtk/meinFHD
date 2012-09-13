@@ -30,8 +30,18 @@
     </div>
     <div class="row-fluid"> <!-- second row for success bar -->
         <div class="span12">
-            <div class="progress progress-danger progress-striped active" style="width: 30%; margin-left: 13%; margin-bottom: 0%; ">
-                <div class="bar" style="width: 20%;"></div>
+            <div class="progress <?php
+                                    if($book_attr['Bewertung'] < 50){
+                                        echo 'progress-danger';
+                                    }
+                                    else if ($book_attr['Bewertung'] > 50 && $book_attr['Bewertung'] < 70) {
+                                        echo 'progress-warning';
+                                    }
+                                    else if ($book_attr['Bewertung'] > 70) {
+                                        echo 'progress-success';
+                                    }
+                                ?>  progress-striped active" style="width: 30%; margin-left: 13%; margin-bottom: 0%; ">
+                <div class="bar" style="width: <?php echo $book_attr['Bewertung']; ?>%;"></div>
             </div>
         </div>
     </div>
@@ -77,7 +87,6 @@
 
         var myModal = createDeleteLogbookModalDialog('Logbuch löschen', 'Möchtest du das ausgewählte Logbuch wirklich löschen? Alle im Logbuch hinterlegten Einträge werden ebenfalls gelöscht und können nicht wiederhergestellt werden.', logbook_to_delete);
         $("#modalcontent").html(myModal);
-        console.log(myModal);
         $('#myModal').modal({
             keyboard: false
         }).on('hide', function () {
@@ -87,8 +96,7 @@
 
         return false;
     });
-    
-<?php endblock(); ?>
 
+<?php endblock(); ?>
 
 <?php end_extend(); # end extend main template ?>
