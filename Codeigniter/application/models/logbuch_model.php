@@ -9,7 +9,7 @@
 
 /**
  * Logbuch Model
- * The 'logbuch model' deals with all neccssary db operations for the students 'logbuch'
+ * The 'logbuch model' deals with all necessary db operations for the students 'logbuch'
  * and 'logbuch' administration for course instructors.
  *
  */
@@ -149,6 +149,7 @@ class Logbuch_Model extends CI_Model {
                 $logbooks[$row->LogbuchID]['LogbuchID'] = $row->LogbuchID;
                 $logbooks[$row->LogbuchID]['kurs_kurz'] = $row->kurs_kurz;
                 $logbooks[$row->LogbuchID]['Kursname'] = $row->kurs_kurz;
+                $logbooks[$row->LogbuchID]['Bewertung'] = $this->_get_avg_rating_for_logbook($row->LogbuchID);
             }
         }
 
@@ -164,4 +165,142 @@ class Logbuch_Model extends CI_Model {
         $this->db->where('LogbuchID',$logbook_id);
         $this->db->delete('logbuch');
     }
+
+    /**
+     * Fetches all entries for a given logbook and returns them in an array.
+     * @access public
+     * @param $logbook_id ID of the specified logbook
+     * @return array Array with the single entries. If there are no entries an empty array will be returned
+     */
+    public function get_all_entries_for_logbook($logbook_id){
+        $this->db->select('LogbucheintragID, Thema, Erlaeuterung, Bewertung');
+        $this->db->from('logbucheintrag');
+        $this->db->where('LogbuchID', $logbook_id);
+
+        $query = $this->db->get(); // query the db
+
+        $entries = array();
+
+        if ($query->num_rows() > 0){ // if there are any results prepare the data to return
+            foreach ($query->result() as $row){
+                $entries[$row->LogbucheintragID]['LogbucheintragID'] = $row->LogbucheintragID;
+                $entries[$row->LogbucheintragID]['Thema'] = $row->Thema;
+                $entries[$row->LogbucheintragID]['Erlaeuterung'] = $row->Erlaeuterung;
+                $entries[$row->LogbucheintragID]['Bewertung'] = $row->Bewertung;
+            }
+        }
+        return $entries;
+    }
+
+    /**
+     * Deletes an logbook entry by his id. For verification the logbook id will also be passed and used
+     * while deleting.
+     * @access public
+     * @param $lb_entry_id ID of the logbook entry to delete
+     */
+    public function delete_logbook_entry($lb_entry_id){
+        $this->db->where('LogbucheintragID', $lb_entry_id);
+        $this->db->delete('logbucheintrag');
+    }
+
+    /**
+     * Fetches an single logbook entry from the database and returns it.
+     * @access public
+     * @param $lb_entry_id ID of the entry that should be selected.
+     * @return array Array with the singe logbook entry
+     */
+    public function get_single_logbook_entry($lb_entry_id) {
+        $this->db->select('LogbucheintragID, Thema, Erlaeuterung, Bewertung, LogbuchID');
+        $this->db->from('logbucheintrag');
+        $this->db->where('LogbucheintragID', $lb_entry_id);
+
+        $query = $this->db->get(); // query the database
+
+        $data = array();
+
+        // if there are results prepare the data to return
+        if ($query->num_rows() == 1) {
+            $data['LogbucheintragID'] = $query->row()->LogbucheintragID;
+            $data['Thema'] = $query->row()->Thema;
+            $data['Erlaeuterung'] = $query->row()->Erlaeuterung;
+            $data['Bewertung'] = $query->row()->Bewertung;
+            $data['LogbuchID'] = $query->row()->LogbuchID;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Saves an new entry for the given (existing) logbook.
+     * @access public
+     * @param logbook_id Integer value with the ID of the logbook where the entry should be inserted.
+     * @param $topic String with the name of the new entry.
+     * @param $annotation String with the annotation.
+     * @param $rating Integer value with the rating between 0 and 100
+     */
+    public function save_new_logbook_entry($logbook_id, $topic, $annotation, $rating) {
+        // prepare the data, that should be inserted
+        $data_to_insert = array(
+                            'Thema' => $topic,
+                            'Erlaeuterung' => $annotation,
+                            'Bewertung' => $rating,
+                            'LogbuchID' => $logbook_id
+        );
+
+        $this->db->insert('logbucheintrag', $data_to_insert);
+    }
+
+    /**
+     * Updates the selected logbook entry with the given informations.
+     * @access public
+     * @param $lb_entry_id ID of the selected logbook entry
+     * @param $topic new topic for the entry
+     * @param $annotation new annotation for the entry
+     * @param $rating new rating for the entry
+     */
+    public function update_logbook_entry($lb_entry_id, $topic, $annotation, $rating) {
+        // prepare the data array
+        $data = array(
+            'Thema' => $topic,
+            'Erlaeuterung' => $annotation,
+            'Bewertung' => $rating
+        );
+
+        $this->db->where('LogbucheintragID', $lb_entry_id);
+        $this->db->update('logbucheintrag', $data);
+    }
+
+    /**
+     * Returns the course abbreviation, that corresponds to the given logbook id.
+     * @param $logbook_id
+     * @return string String with the coursename abbreviation for the given logbook_id
+     */
+    public function get_course_name_for_logbook($logbook_id) {
+        $this->db->select('studiengangkurs.Kursname');
+        $this->db->from('logbuch');
+        $this->db->join('studiengangkurs', 'studiengangkurs.KursID = logbuch.KursID');
+        $this->db->where('logbuch.LogbuchID', $logbook_id);
+
+        // query the db and save the coursename in an string
+        $course_name= $this->db->get()->row()->Kursname;
+
+        return $course_name;
+    }
+
+    /**
+     * Calculates / returns the average rating for the given logbook.
+     * @access private
+     * @param $logbook_id ID of the given logbook.
+     * @return INTEGER average rating of the given logbook.
+     */
+    private function _get_avg_rating_for_logbook($logbook_id) {
+        $this->db->select_avg('Bewertung');
+        $this->db->from('logbucheintrag');
+        $this->db->where('LogbuchID', $logbook_id);
+
+        $avg_rating = $this->db->get()->row()->Bewertung;;
+
+        return $avg_rating;
+    }
+
 }

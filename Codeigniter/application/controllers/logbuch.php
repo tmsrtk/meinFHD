@@ -141,4 +141,122 @@ class Logbuch extends FHD_Controller {
         // reload the logbook library view
         $this->show_logbooks();
     }
+
+    /**
+     * Opens the logbook content view with the different topic entries for
+     * the given logbook id.
+     * @param $logbook_id ID of the selected logbook
+     */
+    public function show_logbook_content($logbook_id) {
+        // add the logbook_id to the view
+        $this->data->add('logbook_id', $logbook_id);
+        // get all logbook entries and add them to the view
+        $this->data->add('logbook_entries',$this->logbuch_model->get_all_entries_for_logbook($logbook_id));
+        // load the logbook content view
+        $this->load->view('logbuch/logbook_entries', $this->data->load());
+    }
+
+    /**
+     * Displays the input mask to create a new entry for the currently viewed logbook.
+     * @access public
+     * @param $logbook_id INTEGER id of the logbook where the entry should be saved in
+     */
+    public function create_entry_mask($logbook_id) {
+
+        // get the coursename and the logbook id for the viewed logbook and add it to the view
+        $this->data->add('kursname',$this->logbuch_model->get_course_name_for_logbook($logbook_id));
+        $this->data->add('LogbuchID', $logbook_id);
+        $this->load->view('logbuch/logbook_add_entry', $this->data->load());
+    }
+
+    /**
+     * Validates the user input for a new topic. If everything is alright, the new
+     * logbook entry will be created.
+     * @access public
+     */
+    public function validate_create_entry_form() {
+        $this->form_validation->set_error_delimiters('<div class="alert alert-error">','</div>');
+
+        // set custom error messages
+        $this->form_validation->set_message('required','Das Feld %s muss einen Wert enthalten.');
+        // define the validation rules
+        $this->form_validation->set_rules('topic','Thema','required|max_length[255]');
+
+        // get the input data
+        $form_data = $this->input->post();
+
+        // run the validation, if everything is okay -> create the entry
+        if($this->form_validation->run() == FALSE){
+            // repopulate the view
+            $this->create_entry_mask($form_data['LogbuchID']);
+        }
+        else { // validation was okay
+            // clean up the topic rating -> remove the % sign
+            $rating = str_replace('%','',$form_data['topic_rating']);
+
+            // save new entry in the logbook (database)
+            $this->logbuch_model->save_new_logbook_entry($form_data['LogbuchID'], $form_data['topic'], $form_data['input-topic-annotation'], $rating);
+            // jump back to the logbook content overview
+            $this->show_logbook_content($form_data['LogbuchID']);
+        }
+    }
+
+    /**
+     * Displays the edit mask for an selected logbook entry.
+     * @access public
+     * @param $lb_entry_id ID of the logbook entry, that should be edited
+     */
+    public function edit_entry_mask($lb_entry_id) {
+        $logbook_entry = $this->logbuch_model->get_single_logbook_entry($lb_entry_id);
+
+        // get the needed data for the single entry and add it to the view
+        $this->data->add('logbook_entry', $logbook_entry);
+        $this->data->add('course_name', $this->logbuch_model->get_course_name_for_logbook($logbook_entry['LogbuchID']));
+
+        // load the edit entry view
+        $this->load->view('logbuch/logbook_edit_entry', $this->data->load());
+    }
+
+    /**
+     * Validates the user edits for the given entry. If everything is alright,
+     * the edits will be saved.
+     * @access public
+     */
+    public function validate_edit_entry_form() {
+        $this->form_validation->set_error_delimiters('<div class="alert alert-error">','</div>');
+
+        // set custom error messages
+        $this->form_validation->set_message('required','Das Feld %s muss einen Wert enthalten.');
+        // define the validation rules
+        $this->form_validation->set_rules('topic','Thema','required|max_length[255]');
+
+        $form_data = $this->input->post();
+        // run the validation, if everything is okay -> create the entry
+
+        if($this->form_validation->run() == FALSE){
+            // repopulate the view
+            $this->edit_entry_mask($form_data['LogbucheintragID']);
+        }
+        else { // validation was okay
+            // clean up the topic rating -> remove the % sign
+            $rating = str_replace('%','',$form_data['topic_rating']);
+            // save new entry in the logbook (database)
+            $this->logbuch_model->update_logbook_entry($form_data['LogbucheintragID'], $form_data['topic'], $form_data['input-topic-annotation'], $rating);
+            // jump back to the logbook content overview
+            $this->show_logbook_content($form_data['LogbuchID']);
+        }
+    }
+
+    /**
+     * Deletes an single logbook entry by his id and reloads the logbook entry view afterwards.
+     * @access public
+     * @param $lb_entry_id The id of the entry, that should be deleted.
+     * @param $logbook_id ID of the logbook, that corresponds to the entry.
+     */
+    public function delete_single_logbook_entry($lb_entry_id, $logbook_id){
+        $this->logbuch_model->delete_logbook_entry($lb_entry_id); // delete the entry
+        $this->show_logbook_content($logbook_id); // reload the topic overview
+    }
+
+
 }
