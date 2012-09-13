@@ -22,7 +22,7 @@
             <a href="<?php print base_url('logbuch/show_logbooks'); ?>" class="btn btn-link pull-right" style="font-weight: bold;">&gt;</a>
             <a href="<?php print base_url('logbuch/show_logbooks'); ?>"><strong>Meine Logb&uuml;cher</strong></a><br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>&Uuml;bersicht &uuml;ber alle<br/>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;anglegten Logbücher</em>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;angelegten Logbücher</em>
         </div>
     </div>
     <hr><!-- end element logbuecher -->

@@ -40,7 +40,7 @@
         <div class="span12">
             <div class="progress <?php
                                         if($entry_value['Bewertung'] < 50){
-                                            echo 'progress-danger';
+                                            echo 'progress-info';
                                         }
                                         else if ($entry_value['Bewertung'] > 50 && $entry_value['Bewertung'] < 70) {
                                             echo 'progress-warning';
@@ -89,7 +89,7 @@
         // before prompting the modal scroll view to the top -> modal is presented on top of the page
         $(document).scrollTop(1);
 
-        var myModal = createDeleteEntryModalDialog('Eintrag löschen', 'Möchtest du den ausgewählten Logbucheintrag wirklich löschen? Das Löschen kann nicht wieder rückgängig gemacht werden.', entry_to_delete, logbook_to_delete);
+        var myModal = createDeleteEntryModalDialog('Eintrag löschen', 'Möchtest du den ausgewählten Logbucheintrag wirklich löschen? Das Löschen kann nicht rückgängig gemacht werden.', entry_to_delete, logbook_to_delete);
         $("#modalcontent").html(myModal);
         $('#myModal').modal({
             keyboard: false

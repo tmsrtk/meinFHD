@@ -32,7 +32,7 @@
         <div class="span12">
             <div class="progress <?php
                                     if($book_attr['Bewertung'] < 50){
-                                        echo 'progress-danger';
+                                        echo 'progress-info';
                                     }
                                     else if ($book_attr['Bewertung'] > 50 && $book_attr['Bewertung'] < 70) {
                                         echo 'progress-warning';

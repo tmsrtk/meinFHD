@@ -62,7 +62,7 @@
         <div class="span12">
             <h4>Eintrag zum Logbuch hinzuf&uuml;gen</h4>
             <p>
-                Bitte f&uuml;lle die folgenden Felder aus und klicke auf Speichern, um einen neuen Eintrag deinem Logbuch für <strong><?php echo $kursname; ?></strong> hinzuzuf&uuml;gen.
+                Bitte f&uuml;lle die folgenden Felder aus und klicke auf Speichern, um einen Eintrag deinem Logbuch für <strong><?php echo $kursname; ?></strong> hinzuzuf&uuml;gen.
             </p>
         </div>
     </div>
@@ -119,7 +119,7 @@
 
                     // change the background color of the slider depending on the act. value
                     if (slider_value < 50) {
-                        $("#topicRatingSlider").children("div").css("background","red");
+                        $("#topicRatingSlider").children("div").css("background","#3dc1dc");
                     }
                     else if(slider_value >= 50 && slider_value< 70) {
                         $("#topicRatingSlider").children("div").css("background","orange");

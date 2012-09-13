@@ -126,7 +126,7 @@ $submit_data = array(
 
                 // change the background color of the slider depending on the act. value
             if (slider_value < 50) {
-                $("#topicRatingSlider").children("div").css("background","red");
+                $("#topicRatingSlider").children("div").css("background","#3dc1dc");
             }
             else if(slider_value >= 50 && slider_value < 70) {
                 $("#topicRatingSlider").children("div").css("background","orange");
@@ -142,18 +142,19 @@ $submit_data = array(
 
         // change the background color of the slider depending on the act. value
         if (rating_to_set < 50) {
-        $("#topicRatingSlider").children("div").css("background","red");
+            $("#topicRatingSlider").children("div").css("background","#3dc1dc");
         }
         else if(rating_to_set >= 50 && rating_to_set< 70) {
-        $("#topicRatingSlider").children("div").css("background","orange");
+            $("#topicRatingSlider").children("div").css("background","orange");
         }
         else {
-        $("#topicRatingSlider").children("div").css("background","green");
+            $("#topicRatingSlider").children("div").css("background","green");
         }
 });
 <?php endblock(); # end custom jQueryCode ?>
 
 <?php startblock('headJSfiles'); # add additional js files?>
+    {jQuery_ui_touch_punch: "<?php print base_url(); ?>resources/jquery/jquery.ui.touch-punch.min.js"},
 
 <?php endblock(); ?>
 
