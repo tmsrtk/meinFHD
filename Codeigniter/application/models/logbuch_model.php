@@ -139,7 +139,8 @@ class Logbuch_Model extends CI_Model {
             SELECT logbuch.LogbuchID, logbuch.KursID, studiengangkurs.kurs_kurz, studiengangkurs.Kursname
             FROM logbuch
             JOIN studiengangkurs ON logbuch.KursID = studiengangkurs.KursID
-            WHERE logbuch.BenutzerID = ".$user_id
+            WHERE logbuch.BenutzerID = ".$user_id . "
+            ORDER BY logbuch.LogbuchID"
         );
 
         $logbooks = array();
