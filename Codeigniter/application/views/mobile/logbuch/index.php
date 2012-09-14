@@ -19,7 +19,7 @@
     <div class="row-fluid">
         <div class="span12">
             <img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_log_book.png" alt="Logbuecher" width="20" height="20"/>&nbsp;
-            <a href="<?php print base_url('logbuch/show_logbooks'); ?>" class="btn btn-link pull-right" style="font-weight: bold;">&gt;</a>
+            <a href="<?php print base_url('logbuch/show_logbooks'); ?>" class="btn pull-right"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_thin_right_arrow.png" alt="delete" style="max-width: 18px; height: auto;"/></a>
             <a href="<?php print base_url('logbuch/show_logbooks'); ?>"><strong>Meine Logb&uuml;cher</strong></a><br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>&Uuml;bersicht &uuml;ber alle<br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;angelegten Logbücher</em>
@@ -30,7 +30,7 @@
     <div class="row-fluid">
         <div class="span12">
             <img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_circle_plus.png" alt="Logbuch hinzufuegen" width="20" height="20"/>&nbsp;
-            <a href="<?php print base_url('logbuch/add_logbook'); ?>" class="btn btn-link pull-right" style="font-weight: bold;">&gt;</a>
+            <a href="<?php print base_url('logbuch/add_logbook'); ?>" class="btn pull-right"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_thin_right_arrow.png" alt="delete" style="max-width: 18px; height: auto;"/></a>
             <a href="<?php print base_url('logbuch/add_logbook'); ?>"><strong>Logbuch anlegen</strong></a><br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>Lege dir jetzt ein Logbuch an</em>
         </div>
@@ -40,7 +40,7 @@
     <div class="row-fluid">
         <div class="span12">
             <img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_stats.png" alt="Auswertungen" width="20" height="20"/>&nbsp;
-            <a href="#" class="btn btn-link pull-right" style="font-weight: bold;">&gt;</a>
+            <a href="<?php print base_url('logbuch/index'); ?>" class="btn pull-right"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_thin_right_arrow.png" alt="delete" style="max-width: 18px; height: auto;"/></a>
             <a href="<?php print base_url('logbuch/index'); ?>"><strong>Auswertungen</strong></a><br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>f&uuml;r jedes Logbuch</em>
         </div>
@@ -50,7 +50,7 @@
     <div class="row-fluid">
         <div class="span12">
             <img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_cup.png" alt="Pokal" width="20" height="20"/>&nbsp;
-            <a href="#" class="btn btn-link pull-right" style="font-weight: bold;">&gt;</a>
+            <a href="<?php print base_url('logbuch/index'); ?>" class="btn pull-right"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_thin_right_arrow.png" alt="delete" style="max-width: 18px; height: auto;"/></a>
             <a href="<?php print base_url('logbuch/index'); ?>"><strong>Meine Auszeichnungen</strong></a><br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>Achievement&uuml;bersicht</em>
         </div>
@@ -60,7 +60,7 @@
     <div class="row-fluid">
         <div class="span12">
             <img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_question_mark.png" alt="Fragezeichen" width="20" height="20"/>&nbsp;
-            <a href="#" class="btn btn-link pull-right" style="font-weight: bold;">&gt;</a>
+            <a href="<?php print base_url('logbuch/index'); ?>" class="btn pull-right"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_thin_right_arrow.png" alt="delete" style="max-width: 18px; height: auto;"/></a>
             <a href="<?php print base_url('logbuch/index'); ?>"><strong>FAQ</strong></a><br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>Hilfe</em>
         </div>

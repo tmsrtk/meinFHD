@@ -387,4 +387,26 @@ class Logbuch_Model extends CI_Model {
             $this->db->insert('logbucheintrag', $data_to_insert);
         }
     }
+
+    /**
+     * Checks if there is already an logbook for the given combination of course and user_id
+     * @access public
+     * @param $course_id ID of the selected course
+     * @param $user_id ID of the accessing user
+     * @return BOOL TRUE if there is an logbook for the given combination, otherwise FALSE
+     */
+    public  function check_logbook_course_existence_for_user($course_id, $user_id) {
+        $this->db->select('*');
+        $this->db->from('logbuch');
+        $this->db->where('KursID', $course_id);
+        $this->db->where('BenutzerID', $user_id);
+
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0 ){
+            return TRUE;
+        }
+
+        return FALSE;
+    }
 }

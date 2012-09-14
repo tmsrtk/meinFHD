@@ -100,12 +100,19 @@ class Logbuch extends FHD_Controller {
             $this->add_logbook();
         }
         else {
-            // add a new logbook to the database (seleected course, and id of the current user)
-           $logbook_id = $this->logbuch_model->insert_new_logbook($selected_course, $this->authentication->user_id());
-           $this->copy_all_base_topics_for_course($selected_course, $logbook_id);
+            // if there is no logbook for the selected course create it, otherwise return a message
+            if (!$this->logbuch_model->check_logbook_course_existence_for_user($selected_course, $this->authentication->user_id())){
+                // add a new logbook to the database (selected course, and id of the current user)
+               $logbook_id = $this->logbuch_model->insert_new_logbook($selected_course, $this->authentication->user_id());
+               $this->copy_all_base_topics_for_course($selected_course, $logbook_id);
 
-            // load the logbook content view
-            $this->show_logbook_content($logbook_id);
+                // load the logbook content view
+                $this->show_logbook_content($logbook_id);
+            }
+            else {
+                $this->message->set(sprintf('Sorry, zu dem gewählten Kurs exisitiert bereits ein Logbuch. Bitte schau in deine Logbuchbibliothek.'));
+                redirect('logbuch/add_logbook');
+            }
         }
     }
 
