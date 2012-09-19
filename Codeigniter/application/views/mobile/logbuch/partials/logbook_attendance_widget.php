@@ -5,12 +5,12 @@
         <?php if(count($running_course)!=0): # only display the following if any course is running ?>
         <div>
             <strong>Gerade l&auml;uft: </strong><span style="color: red;"><?php echo $running_course['Kursname']; ?></span> in <strong><?php echo $running_course['Raum']; ?></strong><br/>
-            Du warst bisher insgesamt <strong><?php echo $running_course['attended_events']; ?>/<?php echo $max_events; ?></strong> mal da. Du hast <strong><?php echo $running_course['attended_events_percent']; ?>%</strong> in diesem Semester bereits erfolgreich hinter dich gebracht.
+            Du warst bisher insgesamt <strong><?php echo($running_course['attended_events']); ?>/<?php echo $max_events; ?></strong> mal da. Du hast <strong><?php echo round($running_course['attended_events_percent']); ?>%</strong> in diesem Semester bereits erfolgreich hinter dich gebracht.
         </div>
         <div>
             <br>
             <div class="progress progress-success progress-striped active" style="width: 90%; margin-left: 5%;">
-                <div class="bar" style="width: 70%;"></div>
+                <div class="bar" style="width: <?php echo $running_course['attended_events']; ?>%;"></div>
             </div>
         </div>
         <div class="pagination-centered" style="margin-top: 2%;">
