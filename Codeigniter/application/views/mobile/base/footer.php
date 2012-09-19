@@ -18,8 +18,7 @@
 <?php start_block_marker('headJSfiles'); ?>
                 {bootstrap_dropdown: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-dropdown.js"},
 <?php end_block_marker(); ?>
-				{meinfhd: "<?php print base_url(); ?>resources/js/meinfhd.js"},
-
+				{meinfhd: "<?php print base_url(); ?>resources/js/meinfhd.js"}
 			);
 		</script>
 		<script type="text/javascript">
