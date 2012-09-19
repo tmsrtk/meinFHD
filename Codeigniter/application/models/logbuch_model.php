@@ -11,7 +11,6 @@
  * Logbuch Model
  * The 'logbuch model' deals with all necessary db operations for the students 'logbuch'
  * and 'logbuch' administration for course instructors.
- *
  */
 class Logbuch_Model extends CI_Model {
 
@@ -395,7 +394,7 @@ class Logbuch_Model extends CI_Model {
      * @param $user_id ID of the accessing user
      * @return BOOL TRUE if there is an logbook for the given combination, otherwise FALSE
      */
-    public  function check_logbook_course_existence_for_user($course_id, $user_id) {
+    public function check_logbook_course_existence_for_user($course_id, $user_id) {
         $this->db->select('*');
         $this->db->from('logbuch');
         $this->db->where('KursID', $course_id);
@@ -409,4 +408,276 @@ class Logbuch_Model extends CI_Model {
 
         return FALSE;
     }
+
+    /**
+     * Returns the currently running course for the authenticated user.
+     * @access public
+     * @return ARRAY Returns the array with the information about the currently running course
+     */
+    public function get_running_course(){
+
+        // get the actual week day
+        $actual_week_day = date("w",time());
+        // get the actual time
+        $actual_time = date("H:i", time());
+
+        // for development purposes static times to be able to test the functionality
+        $actual_time = "16:15";
+        $actual_week_day = "1";
+        // end development time data
+
+        // get all user information
+        $user_information = $this->_get_user_information();
+
+        // get the actual semester
+        $num_act_semester = $this->get_Semester($user_information['StudienbeginnSemestertyp'], $user_information['StudienbeginnJahr']);
+
+        $running_course = $this->_fetch_running_course($num_act_semester, $user_information['BenutzerID'], $actual_week_day, $actual_time);
+        return $running_course;
+    }
+
+    /**
+     * Fetches the actual running course and returns the specified informations in an array.
+     * Only courses with the 'veranstalungsform 1 = Vorlesung' will be queried.
+     * @access private
+     * @return ARRAY Array with the specified information about the running course in an key / value array.
+     */
+    private function _fetch_running_course($act_semester, $user_id, $act_weekday, $act_time){
+        $query = $this->db->query("
+                	SELECT
+                        b.SemesterID, sg.Kursname, sg.kurs_kurz,sp.Raum,
+                        v.VeranstaltungsformName, sp.StartID, sp.EndeID, (sp.EndeID-sp.StartID)+1 AS 'Dauer',
+                        t.TagName,t.TagID,
+                        s_beginn.Beginn, s_ende.Ende,
+                        b.Aktiv,
+                        b.KursID,b.SPKursID
+                    FROM
+                        benutzerkurs b,
+                        studiengangkurs sg,
+                        stundenplankurs sp,
+                        veranstaltungsform v,
+                        tag t,
+                        stunde s_beginn, stunde s_ende,
+                        benutzer d,
+                        gruppe g
+                    WHERE
+                        b.kursID = sg.kursID AND
+                        sp.kursID = b.KursID AND
+                        sp.SPKursID = b.SPKursID AND
+                        v.veranstaltungsformID = sp.veranstaltungsformID AND
+                        s_beginn.StundeID = sp.StartID AND
+                        s_ende.StundeID = sp.EndeID AND
+                        t.TagID = sp.TagID AND
+                        sp.DozentID = d.BenutzerID AND
+                        b.BenutzerID = ". $user_id . " AND
+                        b.SemesterID = " . $act_semester . " AND
+                        sp.GruppeID = g.GruppeID AND
+                        sp.IsWPF = 0 AND
+                        b.Aktiv = 1 AND
+                        v.VeranstaltungsformID = 1 AND
+                        t.TagID = " .$act_weekday ." AND
+                        s_beginn.Beginn <= '". $act_time ."' AND
+                        s_ende.Ende >= '".$act_time."'
+                    ORDER BY
+                        sp.tagID, sp.StartID;
+        ");
+
+        return $query->row_array();
+    }
+
+    /**
+     * Gets all information about the actual authenticated user and returns them in an array.
+     * @access private
+     * @return ARRAY The array with the user information.
+     */
+    private function _get_user_information(){
+        $this->db->select('*');
+        $this->db->from('benutzer');
+        $this->db->where('BenutzerID', $this->authentication->user_id());
+        $this->db->limit(1);
+        $query = $this->db->get();
+
+        return $query->row_array();
+    }
+
+    /**
+     * Saves a new attendance record for the given user_id in the database table 'anwesenheit'
+     * with the current time and the given course id.
+     * @access public
+     * @param $course_id Id of the course, where the attendance should be saved for.
+     * @param $user_id ID of the specified user
+     */
+    public function save_attendance_for_course_with_current_time($course_id, $user_id) {
+        // get the actual week day
+        $actual_week_day = date("w",time());
+        // get the actual time
+        $actual_time = date("H:i", time());
+
+        // for development purposes static times to be able to test the functionality
+        $actual_time = "16:15";
+        $actual_week_day = "1";
+        $timestamp_to_insert = '2012-09-03 16:15:00';
+
+        // end development time data
+
+        // prepare the data, that should be inserted
+        $data = array(
+            'BenutzerID' => $user_id,
+            'KursID' => $course_id,
+            'Datum' => $timestamp_to_insert
+        );
+
+        // insert the data into the table 'anwesenheit'
+        $this->db->insert('anwesenheit', $data);
+    }
+
+    /**
+     * Returns the count of attended course events for the actual semester and the given user. Checks at first the actual semestertype
+     * and then sets the date limits.
+     * @param $course_id
+     * @return INT The count of the attended events for the given user and the given course id is returned. If there are no entries, zero
+     *              will be returned.
+     */
+    public function get_attendance_count_for_course_and_act_semester($course_id, $user_id) {
+        // get the semester type
+        $semester_type = $this->adminhelper->getSemesterTyp();
+        // set the date limits according to the type of the semester
+        $beginn_date = '';
+        $end_date = '';
+        $act_year = date('Y', time()); // get the act year
+
+        switch($semester_type){
+            case 'SS':
+                $beginn_date = $act_year . '-03-01 00:00:00';
+                $end_date = $act_year . '-07-31 00:00:00';
+                break;
+            case 'WS':
+                $beginn_date = $act_year . '-09-01 00:00:00';
+                $end_date = ($act_year+1) . '-02-28 00:00:00';
+                break;
+        }
+
+        // define the date_range to select vor
+        $date_range = 'Datum BETWEEN ' . '"' . $beginn_date . '" AND "' . $end_date . '"';
+        // query for the count
+        $this->db->from('anwesenheit');
+        $this->db->where('BenutzerID', $user_id);
+        $this->db->where('KursID', $course_id);
+        $this->db->where($date_range, NULL, FALSE); // set the date range
+        $attended_events = $this->db->count_all_results();
+
+        return $attended_events;
+    }
+
+    /**
+     * Checks if the current authenticated user has already tracked his attendance for the
+     * given course id.
+     * @param $course_id The course id where the attendance should be checked for.
+     * @return BOOL returns TRUE if the user has already tracked his attendance, otherwise FALSE
+     */
+    public function already_attending_today($course_id){
+        // get the actual week day
+        $actual_day_date = date("Y-m-d",time());
+
+        // for development purposes static times to be able to test the functionality
+        $actual_day_date = '2012-09-03';
+        // end development time data
+
+        // create the date range for the act date
+        $beginn_date = $actual_day_date . " 00:00:00";
+        $end_date = $actual_day_date . " 23:59:00";
+        $date_range = 'Datum BETWEEN "'.$beginn_date.'" AND "'.$end_date.'"';
+
+        // query the database and check if there is an record, that is like the actual date
+        $this->db->from('anwesenheit');
+        $this->db->where($date_range, NULL, FALSE);
+        $this->db->where('KursID', $course_id);
+
+        $query = $this->db->get();
+
+        if($query->num_rows() > 0){
+            return TRUE;
+        }
+
+        return FALSE;
+    }
+
+    /**
+     * Queries the database for the right course_id that corresponds to the degree-program of the student.
+     * The timetable only holds courses from the newest degree programs. Some courses in the newer degree-
+     * programs are the same than the old ones. Because of the data integrity, we are going to save everything
+     * to the course id, that corresponds to the degree programm of the student. Method is only afforded for students
+     * from older degree programs.
+     * @access public
+     * @param $course_id The course_id from the timetable
+     * @param $user_id The id of the currently authenticated user
+     * @return array An array with the selected course_id and the coursename will be returned
+     */
+    public function query_right_stdg_course_for_given_course($course_id, $user_id){
+        $query = $this->db->query("
+                                   SELECT studiengangkurs.KursID, studiengangkurs.Kursname
+                                   FROM benutzer, studiengangkurs
+                                   WHERE benutzer.StudiengangID = studiengangkurs.StudiengangID
+                                   AND benutzer.BenutzerID = ". $user_id ."
+                                   AND studiengangkurs.kurs_kurz = ( SELECT stdg.kurs_kurz
+				                                                      FROM studiengangkurs as stdg
+                                                                      WHERE stdg.KursID = ".$course_id."
+                                                                    )
+                                   LIMIT 1");
+        // create the query result and return it
+        return $query->row_array();
+    }
+
+    /**
+     *	get_semester()
+     *
+     *  wirtten by Jochen Sauer, copyed function, function in adminhelper calculates wrong (2 semester to much)
+     *
+     *	Gibt anhand der übergebenen persönlichen Daten das aktuelle
+     *	Semester des Studenten zurück.
+     *
+     *	@param	$semestertyp	 (WS or SS)
+     *
+     *	@param	$studienbeginn	Four-digit-number, year the study started
+     *
+     *	@return	$semester 		Actual Semester as String.
+     */
+    private function get_semester( $semestertyp, $studienbeginn )
+    {
+
+        // definiere Rückgabewert
+        $semester = "";
+
+        // ermittel semestertyp
+        $errechneter_semestertyp = $this->adminhelper->getSemesterTyp();
+
+        // stimmt aktueller Semestertyp mit Studienbeginn-Semestertyp überein?
+        $gleicher_semestertyp = ($errechneter_semestertyp == $semestertyp) ? true : false;
+
+        // Errechne aktuelles Semester
+        $semester = (($gleicher_semestertyp) ? 1 : 0) + 2 * ((($gleicher_semestertyp && date("n") < 3) ? date("Y")-1 : date("Y")) - $studienbeginn);
+
+        // Gebe String zurück
+        return $semester;
+    }
+
+    /**
+     * Returns the logbook id for the given combination of course and user id
+     * @access public
+     * @param $course_id Course ID where the logbook should be selected for
+     * @param $user_id Owner of the logbook to select
+     * @return int The id of the logbook
+     */
+    public function get_logbook_id($course_id, $user_id){
+        $this->db->select('LogbuchID');
+        $this->db->from('logbuch');
+        $this->db->where('KursID', $course_id);
+        $this->db->where('BenutzerID', $user_id);
+
+        $query = $this->db->get();
+
+        return $query->row()->LogbuchID;
+    }
+
+
 }
