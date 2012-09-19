@@ -192,6 +192,27 @@ class Adminhelper {
 		return (date("n") >= 3 && date("n") <= 8) ? "SS" : "WS";		
 	}
 
+    /**
+     * Returns the count of weeks during the semester for the given semestertype.
+     * SS => 15 weeks, WS => 16 Weeks
+     * @access public
+     * @author Christian Kundruß (CK) <christian.kundruss@fh-duesseldorf.de>
+     * @param $semestertype The type of the semester (SS or WS)
+     * @return INT The number of weeks during the semester
+     */
+    public function get_semesterweeks($semestertype){
+        $weeks_to_return = 0;
+
+        switch($semestertype){
+            case 'SS': $weeks_to_return = 15;
+                       break;
+            case 'WS': $weeks_to_return = 16;
+                       break;
+        }
+
+        return $weeks_to_return;
+    }
+
 }
 
 
