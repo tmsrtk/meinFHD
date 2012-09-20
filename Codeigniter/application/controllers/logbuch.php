@@ -167,6 +167,10 @@ class Logbuch extends FHD_Controller {
      * @param $logbook_id ID of the selected logbook
      */
     public function show_logbook_content($logbook_id) {
+        // get the attendance count and add it to the view
+        // query out the course id that corresponds to the logbook id
+        $course_id = $this->logbuch_model->get_course_id_for_logbook($logbook_id);
+        $this->data->add('attendance_count', $this->logbuch_model->get_attendance_count_for_course_and_act_semester($course_id, $this->authentication->user_id()));
         // add the logbook_id to the view
         $this->data->add('logbook_id', $logbook_id);
         // get all logbook entries and add them to the view

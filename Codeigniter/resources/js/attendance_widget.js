@@ -18,15 +18,20 @@ $("#attendButton").click(function() {
         running_course_id: $(this).parent().parent().parent().data("id")
     };
 
-    // track attendance with the help of ajax
-    $.ajax({
-        url: CI.base_url + 'attendance/save_new_attendance',
-        type: 'POST',
-        data: course_data,
-        success: function(success_data){
-            $('#attendanceWidget').html(success_data); // display the result / refresh the widget container
-        }
-    });
+    // if the clicked button is not disabled, track the attendance
+    if(!$("#attendButton").hasClass('disabled')){
+        // track attendance with the help of ajax
+        $.ajax({
+            url: CI.base_url + 'attendance/save_new_attendance',
+            type: 'POST',
+            data: course_data,
+            success: function(success_data){
+                $('#attendanceWidget').html(success_data); // display the result / refresh the widget container
+            }
+        });
+    }
+
+
 });
 
 /*

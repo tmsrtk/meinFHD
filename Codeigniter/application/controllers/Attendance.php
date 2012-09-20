@@ -45,18 +45,18 @@ class Attendance extends FHD_Controller {
         $result = '';
 
         $running_course = $this->logbuch_model->get_running_course();
-        // query out the right course id, if the user is got from an older degree program he will have got an different courseid (maybe)
-        $students_degree_prog_course = $this->logbuch_model->query_right_stdg_course_for_given_course($running_course['KursID'], $this->authentication->user_id());
-        $running_course['KursID'] = $students_degree_prog_course['KursID'];
-
         $max_events_semester = $this->adminhelper->get_semesterweeks($this->adminhelper->getSemesterTyp()); // get the max. semesterweeks
 
         // only do the following if there is an running course
         if (count($running_course) > 0){
+            // query out the right course id, if the user is got from an older degree program he will have got an different courseid (maybe)
+            $students_degree_prog_course = $this->logbuch_model->query_right_stdg_course_for_given_course($running_course['KursID'], $this->authentication->user_id());
+            $running_course['KursID'] = $students_degree_prog_course['KursID'];
             $running_course['attended_events'] = $this->logbuch_model->get_attendance_count_for_course_and_act_semester($running_course['KursID'], $this->authentication->user_id()); // get the count of attendance and pass it to the view
             $running_course['attended_events_percent'] = ($running_course['attended_events'] / $max_events_semester) * 100;
             $btn_attend_state = '';
-            if($this->logbuch_model->already_attending_today($running_course['KursID'])){ // already tracked attendance?
+            // already tracked attendance or reached the maximum value of events?
+            if($this->logbuch_model->already_attending_today($running_course['KursID']) || $running_course['attended_events'] == $max_events_semester){
                 $btn_attend_state = 'disabled';
             }
 

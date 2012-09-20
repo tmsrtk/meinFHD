@@ -6,7 +6,8 @@
 <div class="well well-small">
     <div class="row-fluid">
         <div class="span12">
-            <a href="<?php print base_url('logbuch/show_logbooks'); ?>" class="btn btn-medium btn-danger" style="font-weight: bold;"><i class="icon-arrow-left icon-white"></i>&nbsp;Logbuch&uuml;bersicht</a>
+            <a href="<?php print base_url('logbuch/show_logbooks'); ?>" class="btn btn-medium btn-danger" style="font-weight: bold;"><i class="icon-arrow-left icon-white"></i>&nbsp;Logbuch&uuml;bersicht</a><br/><br/>
+            <span><strong>Du warst schon <?php echo $attendance_count; ?> mal da</strong></span>
         </div>
     </div>
     <br/>
@@ -20,7 +21,7 @@
             <tr>
                 <td>
                     <h3>Kein Eintrag gefunden</h3>
-                    <p class="alert alert-info">F&uuml;r dieses Logbuch wurde noch kein Eintrag hinterlegt. Hinterlege zun&auml;chst ein Thema, damit Du von dem vollen Funktionsumfang des Logbuchs nutzen kannst.
+                    <p class="alert alert-info">F&uuml;r dieses Logbuch wurde noch kein Eintrag hinterlegt. Hinterlege zun&auml;chst ein Thema, damit Du den vollen Funktionsumfang des Logbuchs nutzen kannst.
                         Zum Anlegen eines Themas, steht dir der Plus-Button am unteren Ende zur Verf&uuml;gung
                     </p>
                 </td>

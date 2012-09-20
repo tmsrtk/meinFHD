@@ -10,13 +10,11 @@
         <div>
             <br>
             <div class="progress progress-success progress-striped active" style="width: 90%; margin-left: 5%;">
-                <div class="bar" style="width: <?php echo $running_course['attended_events']; ?>%;"></div>
+                <div class="bar" style="width: <?php echo $running_course['attended_events_percent']; ?>%;"></div>
             </div>
         </div>
         <div class="pagination-centered" style="margin-top: 2%;">
-            <span><a href="#" class="btn btn-small btn-danger
-                                                        <?php echo $running_course['btn_attend_state'];?>"
-                     id="attendButton"><strong>Ich bin hier!</strong></a></span>
+            <span><a href="#" class="btn btn-small btn-danger <?php echo $running_course['btn_attend_state'];?>" id="attendButton"><strong>Ich bin hier!</strong></a></span>
             <span><a href="#" class="btn btn-small" id="switchToLogbookButton"><strong>zum Logbuch</strong></a></span>
         </div>
         <?php else: # display the following if no course is running?>

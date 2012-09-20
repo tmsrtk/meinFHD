@@ -290,6 +290,21 @@ class Logbuch_Model extends CI_Model {
     }
 
     /**
+     * Returns the course id, that corresponds to the given logbook id.
+     * @param $logbook_id
+     * @return int The id of the course, that corresponds to the logbook id
+     */
+    public function get_course_id_for_logbook($logbook_id){
+        $this->db->select('KursID');
+        $this->db->from('logbuch');
+        $this->db->where('LogbuchID', $logbook_id);
+
+        $course_id = $this->db->get()->row()->KursID;
+
+        return $course_id;
+    }
+
+    /**
      * Calculates / returns the average rating for the given logbook.
      * @access private
      * @param $logbook_id ID of the given logbook.
