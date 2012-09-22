@@ -2,13 +2,13 @@
 
 <?php startblock('title'); # extend the site's title ?><?php get_extended_block(); ?> - Dashboard<?php endblock();?>
 
-<?php start_block_marker('headerJS'); # additional js files ?>
+<?php startblock('headerJS'); # additional js files ?>
 <!-- Edit by CK 2012, JS-Code to save the base url in an global variable. Makes the base url visible in external JS files -->
 <script type="text/javascript">
     var CI = {'base_url': "<?php print base_url();?>"};
 </script>
 <!-- end Edit -->
-<?php end_block_marker(); ?>
+<?php endblock(); ?>
 
 <?php startblock('preCodeContent'); # additional markup before content ?>
 <div class="container container-fluid" id="sortable">
@@ -25,8 +25,7 @@
 <div class="span4" id="attendanceWidget"><!-- attendance / logbuch widget -->
     <?php echo $attendance_widget; ?>
 </div><!-- /.span4-->
-				<div class="span4">
-            <?php endif; ?>
+<?php endif; ?>
 <div class="span4">
     <div class="well widget  default">
         <i class="icon icon-question-sign pull-right"></i>

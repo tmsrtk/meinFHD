@@ -2,13 +2,13 @@
 
 <?php startblock('title'); # extend the site's title ?><?php get_extended_block(); ?> - Dashboard<?php endblock();?>
 
-<?php start_block_marker('headerJS'); # additional js files ?>
-<!-- Edit by CK 2012, JS-Code to save the base url in an global variable. Makes the base url visible in external JS files -->
-<script type="text/javascript">
-    var CI = {'base_url': "<?php print base_url();?>"};
-</script>
-<!-- end Edit -->
-<?php end_block_marker(); ?>
+<?php startblock('headerJS'); # additional js files ?>
+    <!-- Edit by CK 2012, JS-Code to save the base url in an global variable. Makes the base url visible in external JS files -->
+    <script type="text/javascript">
+        var CI = {'base_url': "<?php print base_url();?>"};
+    </script>
+    <!-- end Edit -->
+<?php endblock(); ?>
 
 <?php startblock('preCodeContent'); # additional markup before content ?>
 			<div class="container container-fluid" id="sortable">
@@ -21,12 +21,17 @@
 <?php endblock(); ?>
 
 <?php startblock('content'); # content for this view ?>
-            <?php if( $this->authentication->has_permissions('hat_logbuch') ) :?>
-				<div class="span4" id="attendanceWidget"><!-- attendance / logbuch widget -->
-                    <?php echo $attendance_widget; ?>
-				</div><!-- /.span4-->
-				<div class="span4">
-            <?php endif; ?>
+        <?php if( $this->authentication->has_permissions('hat_logbuch') ) :?>
+            <div class="span4" id="attendanceWidget"><!-- attendance / logbuch widget -->
+                <?php echo $attendance_widget; ?>
+            </div><!-- /.span4-->
+        <?php endif; ?>
+        <?php if ( $this->authentication->has_permissions('hat_logbuch') ) :?>
+            <div class="span4">
+                <?php echo $analysis_widget; ?>
+            </div><!-- /.span4-->
+        <?php endif; ?>
+            <div class="span4">
 				<div class="well widget  default">
 					<i class="icon icon-question-sign pull-right"></i>
 					<h5><i class="icon icon-tasks"></i>N&auml;chste Veranstaltung</h5>
@@ -36,7 +41,7 @@
 								<span class="bold">18.05.2012</span>
 								<span class="bold date">8:00</span>
 							</div>
-							<div class="span8">	
+							<div class="span8">
 								<div class="bold">Mathematik 2</div>
 								<span class="grey">Bei: </span>Prof. Dr. rer. nat D&ouml;rries
 								<div class="grey">Raum: H 1.11 </div>
@@ -45,15 +50,6 @@
 					</div>
 				</div>
 				</div><!-- /. span4-->
-				<div class="span4">
-					 <div class="well widget default">
-                         <i class="icon icon-question-sign pull-right"></i>
-                         <h5><i class="icon icon-tasks"></i>Meine Achievements</h5>
-                         <div class="widget-content">
-                            Hier k&ouml;nnte der Inhalt des Achievements-Widget hinkommen.
-                         </div>
-                     </div>
-				</div><!-- /.span4-->
 			</div><!--first row ends here-->
 			<div class="row"><!--second row starts here-->
 				<div class="span4 flipBox" style="position: relative;">
