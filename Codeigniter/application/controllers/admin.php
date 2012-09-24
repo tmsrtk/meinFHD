@@ -139,7 +139,6 @@ class Admin extends FHD_Controller {
 		$this->show_role_permissions();
 	}
 	
-	
 	/***************************************************************************
 	* User management
 	* 
@@ -148,104 +147,82 @@ class Admin extends FHD_Controller {
 	
 	// view controller =========================================================
 
-	/*
-	* loads content for the admin_create_user_mask.php
+
+
+	/**
+	* User Invitation - Overview
+	* 
+	* Shows all open user requests. You can accept or delete the requests.
+	*/
+	public function request_user_invitation_mask()
+	{
+		// get all possible studiengänge for the form dropdown
+		$this->data->add('studiengaenge', $this->admin_model->get_all_studiengaenge());
+		// get all open user requests
+		$this->data->add('user_invitations', $this->admin_model->request_all_invitations());
+
+		//----------------------------------------------------------------------
+		$this->load->view('admin/user_invite', $this->data->load());
+	}
+
+	/**
+	* Create User - Form
+	* 
+	* 
 	*/
 	public function create_user_mask()
 	{
-		// siteinfo
-	##	$siteinfo = array(
-	#		'title'			=> 'Benutzer erstellen',
-	#		'main_content'	=> 'admin_create_user_mask'
-	#		);
-	#	$this->data->add('siteinfo', $siteinfo);
-		
-		// all roles
+		// get all possible roles for the form dropdown
 		$this->data->add('all_roles', $this->admin_model->get_all_roles());
 		
-		// all studiengänge
+		// get all possible studiengänge for the form dropdown
 		$this->data->add('studiengaenge', $this->admin_model->get_all_studiengaenge());
 		
 		//----------------------------------------------------------------------
 		$this->load->view('admin/user_add', $this->data->load());
 	}
 	
-	/*
-	* loads content for the admin_edit_user_mask.php
+	/**
+	* Edit User - Form
+	* 
+	* 
 	*/
 	public function edit_user_mask()
 	{
-		// siteinfo
-		$siteinfo = array(
-			'title'			=> 'Benutzer anzeigen',
-			'main_content'	=> 'admin_edit_user_mask'
-			);
-		$this->data->add('siteinfo', $siteinfo);
-		
-		// all users
-		// $data['user'] = $this->admin_model->get_all_user();
-		
-		// all roles
+		// get all possible roles for the form dropdown
 		$this->data->add('all_roles', $this->admin_model->get_all_roles());
 		
 		//----------------------------------------------------------------------
 		$this->load->view('admin/user_edit', $this->data->load());
 	}
 
-	/*
-	* loads content for the admin_delete_user_mask.php
+	/**
+	* Delete User - Form
+	* 
+	* 
 	*/
 	public function delete_user_mask()
 	{
-		// siteinfo
-		$siteinfo = array(
-			'title'			=> 'Benutzer loeschen',
-			'main_content'	=> 'admin_delete_user_mask'
-			);
-		$this->data->add('siteinfo', $siteinfo);
-
-		// all users	
+		// get all user	
 		$this->data->add('user', $this->admin_model->get_all_user());
 
 		//----------------------------------------------------------------------
 		$this->load->view('admin/user_delete', $this->data->load());
 	}
 
-	/*
-	* loads content for the admin_show_permissions.php
+	/**
+	* Role to Permission - List
+	* 
+	* Shows all possible roles and their associated permissions.
 	*/
-	public function show_permissions()
+	public function import_user_mask()
 	{
-		// siteinfo
-		$siteinfo = array(
-			'title'			=> 'Benutzerrechte anzeigen',
-			'main_content'	=> 'admin_show_permissions'
-			);
-		$this->data->add('siteinfo', $siteinfo);
 
 		//----------------------------------------------------------------------
-		$this->load->view('admin/permissions_list', $this->data->load());
+		$this->load->view('admin/user_import', $this->data->load());
 	}
 
-	/*
-	* loads content for the admin_request_user_invitation_mask.php
-	*/
-	public function request_user_invitation_mask()
-	{
-		// siteinfo
-		$siteinfo = array(
-			'title'			=> 'Einladungsaufforderungen anzeigen',
-			'main_content'	=> 'admin_request_user_invitation_mask'
-			);
-		$this->data->add('siteinfo', $siteinfo);
-		// all studiengänge
-		$this->data->add('studiengaenge', $this->admin_model->get_all_studiengaenge());
-		// user invitations
-		$this->data->add('user_invitations', $this->admin_model->request_all_invitations());
-
-		//----------------------------------------------------------------------
-		$this->load->view('admin/user_invite', $this->data->load());
-	}
+	// ->>> show_role_permissions
 
 	public function edit_roles_mask()
 	{
