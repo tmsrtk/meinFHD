@@ -20,6 +20,7 @@ class einstellungen extends FHD_Controller{
 			error_reporting(E_ERROR);
 		  parent::__construct();	
 		  $this->load->model('persDaten_model');
+                  $this->load->model('studienplan_model');
 		  
 		  //$this->userid = 1383;
 		  $this->userid = $this->authentication->user_id();
@@ -62,7 +63,7 @@ class einstellungen extends FHD_Controller{
 			    'Nachname' => $_POST['lastname'],
 			    'StudienbeginnJahr' => $_POST['year'],
 			    'StudienbeginnSemestertyp' => $_POST['semester'],
-			    //'StudiengangID' => $_POST['stgid'] 
+			    'StudiengangID' => $_POST['stgid'] 
                             );
 			
 			//set emailflag. required, because a not checked checkbox results in no $_POST-entry
@@ -81,14 +82,35 @@ class einstellungen extends FHD_Controller{
 			{
 			    echo 'Studiengang wurde geändert';
 			    
-			    //add the encrypted passwort
-			    $fieldarray['StudiengangID'] = $_POST['stgid'];
+                            //delete old semesterplan
+                            //$this->studienplan_model->deleteAll();
+                            
+                            //and create a new one
+                            //$this->studienplan_model->createStudyplan();
+                            //$this->studienplan_model->createTimetableCourses();
+                            
+			    //add the studycourse
+			    //$fieldarray['StudiengangID'] = $_POST['stgid'];
 			}
 			
 			//update database
 			$this->persDaten_model->update($this->userid, $fieldarray);
 			//create log
 			$this->persDaten_model->log($this->data['info']['TypID'], $this->data['info']['FachbereichID']);
+                        
+                        //If the studycourse got updated, delete all old references and db-entries
+                        if ($this->hasStudycourseChanged())
+			{
+			    echo 'Studiengang wurde geändert';
+			    
+                            //delete old semesterplan
+                            //$this->studienplan_model->deleteAll();
+                            
+                            //and create a new one
+                            //$this->studienplan_model->createStudyplan();
+                            //$this->studienplan_model->createTimetableCourses();
+                            
+			}
 
 			$this->data['info'] = $this->persDaten_model->getUserInfo($this->userid);
                         $this->data['stgng'] = $this->persDaten_model->getStudiengang();
@@ -97,20 +119,21 @@ class einstellungen extends FHD_Controller{
 	  }
 	}
 	
-	function testlog()
-	{
-	    $this->persDaten_model->log(array());
-	}
-	
-	function update()
-	{
-	    $data['stuff'] = 'bab';
-	    $this->load->view('einstellungen_update', $data);
-	}
-	
-         function hasStudycourseChanged()
+        function studiengangWechseln()
         {
-            echo (isset($_POST['stgid']) && $_POST['stgid'] != $this->data['info']['StudiengangID']) ? 'TRUE' : 'FALSE';
+            //*.csv erstellen
+            
+            //braucht eigentlich nicht zu laden, nur zum debug:
+            $this->data['info'] = $this->persDaten_model->getUserInfo($this->userid);
+            $this->data['stgng'] = $this->persDaten_model->getStudiengang();
+            
+            //View
+            $this->load->view('einstellungen_studiengangWechseln', $this->data);
+        }
+	
+	
+        function hasStudycourseChanged()
+        {
             return (isset($_POST['stgid']) && $_POST['stgid'] != $this->data['info']['StudiengangID']) ? TRUE : FALSE;
         }
         
