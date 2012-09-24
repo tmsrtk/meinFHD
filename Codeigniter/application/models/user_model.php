@@ -43,7 +43,7 @@ class User_model extends CI_Model {
 			$this->user_id = $uid;
 
 			$this->lastname = $this->_query_user_singlecolumndata('Vorname');
-			$this->lastname = $this->_query_user_singlecolumndata('Nachname');
+			$this->forename = $this->_query_user_singlecolumndata('Nachname');
 			$this->loginname = $this->_query_user_singlecolumndata('LoginName');
 			$this->email = $this->_query_user_singlecolumndata('Email');
 
