@@ -16,7 +16,8 @@ class Adminhelper {
 	}
 
 	/**
-	* creates a random pw with a length of 10 chars - jochens function
+	* Creates a random pw with a length of 10 chars - jochens function
+	*
 	* @return random password
 	*/
 	function passwort_generator() 

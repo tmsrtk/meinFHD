@@ -225,9 +225,12 @@ class Admin_model extends CI_Model {
 			);
 		$this->db->insert('benutzer_mm_rolle', $data);
 
-		// TODO: send email to user
-		// $message
-		// $password
+		// send email to user
+		$message = $q['Vorname'] . ', dein Passowort ist; ' . $password;
+		$subject = 'meinFHD2 - Ihre Einladung wurde akzeptiert';
+		$to = $q['Emailadresse'];
+
+		$this->mailhelper->send_meinfhd_mail($to, $subject, $message);
 
 
 		// delete requested invitation
@@ -316,8 +319,15 @@ class Admin_model extends CI_Model {
 		return $my_result;
 	}
 
+
+	// get all users as array
+	public function get_all_user()
+	{
+		return $this->_get_all_user_raw()->result_array();
+	}
+
 	// get all user
-	function get_all_user_raw()
+	private function _get_all_user_raw()
 	{
 		$this->db->select('*')
 					->from('benutzer')
@@ -326,12 +336,6 @@ class Admin_model extends CI_Model {
 					;
 
 		return $this->db->get();
-	}
-
-	// get all users as array
-	public function get_all_user()
-	{
-		return $this->get_all_user_raw()->result_array();
 	}
 
 	// get specific user
@@ -576,7 +580,7 @@ class Admin_model extends CI_Model {
 	public function get_all_user_with_roles()
 	{
 		$result = array();
-		$all_user = $this->get_all_user_raw()->result_array();
+		$all_user = $this->_get_all_user_raw()->result_array();
 
 		foreach ($all_user as $key => $value) {
 
