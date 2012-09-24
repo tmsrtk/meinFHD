@@ -13,6 +13,7 @@
 class einstellungen extends FHD_Controller{
     
     private $userid;
+    var $data;
     
     function __construct()
 		{
@@ -22,6 +23,7 @@ class einstellungen extends FHD_Controller{
 		  
 		  //$this->userid = 1383;
 		  $this->userid = $this->authentication->user_id();
+                  $this->data = array();
 		}
 	
 	
@@ -29,12 +31,12 @@ class einstellungen extends FHD_Controller{
 	{
 	    
 		//initial database-query to get als required information of the user
-		$data['info'] = $this->persDaten_model->getUserInfo($this->userid);
-		$data['stgng'] = $this->persDaten_model->getStudiengang();
+		$this->data['info'] = $this->persDaten_model->getUserInfo($this->userid);
+		$this->data['stgng'] = $this->persDaten_model->getStudiengang();
 
 		//setting up the rules, to which the user-input of the corresponding form-fields must comply:
 		//Note: the form_validation-class is automagically loaded in the config/autoload.php, so there's no need to load it here.
-		$this->form_validation->set_rules('login', 'Loginname', 'callback_validateLoginname['.$data['info']['LoginName'].']');
+		$this->form_validation->set_rules('login', 'Loginname', 'callback_validateLoginname['.$this->data['info']['LoginName'].']');
 		$this->form_validation->set_rules('pw', 'Passwort', 'callback_validatePassword');
 		$this->form_validation->set_rules('email', 'Email', 'callback_validateEmail');
 
@@ -45,7 +47,7 @@ class einstellungen extends FHD_Controller{
 		if ($this->form_validation->run() == FALSE)
 		{
 			//echo 'fehler';
-			$this->load->view('einstellungen', $data);
+			$this->load->view('einstellungen', $this->data);
 			//$this->persDaten_model->update();
 		}
 		else
@@ -60,7 +62,8 @@ class einstellungen extends FHD_Controller{
 			    'Nachname' => $_POST['lastname'],
 			    'StudienbeginnJahr' => $_POST['year'],
 			    'StudienbeginnSemestertyp' => $_POST['semester'],
-			    'StudiengangID' => $_POST['stgid'] );
+			    //'StudiengangID' => $_POST['stgid'] 
+                            );
 			
 			//set emailflag. required, because a not checked checkbox results in no $_POST-entry
 			$fieldarray['EmailDarfGezeigtWerden'] = isset($_POST['emailflag']) ? 1 : 0;
@@ -73,15 +76,24 @@ class einstellungen extends FHD_Controller{
 			    //add the encrypted passwort
 			    $fieldarray['Passwort'] = md5($_POST['pw']);
 			}
+                        
+                        if ($this->hasStudycourseChanged())
+			{
+			    echo 'Studiengang wurde geändert';
+			    
+			    //add the encrypted passwort
+			    $fieldarray['StudiengangID'] = $_POST['stgid'];
+			}
 			
 			//update database
 			$this->persDaten_model->update($this->userid, $fieldarray);
 			//create log
-			$this->persDaten_model->log($data['info']['TypID'], $data['info']['FachbereichID']);
+			$this->persDaten_model->log($this->data['info']['TypID'], $this->data['info']['FachbereichID']);
 
-			$data['info'] = $this->persDaten_model->getUserInfo($this->userid);
+			$this->data['info'] = $this->persDaten_model->getUserInfo($this->userid);
+                        $this->data['stgng'] = $this->persDaten_model->getStudiengang();
 
-			$this->load->view('einstellungen', $data);
+			$this->load->view('einstellungen', $this->data);
 	  }
 	}
 	
@@ -96,6 +108,12 @@ class einstellungen extends FHD_Controller{
 	    $this->load->view('einstellungen_update', $data);
 	}
 	
+         function hasStudycourseChanged()
+        {
+            echo (isset($_POST['stgid']) && $_POST['stgid'] != $this->data['info']['StudiengangID']) ? 'TRUE' : 'FALSE';
+            return (isset($_POST['stgid']) && $_POST['stgid'] != $this->data['info']['StudiengangID']) ? TRUE : FALSE;
+        }
+        
 	/**
 	 * checks, if the pw-field actually got input.
 	 * @return TRUE if password has been altered. FALSE if nothing got submitted or field is empty
