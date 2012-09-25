@@ -6,6 +6,11 @@
 <!-- Edit by CK 2012, JS-Code to save the base url in an global variable. Makes the base url visible in external JS files -->
 <script type="text/javascript">
     var CI = {'base_url': "<?php print base_url();?>"};
+
+    // -- EDIT BY CK: Save data for skill_widget to make it available in the widget` js file --
+    var act_skills = <?php echo $act_skills; ?>;
+    var missing_skills = <?php echo $missing_skills; ?>;
+    // -- EDIT END --
 </script>
 <!-- end Edit -->
 <?php endblock(); ?>
@@ -24,6 +29,11 @@
 <?php if( $this->authentication->has_permissions('hat_logbuch') ) :?>
 <div class="span4" id="attendanceWidget"><!-- attendance / logbuch widget -->
     <?php echo $attendance_widget; ?>
+</div><!-- /.span4-->
+<?php endif; ?>
+<?php if ( $this->authentication->has_permissions('hat_logbuch') ) :?>
+<div class="span4">
+    <?php echo $analysis_widget; ?>
 </div><!-- /.span4-->
 <?php endif; ?>
 <div class="span4">
@@ -45,15 +55,6 @@
         </div>
     </div>
 </div><!-- /. span4-->
-<div class="span4">
-    <div class="well widget default">
-        <i class="icon icon-question-sign pull-right"></i>
-        <h5><i class="icon icon-tasks"></i>Meine Achievements</h5>
-        <div class="widget-content">
-            Hier k&ouml;nnte der Inhalt des Achievements-Widget hinkommen.
-        </div>
-    </div>
-</div><!-- /.span4-->
 </div><!--first row ends here-->
 <div class="row"><!--second row starts here-->
     <div class="span4 flipBox" style="position: relative;">
@@ -183,6 +184,7 @@
                 {jquery_tooltip: "<?php print base_url(); ?>resources/js/meinfhd.tooltip.js"},
                 {jQuery_flip: "<?php print base_url(); ?>resources/js/jquery.flip.js"},
                 {widget_attendance: "<?php print base_url(); ?>resources/js/attendance_widget.js"},
+                {widget_skills: "<?php print base_url(); ?>resources/js/skills_widget.js"},
 <?php endblock(); ?>
 
 <?php startblock('customFooterJQueryCode');?>
