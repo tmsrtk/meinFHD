@@ -40,8 +40,8 @@
     <div class="row-fluid">
         <div class="span12">
             <img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_stats.png" alt="Auswertungen" width="20" height="20"/>&nbsp;
-            <a href="<?php print base_url('logbuch/index'); ?>" class="btn pull-right"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_thin_right_arrow.png" alt="delete" style="max-width: 18px; height: auto;"/></a>
-            <a href="<?php print base_url('logbuch/index'); ?>"><strong>Auswertungen</strong></a><br/>
+            <a href="<?php print base_url('logbuch_analysis/show_possible_courses'); ?>" class="btn pull-right"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_thin_right_arrow.png" alt="delete" style="max-width: 18px; height: auto;"/></a>
+            <a href="<?php print base_url('logbuch_analysis/show_possible_courses'); ?>"><strong>Auswertungen</strong></a><br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>f&uuml;r jedes Logbuch</em>
         </div>
     </div>
