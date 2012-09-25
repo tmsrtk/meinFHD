@@ -109,6 +109,24 @@ class persDaten_model extends CI_Model{
 	return $query->result_array();
     }
     
+    public function getCoursesAndGrades()
+    {
+        
+//        SELECT c.`Kursname`, b.`Notenpunkte` 
+//					FROM semesterplan AS a, semesterkurs AS b, studiengangkurs AS c
+//					WHERE a.`BenutzerID` = '".$benutzerid."' 
+//						AND a.`SemesterplanID` = b.`SemesterplanID` 
+//						AND b.`KursID` = c.`KursID`");
+        
+        $this->db->select('studiengangkurs.Kursname, semesterkurs.Notenpunkte')
+                ->from('semesterplan')
+                ->join('semesterkurs','semesterplan.SemesterplanID = semesterkurs.SemesterplanID')
+                ->join('studiengangkurs','semesterkurs.KursID = studiengangkurs.KursID')
+                ->where('BenutzerID', $this->userId);
+        $query = $this->db->get();
+        return $query->result_array();
+    }
+    
 //    Dinge, die die jeweiligen Userrollen ändern dürfen
 //    
 //    Dozent/Mitarbeiter:
@@ -183,6 +201,13 @@ class persDaten_model extends CI_Model{
 	$this->db->insert('logging', $log_array);
 	//echo 'debug: Insert Log';
 	
+    }
+    
+    
+    public function createCsv()
+    {
+        
+        
     }
 }
 

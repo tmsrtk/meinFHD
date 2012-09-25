@@ -121,11 +121,26 @@ class einstellungen extends FHD_Controller{
 	
         function studiengangWechseln()
         {
-            //*.csv erstellen
             
             //braucht eigentlich nicht zu laden, nur zum debug:
             $this->data['info'] = $this->persDaten_model->getUserInfo($this->userid);
             $this->data['stgng'] = $this->persDaten_model->getStudiengang();
+            
+            //create *.csv
+            
+            //create a String in csv.-encoding
+            //first add the full name of the student
+            $table = "Name:;".$this->data['info']["Vorname"]." ".$this->data['info']["Nachname"].";\r\r";
+            //then add the studycourse and PO
+            $table .= "Studiengang:;".$this->data['info']["StudiengangName"].";\rPrüfungsordnung:;".$this->data['info']["Pruefungsordnung"].";\r\r";
+            //then add all courses and the corresponding grades:
+            $result = $this->persDaten_model->getCoursesAndGrades();
+            foreach ($result as $row)
+            {
+                $table .= utf8_decode($row["Kursname"]).";".(($row["Notenpunkte"]==101) ? "-/-" : $row["Notenpunkte"]).";\r";
+            }
+            echo $table;
+					
             
             //View
             $this->load->view('einstellungen_studiengangWechseln', $this->data);
