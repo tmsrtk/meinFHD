@@ -3,6 +3,10 @@
 <div class="container-fluid">
   <h6 class="row-fluid">Persönliche Einstellungen</h6>
   <form id="user-details" class="form-vertical" method="post" action="<?php print base_url(); ?>einstellungen">
+      
+      <!-- the hidden-input fields are kinda a workaround -->
+      <input type="hidden" name="login" <?php if(isset($info['LoginName'])) echo ' value="' . $info['LoginName'] . '"' ?> >
+      <input type="hidden" name="email" <?php if(isset($info['Email'])) echo ' value="' . $info['Email'] . '"' ?> >
     <div class="row-fluid">
       <div class="span12" id="matrikel-und-sem">
         <div class="well well-small">

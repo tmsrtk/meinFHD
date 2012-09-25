@@ -1,12 +1,12 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- * Description of persDaten_model
+ * The corresponding Model to the "Persönlichen Einstellungen".
+ * Retrieves all sort of informations about the user and his studycourse
+ * 
+ * Important: 
+ * At this state, it considers all needed informations for STUDENTS only,
+ * ergo: academics/instructors and tutors are handled as students and can't change their office/room e.g.
  *
  * @author jan
  */
@@ -22,8 +22,11 @@ class persDaten_model extends CI_Model{
         $this->userid = $this->authentication->user_id();
     }
     
-    
-    public function getUserInfoDoz()
+    /**
+     * Not used
+     * @return type
+     */
+    private function getUserInfoDoz()
     {
 //	Select LoginName, Email, Titel, Vorname, Nachname, Raum, farbschema
 //	From benutzer
@@ -99,6 +102,10 @@ class persDaten_model extends CI_Model{
 	return array_merge($result, $result2);
     }
     
+    /**
+     * Retrieves an Array with informations of all Studycourses
+     * @return array of rows -> StudiengangID, Pruefungsordnung, StudiengangAbkuerzung, StudiengangName
+     */
     public function getStudiengang()
     {
 	$this->db->select('StudiengangID, Pruefungsordnung, StudiengangAbkuerzung, StudiengangName')
@@ -109,14 +116,19 @@ class persDaten_model extends CI_Model{
 	return $query->result_array();
     }
     
+    /**
+     * Retrieves all Coursenames and the corresponding grades of the semesterplan of the student
+     * @return array of rows -> Kursname, Notenpunkte
+     */
     public function getCoursesAndGrades()
     {
         
-//        SELECT c.`Kursname`, b.`Notenpunkte` 
-//					FROM semesterplan AS a, semesterkurs AS b, studiengangkurs AS c
-//					WHERE a.`BenutzerID` = '".$benutzerid."' 
-//						AND a.`SemesterplanID` = b.`SemesterplanID` 
-//						AND b.`KursID` = c.`KursID`");
+        //original SQL-Statement:
+//      SELECT c.`Kursname`, b.`Notenpunkte` 
+//	  FROM semesterplan AS a, semesterkurs AS b, studiengangkurs AS c
+//	  WHERE a.`BenutzerID` = '".$benutzerid."' 
+//	   AND a.`SemesterplanID` = b.`SemesterplanID` 
+//	   AND b.`KursID` = c.`KursID`");
         
         $this->db->select('studiengangkurs.Kursname, semesterkurs.Notenpunkte')
                 ->from('semesterplan')
@@ -127,6 +139,11 @@ class persDaten_model extends CI_Model{
         return $query->result_array();
     }
     
+    /**
+     * Creates the actual csv-file and uploads it to a given filepath
+     * @param data      $content to be written in the file
+     * @return string   filepath , or an error message (not ideal)
+     */
     public function createCsv($content)
     {
         $filename = "semplan_".md5($_SESSION["loginname"]).".csv";
@@ -150,45 +167,12 @@ class persDaten_model extends CI_Model{
         
     }
     
-//    Dinge, die die jeweiligen Userrollen ändern dürfen
-//    
-//    Dozent/Mitarbeiter:
-//	LoginName,
-//	Email,
-//	Titel,
-//	Vorname,
-//	Nachname,
-//	Raum,
-//	farbschema
-//	
-//    Student
-//	LoginName
-//	Email
-//	EmailDarfGezeigtWerden
-//	Vorname
-//	Nachname
-//	(Matrikelnummer)	nur Anzeige
-//	(MatrikelnummerFlag)	??? Was ist das
-//	(StudiengangID)		nur Anzeige -> Referenz auf Studiengang-Tabelle bei Anzeige!
-//	(Semester)		nur Anzeige
-//	StudienbeginnJahr
-//	StudienbeginnSemestertyp
-//	farbschema
-//	
-//    Tutor
-//      LoginName
-//	Email
-//	EmailDarfGezeigtWerden
-//	Vorname
-//	Nachname
-//	farbschema
-    
     
     /**
-     * Same as update(), but without a new the password being set.
+     * Updates the database with the content from the array 
      * @param array  
      */
-    function update($fielddata)
+    public function update($fielddata)
     {
 	
 	$this->db->where('BenutzerID', $this->userid)
@@ -197,7 +181,7 @@ class persDaten_model extends CI_Model{
     }
     
     /**
-     * Kann man dies nicht auslagern? In der Theorie müsste es diese Funktion auch in 3 weiteren Models geben.
+     * Creates a log-entry in the database.
      * @param type $array
      */
     public function log($typid, $fbid)
@@ -217,12 +201,11 @@ class persDaten_model extends CI_Model{
 //	);
 	$log_array = array(
 	    'LogtypID' => 4,
-	    'BenutzertypID' => $typid,  //Benutzertyp = Rolle? benutzer.TypID
+	    'BenutzertypID' => $typid,
 	    'Fachbereich' => $fbid
 	    );
 
 	$this->db->insert('logging', $log_array);
-	//echo 'debug: Insert Log';
 	
     }
 }
