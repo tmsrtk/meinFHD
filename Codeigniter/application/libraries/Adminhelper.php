@@ -213,6 +213,28 @@ class Adminhelper {
         return $weeks_to_return;
     }
 
+    /**
+     * Calculates the number of calendar weeks between the 2 given dates.
+     * @access public
+     * @author Christian Kundruß (CK) <christian.kundruss@fh-duesseldorf.de>
+     * @param $start_date The begin date
+     * @param $end_date The end date
+     * @return integer Number of calendar weeks betweend start and end date.
+     */
+    public function get_calendar_weeks($start_date, $end_date){
+        $cw = array();
+
+        if(!($start_date >= $end_date)) {
+            $duration = ceil(($end_date-$start_date)/3600/24/7);
+            for($i = 0; $i < $duration; ++$i) {
+                $week = mktime(0, 0, 0, date('m', $start_date), date('d', $start_date)+($i*7), date('Y', $start_date));
+                $cw[$i]['week'] = date('W', $week);
+                $cw[$i]['year'] = date('Y', $week);
+            }
+        }
+
+        return $cw; // the number of calendar weeks
+    }
 }
 
 
