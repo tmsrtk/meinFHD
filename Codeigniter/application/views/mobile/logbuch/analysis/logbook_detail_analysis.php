@@ -18,8 +18,8 @@
         <h3>Kenntnisse</h3>
         <br/>
         <div class="row-fluid">
-            <div class="span4" id="skillsChart" style="width:265px; height: 200px;">[DIAGRAMM]</div>
-            <div class="span6">
+            <div class="span8" id="skillsChart" style="max-width:500px; height: 200px;"></div>
+            <div class="span4">
                 <p>Aktuell beherrschst du alle Themen durchschnittlich zu <span style="color: red;">x%</span>.</p>
                 <p>[MOTIVATIONSTEXT]</p>
                 <p>Mach weiter so!</p>
@@ -31,8 +31,8 @@
         <h3>Anwesenheit</h3>
         <br/>
         <div class="row-fluid">
-            <div class="span2" id="attendanceChart" style="width: 260px; height:200px;">[DIAGRAMM]</div>
-            <div class="span6">
+            <div class="span8" id="attendanceChart" style="max-width: 500px; height:200px;"></div>
+            <div class="span4">
                 <p>Du warst im bisherigen Semester insgesamt <span style="color: red;"><strong><?php echo $attended_events; ?></strong></span> von <strong><?php echo $max_semester_weeks; # max events equal to max semesterweeks ?></strong>
                     mal da!</p>
                 <p>[MOTIVATIONSTEXT]</p>
@@ -133,6 +133,7 @@
             skillChart = new Highcharts.Chart({
                 chart: {
                   renderTo: 'skillsChart',
+                  type: 'bar'
                 },
                 title: {
                     text: 'Kenntnisse'
@@ -192,8 +193,6 @@
                 // push data to the series array
                 attendanceSeries_data.push([date, count]);
             });
-
-            console.log(attendanceSeries_data);
        }
 <?php endblock(); ?>
 
