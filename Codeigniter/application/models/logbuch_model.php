@@ -150,8 +150,9 @@ class Logbuch_Model extends CI_Model {
             foreach ($query->result() as $row) { // foreach result row
                 $logbooks[$row->LogbuchID]['LogbuchID'] = $row->LogbuchID;
                 $logbooks[$row->LogbuchID]['kurs_kurz'] = $row->kurs_kurz;
-                $logbooks[$row->LogbuchID]['Kursname'] = $row->kurs_kurz;
-                $logbooks[$row->LogbuchID]['Bewertung'] = $this->_get_avg_rating_for_logbook($row->LogbuchID);
+                $logbooks[$row->LogbuchID]['Kursname'] = $row->Kursname;
+                $logbooks[$row->LogbuchID]['Bewertung'] = $this->get_avg_rating_for_logbook($row->LogbuchID);
+                $logbooks[$row->LogbuchID]['KursID'] = $row->KursID;
             }
         }
 
@@ -306,11 +307,11 @@ class Logbuch_Model extends CI_Model {
 
     /**
      * Calculates / returns the average rating for the given logbook.
-     * @access private
+     * @access public
      * @param $logbook_id ID of the given logbook.
      * @return INTEGER average rating of the given logbook.
      */
-    private function _get_avg_rating_for_logbook($logbook_id) {
+    public function get_avg_rating_for_logbook($logbook_id) {
         $this->db->select_avg('Bewertung');
         $this->db->from('logbucheintrag');
         $this->db->where('LogbuchID', $logbook_id);
@@ -692,6 +693,42 @@ class Logbuch_Model extends CI_Model {
         $query = $this->db->get();
 
         return $query->row()->LogbuchID;
+    }
+
+    /**
+     * Returns the attendance count for the given courseid in an specified date range.
+     * @param $course_id The course, where the attendance should be counted for
+     * @param $begin_date Start date of the range as an string (format YYYY-MM-DD)
+     * @param $end_date End date of the range as an string (format YYYY-MM-DD)
+     */
+    public function get_attendance_count_for_date_range($course_id, $begin_date, $end_date){
+        // construct the date range
+        $date_range = 'Datum BETWEEN ' . '"' . $begin_date . ' 00:00:00" AND "' . $end_date . ' 00:00:00"';
+
+        // query attendance count for date range
+        $this->db->from('anwesenheit');
+        $this->db->where('BenutzerID', $this->authentication->user_id());
+        $this->db->where('KursID', $course_id);
+        $this->db->where($date_range, NULL, FALSE); // set the date range
+        $attended_events = $this->db->count_all_results();
+
+        return $attended_events;
+    }
+
+    /**
+     * Fetches infos form the 'studiengangkurs'-table for the given course id and returns them.
+     * @access public
+     * @param $course_id ID of the course where the infos should be selected for
+     * @return array Array with the course information
+     */
+    public function get_course_information($course_id){
+        $this->db->select('Kursname, kurs_kurz');
+        $this->db->from('studiengangkurs');
+        $this->db->where('KursID', $course_id);
+        // query the db and return the selected row
+        $query = $this->db->get();
+
+        return $query->row_array();
     }
 
 
