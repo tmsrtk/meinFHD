@@ -12,10 +12,10 @@
  */
 class einstellungen extends FHD_Controller{
     
-    private $userid;
+    //private $userid;
     var $data;
     
-    function __construct()
+    public function __construct()
 		{
 			error_reporting(E_ERROR);
 		  parent::__construct();	
@@ -23,7 +23,7 @@ class einstellungen extends FHD_Controller{
                   $this->load->model('studienplan_model');
 		  
 		  //$this->userid = 1383;
-		  $this->userid = $this->authentication->user_id();
+		  //$this->userid = $this->authentication->user_id();
                   $this->data = array();
 		}
 	
@@ -32,9 +32,10 @@ class einstellungen extends FHD_Controller{
 	{
 	    
 		//initial database-query to get als required information of the user
-		$this->data['info'] = $this->persDaten_model->getUserInfo($this->userid);
+		$this->data['info'] = $this->persDaten_model->getUserInfo();
 		$this->data['stgng'] = $this->persDaten_model->getStudiengang();
 
+                //$this->krumo->dump($this->data);
 		//setting up the rules, to which the user-input of the corresponding form-fields must comply:
 		//Note: the form_validation-class is automagically loaded in the config/autoload.php, so there's no need to load it here.
 		$this->form_validation->set_rules('login', 'Loginname', 'callback_validateLoginname['.$this->data['info']['LoginName'].']');
@@ -94,7 +95,7 @@ class einstellungen extends FHD_Controller{
 			}
 			
 			//update database
-			$this->persDaten_model->update($this->userid, $fieldarray);
+			$this->persDaten_model->update($fieldarray);
 			//create log
 			$this->persDaten_model->log($this->data['info']['TypID'], $this->data['info']['FachbereichID']);
                         
@@ -112,7 +113,7 @@ class einstellungen extends FHD_Controller{
                             
 			}
 
-			$this->data['info'] = $this->persDaten_model->getUserInfo($this->userid);
+			$this->data['info'] = $this->persDaten_model->getUserInfo();
                         $this->data['stgng'] = $this->persDaten_model->getStudiengang();
 
 			$this->load->view('einstellungen', $this->data);
@@ -123,27 +124,27 @@ class einstellungen extends FHD_Controller{
         {
             
             //braucht eigentlich nicht zu laden, nur zum debug:
-            $this->data['info'] = $this->persDaten_model->getUserInfo($this->userid);
-            $this->data['stgng'] = $this->persDaten_model->getStudiengang();
-            
-            //create *.csv
-            
+            $data['stgng'] = $this->persDaten_model->getStudiengang();
+            $data['info'] = $this->persDaten_model->getUserInfo();
+           
             //create a String in csv.-encoding
             //first add the full name of the student
-            $table = "Name:;".$this->data['info']["Vorname"]." ".$this->data['info']["Nachname"].";\r\r";
+            $table = "Name:;".$data['info']['Vorname']." ".$data['info']['Nachname'].";\r\r";
             //then add the studycourse and PO
-            $table .= "Studiengang:;".$this->data['info']["StudiengangName"].";\rPrüfungsordnung:;".$this->data['info']["Pruefungsordnung"].";\r\r";
+            $table .= "Studiengang:;".$data['info']["StudiengangName"].";\rPrüfungsordnung:;".$data['info']["Pruefungsordnung"].";\r\r";
             //then add all courses and the corresponding grades:
             $result = $this->persDaten_model->getCoursesAndGrades();
             foreach ($result as $row)
             {
                 $table .= utf8_decode($row["Kursname"]).";".(($row["Notenpunkte"]==101) ? "-/-" : $row["Notenpunkte"]).";\r";
             }
-            echo $table;
+            
+            //create *.csv
+            $data['filepath'] = $this->persDaten_model->createCsv($table);
 					
             
             //View
-            $this->load->view('einstellungen_studiengangWechseln', $this->data);
+            $this->load->view('einstellungen_studiengangWechseln', $data);
         }
 	
 	

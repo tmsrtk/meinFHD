@@ -13,24 +13,24 @@
 class persDaten_model extends CI_Model{
     
     
-    private $userId;
+    private $userid;
     
     public function __construct()
     {
         parent::__construct();
 	
-        $this->userId = $this->authentication->user_id();
+        $this->userid = $this->authentication->user_id();
     }
     
     
-    public function getUserInfoDoz($userid)
+    public function getUserInfoDoz()
     {
 //	Select LoginName, Email, Titel, Vorname, Nachname, Raum, farbschema
 //	From benutzer
 //	Where benutzerid = $userid
 	$this->db->select('LoginName, Titel, Email, Vorname, Nachname, Raum, farbschema')
 		->from('benutzer')
-		->where('BenutzerID', $userid );
+		->where('BenutzerID', $this->userid );
 	$query = $this->db->get();
 	
 	return $query->result_array();
@@ -70,10 +70,10 @@ class persDaten_model extends CI_Model{
      * @param type $userid
      * @return array of rows
      */
-    public function getUserInfo($userid)
+    public function getUserInfo()
     {
 	//Select all columns from "benutzer"
-	$query = $this->db->get_where('benutzer', array('benutzerid' => $userid));
+	$query = $this->db->get_where('benutzer', array('benutzerid' => $this->userid));
 	$result = $query->row_array();
 	
 	
@@ -122,9 +122,32 @@ class persDaten_model extends CI_Model{
                 ->from('semesterplan')
                 ->join('semesterkurs','semesterplan.SemesterplanID = semesterkurs.SemesterplanID')
                 ->join('studiengangkurs','semesterkurs.KursID = studiengangkurs.KursID')
-                ->where('BenutzerID', $this->userId);
+                ->where('BenutzerID', $this->userid);
         $query = $this->db->get();
         return $query->result_array();
+    }
+    
+    public function createCsv($content)
+    {
+        $filename = "semplan_".md5($_SESSION["loginname"]).".csv";
+        $filepath = 'upload/'.$filename;       //atm located in the base-directory of CodeIgniter
+				
+        //if there's an old file already, delete it
+        if(file_exists($filepath))
+        {
+            unlink($filepath);
+        }
+        //and create a new file
+        //File Permissions based on the original Code
+        if ( write_file($filepath, $content, 'a+'))
+        {
+            chmod($filepath, 0640);
+            return $filepath;
+        }
+        
+        return 'unable to write file';
+                
+        
     }
     
 //    Dinge, die die jeweiligen Userrollen ändern dürfen
@@ -165,10 +188,10 @@ class persDaten_model extends CI_Model{
      * Same as update(), but without a new the password being set.
      * @param array  
      */
-    function update($userid, $fielddata)
+    function update($fielddata)
     {
 	
-	$this->db->where('BenutzerID', $userid)
+	$this->db->where('BenutzerID', $this->userid)
 		->update('benutzer', $fielddata);
 	
     }
@@ -201,13 +224,6 @@ class persDaten_model extends CI_Model{
 	$this->db->insert('logging', $log_array);
 	//echo 'debug: Insert Log';
 	
-    }
-    
-    
-    public function createCsv()
-    {
-        
-        
     }
 }
 

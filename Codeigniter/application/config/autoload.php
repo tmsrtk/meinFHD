@@ -63,7 +63,7 @@ $autoload['libraries'] = array('krumo', 'user_agent', 'detection', 'database', '
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('url', 'form', 'html','template_inheritance');
+$autoload['helper'] = array('url', 'form', 'html','template_inheritance', 'file');
 
 
 /*

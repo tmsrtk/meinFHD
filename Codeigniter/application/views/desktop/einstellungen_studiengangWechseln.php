@@ -6,7 +6,8 @@
     <div class="row-fluid">
       <div class="span12" id="matrikel-und-sem">
         <div class="well well-small">
-          Blablabla ändern des Studiengangs blablabla
+          Blablabla ändern des Studiengangs blablabla LINK: <a href="<?php echo '../'.$filepath; ?> ">Link</a>
+          
         </div>
       </div>
     </div>
