@@ -146,13 +146,13 @@ class Admin_model extends CI_Model {
 		$data = array(
 				'LoginName' 				=> $form_data['loginname'],
 				'Email' 					=> $form_data['email'],
-				'Vorname'					=> $form_data['forename'],
-				'Nachname' 					=> $form_data['lastname'],
+				'Vorname'				=> $form_data['forename'],
+				'Nachname' 				=> $form_data['lastname'],
 				'Matrikelnummer' 			=> $form_data['matrikelnummer'],
 				'StudienbeginnJahr' 		=> $form_data['startjahr'],
 				'StudienbeginnSemestertyp' 	=> $form_data['semesteranfang'],
 				'StudiengangID' 			=> $form_data['studiengang'],
-				'Passwort' 					=> md5($password)
+				'Passwort' 				=> md5($password)
 			);
 
 		$this->db->insert('benutzer', $data);
@@ -175,7 +175,7 @@ class Admin_model extends CI_Model {
 				'Vorname'					=> $form_data['forename'],
 				'Nachname' 					=> $form_data['lastname'],
 				'Startjahr'			 		=> $form_data['startjahr'],
-				'Matrikelnummer' 			=> $form_data['matrikelnummer'],
+				'Matrikelnummer' 				=> $form_data['matrikelnummer'],
 				'Emailadresse' 				=> $form_data['email'],
 				'Semester'				 	=> $form_data['semesteranfang'],
 				'Studiengang' 				=> $form_data['studiengang'],
@@ -388,6 +388,8 @@ class Admin_model extends CI_Model {
 	// save user changes
 	public function update_user($user_id, $data)
 	{
+		if (!empty($data['Passwort'])) $data['Passwort'] = md5($data['Passwort']);
+
 		$this->db->where('BenutzerID', $user_id);
 		$this->db->update('benutzer', $data);
 	}

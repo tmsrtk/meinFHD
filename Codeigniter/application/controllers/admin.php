@@ -151,8 +151,9 @@ class Admin extends FHD_Controller {
 
 	/**
 	* User Invitation - Overview
-	* 
 	* Shows all open user requests. You can accept or delete the requests.
+	*
+	* @category user_invite.php
 	*/
 	public function request_user_invitation_mask()
 	{
@@ -167,8 +168,9 @@ class Admin extends FHD_Controller {
 
 	/**
 	* Create User - Form
+	* Create a new user.
 	* 
-	* 
+	* @category user_add.php
 	*/
 	public function create_user_mask()
 	{
@@ -241,10 +243,13 @@ class Admin extends FHD_Controller {
 
 
 
-	/*
-	* creates a new user 
-	*/
-	public function create_user()
+	/**
+	 * Gets the input data, generates a password, routes to the model function to save 
+	 * the user in the DB and sends an email to the created user.
+	 * 
+	 * @category user_add.php
+	 */
+	private function create_user()
 	{
 		// get values from post
 		$form_data = $this->input->post();
@@ -259,10 +264,13 @@ class Admin extends FHD_Controller {
 		// $this->mailhelper->send_meinfhd_mail($form_data['email'], "Der User {$form_data['loginname']} wurde erstellt.", "Ihr Passwort lautet: {$password}");
 	}
 
-	/*
-	* puts a user invitation request 
-	*/
-	public function put_user_into_invitation_requests()
+	/**
+	 * Gets the input data and puts the user to the invitation requests. Sends an email
+	 * to the admin, that a new request is open.
+	 *
+	 * @category user_invite.php
+	 */
+	private function put_user_into_invitation_requests()
 	{
 		// get values from post
 		$form_data = $this->input->post();
@@ -274,12 +282,14 @@ class Admin extends FHD_Controller {
 		// TODO: send mail to user, that he has to wait 
 	}
 
-	/*
-	* creates a new user from invitation
-	*/
-	public function create_user_from_invitation()
+	/**
+	 * Creates the user from his invitation request.
+	 *
+	 * @category user_invite.php
+	 */
+	private function create_user_from_invitation_requests()
 	{
-		// get values from post | 
+		// get values from post
 		$invitation_id = $this->input->post('request_id');
 
 		// 0: create user, 1: delete request
@@ -306,9 +316,11 @@ class Admin extends FHD_Controller {
 		}
 	}
 
-	/*
-	* saves user changes
-	*/
+	/**
+	 * Saves user changes.
+	 *
+	 * @category user_edit.php
+	 */
 	public function save_user_changes()
 	{
 		$user_id = $this->input->post('user_id');
@@ -324,9 +336,11 @@ class Admin extends FHD_Controller {
 		$this->admin_model->update_user($user_id, $data);
 	}
 
-	/*
-	* validates the form from admin_create_user_mask
-	*/
+	/**
+	 * Validation for a new user.
+	 *
+	 * @category user_add.php
+	 */
 	public function validate_create_user_form()
 	{
 		$this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
@@ -370,7 +384,8 @@ class Admin extends FHD_Controller {
 		if($this->form_validation->run() == FALSE)
 		{
 			// call create user mask again
-			$this->message->set('Beim Erstellen des Users ist ein Fehler unterlaufen.', 'error');
+			// $this->message->set('Beim Erstellen des Users ist ein Fehler unterlaufen.', 'error');
+			// redirect(site_url().'admin/create_user_mask');
 			$this->create_user_mask();
 		}
 		else 
@@ -385,9 +400,11 @@ class Admin extends FHD_Controller {
 	}
 
 
-	/*
-	*
-	*/
+	/**
+	 * Validation for a new user invitation.
+	 *
+	 * @category user_invite.php
+	 */
 	public function validate_request_user_invitation_form()
 	{
 		// set custom delimiter for validation errors
@@ -429,9 +446,9 @@ class Admin extends FHD_Controller {
 		// check for (in)correctness
 		if($this->form_validation->run() == FALSE)
 		{
-			// call edit user mask again
-			$this->message->set('Beim setzten des Users auf die Einladungsliste ' .
-				' ist ein Fehler unterlaufen', 'error');
+			// $this->message->set('Beim setzten des Users auf die Einladungsliste ' .
+				// ' ist ein Fehler unterlaufen', 'error');
+			// redirect(site_url().'admin/request_user_invitation_mask');
 			$this->request_user_invitation_mask();
 		}
 		else
@@ -440,14 +457,16 @@ class Admin extends FHD_Controller {
 			$this->put_user_into_invitation_requests();
 
 			// load new view with success message
-			$this->message->set('User wurde auf die Einladungsliste gesetzt!', 'error');
+			$this->message->set('User wurde erfolgreich auf die Einladungsliste gesetzt!', 'error');
 			redirect(site_url().'admin/request_user_invitation_mask');
 		}
 	}
 
-	/*
-	* validates the form from admin_edit_user_mask
-	*/
+	/**
+	 * Decides which function was selected and routes to the associated methods.
+	 *
+	 * @category user_edit.php
+	 */
 	public function validate_edit_user_form()
 	{
 		// TODO: decide which submit button was clicked by hidden inputs
@@ -476,7 +495,11 @@ class Admin extends FHD_Controller {
 		}
 	}
 
-	/**/
+	/**
+	 * Validation for user changes.
+	 *
+	 * @category user_edit.php
+	 */
 	private function _validate_edits()
 	{
 		// set custom delimiter for validation errors
@@ -497,28 +520,12 @@ class Admin extends FHD_Controller {
 		// check if current value is different from the value in db
 		if ($current_user_data['LoginName'] != $new_form_values['loginname']) 
 		{
-			// // add the rules, if there was a change
-			// $new_rule = array(
-			// 	'field' => 'loginname',
-			// 	'label' => 'Benutzername',
-			// 	'rules' => 'required|alpha_dash|min_length[4]|max_length[20]|is_unique[benutzer.LoginName]'
-			// );
-			// // push value to global rules var
-			// array_push($rules, $new_rule);
 			$rules[] = $this->adminhelper->get_formvalidation_loginname();
 		}
 
 		// same procedure for the other form inputs
 		if ($current_user_data['Email'] != $new_form_values['email']) 
 		{
-			// // add the rules, if there was a change
-			// $new_rule = array(
-			// 	'field' => 'email',
-			// 	'label' => 'E-Mail',
-			// 	'rules' => 'required|valid_email|is_unique[benutzer.Email]'
-			// );
-			// // push value to global rules var
-			// array_push($rules, $new_rule);
 			$rules[] = $this->adminhelper->get_formvalidation_email();
 		}
 
@@ -526,25 +533,11 @@ class Admin extends FHD_Controller {
 		// they are not avaliable after the ->run() method
 		if ($current_user_data['Vorname'] != $new_form_values['forename'])
 		{
-			// $new_rule = array(
-			// 	'field' => 'forename',
-			// 	'label' => 'Vorname',
-			// 	'rules' => ''
-			// );
-			// array_push($rules, $new_rule);
-
 			$rules[] = $this->adminhelper->get_formvalidation_forename();
 		}
 
 		if ($current_user_data['Nachname'] != $new_form_values['lastname'])
 		{
-			// $new_rule = array(
-			// 	'field' => 'lastname',
-			// 	'label' => 'Nachname',
-			// 	'rules' => ''
-			// );
-			// array_push($rules, $new_rule);
-
 			$rules[] = $this->adminhelper->get_formvalidation_lastname();
 		}
 
@@ -554,9 +547,9 @@ class Admin extends FHD_Controller {
 		if($this->form_validation->run() == FALSE)
 		{
 			// call edit user mask again
-			// $this->edit_user_mask();
-			$this->message->set('Beim Bearbeiten des Users ist ein Fehler aufgetreten.', 'error');
-			redirect(site_url().'admin/edit_user_mask');
+			// $this->message->set('Beim Bearbeiten des Users ist ein Fehler aufgetreten.', 'error');
+			// redirect(site_url().'admin/edit_user_mask');
+			$this->edit_user_mask();
 		}
 		else
 		{
@@ -569,7 +562,11 @@ class Admin extends FHD_Controller {
 		}
 	}
 
-	/**/
+	/**
+	 * Resets a user´s password, and sends an email to him with the new one.
+	 *
+	 * @category user_edit.php
+	 */
 	private function _reset_pw()
 	{
 		// values, from actual form inputs
@@ -581,11 +578,22 @@ class Admin extends FHD_Controller {
 
 		$this->admin_model->update_user($new_form_values['user_id'], $data);
 
+		// send email
+		$this->mailhelper->send_meinfhd_mail(											///////////////////////////////////
+			$new_form_values['email'],
+			"Ihr Passwort wurde zurückgesetzt",
+			"Ihr Passwort lautet: {$data['Passwort']}"
+			);
+
 		$this->message->set('Das Passwort wurde erfolgreich zurückgesetzt.', 'error');
 		redirect(site_url().'admin/edit_user_mask');
 	}
 
-	/**/
+	/**
+	 * Resets a user´s semesterplan.
+	 *
+	 * @category user_edit.php
+	 */
 	private function _reset_semesterplan()
 	{
 		// get the id of which user the semesterplan should be deleted
@@ -596,9 +604,11 @@ class Admin extends FHD_Controller {
 		redirect(site_url().'admin/edit_user_mask');
 	}
 
-	/*
-	* deletes an user by his id
-	*/
+	/**
+	 * Deletes an user by his id.
+	 *
+	 * @category user_delete.php
+	 */
 	public function delete_user()
 	{
 		$user_id = $this->input->post('user_id');
@@ -629,32 +639,30 @@ class Admin extends FHD_Controller {
 	/*
 	* builds the needed html markup an content (db) from incoming ajax request
 	*/
-	/*
-	* builds the needed html markup an content (db) from incoming ajax request
-	*/
-	public function ajax_show_user_backup()
-	{
-		// get value
-		$role_id = $this->input->get('role_id');
-		$searchletter = $this->input->get('searchletter');
+	// public function ajax_show_user_backup()
+	// {
+	// 	// get value
+	// 	$role_id = $this->input->get('role_id');
+	// 	$searchletter = $this->input->get('searchletter');
 
-		$q = $this->admin_model->get_user_per_role_searchletter($role_id, $searchletter);  ///////////////////// query if result 0 !!!!!!!!!!!
+	// 	$q = $this->admin_model->get_user_per_role_searchletter($role_id, $searchletter);  ///////////////////// query if result 0 !!!!!!!!!!!
 
-		$result = '';
+	// 	$result = '';
 
-		foreach ($q as $key => $value) {
-			$result .= $this->load->view('admin-subviews/user_tr', $value, TRUE);
-		}
-		echo $result;
-	}
+	// 	foreach ($q as $key => $value) {
+	// 		$result .= $this->load->view('admin-subviews/user_tr', $value, TRUE);
+	// 	}
+	// 	echo $result;
+	// }
 
 
 	/**
-	 * ajax_show_user for the div table version
+	 * This method is used to render the needed search-response and HTML Markup.
+	 * 
+	 * @category user_edit.php
 	 */
 	public function ajax_show_user()
 	{
-
 		$result = '';
 
 
@@ -680,6 +688,11 @@ class Admin extends FHD_Controller {
 		echo $result;
 	}
 
+	/**
+	 * Changes the userroles.
+	 * 
+	 * @category user_edit_roles.php
+	 */
 	public function changeroles_user()
 	{
 		$formdata = $this->input->post();

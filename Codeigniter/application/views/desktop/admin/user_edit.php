@@ -231,11 +231,10 @@
 			// createDialog('Änderungen speichern', 'Sollen die Änderungen wirklich gespeichert werden?').dialog("open");
 			_showModal('Änderungen speichern', 'Sollen die Änderungen wirklich gespeichert werden?', true);
 		} else if (user_function === '1') {
-			// $(this).attr("data-clicked", "true");
-			// createDialog('Passwort resetten', 'Möchten Sie das Passwort für diesen Benutzer wirklich zurücksetzen?').dialog("open");
+			$(this).attr("data-clicked", "true");
+			_showModal('Passwort resetten', 'Möchten Sie das Passwort für diesen Benutzer wirklich zurücksetzen?', true);
 		} else if (user_function === '2') {
 			$(this).attr("data-clicked", "true");
-			// createDialog('Studienplan resetten', 'Möchten Sie den Studienplan für diesen Benutzer wirklich zurücksetzen?').dialog("open");
 			_showModal('Studienplan resetten', 'Möchten Sie den Studienplan für diesen Benutzer wirklich zurücksetzen?', true);
 		} else if (user_function === '3') {
 			$(this).attr("data-clicked", "true");
