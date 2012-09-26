@@ -14,13 +14,13 @@
 	$data_loginname = array(
 			'class' => 'input-xxxlarge',
 			'name' => 'loginname',
-			'placeholder' => 'Login Name',
+			'placeholder' => 'Loginname*',
 			'value' => set_value('loginname')
 		);
 	$data_email = array(
 			'class' => 'input-xxxlarge',
 			'name' => 'email',
-			'placeholder' => 'E-Mail',
+			'placeholder' => 'E-Mail*',
 			'value' => set_value('email')
 		);
 	$data_forename = array(

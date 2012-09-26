@@ -226,11 +226,6 @@ class Admin extends FHD_Controller {
 
 	public function edit_roles_mask()
 	{
-		$siteinfo = array(
-			'title' => 'Rollen bearbeiten'
-			);
-		$this->data->add('siteinfo', $siteinfo);
-
 		// all users
 		$this->data->add('all_user', $this->admin_model->get_all_user_with_roles());
 
@@ -240,20 +235,6 @@ class Admin extends FHD_Controller {
 		//----------------------------------------------------------------------
 		$this->load->view('admin/user_edit_roles', $this->data->load());
 	}
-
-	public function show_successful_page()
-	{
-		// siteinfo
-		$siteinfo = array(
-			'title'			=> 'Erfolgreich',
-			'main_content'	=> 'admin_create_user_success'
-			);
-		$this->data->add('siteinfo', $siteinfo);
-
-		//----------------------------------------------------------------------
-		$this->load->view('includes/template', $this->data->load());
-	}
-
 
 	// action controller =======================================================
 
@@ -311,11 +292,13 @@ class Admin extends FHD_Controller {
 			case '0':
 				// save the user into benutzer table
 				$this->admin_model->save_new_user_from_invitation($invitation_id);
-				$this->request_user_invitation_mask();
+				$this->message->set('Der User wurde von der Einladungsliste erstellt.', 'error');
+				redirect(site_url().'admin/request_user_invitation_mask');
 				break;
 			case '1':
 				$this->admin_model->_delete_invitation($invitation_id);
-				$this->request_user_invitation_mask();
+				$this->message->set('Der User wurde von der Einladungsliste gelöscht.', 'error');
+				redirect(site_url().'admin/request_user_invitation_mask');
 				break;
 			default:
 				# code...
@@ -387,6 +370,7 @@ class Admin extends FHD_Controller {
 		if($this->form_validation->run() == FALSE)
 		{
 			// call create user mask again
+			$this->message->set('Beim Erstellen des Users ist ein Fehler unterlaufen.', 'error');
 			$this->create_user_mask();
 		}
 		else 
@@ -395,9 +379,8 @@ class Admin extends FHD_Controller {
 			$this->create_user();
 
 			// flash message
-			$this->message->set('User erfolgreich erstellt!', 'error');  //////////////// NOT WORKING
-
-			$this->show_successful_page();
+			$this->message->set('User erfolgreich erstellt!', 'error');
+			redirect(site_url().'admin/create_user_mask');
 		}
 	}
 
@@ -447,6 +430,8 @@ class Admin extends FHD_Controller {
 		if($this->form_validation->run() == FALSE)
 		{
 			// call edit user mask again
+			$this->message->set('Beim setzten des Users auf die Einladungsliste ' .
+				' ist ein Fehler unterlaufen', 'error');
 			$this->request_user_invitation_mask();
 		}
 		else
@@ -455,7 +440,8 @@ class Admin extends FHD_Controller {
 			$this->put_user_into_invitation_requests();
 
 			// load new view with success message
-			$this->show_successful_page();
+			$this->message->set('User wurde auf die Einladungsliste gesetzt!', 'error');
+			redirect(site_url().'admin/request_user_invitation_mask');
 		}
 	}
 
@@ -568,15 +554,18 @@ class Admin extends FHD_Controller {
 		if($this->form_validation->run() == FALSE)
 		{
 			// call edit user mask again
-			$this->edit_user_mask();
+			// $this->edit_user_mask();
+			$this->message->set('Beim Bearbeiten des Users ist ein Fehler aufgetreten.', 'error');
+			redirect(site_url().'admin/edit_user_mask');
 		}
 		else
 		{
 			// save in db
 			$this->save_user_changes();
 
-			$this->edit_user_mask();
+			// $this->message->set('Der User wurde erfolgreich bearbeitet.', 'error');
 			// redirect(site_url().'admin/edit_user_mask');
+			$this->edit_user_mask();
 		}
 	}
 
@@ -592,6 +581,7 @@ class Admin extends FHD_Controller {
 
 		$this->admin_model->update_user($new_form_values['user_id'], $data);
 
+		$this->message->set('Das Passwort wurde erfolgreich zurückgesetzt.', 'error');
 		redirect(site_url().'admin/edit_user_mask');
 	}
 
@@ -602,7 +592,8 @@ class Admin extends FHD_Controller {
 		$input_data = $this->input->post();
 		$this->admin_model->reconstruct_semesterplan($input_data['user_id']);
 
-		// redirect(site_url().'admin/edit_user_mask');
+		$this->message->set('Der Studienplan wurde erfolgreich zurückgesetzt.', 'error');
+		redirect(site_url().'admin/edit_user_mask');
 	}
 
 	/*
@@ -614,6 +605,7 @@ class Admin extends FHD_Controller {
 
 		$this->admin_model->model_delete_user($user_id);
 
+		$this->message->set('Der User wurde erfolreich gelöscht.', 'error');
 		redirect(site_url().'admin/delete_user_mask');
 	}
 
