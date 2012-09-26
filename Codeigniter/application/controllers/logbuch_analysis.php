@@ -39,8 +39,34 @@ class Logbuch_Analysis extends FHD_Controller {
      * @return void
      */
     public function show_possible_courses(){
+
+        $number_of_semesterweeks =  $this->adminhelper->get_semesterweeks($this->adminhelper->getSemesterTyp());
+
+        // get all possible logbook courses
+        $all_logbook_courses = $this->logbuch_model->get_all_logbooks($this->authentication->user_id());
         // add all logbook courses to the view
-        $this->data->add('logbook_courses',$this->logbuch_model->get_all_logbooks($this->authentication->user_id()));
+        $this->data->add('logbook_courses',$all_logbook_courses);
+
+        // -- setup for the overall skills chart --
+        // get the skills for every logbook
+        $logbook_courses_skills_data = $this->_get_overall_skill_chart_data($all_logbook_courses);
+        // add the logbook course names in an json object to the view (for displaying in the chart)
+        $this->data->add('all_logbook_courses',json_encode($logbook_courses_skills_data['courses']));
+        // add the course rating for each user logbook course in an json object to the view (for displaying in the chart)
+        $this->data->add('all_logbook_courses_rating', json_encode($logbook_courses_skills_data['skills_per_course']));
+        // -- end setup for the overall skill chart
+
+        // -- setup for the overall attendance chart --
+        $this->data->add('overall_attendance',json_encode($this->_get_overall_attendance_chart_data($all_logbook_courses)));
+        // get the values for the x-axis and add them to the view
+        $this->data->add('att_chart_x_scaling', $this->_get_attendance_chart_scaling($this->adminhelper->getSemesterTyp()));
+        // get max. count for y-axis
+        // calculate the max. count of attendable events -> number of logbook courses * semesterweeks
+        $attendable_events = count($all_logbook_courses) * $number_of_semesterweeks;
+        $this->data->add('att_chart_y_scaling', $attendable_events);
+
+        // -- end setup for the overall attendance chart --
+        // load the view
         $this->load->view('logbuch/analysis/logbook_analysis_course_overview', $this->data->load());
     }
 
@@ -52,15 +78,16 @@ class Logbuch_Analysis extends FHD_Controller {
      */
     public function show_analysis_for_course($course_id){
 
+        $number_of_semesterweeks =  $this->adminhelper->get_semesterweeks($this->adminhelper->getSemesterTyp());
+
         // -- Data for skills chart --
         // get data single topics and ratings and add them to the view
         $this->data->add('skill_data', $this->_get_data_for_skills_chart($course_id));
-
         // -- end data for skills chart --
 
         // -- Data for attendance chart --
         // get count of semester weeks and add them to the view
-        $this->data->add('max_semester_weeks', $this->adminhelper->get_semesterweeks($this->adminhelper->getSemesterTyp()));
+        $this->data->add('max_semester_weeks', $number_of_semesterweeks);
 
         // get the attended events and add them to the view
         $this->data->add('attended_events', $this->logbuch_model->get_attendance_count_for_course_and_act_semester($course_id, $this->authentication->user_id()));
@@ -108,7 +135,7 @@ class Logbuch_Analysis extends FHD_Controller {
     }
 
     /**
-     * Fetches the attendance chart series and adds it to the view.
+     * Fetches the attendance chart series and adds it to the view. The data is fetched in weekly intervalls.
      * @access private
      * @param $course_id
      * @return array Returns the array with the series data
@@ -188,6 +215,71 @@ class Logbuch_Analysis extends FHD_Controller {
         }
 
         return $semester;
+    }
+
+    /**
+     * Returns the average course skills rating for the given list (array) of logbook courses.
+     * @param $all_logbook_courses The array with all user logbook courses
+     * @return array Holds the different logbook names and the correspondig skills array
+     */
+    private function _get_overall_skill_chart_data($all_logbook_courses) {
+
+        $skills_per_course = array(); // array to hold the skills per course
+        $courses = array(); // array to hold each course name
+
+        // get the course name and the average skill for each user logbook course
+        foreach($all_logbook_courses as $single_course){
+            $courses[] = $single_course['Kursname']; // wirte the act course name into the courses array
+            $skills_per_course[] = intval($this->logbuch_model->get_avg_rating_for_logbook($single_course['LogbuchID'])); // get the average raitong and wirte it to the skills array
+        }
+
+        $course_skills = array(); // the return array
+
+        // add the course names and the skills array to the return array
+        $course_skills['courses'] = $courses;
+        $course_skills['skills_per_course'] = $skills_per_course;
+
+        return $course_skills;
+    }
+
+    /**
+     * Returns the attendance data for all documentated courses for the authenticated user.
+     * The attendance count is fetched in weekly (7 days) intervals.
+     * @param $all_logbook_courses Array / list with all logbooks for the authenticated user
+     * @return array Array, that holds the attendance count for all courses, the overall attendance count, and the format / series
+     * dates for the chart.
+     */
+    private function _get_overall_attendance_chart_data(){
+        // get the actual date
+        $actual_day_date = date("Y-m-d",time());
+
+        // array to hold the semester date information
+        $semester_data = $this->_get_semester_dates($this->adminhelper->getSemesterTyp());
+
+        $overall_course_attendance = array();
+        // loop from the beginning of the semester to the actual date in 7 day interval and construct the data array for the view
+        for($date = $semester_data['start_date']; $date <= strtotime($actual_day_date); $date+= (7 * 24 * 3600)){
+            // construct the utc date
+            $utc_date = 'Date.UTC('.date("Y", $date).', '.date("m", $date) .', ' . date("d", $date) .')';
+            $unix_date = $date;
+
+            // get the count for the acutal looped date
+            // construct the range dates from the beginning of the semester till the looped date
+            $start_date = date("Y-m-d", $semester_data['start_date']);
+            $end_date = date("Y-m-d", $date);
+
+            // multiply unix timestamp by 1000 to get it to the js format
+            $series_element = '[' . ($unix_date * 1000).', ' . $this->logbuch_model->get_attendance_count_for_all_courses_in_range($start_date, $end_date).']';
+
+            // add the selected item to the return array
+            $overall_course_attendance[] = $series_element;
+        }
+
+        // return series data
+        return $overall_course_attendance;
+
+
+
     }
 
 

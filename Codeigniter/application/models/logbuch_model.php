@@ -697,9 +697,11 @@ class Logbuch_Model extends CI_Model {
 
     /**
      * Returns the attendance count for the given courseid in an specified date range.
+     * @access public
      * @param $course_id The course, where the attendance should be counted for
      * @param $begin_date Start date of the range as an string (format YYYY-MM-DD)
      * @param $end_date End date of the range as an string (format YYYY-MM-DD)
+     * @return integer The count of the attended events for the given course in the given range
      */
     public function get_attendance_count_for_date_range($course_id, $begin_date, $end_date){
         // construct the date range
@@ -713,6 +715,26 @@ class Logbuch_Model extends CI_Model {
         $attended_events = $this->db->count_all_results();
 
         return $attended_events;
+    }
+
+    /**
+     * Returns the count of all attended events in the given date range for the authenticated user.
+     * @access public
+     * @param $begin_date Start date of the range as an string (format YYYY-MM-DD)
+     * @param $end_date End date of the range as an string (format YYYY-MM-DD)
+     * @return integer The count of attendance over all courses for the given date range
+     */
+    public function get_attendance_count_for_all_courses_in_range($begin_date, $end_date){
+        // construct the date range
+        $date_range = 'Datum BETWEEN ' . '"' . $begin_date . ' 00:00:00" AND "' . $end_date . ' 00:00:00"';
+
+        // query the attendance count for all courses in the given date range for the actual authenticated user
+        $this->db->from('anwesenheit');
+        $this->db->where('BenutzerID', $this->authentication->user_id());
+        $this->db->where($date_range, NULL, FALSE);
+        $overall_attended_events = $this->db->count_all_results();
+
+        return $overall_attended_events;
     }
 
     /**
