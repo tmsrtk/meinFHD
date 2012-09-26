@@ -7,6 +7,11 @@
       <!-- the hidden-input fields are kinda a workaround -->
       <input type="hidden" name="login" <?php if(isset($info['LoginName'])) echo ' value="' . $info['LoginName'] . '"' ?> >
       <input type="hidden" name="email" <?php if(isset($info['Email'])) echo ' value="' . $info['Email'] . '"' ?> >
+      <input type="hidden" name="firstname" <?php if(isset($info['Vorname'])) echo ' value="' . $info['Vorname'] . '"' ?> >
+      <input type="hidden" name="lastname" <?php if(isset($info['Nachname'])) echo ' value="' . $info['Nachname'] . '"' ?> >
+      <input type="hidden" name="year" <?php if(isset($info['StudienbeginnJahr'])) echo ' value="' . $info['StudienbeginnJahr'] . '"' ?> >
+      <input type="hidden" name="semester" <?php if(isset($info['StudienbeginnSemestertyp'])) echo ' value="' . $info['StudienbeginnSemestertyp'] . '"' ?> >
+      <input type="hidden" name="emailflag" <?php if(isset($info['EmailDarfGezeigtWerden'])) echo ' value="' . $info['EmailDarfGezeigtWerden'] . '"' ?> >
     <div class="row-fluid">
       <div class="span12" id="matrikel-und-sem">
         <div class="well well-small">
