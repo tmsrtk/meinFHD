@@ -228,7 +228,7 @@ class User_model extends CI_Model {
 	
 	/**
 	 * Returns all ids for this user mapped to containing roles.
-	 * @return array(int => inht) all ids mapped to roles
+	 * @return array(int => int) all ids mapped to roles
 	 */
 	private function get_course_ids_with_roles(){
 	    $ids = array();
@@ -378,7 +378,7 @@ class User_model extends CI_Model {
 	
 	/**
 	 * Returns course-ids for a single user mapped to roles
-	 * @return array
+	 * @return array [course_id] => [role_id]
 	 */
 	public function get_user_course_ids(){
 	    return $this->user_course_ids;

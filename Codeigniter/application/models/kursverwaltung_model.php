@@ -8,23 +8,47 @@ class Kursverwaltung_model extends CI_Model {
      * @return type
      */
     public function get_lecture_details($course_id, $eventtype){
-	$this->db->select('SPKursID, Raum, StartID, EndeID, TagID, GruppeID');
-	$this->db->where('KursID', $course_id);
-	$this->db->where('VeranstaltungsformID', $eventtype);
-	$q = $this->db->get('stundenplankurs');
-	
-	$data = array(); // init
+		$this->db->select('SPKursID, Raum, StartID, EndeID, TagID, GruppeID');
+		$this->db->where('KursID', $course_id);
+		$this->db->where('VeranstaltungsformID', $eventtype);
+		$q = $this->db->get('stundenplankurs');
 
-	if($q->num_rows() > 0){
-	    foreach ($q->result() as $row){
-		$data[] = $row;
-	    }
-	}
-	
-	return $data[0];
+		$data = array(); // init
+
+		if($q->num_rows() > 0){
+			foreach ($q->result() as $row){
+			$data[] = $row;
+			}
+		}
+
+		return $data[0];
     }
     
+	
+    /**
+     * Returns lab, seminar, tut - details - eventtype passed
+     * @param int $id
+     * @param int $eventtype
+     * @return type
+     */
+    public function get_course_details($course_id, $eventype){
+		$this->db->select('SPKursID, Raum, StartID, EndeID, TagID, GruppeID');
+		$this->db->where('KursID', $course_id);
+		$this->db->where('VeranstaltungsformID', $eventype);
+		$q = $this->db->get('stundenplankurs');
+
+		$data = array(); // init
+
+		if($q->num_rows() > 0){
+			foreach ($q->result() as $row){
+			$data[] = $row;
+			}
+		}
+		
+		return $data;
+    }
     
+	
     /**
      * Returns name for given course_id
      * @param int $course_id

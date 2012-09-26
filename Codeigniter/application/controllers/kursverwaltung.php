@@ -6,6 +6,7 @@ class Kursverwaltung extends FHD_Controller {
     private $roles;
     private $roleIds;
     private $course_ids;
+	private $user_id;
     
     // eventtype_ids
     const LECTURE = 1;
@@ -27,10 +28,18 @@ class Kursverwaltung extends FHD_Controller {
 		$this->roleIds = $this->user_model->get_all_roles();
 		// get course ids for that user
 		$this->course_ids = $this->user_model->get_user_course_ids();
-
+		// get user_id - mainly for logging-reasons
+		$this->user_id = $this->user_model->get_userid();
     }
     
-    
+	
+	/* ************************************************************************
+	 * 
+	 * ************************************** Kursverwaltung
+	 * ************************************** Frank Gottwald
+	 * 
+	 */
+	
     function show_coursemgt(){
 		// if user has courses - run through all of them
 		if($this->course_ids){
@@ -347,9 +356,10 @@ class Kursverwaltung extends FHD_Controller {
 //						print_r($save_group_details_to_db);
 //						echo '</pre>';
 
+					// clean arrays 
 					$save_course_details_to_db = array();
 					$save_group_details_to_db = array();
-
+					
 				}
 				$sp_course_id_temp = $sp_course_id;
 			}
@@ -367,6 +377,9 @@ class Kursverwaltung extends FHD_Controller {
 			$sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
 		
 		$this->kursverwaltung_model->save_course_description($course_id, $description);
+		
+		// log activities once - data has been changed
+		$this->helper_model->log_activities(5, $this->user_id);
 		
 //		echo '<pre>';
 //		echo '<div>course</div>';
@@ -541,7 +554,100 @@ class Kursverwaltung extends FHD_Controller {
 //	$this->kursverwaltung_model->update_benutzermmrolle();
 //    }
        
-    
+	
+	/* 
+	 * 
+	 * ************************************** Kursverwaltung
+	 * ************************************** Frank Gottwald
+	 * 
+	 * ***********************************************************************/
+	
+	
+	
+	/* ************************************************************************
+	 * 
+	 * ******************************** Praktikumsverwaltung
+	 * ************************************** Frank Gottwald
+	 * 
+	 */
+	
+	
+	/**
+	 * Single function called from menue and within view
+	 * Behaviour depends on 
+	 * 1. data in POST
+	 * 2. courseIds for current user
+	 */
+	public function show_labmgt(){
+		// get the course_id from POST
+		$course_id_to_show = -1;
+		
+		// if there is only one  course_id >> save that one to variable
+		// TODO check if correct !!!!!!!!!!!!!
+		if(count($this->course_ids) === 1){
+			$course_id_to_show = key($this->course_ids);
+		}
+		
+		// if data is passed >> store
+		if($this->input->POST('labs_to_show')){
+			$course_id_to_show = $this->input->POST('labs_to_show');
+		}
+		
+		// 
+		if(count($this->course_ids) > 1 || $course_id_to_show === -1){
+			// goto overview-view
+			$this->show_labmgt_overview();
+		} else {
+			$this->show_labmgt_groups();
+			// go directly to group-view
+			
+			// put course-id to flashdata
+			// if there is a id via POST
+				// >> take this one
+			// otherwise
+				// >> take the one from 
+		}
+		
+	}
+	
+	/**
+	 * Pass course_ids and sp_course_ids into view and call view
+	 */
+	private function show_labmgt_overview(){
+		// get sp_course_details for course_id - all labs? disable seminar?
+		$sp_course_details = '';
+		$eventtypes_to_fetch = array(2,3,4);
+		foreach($this->course_ids as $c_id => $role){
+			foreach($eventtypes_to_fetch as $e){
+				$sp_course_details[$c_id.'-'.$e] = $this->kursverwaltung_model->get_course_details($c_id, $e);
+			}
+		}
+
+		// store for view
+		$this->data->add('sp_course_details', $sp_course_details);
+	    $this->load->view('courses/labs_overview_show', $this->data->load());
+	}
+	
+	/**
+	 * Prepared data and pass into view
+	 * !! little more work to do.
+	 */
+	private function show_labmgt_groups(){
+		$sp_course_details = 'x';
+		$this->data->add('sp_course_details', $sp_course_details);
+	    $this->load->view('courses/labs_overview_show', $this->data->load());
+	}
+	
+	
+	/* 
+	 * 
+	 * ******************************** Praktikumsverwaltung
+	 * ************************************** Frank Gottwald
+	 * 
+	 * ***********************************************************************/
+	
+	
+	
 }
 
 
