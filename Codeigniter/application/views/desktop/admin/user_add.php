@@ -94,7 +94,7 @@
 						<hr>
 						<?php echo form_submit($submit_data, 'Neuen Benutzer anlegen'); ?>
 					<?php echo form_close(); ?>
-					<?php //FB::log($studiengaenge); ?>
+					
 <?php endblock(); ?>
 
 <?php startblock('postCodeContent'); # additional markup before content ?>

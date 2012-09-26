@@ -230,11 +230,12 @@ class Admin_model extends CI_Model {
 		$subject = 'meinFHD2 - Ihre Einladung wurde akzeptiert';
 		$to = $q['Emailadresse'];
 
-		$this->mailhelper->send_meinfhd_mail($to, $subject, $message);
-
+		// TODO:
+		// $this->mailhelper->send_meinfhd_mail($to, $subject, $message);
 
 		// delete requested invitation
 		$this->_delete_invitation($invitation_id);
+
 	}
 
 	/**

@@ -12,7 +12,6 @@ class Adminhelper {
 	 */
 	public function __construct()
 	{
-
 	}
 
 	/**
@@ -59,7 +58,8 @@ class Adminhelper {
 		return array(
 			'field' => 'forename',
 			'label' => 'Vorname',
-			'rules' => 'alpha|max_length[50]'
+			// 'rules' => 'alpha|max_length[50]'
+			'rules' => 'alpha_dash_space|max_length[50]'
 			);
 	}
 
@@ -69,7 +69,8 @@ class Adminhelper {
 		return array(
 			'field' => 'lastname',
 			'label' => 'Nachname',
-			'rules' => 'alpha|max_length[50]'
+			// 'rules' => 'alpha|max_length[50]'
+			'rules' => 'alpha_dash_space|max_length[50]'
 			);
 	}
 
@@ -137,7 +138,7 @@ class Adminhelper {
 	{
 		return array(
 			'field' => 'erstsemestler',
-			'label' => 'erstsemestler',
+			'label' => 'Erstsemestler',
 			'rules' => ''
 			);
 	}
