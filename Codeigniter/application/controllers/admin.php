@@ -187,7 +187,7 @@ class Admin extends FHD_Controller {
 	/**
 	* Edit User - Form
 	* 
-	* 
+	* @category user_edit.php
 	*/
 	public function edit_user_mask()
 	{
@@ -201,7 +201,7 @@ class Admin extends FHD_Controller {
 	/**
 	* Delete User - Form
 	* 
-	* 
+	* @category user_delete.php
 	*/
 	public function delete_user_mask()
 	{
@@ -214,8 +214,9 @@ class Admin extends FHD_Controller {
 
 	/**
 	* Role to Permission - List
-	* 
 	* Shows all possible roles and their associated permissions.
+	*
+	* @category user_import.php
 	*/
 	public function import_user_mask()
 	{
@@ -226,6 +227,11 @@ class Admin extends FHD_Controller {
 
 	// ->>> show_role_permissions
 
+	/**
+	* Shows all users and their associated roles. 
+	*
+	* @category user_edit_roles.php
+	*/
 	public function edit_roles_mask()
 	{
 		// all users
@@ -306,7 +312,7 @@ class Admin extends FHD_Controller {
 				redirect(site_url().'admin/request_user_invitation_mask');
 				break;
 			case '1':
-				$this->admin_model->_delete_invitation($invitation_id);
+				$this->admin_model->delete_invitation($invitation_id);
 				$this->message->set('Der User wurde von der Einladungsliste gelöscht.', 'error');
 				redirect(site_url().'admin/request_user_invitation_mask');
 				break;
@@ -579,11 +585,11 @@ class Admin extends FHD_Controller {
 		$this->admin_model->update_user($new_form_values['user_id'], $data);
 
 		// send email
-		$this->mailhelper->send_meinfhd_mail(											///////////////////////////////////
-			$new_form_values['email'],
-			"Ihr Passwort wurde zurückgesetzt",
-			"Ihr Passwort lautet: {$data['Passwort']}"
-			);
+		// $this->mailhelper->send_meinfhd_mail(											///////////////////////////////////
+		// 	$new_form_values['email'],
+		// 	"Ihr Passwort wurde zurückgesetzt",
+		// 	"Ihr Passwort lautet: {$data['Passwort']}"
+		// 	);
 
 		$this->message->set('Das Passwort wurde erfolgreich zurückgesetzt.', 'error');
 		redirect(site_url().'admin/edit_user_mask');
