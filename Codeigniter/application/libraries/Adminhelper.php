@@ -28,7 +28,7 @@ class Adminhelper {
 		 
 		$password = substr($string, $start, $laenge);
 		 
-		return md5($password);
+		return $password;
 	}
 
 	// modular form validation rules

@@ -255,8 +255,8 @@ class Admin extends FHD_Controller {
 		// save new user in db
 		$this->admin_model->save_new_user($form_data, $password);
 
-		// TODO: send mail with password
-
+		// send e-mail to the new user
+		// $this->mailhelper->send_meinfhd_mail($form_data['email'], "Der User {$form_data['loginname']} wurde erstellt.", "Ihr Passwort lautet: {$password}");
 	}
 
 	/*

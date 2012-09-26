@@ -27,7 +27,7 @@
 	$data_email = array(
 		'class' => 'span3',
 		'name' => 'email',
-		'placeholder' => 'E-Mail',
+		'placeholder' => 'E-Mail*',
 		'value' => set_value('email')
 	);
 	$data_matrikelnummer = array(
@@ -226,8 +226,6 @@ if( ! empty( $b ) ) $radio_val2 = TRUE;
 </div>
 
 <div id="modalcontent"></div>
-
-<div class="shit">Test</div>
 
 <?php endblock(); ?>
 
