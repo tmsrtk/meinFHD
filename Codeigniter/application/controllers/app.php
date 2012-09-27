@@ -51,8 +51,13 @@ class App extends FHD_Controller {
 			if ($this->authentication->login($username, $password))
 			{
 				// user is logged in -> set message and redirect to frontpage
-				$this->message->set(sprintf('Eingeloggt! (ID: %s)', $this->authentication->user_id()));
-				redirect('dashboard/index');
+				if ($this->agent->is_mobile()) {
+					redirect('dashboard/mobile');
+				}
+				else {
+					redirect('dashboard/index');
+				}
+				
 			}
 			else
 			{
