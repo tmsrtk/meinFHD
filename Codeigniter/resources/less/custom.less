@@ -29,7 +29,7 @@ h1.maintitle span{
 .fhd-box{
 	.alert;
 	.alert-error;
-	padding: 8px 14px 8px 14px;
+	padding: 8px !important;
 }
 
 // Full widths buttons
@@ -49,4 +49,27 @@ a.btn-fullwidth{
 
 button.btn-fullwidth{
 	width: 100%;
+}
+
+.carousel{
+	margin-bottom: 0;
+}
+
+.pagination{
+	margin-top:0;
+}
+
+.table.table-condensed{
+	&:last-child{
+		margin-bottom: 0;
+	}
+	
+	th, td{
+		padding:6px 0 !important;
+	}
+}
+
+.table.table-condensed small{
+	font-size: 0.8em;
+	color:@grayLight;
 }
