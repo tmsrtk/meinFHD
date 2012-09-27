@@ -30,34 +30,10 @@
 		    				 Dozent
 		    			</a>
 		    		</div>
-		    						    		    	   
-		    		<!--Bar-Widget-->
-		    		<h4>Anwesenheit dieses Semester</h4>
-		    		<div class="progress progress-striped">
-  						<div class="bar" style="width: 45%;"></div>
-					</div>									  
+		    						    		    	   		    										  
 				</div>
 				
-			</div><!-- /.span8-->
-			
-			<!--DESKTOP AND TABLET ONLY-->
-			<div class="span4">
-			
-				<div class="well well-small hidden-phone">
-					<h2>Widgets <small>Dekstop & Tablet only</small></h2>
-					<hr class="hidden-phone" />
-					<h4>widget content</h4>
-					<div class="progress progress-striped active">
-					  <div class="bar" style="width: 40%;"></div>
-					</div>
-					<hr />
-					<h4>widget content</h4>
-					<div class="progress progress-striped progress-warning active">
-					  <div class="bar" style="width: 40%;"></div>
-					</div>
-				</div>
-			
-			</div><!-- /.span4 -->						
+			</div><!-- /.span8-->											
 			
 		</div><!--first row ends here-->
 		
@@ -66,18 +42,15 @@
 
 			<?php //--------------------Loop for kurse --------------------?>			
 			<?php foreach ($courseinfo['Kurse'] as $key => $courselist) : ?>
-
-
 			
 				<div class="span4">
-
-
+				
 					<?php //--------------------If there is any course of that kind --------------------?>
 					<?php if (!empty($courselist))  { ?>
 				
 
 					<div class="well well-small">
-						<h2><?php echo $key; ?>&nbsp;<small></small></h2>
+						<h2><?php echo $key; ?></h2>
 						<h3><?php echo $courselist[0]['Raum']; ?>
 
 					<?php //--------------------If there are alternatives --------------------?>
@@ -153,10 +126,6 @@
 
 								<?php //--------------------EndElse there are no alternatives -------------------- ?>
 								<?php } ?>
-
-
-
-							<hr class="hidden-phone" />
 
 							</div>
 							<?php //--------------------EndIF there is any course of that kind  -------------------- ?>
