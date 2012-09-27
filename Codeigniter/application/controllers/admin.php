@@ -293,7 +293,7 @@ class Admin extends FHD_Controller {
 	 *
 	 * @category user_invite.php
 	 */
-	private function create_user_from_invitation_requests()
+	public function create_user_from_invitation_requests()
 	{
 		// get values from post
 		$invitation_id = $this->input->post('request_id');
@@ -690,6 +690,32 @@ class Admin extends FHD_Controller {
 			{
 				$result .= $this->load->view('admin/partials/user_single_form', $value, TRUE);
 			}
+		}
+		echo $result;
+	}
+
+	/**
+	 * Returns the sum of all matched users.
+	 * @return string Sum of matched users.
+	 */
+	public function ajax_show_user_count()
+	{
+		$result = '';
+
+
+		// get value
+		$role_id = $this->input->get('role_id');
+		$searchletter = $this->input->get('searchletter');
+
+		// if nothing set, query would response all users, so lets prevent this
+		if ( empty($role_id) && empty($searchletter) )
+		{
+			$result = '0';
+		}
+		else
+		{
+			$q = $this->admin_model->get_user_per_role_searchletter($role_id, $searchletter);
+			$result = count($q);
 		}
 		echo $result;
 	}

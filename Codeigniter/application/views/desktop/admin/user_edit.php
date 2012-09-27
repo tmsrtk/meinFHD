@@ -26,7 +26,7 @@
 ?>
 	<div class="row-fluid">
 		<?php echo form_open('', $data_formopen); ?>
-		<div class="span4"><h2>Benutzer bearbeiten</h2></div>
+		<div class="span4"><h2>Benutzer bearbeiten</h2>Anzahl: <span class="studentcounter badge badge-success"></span></div>
 		<div class="span4"><h5>Filter</h5><?php echo form_dropdown('user_change_rolle_dd', $data_role, '0', $data_role_ext); ?></div>
 		<div class="span4"><h5>Suche</h5><?php echo form_input($data_search); ?></div>
 		<?php echo form_close(); ?>
@@ -66,7 +66,7 @@
 
 <?php startblock('customFooterJQueryCode');?>
 
-	var xhr; 
+	var xhr, usercount;
 
 	var UsersEditAjax = {
 		init : function( config ) {
@@ -121,6 +121,13 @@
 					data,
 					function(response) {
 						self.config.dataContent.html(response);
+					}).done(function() {
+						$.get(
+						"<?php echo site_url();?>admin/ajax_show_user_count/",
+						data,
+						function(response) {
+							self.config.counter.text(response);
+						});
 					});
 				
 			}, 400);
@@ -215,7 +222,8 @@
 	UsersEditAjax.init({
 		roleDropdown : $('#user_cr_role'),
 		searchInput : $('#user_cr_search'),
-		dataContent : $('tbody#user_content')
+		dataContent : $('tbody#user_content'),
+		counter : $('.studentcounter')
 	});
 
 

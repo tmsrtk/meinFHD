@@ -205,7 +205,7 @@ if( ! empty( $b ) ) $radio_val2 = TRUE;
 			<?php foreach ($user_invitations as $key => $value) : ?>
 			<tr>
 				<td>
-					<?php echo form_open('admin/create_user_from_invitation/', $data_formopen2); ?>
+					<?php echo form_open('admin/create_user_from_invitation_requests/', $data_formopen2); ?>
 					<?php echo form_hidden('request_id', $value['AnfrageID']); ?>
 
 					<div class="span2">leer</div>
