@@ -54,9 +54,11 @@ class User_model extends CI_Model {
 			$this->studienbeginn_typ = $this->_query_user_singlecolumndata('StudienbeginnSemestertyp');
 
 			$this->semesterplan_id = $this->_query_semesterplanid();
-			// get actual Semester every time when the user connects
-			$this->act_semester = $this->adminhelper->getSemester($this->studienbeginn_typ, $this->studienbeginn_jahr);
-			// $this->act_semester = $this->_query_user_singlecolumndata('Semester');
+			// get actual Semester every time when the user connects and save it in the db
+			// $this->act_semester = $this->adminhelper->getSemester($this->studienbeginn_typ, $this->studienbeginn_jahr);
+			$this->act_semester = $this->adminhelper->get_act_semester($this->studienbeginn_typ, $this->studienbeginn_jahr);
+
+			// log_message('error', $this->act_semester);
 
 			$this->studiengang_id = $this->_query_studiengang_id();
 			$this->studiengang_data = $this->_query_studiengang_data();

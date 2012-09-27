@@ -143,6 +143,29 @@ class Adminhelper {
 			);
 	}
 
+	/**
+	 * Returns the sum of the semester, by calculating whit the given 
+	 * @param  [type] $semestertyp   [description]
+	 * @param  [type] $studienbeginn [description]
+	 * @return [type]                [description]
+	 */
+	public function get_act_semester($semestertyp, $studienbeginn)
+	{
+		// $act_semester_count = 0;
+
+		// $act_semtype = $this->getSemesterTyp();
+		// $is_same_semtype = ($act_semtype == $semestertyp) ? true : false;
+
+		// $jahresdelta = abs(date("Y") - $studienbeginn);
+		// $sem_tmp = ($gleicher_semestertyp) ? 1 : 2;
+		// $act_semester_count = $jahresdelta * 2 + $sem_tmp;
+
+		// return $act_semester_count;
+
+		//           delta of years     two sem per year      act. semtype         same as given type?      if yes add one  otherwise two
+		return (abs(date("Y"))-$studienbeginn) * 2 + ((($this->getSemesterTyp() == $semestertyp) ? true : false) ? 1 : 2);
+	}
+
 	/************************************************************************
 	 *	printSemesterInteger()												*
 	 *																		*
@@ -166,6 +189,7 @@ class Adminhelper {
 		// stimmt aktueller Semestertyp mit Studienbeginn-Semestertyp �berein?
 		$gleicher_semestertyp = ($errechneter_semestertyp == $semestertyp) ? true : false;
 		
+
 		// Errechne aktuelles Semester
 		$semester = (($gleicher_semestertyp) ? 1 : 0) + 2 * ((($gleicher_semestertyp && date("n") < 3) ? date("Y")-1 : date("Y")) - $studienbeginn + ((date("n")>2) ? 1 : 0));
 		

@@ -585,11 +585,11 @@ class Admin extends FHD_Controller {
 		$this->admin_model->update_user($new_form_values['user_id'], $data);
 
 		// send email
-		// $this->mailhelper->send_meinfhd_mail(											///////////////////////////////////
-		// 	$new_form_values['email'],
-		// 	"Ihr Passwort wurde zurückgesetzt",
-		// 	"Ihr Passwort lautet: {$data['Passwort']}"
-		// 	);
+		$this->mailhelper->send_meinfhd_mail(											///////////////////////////////////
+			$new_form_values['email'],
+			"Ihr Passwort wurde zurückgesetzt",
+			"Ihr Passwort lautet: {$data['Passwort']}"
+			);
 
 		$this->message->set('Das Passwort wurde erfolgreich zurückgesetzt.', 'error');
 		redirect(site_url().'admin/edit_user_mask');
@@ -733,9 +733,12 @@ class Admin extends FHD_Controller {
 		$this->admin_model->clear_userroles($formdata['user_id']);
 
 		// set new settings
-		foreach ($formdata['cb_userroles'] as $role)
+		if (isset($formdata['cb_userroles']))
 		{
-			$this->admin_model->save_userrole($formdata['user_id'], $role);
+			foreach ($formdata['cb_userroles'] as $role)
+			{
+				$this->admin_model->save_userrole($formdata['user_id'], $role);
+			}
 		}
 
 		redirect('/admin/edit_roles_mask/', 'refresh');
