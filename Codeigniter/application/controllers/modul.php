@@ -74,7 +74,6 @@ class Modul extends FHD_Controller {
 
 		$this->data->add('courseinfo', $courseinfo);
 
-
 		$this->load->view('modul/index', $this->data->load());
 	}
 

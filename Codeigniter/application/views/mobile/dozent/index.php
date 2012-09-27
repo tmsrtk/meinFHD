@@ -12,9 +12,21 @@
 	    			<h1><?php echo $dozentinfo[0]['Vorname']; ?> <?php echo $dozentinfo[0]['Nachname']; ?></h1>
 					<hr />
 					<!--Optionen-->
-					<img src="<?php echo base_url('resources\img\dozent_standart.png'); ?>" alt="dozent">
 
-		    		<a href="mailto: <?php echo $dozentinfo[0]['Email']; ?>" class="btn btn-large pull-right">
+					<?php //--------------------If there is a URL in the dozentinfo Table --------------------?>
+
+					<?php if ($dozentinfo[0]['BildURL'] == '') { ?>
+
+						<img src="<?php echo base_url('resources\img\dozent_standart.png'); ?>" alt="dozent">
+
+					<?php }else { ?>
+
+						<img src="<?php echo $dozentinfo[0]['BildURL']; ?>" alt="dozent">
+
+					<?php //--------------------EndIf there is a URL in the dozentinfo Table --------------------?>
+					<?php } ?>
+
+		    		<a href="mailto: <?php echo $dozentinfo[0]['Email'] ;  ?>" class="btn btn-large pull-right">
 		   				<i class="icon-envelope"></i>
 		   				 Mail
 		   			</a>
