@@ -83,7 +83,7 @@
 			<table class="table table-bordered table-condensed">
 				<thead>
 					<tr>
-						<th style="width: 100px;"></th>
+						<th style="width: 30px;"></th>
 						<?php $i = 1; $wochentag = date("N"); ?>
 					<?php foreach ($stundenplan as $dayname => $day) : ?>
 						<th <?php ($i == $wochentag) ? print 'style="background-color: #dee4c5";' : print 'style="background-color: #eee";';?> >
@@ -97,8 +97,8 @@
 				<tbody>
 					<tr>
 						<td class="std-time-cell">
-						<?php foreach ($zeiten as $zeit) : ?>
-							<div  style="height:<?php print $event_height; ?>px;">
+						<?php foreach ($zeiten as $zeit) : ?>							
+							<div style="height:<?php print $event_height; ?>px;">
 								<?php print $zeit['Beginn']; ?>
 							</div>
 						<?php endforeach; ?>
