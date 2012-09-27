@@ -160,6 +160,32 @@
   .buttonBackground(@btnInverseBackground, @btnInverseBackgroundHighlight);
 }
 
+.mfhd-btn-block {
+	.btn;
+	.btn-large;
+	
+	display: block !important;
+	margin-bottom: @baseLineHeight !important;
+	
+	&:hover, &:active {
+		color: @white;
+		text-decoration: none;
+	}
+	
+	&:last-child {
+		margin-bottom: 0 !important;
+	}
+}
+
+.mfhd-btn-block-primary {
+	.mfhd-btn-block;
+	.btn-primary;
+}
+
+.mfhd-btn-block-inverse {
+	.mfhd-btn-block;
+	.btn-inverse;
+}
 
 // Cross-browser Jank
 // --------------------------------------------------
