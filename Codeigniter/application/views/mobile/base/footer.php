@@ -1,6 +1,5 @@
 <?php start_block_marker('postCodeFooter'); # use for hidden markup like modals ?>
 <?php end_block_marker(); ?>
-		<?php print $messages; ?>
 		<div class="clearfix"></div>
 		<!-- only head.js is required, due to asynchronous js file handling -->
 		<script src="<?php print base_url(); ?>resources/headjs/head.min.js" type="text/javascript"></script>

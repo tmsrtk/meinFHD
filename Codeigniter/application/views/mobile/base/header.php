@@ -44,3 +44,5 @@
 			-->
 <?php end_block_marker(); ?>
 		</header><!-- #header -->
+		
+		<?php print $messages; ?>
