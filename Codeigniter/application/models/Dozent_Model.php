@@ -1,6 +1,6 @@
 <?php   if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Modul_Model extends CI_Model {
+class Dozent_Model extends CI_Model {
 
 	private $user;//Debug
 
@@ -186,56 +186,32 @@ class Modul_Model extends CI_Model {
 	public function get_courselist($user_id, $course_id)
 	{
 
+		
+	}
+
+	/**
+	 * Collects the basic Info to the docent a query
+	 *
+	 *
+	 * @param type $dozent_id // ID of the docent
+	 * @return result_array // Array of docentinfo
+	 */	
+	public function get_dozentinfo($dozent_id)
+	{	
+
 		$query = $this->db->query("
 		SELECT 
-			sg.Kursname, sg.kurs_kurz,
-			v.VeranstaltungsformName,sp.VeranstaltungsformAlternative, sp.VeranstaltungsformID, sp.KursID, sp.SPKursID, sp.Raum,
-			sp.DozentID, sp.StartID, sp.EndeID, (sp.EndeID-sp.StartID)+1 AS 'Dauer', sp.GruppeID,
-			d.Vorname AS 'DozentVorname', d.Nachname AS 'DozentNachname', d.Email AS 'DozentEmail', d.Titel AS 'DozentTitel', d.BenutzerID AS 'DozentID',
-			t.TagName,t.TagID,
-			s_beginn.Beginn, s_ende.Ende,
-			g.TeilnehmerMax, g.Anmeldung_zulassen,
-			(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.GruppeID = sp.GruppeID) AS 'Anzahl Teilnehmer',
-			(SELECT b.aktiv FROM benutzerkurs b WHERE b.BenutzerID = " . $user_id . " AND b.SPKursID = sp.SPKursID AND b.KursID = sp.KursID) AS 'aktiv'
+		*
 		FROM 
-			stundenplankurs sp,
-			studiengangkurs sg,
-			veranstaltungsform v,
-			tag t,
-			stunde s_beginn,
-			stunde s_ende,
-			benutzer d,
-			gruppe g
+			benutzer b
 		WHERE 
-			sp.kursID = ".$course_id." AND
-			sp.IsWPF = 0 AND
-			sg.KursID = ".$course_id." AND
-			sp.VeranstaltungsformID = v.VeranstaltungsformID AND
-			s_beginn.StundeID = sp.StartID AND
-			s_ende.StundeID = sp.EndeID AND
-			sp.TagID = t.TagID AND 
-			sp.GruppeID = g.GruppeID AND
-			d.BenutzerID = sp.DozentID
-		ORDER BY 
-			sp.VeranstaltungsformID, aktiv DESC
+			b.BenutzerID = ".$dozent_id."
 
 		");
 		
 		$result = $query->result_array();
 
 		return $result;
-	}
-
-	public function get_courseinfo($user_id, $course_id)
-	{	
-
-		$courselist = $this->get_courselist($user_id, $course_id);
-
-		$courselist = $this->courselist_add_userinfo($courselist, $user_id);
-
-		$courseinfo = $this->courselist_in_courseinfo($courselist);
-
-		return $courseinfo;
 	}
 
 

@@ -47,7 +47,6 @@ class Stundenplan extends FHD_Controller {
 		$this->data->add('zeiten', $stundenplan[2]);
 		$this->data->add('aktivekurse', $stundenplan[3]);
 		
-		//$this->krumo->dump($this->data);
 		$this->load->view('stundenplan/index', $this->data->load());
 	}
 	

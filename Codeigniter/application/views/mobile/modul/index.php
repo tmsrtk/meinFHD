@@ -25,7 +25,7 @@
    		    				<i class="icon-pencil"></i>
    		    				 Notizen
    		    			</a>
-		    			<a href="dozent" class="btn btn-large btn-primary pull-right">
+		    			<a href=<?php echo base_url('dozent/'. $courseinfo['Modulinfo']['DozentID'] ); ?> class="btn btn-large btn-primary pull-right">
 		    				<i class="icon-arrow-right icon-white"></i>
 		    				 Dozent
 		    			</a>
