@@ -747,43 +747,55 @@ class Admin_model extends CI_Model {
 		$this->db->select('SemesterplanID')
 				 ->from('semesterplan')
 				 ->where('BenutzerID', $user_id);
-		$q = $this->db->get()->row_array();
-		return $q['SemesterplanID'];
+		$q = $this->db->get();
+		$qa = $q->row_array();
+
+		if ($q->num_rows() > 0) return $qa['SemesterplanID'];
+
+		// return $q['SemesterplanID'];
 	}
 
 	/**
 	 * Deletes all dependencies of a user in the DB.
+	 * Deletes entries from:
+	 * 1. semesterkurs 		(SemesterplanID)
+	 * 2. semesterplan 		(SemesterplanID & BenutzerID)
+	 * 3. benutzerkurs 		(BenutzerID)
+	 * 4. gruppenteilnehmer	(BenutzerID)
+	 * 5. benutzer_mm_rolle 	(BenutzerID)
+	 * 6. benutzer 			(BenutzerID)
+	 * 
 	 * @param  integer $user_id User ID.
 	 */
 	private function _delete_all_user_dependencies($user_id=0)
 	{
 		// get the needed data to execute this job
-		// 1. SemesterplanID, 2. StudycourseID
-
-		// 1.
+		// -SemesterplanID, - StudycourseID (StudiengangID)
 		$semesterplan_id = $this->_query_semesterplanid_of_user($user_id);
-		// 2.
 		$studycourse_id = $this->_query_studycourseid_of_user($user_id);
 
 		// --
 
-		// delete all entries in semesterkurs
+		// 1.
 		$this->db->where('SemesterplanID', $semesterplan_id);
 		$this->db->delete('semesterkurs');
 		
-		// delete all entries in semesterplan
+		// 2.
 		$this->db->where('SemesterplanID', $semesterplan_id);
 		$this->db->where('BenutzerID', $user_id);
 		$this->db->delete('semesterplan');
 		
-		// deletes all entries in benutzerkurs
+		// 3.
 		$this->db->where('BenutzerID', $user_id);
 		$this->db->delete('benutzerkurs');
 
-		// delete all entries in rolle_mm_benutzer
+		// 4.
+		$this->db->delete('gruppenteilnehmer', array('BenutzerID' => $user_id));
+		
+		// 5.
 		$this->db->delete('benutzer_mm_rolle', array('BenutzerID' => $user_id));
 
-		// delete all entries in benutzer
+		// 6.
 		$this->db->delete('benutzer', array('BenutzerID' => $user_id));
 	}
 
