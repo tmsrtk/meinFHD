@@ -63,7 +63,7 @@
 									<button class="btn pull-left attendant attendant<?php echo $course['SPKursID']; ?>">
 										<i class="icon-ok"></i> anwesend
 									</button>
-									<a href="<?php print base_url(); ?>modul/show/<?php echo $course['KursID']; ?>" class="btn btn-primary pull-right">
+									<a href="<?php print base_url('modul/show/' . $course['KursID']); ?>" class="btn btn-primary pull-right">
 										Details <i class="icon-arrow-right icon-white"></i>
 									</a>
 								</div>
