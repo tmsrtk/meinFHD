@@ -10,7 +10,7 @@
 			<a href="<?php print base_url('stundenplan'); ?>" class="mfhd-btn-block-primary">Stundenplan</a>
 			<a href="<?php print base_url('studienplan'); ?>" class="mfhd-btn-block-primary">Studienplan</a>
 			<a href="<?php print base_url('dashboard'); ?>" class="mfhd-btn-block-primary">Dashboard</a>
-			<a href="<?php print base_url('hilfe'); ?>" class="mfhd-btn-block-primary">Hilfe</a>
+			<a href="<?php print base_url('veranstaltungen'); ?>" class="mfhd-btn-block-primary">Meine Kurse</a>
 			<a href="<?php print base_url('logout'); ?>" class="mfhd-btn-block-inverse">Abmelden</a>
 		</div>
 					
