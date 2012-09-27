@@ -1,7 +1,7 @@
 <?php extend('base/template.php'); # extend main template ?>
 
 	<?php startblock('title'); # extend the site's title ?>
-		<?php get_extended_block(); ?> - Start
+		<?php get_extended_block(); ?> - Übersicht
 	<?php endblock();?>
 	
 	<?php startblock('content'); # content for this view ?>
