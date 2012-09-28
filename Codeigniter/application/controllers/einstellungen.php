@@ -43,7 +43,7 @@ class einstellungen extends FHD_Controller{
 		$this->form_validation->set_rules('email', 'Email', 'callback_validateEmail');
 
 		//$this->krumo->dump($data);
-		$this->krumo->dump($_POST);
+		//$this->krumo->dump($_POST);
 		//print_r($this->authentication->user_id());
 		//$this->load->view('einstellungen', $data);
                 
@@ -86,6 +86,11 @@ class einstellungen extends FHD_Controller{
 			    $fieldarray['Passwort'] = md5($_POST['pw2']);
 			}
                         
+                        
+			
+			//update database
+			$this->persDaten_model->update($fieldarray);
+                        
                         if ($this->hasStudycourseChanged($data['info']['StudiengangID']))
 			{
 			    echo 'Studiengang wurde geändert';
@@ -95,14 +100,10 @@ class einstellungen extends FHD_Controller{
                             
                             //and create a new one
                             //$this->studienplan_model->createStudyplan();
-                            //$this->studienplan_model->createTimetableCourses();
                             
 			    //add the studycourse
 			    //$fieldarray['StudiengangID'] = $_POST['stgid'];
 			}
-			
-			//update database
-			$this->persDaten_model->update($fieldarray);
 			//create log
 			$this->persDaten_model->log($data['info']['TypID'], $data['info']['FachbereichID']);
                         
