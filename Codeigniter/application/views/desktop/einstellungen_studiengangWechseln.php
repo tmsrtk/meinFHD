@@ -14,19 +14,20 @@
       <input type="hidden" name="emailflag" <?php if(isset($info['EmailDarfGezeigtWerden'])) echo ' value="' . $info['EmailDarfGezeigtWerden'] . '"' ?> >
     <div class="row-fluid">
       <div class="span12" id="matrikel-und-sem">
-        <div class="well well-small">
-          Blablabla ändern des Studiengangs blablabla LINK: <a href="<?php echo '../'.$filepath; ?> ">Link</a>
-          
+        <div class="alert alert-error alert-block">
+          <h4>Achtung!</h4>
+          <p>Willst Du wirklich einen neuen Studiengang auswählen? Dadurch wird Dein Semester- & Stundenplan resettet. Du kannst Deinen bisherigen Semesterplan-Stand auch als Tabelle speichern.
+Klicke dazu auf den <a href="<?php echo '../'.$filepath; ?> ">Link</a>.</p>
         </div>
       </div>
     </div>
     <div class="row-fluid"> 
       <fieldset class="span4" id="study-course-details">
         <div class="well well-small">
-          <h3 >Studiengang</h3>
+          <h3>Studiengang</h3>
           <div class="form-elements">
             <label for="study-course">Studiengang</label>
-            <select name="stgid" id="study-course" class="input-xxlarge">              
+            <select name="stgid" id="study-course" class="input-xxxlarge input-block-level">              
               <?php
                 $option = '<option value="%s">%s</option>';
                 echo sprintf($option, '0', '--Bitte Wählen--');
@@ -45,7 +46,8 @@
     </div>
     <div class="row-fluid">
       <div class="alert alert-info clearfix">
-        <button type="submit" class="btn btn-large" value="save"><i class="icon-hdd"></i> Speichern</button>
+        <a href="<?php print base_url(); ?>einstellungen" class="btn btn-large btn-primary"><i class="icon-arrow-left icon-white"></i> Einstellungen</a>
+        <button type="submit" class="btn btn-large pull-right" value="save"><i class="icon-hdd"></i> Speichern</button>
       </div>
     </div>
   </form>
