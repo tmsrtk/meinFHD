@@ -14,8 +14,8 @@
 	
 	// autoclosing twitter bootstrap alerts
 	function createAutoClosingAlert(selector, delay) {
-		var alert = $(selector).alert();
-		window.setTimeout(function() {alert.alert('close')}, delay);
+		//var alert = $(selector).alert();
+		//window.setTimeout(function() {alert.alert('close')}, delay);
 	}
 	
 	createAutoClosingAlert(".alert.in", 3000);
