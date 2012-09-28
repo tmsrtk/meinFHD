@@ -31,101 +31,84 @@ class einstellungen extends FHD_Controller{
 	function index()
 	{
 	    
-		//initial database-query to get als required information of the user
-		$data['info'] = $this->persDaten_model->getUserInfo();
-		$data['stgng'] = $this->persDaten_model->getStudiengang();
+            //initial database-query to get als required information of the user
+            $data['info'] = $this->persDaten_model->getUserInfo();
+            $data['stgng'] = $this->persDaten_model->getStudiengang();
 
-                //$this->krumo->dump($data);
-		//setting up the rules, to which the user-input of the corresponding form-fields must comply:
-		//Note: the form_validation-class is automagically loaded in the config/autoload.php, so there's no need to load it here.
-		$this->form_validation->set_rules('login', 'Loginname', 'callback_validateLoginname['.$data['info']['LoginName'].']');
-		$this->form_validation->set_rules('pw2', 'Passwort', 'callback_validatePassword');
-		$this->form_validation->set_rules('email', 'Email', 'callback_validateEmail');
+            //$this->krumo->dump($data);
+            //setting up the rules, to which the user-input of the corresponding form-fields must comply:
+            //Note: the form_validation-class is automagically loaded in the config/autoload.php, so there's no need to load it here.
+            $this->form_validation->set_rules('login', 'Loginname', 'callback_validateLoginname['.$data['info']['LoginName'].']');
+            $this->form_validation->set_rules('pw2', 'Passwort', 'callback_validatePassword');
+            $this->form_validation->set_rules('email', 'Email', 'callback_validateEmail');
 
-		//$this->krumo->dump($data);
-		//$this->krumo->dump($_POST);
-		//print_r($this->authentication->user_id());
-		//$this->load->view('einstellungen', $data);
-                
-                //Form-Validation works like this:
-                //  1. is there POST-data to check? if not, it fails -> no database updating
-                //  2. if there is POST-data, it checks every rule above for validation ->if something is wrong -> no update
-                //  3. the checked fields (login, pw, email) are either valid in empty state (pw) OR get filled with the current data (login,email), if the user doesn't change anything
-                //      Because of that, every POST-data always gets to the db-update, even if there are no rules set up. (like firstname/lastname etc.)
-		if ($this->form_validation->run() == FALSE)
-		{
-                    echo 'NICHTS PASSIERT';
-			//echo 'fehler';
-			$this->load->view('einstellungen', $data);
-			//$this->persDaten_model->update();
-		}
-		else
-		{		
-			//array of all input-fields
-			$fieldarray = array(
-			    'LoginName' => $_POST['login'],
-			    'Email' => $_POST['email'],
-			    'Titel' => $_POST['title'],
-			    'Raum' => $_POST['room'],
-			    'Vorname' => $_POST['firstname'],
-			    'Nachname' => $_POST['lastname'],
-			    'StudienbeginnJahr' => $_POST['year'],
-			    'StudienbeginnSemestertyp' => $_POST['semester'],
-			    'StudiengangID' => $_POST['stgid'] 
-                            );
-			
-			//set emailflag. required, because a not checked checkbox results in no $_POST-entry
-			$fieldarray['EmailDarfGezeigtWerden'] = isset($_POST['emailflag']) ? 1 : 0;
-			
-			if ($this->hasPasswordChanged())
-			{
-			    echo 'Password wurde geändert';
-			    //ToDO: Email versenden!
-			    
-			    //add the encrypted passwort
-			    $fieldarray['Passwort'] = md5($_POST['pw2']);
-			}
-                        
-                        
-			
-			//update database
-			$this->persDaten_model->update($fieldarray);
-                        
-                        if ($this->hasStudycourseChanged($data['info']['StudiengangID']))
-			{
-			    echo 'Studiengang wurde geändert';
-			    
-                            //delete old semesterplan
-                            //$this->studienplan_model->deleteAll();
-                            
-                            //and create a new one
-                            //$this->studienplan_model->createStudyplan();
-                            
-			    //add the studycourse
-			    //$fieldarray['StudiengangID'] = $_POST['stgid'];
-			}
-			//create log
-			$this->persDaten_model->log($data['info']['TypID'], $data['info']['FachbereichID']);
-                        
-                        //If the studycourse got updated, delete all old references and db-entries
-                        if ($this->hasStudycourseChanged($data['info']['StudiengangID']))
-			{
-			    echo 'Studiengang wurde geändert';
-			    
-                            //delete old semesterplan
-                            //$this->studienplan_model->deleteAll();
-                            
-                            //and create a new one
-                            //$this->studienplan_model->createStudyplan();
-                            //$this->studienplan_model->createTimetableCourses();
-                            
-			}
+            //$this->krumo->dump($data);
+            //$this->krumo->dump($_POST);
+            //print_r($this->authentication->user_id());
+            //$this->load->view('einstellungen', $data);
 
-			$data['info'] = $this->persDaten_model->getUserInfo();
-                        $data['stgng'] = $this->persDaten_model->getStudiengang();
+            //Form-Validation works like this:
+            //  1. is there POST-data to check? if not, it fails -> no database updating
+            //  2. if there is POST-data, it checks every rule above for validation ->if something is wrong -> no update
+            //  3. the checked fields (login, pw, email) are either valid in empty state (pw) OR get filled with the current data (login,email), if the user doesn't change anything
+            //      Because of that, every POST-data always gets to the db-update, even if there are no rules set up. (like firstname/lastname etc.)
+            if ($this->form_validation->run() == FALSE)
+            {
+                echo 'NICHTS PASSIERT';
+                //echo 'fehler';
+            }
+            else
+            {		
+                //array of all input-fields
+                $fieldarray = array(
+                    'LoginName' => $_POST['login'],
+                    'Email' => $_POST['email'],
+                    'Titel' => $_POST['title'],
+                    'Raum' => $_POST['room'],
+                    'Vorname' => $_POST['firstname'],
+                    'Nachname' => $_POST['lastname'],
+                    'StudienbeginnJahr' => $_POST['year'],
+                    'StudienbeginnSemestertyp' => $_POST['semester'],
+                    'StudiengangID' => $_POST['stgid'] 
+                    );
 
-			$this->load->view('einstellungen', $data);
-	  }
+                //set emailflag. required, because a not checked checkbox results in no $_POST-entry
+                $fieldarray['EmailDarfGezeigtWerden'] = isset($_POST['emailflag']) ? 1 : 0;
+
+                if ($this->hasPasswordChanged())
+                {
+                    echo 'Password wurde geändert';
+                    //ToDO: Email versenden!
+
+                    //add the encrypted passwort
+                    $fieldarray['Passwort'] = md5($_POST['pw2']);
+                }
+
+
+
+                //update database
+                $this->persDaten_model->update($fieldarray);
+
+                if ($this->hasStudycourseChanged($data['info']['StudiengangID']))
+                {
+                    echo 'Studiengang wurde geändert';
+
+                    //delete old semesterplan
+                    $this->studienplan_model->deleteAll();
+
+                    //update studienplan IDs:
+                    $this->studienplan_model->queryStudycourseId();
+                    //and create a new one
+                    $this->studienplan_model->createStudyplan();
+                }
+
+                $data['info'] = $this->persDaten_model->getUserInfo();
+                $data['stgng'] = $this->persDaten_model->getStudiengang();
+
+            }
+            
+            //in either case, load the view
+            $this->load->view('einstellungen', $data);
 	}
 	
         function studiengangWechseln()
