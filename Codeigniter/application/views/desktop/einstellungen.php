@@ -17,11 +17,11 @@
           <h3>Login-Details</h3>
           <div class="form-elements">
               <label for="login-name">Loginname</label>
-              <input type="text" class="input-xxlarge" id="login-name" name="login" placeholder="Loginname"<?php if(isset($info['LoginName'])) echo ' value="' . $info['LoginName'] . '"' ?> />
+              <input type="text" id="login-name" name="login" placeholder="Loginname"<?php if(isset($info['LoginName'])) echo ' value="' . $info['LoginName'] . '"' ?> />
               <label for="password">Passwort</label>
-              <input type="password" class="input-xxlarge" id="password" name="pw" placeholder="Passwort" />
+              <input type="password" id="password" name="pw" placeholder="Passwort" />
               <label for="confirm-password">Passwort bestätigen</label>
-              <input type="password" class="input-xxlarge" id="confirm-password" name="pw2" placeholder="Passwort bestätigen" />
+              <input type="password" id="confirm-password" name="pw2" placeholder="Passwort bestätigen" />
           </div>
         </div>
       </fieldset>
@@ -30,11 +30,11 @@
           <h3>Kontaktinformationen</h3>
           <div class="form-elements">
             <label for="first-name">Vorname</label>
-            <input type="text" class="input-xxlarge" id="first-name" name="firstname" placeholder="Vorname"<?php if ( isset($info['Vorname']) ) echo ' value="' . $info['Vorname'] . '"' ?> />
+            <input type="text" id="first-name" name="firstname" placeholder="Vorname"<?php if ( isset($info['Vorname']) ) echo ' value="' . $info['Vorname'] . '"' ?> />
             <label for="last-name">Nachname</label>
-            <input type="text" class="input-xxlarge" id="last-name" name="lastname" placeholder="Nachname"<?php if ( isset($info['Nachname']) ) echo ' value="' . $info['Nachname'] . '"' ?> />
+            <input type="text" id="last-name" name="lastname" placeholder="Nachname"<?php if ( isset($info['Nachname']) ) echo ' value="' . $info['Nachname'] . '"' ?> />
             <label for="email">E-Mail-Adresse</label>
-            <input type="email" class="input-xxlarge" id="email" name="email" placeholder="E-Mail-Adresse"<?php if ( isset($info['Email']) ) echo ' value="' . $info['Email'] . '"' ?> />
+            <input type="email" id="email" name="email" placeholder="E-Mail-Adresse"<?php if ( isset($info['Email']) ) echo ' value="' . $info['Email'] . '"' ?> />
             <label for="private-correspondence" class="checkbox"><input type="checkbox" id="private-correspondence" name="emailflag"<?php if ( isset($info['EmailDarfGezeigtWerden']) && $info['EmailDarfGezeigtWerden'] == 1 ) echo ' checked' ?> /> Dozenten dürfen mich unter dieser Adresse auch persönlich erreichen.</label>
           </div>
         </div>
@@ -58,7 +58,7 @@
               ?>
             </select>
             <label for="year">Startjahr</label>
-            <input type="text" class="input-xxlarge" id="year" name="year" placeholder="Startjahr"<?php if ( isset($info['StudienbeginnJahr']) ) echo ' value="' . $info['StudienbeginnJahr'] . '"' ?> />
+            <input type="text" id="year" name="year" placeholder="Startjahr"<?php if ( isset($info['StudienbeginnJahr']) ) echo ' value="' . $info['StudienbeginnJahr'] . '"' ?> />
             <label for="start-term-winter" class="radio"><input type="radio" id="start-term-winter" name="semester" value="WS"<?php if ( isset($info['StudienbeginnSemestertyp']) && $info['StudienbeginnSemestertyp'] == 'WS' ) echo ' checked' ?> /> Wintersemester</label>
             <label for="start-term-summer" class="radio"><input type="radio" id="start-term-summer" name="semester" value="SS"<?php if ( isset($info['StudienbeginnSemestertyp']) && $info['StudienbeginnSemestertyp'] == 'SS' ) echo ' checked' ?> /> Sommersemester</label>
           </div>
