@@ -49,7 +49,7 @@
 	
 	$(function(){
 		
-		$('.carousel').carousel('pause');
+/*		$('.carousel').carousel('pause');
 		
 		//pagination
 		$('.pagination').find('.slide-montag').click(function(){	
@@ -70,7 +70,7 @@
 		
 		$('.pagination').find('.slide-freitag').click(function(){	
 			$('.carousel').carousel(4);
-		});
+		});*/
 		
 	});
 			
