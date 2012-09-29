@@ -7,7 +7,8 @@
     <div class="row-fluid">
         <div class="span12">
             <a href="<?php print base_url('logbuch/show_logbooks'); ?>" class="btn btn-medium btn-danger" style="font-weight: bold;"><i class="icon-arrow-left icon-white"></i>&nbsp;Logbuch&uuml;bersicht</a><br/><br/>
-            <span><strong>Du warst schon <?php echo $attendance_count; ?> mal da</strong></span>
+            <span><strong>Du warst schon <?php echo $attendance_count; ?> mal da.</strong></span><br/>
+            <span><strong>Dein Gesamtkenntnisstand betr&auml;gt aktuell <?php echo intval($logbook_rating); ?>%.</strong></span>
         </div>
     </div>
     <br/>
@@ -109,6 +110,33 @@
         }).modal('show');
 
         return false;
+    });
+
+    /*
+     * If the document has been loaded check if an new achievement has been unlocked for the current course.
+     */
+     $(document).ready(function(){
+
+        // construct the url for further usage
+        var request_url = "<?php print base_url() ?>achievement/ajax_check_for_new_skill_achievement/<?php echo $course_id; ?>";
+
+        // send (ajax)request to the achievement controller to check if an new achievement has been unlocked
+        $.ajax({
+            url: request_url,
+            type: 'POST',
+            success: function(success_data){ // function that handels the ajax response
+                if(success_data != 'no_achievement_unlocked'){ // an achievement has been unlocked by the user. show him the modal
+                    // render out the success data to the modal markup
+                    $('#modalcontent').html(success_data);
+
+                    // show the modal
+                    $('#achievementModal').modal({
+                        keyboard: false
+                    }).modal('show');
+                }
+            }
+        });
+
     });
 
 <?php endblock(); # end custom jQuery Code ?>

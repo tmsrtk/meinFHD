@@ -50,8 +50,8 @@
     <div class="row-fluid">
         <div class="span12">
             <img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_cup.png" alt="Pokal" width="20" height="20"/>&nbsp;
-            <a href="<?php print base_url('logbuch/index'); ?>" class="btn pull-right"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_thin_right_arrow.png" alt="delete" style="max-width: 18px; height: auto;"/></a>
-            <a href="<?php print base_url('logbuch/index'); ?>"><strong>Meine Auszeichnungen</strong></a><br/>
+            <a href="<?php print base_url('achievement/show_achievement_gallery'); ?>" class="btn pull-right"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_thin_right_arrow.png" alt="delete" style="max-width: 18px; height: auto;"/></a>
+            <a href="<?php print base_url('achievement/show_achievement_gallery'); ?>"><strong>Meine Auszeichnungen</strong></a><br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>Achievement&uuml;bersicht</em>
         </div>
     </div>

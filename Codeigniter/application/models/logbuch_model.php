@@ -14,6 +14,8 @@
  */
 class Logbuch_Model extends CI_Model {
 
+    private $actual_day_date = "2012-12-03"; // debug (development) date to be able to test the attendance widget
+
     /**
      * Inserts the given array with base topics into the database. Expects an array with the topics to insert.
      * 1 Array entry is equal to 1 topic
@@ -309,14 +311,14 @@ class Logbuch_Model extends CI_Model {
      * Calculates / returns the average rating for the given logbook.
      * @access public
      * @param $logbook_id ID of the given logbook.
-     * @return INTEGER average rating of the given logbook.
+     * @return integer average rating of the given logbook.
      */
     public function get_avg_rating_for_logbook($logbook_id) {
         $this->db->select_avg('Bewertung');
         $this->db->from('logbucheintrag');
         $this->db->where('LogbuchID', $logbook_id);
 
-        $avg_rating = $this->db->get()->row()->Bewertung;;
+        $avg_rating = $this->db->get()->row()->Bewertung;
 
         return $avg_rating;
     }
@@ -530,10 +532,10 @@ class Logbuch_Model extends CI_Model {
         $actual_time = date("H:i", time());
 
         // for development purposes static times to be able to test the functionality
-        $actual_time = "16:15";
+        $actual_time = "16:15:00";
         $actual_week_day = "1";
-        $timestamp_to_insert = '2012-09-03 16:15:00';
-
+        //$timestamp_to_insert = '2012-09-03 16:15:00';
+        $timestamp_to_insert = $this->actual_day_date . ' ' . $actual_time;
         // end development time data
 
         // prepare the data, that should be inserted
@@ -595,13 +597,9 @@ class Logbuch_Model extends CI_Model {
         // get the actual week day
         $actual_day_date = date("Y-m-d",time());
 
-        // for development purposes static times to be able to test the functionality
-        $actual_day_date = '2012-09-03';
-        // end development time data
-
         // create the date range for the act date
-        $beginn_date = $actual_day_date . " 00:00:00";
-        $end_date = $actual_day_date . " 23:59:00";
+        $beginn_date = $this->actual_day_date . " 00:00:00"; // for testing -> using the class variable
+        $end_date = $this->actual_day_date . " 23:59:00"; // for testing -> using the class variable
         $date_range = 'Datum BETWEEN "'.$beginn_date.'" AND "'.$end_date.'"';
 
         // query the database and check if there is an record, that is like the actual date

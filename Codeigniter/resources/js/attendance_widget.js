@@ -27,6 +27,8 @@ $("#attendButton").click(function() {
             data: course_data,
             success: function(success_data){
                 $('#attendanceWidget').html(success_data); // display the result / refresh the widget container
+                // check if an new attendance widget has been unlocked
+                checkForAttendanceAchievement(course_data);
             }
         });
     }
@@ -84,4 +86,28 @@ function createAddLogbookModalDialog(title, text) {
         .append('<div class="modal-body"><p>'+text+'</p></div>')
         .append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Nein</a><a href="#" id="createAcceptedBtn" class="btn btn-primary" data-accept="modal">Ja</a></div>');
     return $myModalDialog;
+}
+
+/*
+ * Function that checks if an new achievement has been unlocked.
+ * If an achievement has been unlocked an modal view will be displayed
+ */
+function checkForAttendanceAchievement(course_data) {
+
+    // send (ajax)request to the achievement controller
+   $.ajax({
+        url: CI.base_url + 'achievement/ajax_check_for_new_attendance_achievement/' + course_data.running_course_id,
+        type: 'POST',
+        success: function(success_data){ // function that handels the ajax response
+            if(success_data != 'no_achievement_unlocked'){ // an achievement has been unlocked by the user. show him the modal
+                // render out the success data to the modal markup
+                $('#modalcontent').html(success_data);
+
+                // show the modal
+                $('#achievementModal').modal({
+                    keyboard: false
+                }).modal('show');
+            }
+        }
+    });
 }
