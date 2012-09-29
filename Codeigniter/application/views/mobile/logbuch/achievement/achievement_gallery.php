@@ -75,4 +75,15 @@
 
 <?php endblock(); #end content ?>
 
+<?php startblock('customFooterJQueryCode');?>
+
+    /*
+     * When the document finished loading collapse the last collapsable element (highest achievement level)
+     */
+     $(document).ready(function(){
+        var highest_level = $('div.accordion-body:last').attr('id'); // get the highes achievement level accordion
+        $('#'+highest_level+'').collapse('show'); // colapse the element
+     });
+<?php endblock(); ?>
+
 <?php end_extend(); ?>
