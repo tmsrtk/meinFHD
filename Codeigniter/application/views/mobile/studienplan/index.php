@@ -152,7 +152,7 @@
         <!-- begin : optionbox -->
         <div class="span12">
             <div class="fhd-box clearfix">
-                <a href="dashboard" class="btn btn-large btn-primary" href="#"> <i class="icon-arrow-left icon-white"></i> Dashboard </a>
+                <a href="http://localhost/meinFHD/Codeigniter/dashboard/index" class="btn btn-large btn-primary pull-left"> <i class="icon-arrow-left icon-white"></i> Dashboard </a>
                 <a href="/meinFHD/Codeigniter/studienplan/spalteEinfuegen" class="btn btn-large pull-right"><i class="icon-plus"></i>&nbsp;Semester</a>
             </div>
         </div>
