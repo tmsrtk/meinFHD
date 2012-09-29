@@ -2,19 +2,22 @@
 /**
  * meinFHD WebApp
  *
- * @copyright Christian Kundruss, 2012
+ * @copyright Christian Kundruß, 2012
  * @link http://www.fh-duesseldorf.de
- * @author Christian Kundruss (CK), <christian.kundruss@fh-duesseldorf.de>
+ * @author Christian Kundruß (CK), <christian.kundruss@fh-duesseldorf.de>
  */
 
 /**
  * Logbuch Model
  * The 'logbuch model' deals with all necessary db operations for the students 'logbuch'
  * and 'logbuch' administration for course instructors.
+ * @author Christian Kundruß (CK), <christian.kundruss@fh-duesseldorf.de>
+ * @todo remove debug / development time class variable and class variables usage.
  */
 class Logbuch_Model extends CI_Model {
 
-    private $actual_day_date = "2012-12-03"; // debug (development) date to be able to test the attendance widget
+    private $actual_day_date = "2012-09-10"; // debug (development) date to be able to test the attendance widget
+    private $actual_time = "16:15:00";
 
     /**
      * Inserts the given array with base topics into the database. Expects an array with the topics to insert.
@@ -544,7 +547,6 @@ class Logbuch_Model extends CI_Model {
             'KursID' => $course_id,
             'Datum' => $timestamp_to_insert
         );
-
         // insert the data into the table 'anwesenheit'
         $this->db->insert('anwesenheit', $data);
     }
@@ -575,7 +577,7 @@ class Logbuch_Model extends CI_Model {
                 break;
         }
 
-        // define the date_range to select vor
+        // define the date_range to select for
         $date_range = 'Datum BETWEEN ' . '"' . $beginn_date . '" AND "' . $end_date . '"';
         // query for the count
         $this->db->from('anwesenheit');
@@ -751,5 +753,98 @@ class Logbuch_Model extends CI_Model {
         return $query->row_array();
     }
 
+    /**
+     * Checks for the given course and the current timestamp, if there is already an event stored.
+     * @param $course_id ID of the course, where the current running
+     * @return bool TRUE if an event has already been stored, otherwise FALSE is returned
+     */
+    public function is_course_event_stored($course_id){
+
+        // get the actual day date
+        $actual_day_date = date("Y-m-d",time());
+
+        // create the date range for the act date
+        $beginn_date = $this->actual_day_date . " 00:00:00"; // for testing -> using the class variable
+        $end_date = $this->actual_day_date . " 23:59:00"; // for testing -> using the class variable
+        $date_range = 'Datum BETWEEN "'.$beginn_date.'" AND "'.$end_date.'"';
+
+        $this->db->select('*');
+        $this->db->from('studiengangkurs_veranstaltung');
+        $this->db->where($date_range, NULL, FALSE);
+        $this->db->where('KursID', $course_id);
+
+        $query = $this->db->get();
+
+        // is there any result, so return true, otherwise return false
+        if($query->num_rows() != 0){
+            return TRUE;
+        }
+
+        return FALSE;
+    }
+
+    /**
+     * Add`s an new entry to the studiengangkurs_veranstaltung table, which indicates that an event
+     * has been happened for the actual day date.
+     * @access public
+     * @param $course_id ID of the course where the event timestamp should be saved for
+     */
+    public function add_course_event($course_id){
+
+        // get the actual day date
+        $actual_day_date = date("Y-m-d",time());
+        // get the actual time
+        $actual_time = date("H:i", time());
+
+        // construct the timestamp, that should be inserted
+        $timestamp_to_insert = $this->actual_day_date . ' ' . $this->actual_time;
+
+        // prepare the data, that should be inserted
+        $data = array(
+            'KursID' => $course_id,
+            'Datum' => $timestamp_to_insert
+        );
+
+        // insert the data into the table 'studiengangkurs_veranstaltung'
+        $this->db->insert('studiengangkurs_veranstaltung', $data);
+    }
+
+    /**
+     * Returns the number of course events for the actual semester, that have been occurred
+     * till today.
+     * @access public
+     * @param $course_id ID of the course where the number of events should be fetched for.
+     */
+    public function get_number_of_course_events_till_today($course_id){
+
+        // get the semester type
+        $semester_type = $this->adminhelper->getSemesterTyp();
+        // set the date limits according to the type of the semester
+        $beginn_date = '';
+        $act_year = date('Y', time()); // get the act year
+
+        // depending of the semester type switch the begin date of the range
+        switch($semester_type){
+            case 'SS':
+                $beginn_date = $act_year . '-03-01 00:00:00';
+                break;
+            case 'WS':
+                $beginn_date = $act_year . '-09-01 00:00:00';
+                break;
+        }
+
+        // save the actual day date
+        $actual_day_date = date("Y-m-d",time());
+
+        // define the date_range to select for
+        $date_range = 'Datum BETWEEN ' . '"' . $beginn_date . '" AND "' . $this->actual_day_date . ' 23:59:00"';
+        // query for the count
+        $this->db->from('studiengangkurs_veranstaltung');
+        $this->db->where('KursID', $course_id);
+        $this->db->where($date_range, NULL, FALSE); // set the date range
+        $occured_events = $this->db->count_all_results();
+
+        return $occured_events;
+    }
 
 }

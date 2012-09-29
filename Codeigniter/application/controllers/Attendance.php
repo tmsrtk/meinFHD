@@ -53,7 +53,10 @@ class Attendance extends FHD_Controller {
             $students_degree_prog_course = $this->logbuch_model->query_right_stdg_course_for_given_course($running_course['KursID'], $this->authentication->user_id());
             $running_course['KursID'] = $students_degree_prog_course['KursID'];
             $running_course['attended_events'] = $this->logbuch_model->get_attendance_count_for_course_and_act_semester($running_course['KursID'], $this->authentication->user_id()); // get the count of attendance and pass it to the view
-            $running_course['attended_events_percent'] = ($running_course['attended_events'] / $max_events_semester) * 100;
+            // get the number of occured events for the act semester and return it to the view
+            $running_course['occured_events'] = $this->logbuch_model->get_number_of_course_events_till_today($running_course['KursID']);
+            $running_course['attended_events_percent'] = ($running_course['attended_events'] / $running_course['occured_events']) * 100;
+
             $btn_attend_state = '';
             // already tracked attendance or reached the maximum value of events?
             if($this->logbuch_model->already_attending_today($running_course['KursID']) || $running_course['attended_events'] == $max_events_semester){
@@ -76,12 +79,17 @@ class Attendance extends FHD_Controller {
      * @access public
      */
     public function save_new_attendance() {
+
         // save the posted course id
-        $running_course_id = $this->input->post('running_course_id');
+        $running_course_id = $this->input->get('running_course_id');
         // query out the right course id, if the user is got from an older degree program he will have got an different courseid (maybe)
         $students_degree_prog_course_id = $this->logbuch_model->query_right_stdg_course_for_given_course($running_course_id, $this->authentication->user_id());
         $course_id_to_use = $students_degree_prog_course_id['KursID'];
 
+        // check if there is an entry for the current event in the studiengangkurs_veranstaltung table
+        if(!$this->logbuch_model->is_course_event_stored($course_id_to_use)){        // if not insert it
+            $this->logbuch_model->add_course_event($course_id_to_use);
+        }
         // write the attendance record to the database
         $this->logbuch_model->save_attendance_for_course_with_current_time($course_id_to_use, $this->authentication->user_id());
         // display out the result view

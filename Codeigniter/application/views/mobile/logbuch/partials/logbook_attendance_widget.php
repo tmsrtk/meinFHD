@@ -5,7 +5,7 @@
         <?php if(count($running_course)!=0): # only display the following if any course is running ?>
         <div>
             <strong>Gerade l&auml;uft: </strong><span style="color: red;"><?php echo $running_course['Kursname']; ?></span> in <strong><?php echo $running_course['Raum']; ?></strong><br/>
-            Du warst bisher insgesamt <strong><?php echo($running_course['attended_events']); ?>/<?php echo $max_events; ?></strong> mal da. Du hast <strong><?php echo round($running_course['attended_events_percent']); ?>%</strong> in diesem Semester bereits erfolgreich hinter dich gebracht.
+            Du warst bisher insgesamt <strong><?php echo($running_course['attended_events']); ?>/<?php echo $running_course['occured_events']; ?></strong> mal da. Das entspricht <strong><?php echo round($running_course['attended_events_percent']); ?>%</strong> der bisher in diesem Semester stattgefundenen Veranstaltungen.
         </div>
         <div>
             <br>

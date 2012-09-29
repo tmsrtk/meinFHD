@@ -23,8 +23,9 @@ $("#attendButton").click(function() {
         // track attendance with the help of ajax
         $.ajax({
             url: CI.base_url + 'attendance/save_new_attendance',
-            type: 'POST',
+            type: 'GET',
             data: course_data,
+            cache: false,
             success: function(success_data){
                 $('#attendanceWidget').html(success_data); // display the result / refresh the widget container
                 // check if an new attendance widget has been unlocked
@@ -40,12 +41,11 @@ $("#attendButton").click(function() {
  * The user wants to load the logbook content for the currently attended course.
  * If there isn`t a logbook so far, present a modal view otherwise the user will be redirected to his logbook.
  */
-$('#switchToLogbookButton').click(function() {
+$('#switchToLogbookButton').live("click", function() {
    // get the id of the running course
     var data = {
         course_id: $(this).parent().parent().parent().data("id")
     };
-
     // send request for the logbook to the controller
     $.ajax({
        url: CI.base_url + 'attendance/ajax_search_logbook_for_course',
