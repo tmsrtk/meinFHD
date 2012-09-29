@@ -659,7 +659,7 @@ class Studienplan_Model extends CI_Model
      */
     public function changeModuleStatus($moduleID, $markpoints)
     {
-        if($mark >= 50)
+        if($markpoints >= 50)
         {
             $data = array(
                 'PruefungsstatusID' => 4
