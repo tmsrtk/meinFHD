@@ -20,7 +20,11 @@ class einstellungen extends FHD_Controller{
         }
 	
 	
-	function index()
+        /**
+         * Main-Controller
+         * Any Form-Validation happens here
+         */
+	public function index()
 	{
 	    
             //initial database-query to get als required information of the user
@@ -42,13 +46,10 @@ class einstellungen extends FHD_Controller{
             //  2. if there is POST-data, it checks every rule above for validation ->if something is wrong -> no update
             //  3. the checked fields (login, pw, email) are either valid in empty state (pw) OR get filled with the current data (login,email), if the user doesn't change anything
             //      Because of that, every POST-data always gets to the db-update, even if there are no rules set up. (like firstname/lastname etc.)
-            if ($this->form_validation->run() == FALSE)
-            {
-                echo 'NICHTS PASSIERT';
-            }
-            else
-            {		
-                //array of all input-fields
+            if ($this->form_validation->run() == TRUE)
+            {	
+                //create an array of all input-fields
+                //everything in this array will be put in the database
                 $fieldarray = array(
                     'LoginName' => $_POST['login'],
                     'Email' => $_POST['email'],
@@ -66,8 +67,7 @@ class einstellungen extends FHD_Controller{
 
                 if ($this->hasPasswordChanged())
                 {
-                    //echo 'Password wurde geändert';
-                    //ToDO: Email versenden!
+                    //ToDO: The user still doesnt get any mail-notifications
 
                     //add the encrypted passwort
                     $fieldarray['Passwort'] = md5($_POST['pw2']);
@@ -115,18 +115,15 @@ class einstellungen extends FHD_Controller{
           
 	}
 	
-        function studiengangWechseln()
+        /**
+         * Seperate function for updating the Studycourse. Creates a *.csv file with the current semesterplan and provides a download-path
+         */
+        public function studiengangWechseln()
         {
             
             $data['stgng'] = $this->persDaten_model->getStudiengang();
             $data['info'] = $this->persDaten_model->getUserInfo();
-            
-            // ----------- Not working --------------- //
-            //because the way the form_validation back in index() works, it does not recognize the StudiengangID (stgid) in the POST-Array, if it got submitted by the View of this function
-            //to fix this, we simply add the required POST-fields like they would be in the index()-function:
-            //$_POST['login'] = $data['info']['LoginName'];       //login = old login -> no error during form_validation
-            //$_POST['email'] = $data['info']['Email'];           //same
-            // ---------------------------------------------
+           
            
             //create a String in csv.-encoding
             //first add the full name of the student
@@ -148,8 +145,12 @@ class einstellungen extends FHD_Controller{
             $this->load->view('einstellungen_studiengangWechseln', $data);
         }
 	
-	
-        function hasStudycourseChanged($old_id)
+	/**
+         * compares the old StudiengangID with the one submitted in the POST-Array. Returns true, if they dont match
+         * @param integer $old_id
+         * @return bool
+         */
+        private function hasStudycourseChanged($old_id)
         {
             return (isset($_POST['stgid']) && $_POST['stgid'] != $old_id) ? TRUE : FALSE;
         }
@@ -159,7 +160,7 @@ class einstellungen extends FHD_Controller{
          * WAS formerly checking the first password-field, but some Browsers (Firefox e.g) fill the field automatically, so that this method always returned TRUE without any input by the user
 	 * @return TRUE if password has been altered. FALSE if nothing got submitted or field is empty
 	 */
-	function hasPasswordChanged()
+	private function hasPasswordChanged()
 	{
 	    //returns true, if there is input
 	    //returns false, if the pw-field ist empty
@@ -174,7 +175,7 @@ class einstellungen extends FHD_Controller{
 	 * @param string	password
 	 * @return boolean	TRUE, if password is valid or empty
 	 */
-	function validatePassword($pw2) {
+	public function validatePassword($pw2) {
 	    
 	    // min/max length values for the passwort
 	    $min = 6;
@@ -183,16 +184,6 @@ class einstellungen extends FHD_Controller{
 	    //no error if there's no password submitted
 	    if ($this->hasPasswordChanged())
 	    {
-		//echo $pw;
-		//the should actually be checked for whitespaces or other unwanted characters! But its not yet implemented
-//		//check if it contains any suspiscious or probably unwanted characters like spaces, slashes etc.
-//		if (!$this->form_validation->min_length($pw, $min)){
-//		    //echo 'too short';
-//		    //if yes, return "not valid" and set the error-msg
-//		    $this->form_validation->set_message('validatePassword', 'Passwort zu kurz. Benötigt mindestens '.$min.' Zeichen');
-//		    return false;
-//		}
-//		
 		
 		//does it have less than the minimum length?
 		if (!$this->form_validation->min_length($pw2, $min)){
@@ -233,16 +224,11 @@ class einstellungen extends FHD_Controller{
 	 * @param string    $old_login
 	 * @return boolean  TRUE, if Loginname is valid
 	 */
-	function validateLoginname($login, $old_login)
+	public function validateLoginname($login, $old_login)
 	{
-//	    echo $login;
-//	    echo $old_login;
-	    
 	    // min/max length values for the input
 	    $min = 4;
 	    $max = 200;
-//	    print_r($login);
-//	    print_r($old_login);
 //	    
 	    //if the Loginname was changed:
 	    if ($login != $old_login)
@@ -284,7 +270,7 @@ class einstellungen extends FHD_Controller{
 	 * @param string    entered emailaddress
 	 * @return Boolean  TRUE if mail is correct, FALSE if not
 	 */
-	function validateEmail($mail)
+	public function validateEmail($mail)
 	{
 	    if (!$this->form_validation->valid_email($mail)){
 		$this->form_validation->set_message('validateEmail', 'Keine korrekte Emailadresse. Überprüfen sie ihre Eingabe');
@@ -296,7 +282,16 @@ class einstellungen extends FHD_Controller{
 	    return TRUE;
 	}
         
-        function validateMatrikel()
+        /**
+         * Checks the submitted Matrikelnummer for any invalid letters/characters
+         * 
+         * DIFFERS FROM THE ORIGINAL CODE IN MEIN_FHD 1.0 !!
+         * main diference is the validation for uniqueness in the database. If there is already another entry with the same number, this function returns FALSE.
+         * It seems unlikely that there could be two users (as students!) with the same Matrikelnummer, so it is assumend that the entered number by the user is wrong/misstyped. 
+         * 
+         * @return boolean  TRUE if matrikelnummer meets all requirements
+         */
+        public function validateMatrikel()
         {
             if (isset($_POST['matrikel'])){
                 //does it contain any letters or other non-numbery characters?
