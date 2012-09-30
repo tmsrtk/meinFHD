@@ -1,12 +1,14 @@
 			<nav class="navbar navbar-fixed-top">
 				<div class="navbar-inner">
 					<div class="container">
+						<?php if ( $this->authentication->is_logged_in() ) : ?>
 						<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</a>
 						<a class="brand" href="#">meinFHD<span>mobile</span></a>
+						<?php endif; ?>
 						<div class="nav-collapse">
 							<ul class="nav level-1"> <!-- .nav.level-1 -->
 								<?php if ( $this->authentication->has_permissions('hat_dashboard') ) : ?>
