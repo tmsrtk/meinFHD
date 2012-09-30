@@ -42,8 +42,25 @@ class Veranstaltungen extends FHD_Controller {
 	{
 
 		$stundenplan = $this->Stundenplan_Model->get_stundenplan($this->authentication->user_id());
-		
-		$this->data->add('kurse', $stundenplan[3]);
+
+		$kursliste = $stundenplan[3];
+
+		$courses_displayed = array();
+
+		//Erase all double entries in Array, only one per Course is needed!
+		foreach ($kursliste as $key => $value) {
+			if ( in_array($value['KursID'], $courses_displayed) )
+				unset($kursliste[$key]);
+			else
+				array_push($courses_displayed, $value['KursID']);
+
+		}
+
+
+
+		$this->data->add('kurse', $kursliste);
+
+		$this->krumo->dump($kursliste);
 		
 		$this->load->view('veranstaltungen/index', $this->data->load());
 		
