@@ -2,6 +2,8 @@
 <?php startblock('title');?><?php get_extended_block();?> - Stundenplan - Tag<?php endblock(); ?>
 <?php startblock('content'); # content for this view ?>
 
+<div class="row-fluid">
+
 <div id="carousel" class="carousel slide">
 	<!-- Carousel items -->
 	<?php echo validation_errors(); ?>
@@ -9,13 +11,13 @@
 	<div class="carousel-inner">
 		<?php
 			//--------------------Loop for one day--------------------
-			$day_number = 0 ; //Incermented after a day
+			$day_number = 0 ; //Incremented after a day
 			$no_courses = 1 ; //Flag, set 0 if theres at least one course today
 			foreach ($stundenplan as $dayname => $day) :
 		?>
 		<div class="item <?php if ($tage[$day_number]['IstHeute']) echo "active"; ?>">
 			<!--Tag-->
-			<div class="row-fluid day" id= "<?php echo $dayname ?>">
+			<div class="day" id= "<?php echo $dayname ?>">
 				<!--Tagestitel-->
 				<div class="span6 well">
 					
@@ -88,29 +90,29 @@
 			endforeach;
 		?>
 	</div>
-	<!-- Carousel nav -->
-	<!--<a class="carousel-control left" href="#carousel" data-slide="prev">&lsaquo;</a>
-	<a class="carousel-control right" href="#carousel" data-slide="next">&rsaquo;</a>-->
 </div>
+</div>
+
 <div class="row-fluid">
 	<div class="span12">
 		<div class="pagination pagination-centered">
 			<ul>
-				<li><a class="" href="#carousel" data-slide="prev">&lsaquo;</a></li>
-				<li><a class="slide-montag" href="#Montag">M</a></li>
-				<li><a class="slide-dienstag" href="#Dienstag">D</a></li>
-				<li><a class="slide-mittwoch" href="#Mittwoch">M</a></li>
-				<li><a class="slide-donnerstag" href="#Donnerstag">D</a></li>
-				<li><a class="slide-freitag" href="#Freitag">F</a></li>	
-				<li><a class="" href="#carousel" data-slide="next">&rsaquo;</a></li>
+				<li><a href="#carousel" data-slide="prev">&lsaquo;</a></li>
+				<li><a href="#Montag">M</a></li>
+				<li><a href="#Dienstag">D</a></li>
+				<li><a href="#Mittwoch">M</a></li>
+				<li><a href="#Donnerstag">D</a></li>
+				<li><a href="#Freitag">F</a></li>	
+				<li><a href="#carousel" data-slide="next">&rsaquo;</a></li>
 			</ul>
 		</div>
 	</div><!-- /.span12-->
 </div><!-- /.row-fluid -->
+
 <div class="row-fluid">
 	<div class="span12">
 		<div class="fhd-box clearfix">
-			<a href="<?php print base_url('dashboard/index'); ?>" class="btn btn-large btn-primary pull-left">
+			<a href="<?php print base_url('dashboard/mobile'); ?>" class="btn btn-large btn-primary pull-left">
 				<i class="icon-arrow-left icon-white"></i>
 				zurück
 			</a>

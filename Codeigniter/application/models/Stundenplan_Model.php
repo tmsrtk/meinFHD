@@ -137,19 +137,28 @@ class Stundenplan_Model extends CI_Model {
 			$time_since_monday = $time_since_monday + 86400;
 			$actual_day--;
 		}
+		
+		//Bugfix, if it's Sunday, it's the day before Monday, so the past time is negative 
+		if ($actual_day == 0)
+			$time_since_monday = -86400;
 
 		$date_monday = date('d.m.Y', time() - $time_since_monday);
 
 		//Add to the row array the specific date counting from Monday to Friday
 		$actual_date = $date_monday;
-
+		
+		// We need to exclude Saturday and Sunday.
+		// PHP week numbers start at 0 for Sunday, so 6 is for Saturday
+		$valid_days = array(1, 2, 3, 4, 5);
+		
 		//Reset Variable for actual day(Needed to Markup the day in Array)
-		$actual_day = date('w');
+		$day_number = date('w');
+		$actual_day = (in_array($day_number, $valid_days)) ? $day_number : 1;
 
 		$day_in_loop = 1;
-
-		foreach ($days as $key => $value) {
-
+		
+		foreach ($days as $key => $value)
+		{			
 			$days[$key]["Datum"] = $actual_date;
 			$time_since_monday = $time_since_monday - 86400;
 
@@ -164,6 +173,11 @@ class Stundenplan_Model extends CI_Model {
 
 			$day_in_loop++;
 
+		}
+
+		//Bugifx, If its Weekend show the next Monday
+		if (($actual_day == 0) or ($actual_day == 6)) {
+			$days[0]["IstHeute"] = 1;
 		}
 
 		return $days;

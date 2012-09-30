@@ -1,6 +1,6 @@
 <?php extend('base/template.php'); # extend main template ?>
 
-<?php startblock('title'); # extend the site's title ?><?php get_extended_block(); ?> - Studienplan<?php endblock();?>
+<?php startblock('title'); # extend the site's title ?><?php get_extended_block(); ?>Studienplan<?php endblock();?>
 
 <?php startblock('content'); # content for this view ?>
 <!-- begin : pop window (one-to-one relation between class and it's pop window) -->
@@ -79,6 +79,7 @@
         <div class="span4">
             <div class="well well-small clearfix">
                 <h6>Semesterplanung</h6>
+                <a name="jumpkpoint"></a>
             </div>
         </div>
         <!-- end : the title of this page -->
@@ -88,7 +89,7 @@
             <?php foreach ($studienplan as $semester) : ?>
                 <?php $semesterNum = 0; ?>
                 <?php foreach ($semester as $modul) : ?>
-                    <div class="accordion" id="accordion">
+                    <div class="accordion">
                         <div class="accordion-group">
 
                             <!-- begin : Semester title -->				
@@ -150,8 +151,8 @@
     <div class="row">
         <!-- begin : optionbox -->
         <div class="span12">
-            <div class="alert alert-info clearfix">
-                <a href="dashboard" class="btn btn-large btn-primary" href="#"> <i class="icon-arrow-left icon-white"></i> Dashboard </a>
+            <div class="fhd-box clearfix">
+                <a href="http://localhost/meinFHD/Codeigniter/dashboard/index" class="btn btn-large btn-primary pull-left"> <i class="icon-arrow-left icon-white"></i> Dashboard </a>
                 <a href="/meinFHD/Codeigniter/studienplan/spalteEinfuegen" class="btn btn-large pull-right"><i class="icon-plus"></i>&nbsp;Semester</a>
             </div>
         </div>
@@ -165,15 +166,22 @@
 
 
 <?php startblock('customFooterJQueryCode');?>
+
+	// change the icon for title
 	$('.collapse').on('shown', function(e) {
 		$(e.target).parent().find('i.icon-plus').removeClass('icon-plus').addClass('icon-minus');
 	}).on('hidden', function(e) {
 		$(e.target).parent().find('i.icon-minus').removeClass('icon-minus').addClass('icon-plus');
 	});
+
+<?php endblock(); ?>
+
+<script type="text/javascript">
 	
 	// set the current semester to be the "Selected" semester
 	function sendSemesterNum(semesterNum, classID) {
-		$('#semester_' + classID).val(semesterNum);
+        $('body,html').animate({scrollTop:0},1);        
+        $('#semester_' + classID).val(semesterNum);
 	}
 	
 	// if the status of Teilnehmen-Button be changed, change the value of "hidden input"(writeHidden)
@@ -192,7 +200,8 @@
 		} else {
 			$('#schreiben_' + classID).val(1);
 		}
-	}
-<?php endblock(); ?>
+    }
+</script>
+
 
 <?php end_extend(); # end extend main template ?>
