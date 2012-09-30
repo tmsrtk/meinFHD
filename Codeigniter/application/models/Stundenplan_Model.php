@@ -1,4 +1,17 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * meinFHD WebApp
+ * 
+ * @version 0.0.1
+ * @copyright Fachhochschule Duesseldorf, 2012
+ * @link http://www.fh-duesseldorf.de
+ * @author Simon vom Eyser (SVE), <simon.vomeyser@fh-duesseldorf.de>
+ */
+
+/**
+ * Stundenplan Model
+ */
 class Stundenplan_Model extends CI_Model {
 
 	private $user;//Debug
@@ -22,24 +35,6 @@ class Stundenplan_Model extends CI_Model {
 	
 		$query = $this->db->query("Select * From benutzer Where BenutzerID Like '".$id."' LIMIT 1");
 		$this->user = $query->row_array();
-	}
-
-	public function enroll_in_course($user_id, $course_id) {
-
-		//Testing, if there is still the possibility to enroll in that course
-
-		$query_students_enrolled = $this->db->query("Select * From gruppenteilnehmer Where GruppeID = '".$course_id."' ");
-		$students_in_course = $query_students_enrolled->num_rows();
-
-		$query_group = $this->db->query("Select * From gruppe Where GruppeID = '".$course_id."' ");
-		$group = $query_group->row();
-
-		echo $students_in_course . " gegen " . $group->TeilnehmerMax ;
- 
-		if (false) {
-			# code...
-		}
-
 	}
 	
 	/**
@@ -87,7 +82,6 @@ class Stundenplan_Model extends CI_Model {
 		// Gebe String zurück
 		return $semester;
 	}	
-
 
 	/**
 	 * Function create_times_array
@@ -183,7 +177,12 @@ class Stundenplan_Model extends CI_Model {
 		return $days;
 	}
 
-	//Constructs and returns an empty 2D array which will contain the timetable
+	/**
+	 * Constructs and returns an empty 2D array which will contain the timetable
+	 *
+	 * @param type name // nicht vorhanden
+	 * @return type // empty 2D array which will contain the timetable
+	 */
 	private function create_timetable_array()
 	{
 		$query_days = $this->db->query("SELECT TagName FROM tag");
@@ -295,9 +294,14 @@ class Stundenplan_Model extends CI_Model {
 		return $courses;
 	}
 
+	/**
+	 * Sort courses into timetable-array-structure
+	 *
+	 * @param type name // Record of courses(already set active!!), empty timetabe array
+	 * @return type // filled timetable
+	 */
 	private function courses_into_timetable($courses, $timetable)
 	{
-
 
 		//insert courses in the empty timetable array via for-each
 		foreach ($timetable as $TagName => $TagInhalt) {
@@ -312,8 +316,6 @@ class Stundenplan_Model extends CI_Model {
 
 			}
 		}
-
-
 
 		return $timetable;
 	}
@@ -363,8 +365,6 @@ class Stundenplan_Model extends CI_Model {
 
 		//[3] : The courses in a list, indexed by Numbers, ordered by day and hour
 		array_push($return, $courses);
-
-		//$this->krumo->dump($return);
 		
 		return $return;
 	}

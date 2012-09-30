@@ -39,7 +39,6 @@ class Stundenplan extends FHD_Controller {
      */
 	public function index()
 	{
-		//$this->krumo->dump($this->data->load());
 		$stundenplan = $this->Stundenplan_Model->get_stundenplan($this->authentication->user_id());
 		
 		$this->data->add('stundenplan', $stundenplan[0]); 
@@ -102,31 +101,14 @@ class Stundenplan extends FHD_Controller {
 		$this->load->view('stundenplan/week', $this->data->load());
 	}
 	
-	
-	
-	
-	
-	
-	
-	
 	public function timetable_show(){
 	    // TODO pass roles-specific data to view
 	    $this->load->view('stundenplan/tabview_desktop', $this->data->load());
 	}
 
-
-
-
-
-
-
-
-
 	public function register_in_course()
 	{
 		$data = $this->input->post();
-		
-		
 	}
 
 }
