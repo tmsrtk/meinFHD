@@ -92,6 +92,9 @@ class Logbuch_Analysis extends FHD_Controller {
         // get the attended events and add them to the view
         $this->data->add('attended_events', $this->logbuch_model->get_attendance_count_for_course_and_act_semester($course_id, $this->authentication->user_id()));
 
+        // get the occured events and add them to the view
+        $this->data->add('occured_events', $this->logbuch_model->get_number_of_course_events_till_today($course_id));
+
         // get some course informations and add them to the view
         $this->data->add('course_info', $this->logbuch_model->get_course_information($course_id));
 

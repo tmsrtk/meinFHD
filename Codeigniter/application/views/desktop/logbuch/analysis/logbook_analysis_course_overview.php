@@ -24,7 +24,7 @@
                 <div class="accordion-heading">
                     <h3 class="accordion-toggle" data-toggle="collapse" data-parent="#analysisAccordion" data-target="#overallAnalysis">Gesamtauswertung &uuml;ber alle meine Logbuchkurse<i class="icon-plus pull-right"></i></h3>
                 </div>
-                <div id="overallAnalysis" class="accordion-body collapse in">
+                <div id="overallAnalysis" class="accordion-body collapse">
                     <div class="accordion-inner">
                         <div class="row-fluid">
                             <p>Hier erh&auml;lst du einen kurzen zusammengefassten &Uuml;berblick &uuml;ber deine F&auml;higkeiten und Anwesenheiten zu
@@ -41,7 +41,7 @@
                             <hr/>
                             <h4>Anwesenheiten</h4>
                             <hr/>
-                            <div class="span6" id="overallAttendanceChart" style="max-width:500px; height: 300px; margin-left: 3%;">[DIAGRAMM]</div>
+                            <div class="span6" id="overallAttendanceChart" style="max-width:500px; height: 300px; margin-left: 3%;"></div>
                             <div class="span4"></div>
                         </div>
                     </div>
@@ -111,6 +111,9 @@
         format_attendance_series();
         // render out the overall attendance chart
         overallAttendanceChart();
+
+        // collapse the overall analysis element after loading
+        $('#overallAnalysis').collapse('show');
 
     });
 

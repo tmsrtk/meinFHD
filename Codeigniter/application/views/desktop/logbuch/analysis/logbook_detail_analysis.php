@@ -23,9 +23,8 @@
             <div class="span8" id="skillsChart" style="max-width:500px; height: 300px; margin-left: 3%;"></div>
             <div class="span4">
                 <br/>
-                <p>Aktuell beherrschst du alle von Dir dokumentierten Themen zu durchschnittlich <span style="color: red;"><strong>X %</strong></span>.</p>
-                <p>[MOTIVATIONSTEXT]</p>
-                <p>Mach weiter so!</p>
+                <p>Aktuell beherrschst du alle von Dir dokumentierten Themen zu durchschnittlich <span style="color: green;"><strong><?php echo $skill_data['avg_rating'][0];?> %</strong></span>.</p>
+                <p>Die Grafik gibt dir einen &Uuml;berblick &uuml;ber deine Kenntnisse getrennt nach den einzelnen, hinterlegten Themen. </p>
             </div>
         </div>
     </div><!-- /div kenntnisse container -->
@@ -37,10 +36,9 @@
             <div class="span8" id="attendanceChart" style="max-width: 500px; height:300px; margin-left: 3%;"></div>
             <div class="span4">
                 <br/>
-                <p>Du warst im bisherigen Semester insgesamt <span style="color: red;"><strong><?php echo $attended_events; ?></strong></span> von <strong><?php echo $max_semester_weeks; # max events equal to max semesterweeks ?></strong>
-                    mal da!</p>
-                <p>[MOTIVATIONSTEXT]</p>
-                <p>Schau dir die Grafik an, um einen Überblick über die Anwesenheiten über den Semsterverlauf zu bekommen.</p>
+                <p>Du warst im aktuellen Semester bisher bei <span style="color: green;"><strong><?php echo $attended_events; ?></strong></span> von <strong><?php echo $occured_events; # occured events till today ?></strong>
+                    Veranstaltungen!</p>
+                <p>Schau dir die Grafik an, um einen &Uuml;berblick &uuml;ber den Verlauf deiner Anwesenheiten w&auml;hrend des Semesters zu bekommen.</p>
             </div>
         </div>
     </div>
