@@ -34,7 +34,7 @@
                         <div class="row-fluid">
                             <h4>Kenntnisse</h4>
                             <hr/>
-                            <div class="span6" id="overallSkillChart" style="max-width:500px; height: 300px; margin-left: 3%;"></div>
+                            <div class="span6" id="overallSkillChart" style="max-width:500px; height: 400px; margin-left: 3%;"></div>
                             <div class="span4"></div>
                         </div>
                         <div class="row-fluid">

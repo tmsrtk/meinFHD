@@ -97,7 +97,7 @@ function checkForAttendanceAchievement(course_data) {
     // send (ajax)request to the achievement controller
    $.ajax({
         url: CI.base_url + 'achievement/ajax_check_for_new_attendance_achievement/' + course_data.running_course_id,
-        type: 'POST',
+        type: 'GET',
         success: function(success_data){ // function that handels the ajax response
             if(success_data != 'no_achievement_unlocked'){ // an achievement has been unlocked by the user. show him the modal
                 // render out the success data to the modal markup

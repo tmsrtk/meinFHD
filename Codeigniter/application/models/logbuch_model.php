@@ -333,7 +333,7 @@ class Logbuch_Model extends CI_Model {
      * @return ARRAY Array with all base topics, if there are no base topics an empty array will be returned
      */
     public function get_all_base_topics_for_course($course_id){
-        $this->db->select('Thema, Erlaeuterung');
+        $this->db->select('Thema');
         $this->db->from('basislogbucheintrag');
         $this->db->where('KursID', $course_id);
 
@@ -346,7 +346,6 @@ class Logbuch_Model extends CI_Model {
             foreach($query->result() as $row) {
                 $entry = array(
                     'Thema' => $row->Thema,
-                    'Erlaeuterung' => $row->Erlaeuterung
                 );
                 $base_topics[] = $entry;
             }
@@ -399,7 +398,6 @@ class Logbuch_Model extends CI_Model {
          foreach($base_topics as $single_topic){
             $data_to_insert = array(
                 'Thema' => $single_topic['Thema'],
-                'Erlaeuterung' => $single_topic['Erlaeuterung'],
                 'LogbuchID' => $logbook_id
             );
 

@@ -25,6 +25,8 @@ class Achievement extends FHD_Controller {
     // declaration of instance variables
     private $CI;
     private $user_id;
+    // variable for the min. count of topics that are necessary for the skills achievments
+    private $min_topics_skill_achievment;
 
     /**
      * Default Constructor, used for initialization
@@ -37,8 +39,12 @@ class Achievement extends FHD_Controller {
 
         $this->user_id = $this->authentication->user_id(); // save the uid of the current authenticated user
 
+        // set the minimum count of topics, that are needed for the skills achievment
+        $this->min_topics_skill_achievment = 5; // user needs at leas 5 topics
+
         // load the logbuch and the achievement model
         $this->load->model('logbuch_model');
+        // load the achievment model
         $this->load->model('achievement_model');
     }
 
@@ -76,7 +82,7 @@ class Achievement extends FHD_Controller {
         $result = ''; // result variable to hold the information, which should be 'returned' to the view
 
         // if the user has saved more than 5 topics in the logbook, than check for an achievement
-        if($this->achievement_model->get_saved_topic_count_for_logbook($logbook_id) >= 5){
+        if($this->achievement_model->get_saved_topic_count_for_logbook($logbook_id) >= $this->min_topics_skill_achievment){
             // get the avg course / logbook rating
             $course_skill_rating = $this->logbuch_model->get_avg_rating_for_logbook($logbook_id);
             // get the matching achievement (achievementlevel), if there is no matching achievement the value will be FALSE

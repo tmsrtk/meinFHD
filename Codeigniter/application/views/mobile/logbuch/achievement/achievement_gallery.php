@@ -44,7 +44,7 @@
                                             <img src="<?php print base_url(); ?>resources/img/achievement_badges/<?php echo $single_achievementtype['Aktivitaetenname'];?>/level_<?php echo $single_achievementtype['LevelNr']; ?>.png" alt="Achievement Badge" />
                                         </div>
                                         <div class="span1"></div>
-                                        <div class="span8">Und hier dann der Motivationstext und so</div>
+                                        <div class="span8"><?php echo $single_achievementtype['Motivationstext']; ?></div>
                                     </div>
                                     <br/>
                                     <div class="row-fluid">

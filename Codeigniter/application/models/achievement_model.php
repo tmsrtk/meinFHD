@@ -118,7 +118,7 @@ class Achievement_Model extends CI_Model {
         // query the database for the distinct achievementtypes, for the given level and the given user_id
         $query = $this->db->query("
                                     SELECT distinct(achievement.AchievementID), achievement.Achievementname,
-                                           achievementart.Aktivitaetenname, achievement.LevelNr
+                                           achievementart.Aktivitaetenname, achievement.LevelNr, achievement.Motivationstext
                                     FROM benutzer_achievement, achievement, achievementart
                                     WHERE benutzer_achievement.AchievementID = achievement.AchievementID
                                     AND achievement.AchievementArtID = achievementart.AchievementartID

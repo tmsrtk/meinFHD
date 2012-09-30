@@ -18,7 +18,7 @@
         <h3>Kenntnisse</h3>
         <br/>
         <div class="row-fluid">
-            <div class="span8" id="skillsChart" style="max-width:500px; height: 200px;"></div>
+            <div class="span8" id="skillsChart" style="max-width:500px; height: 500px;"></div>
             <div class="span4">
                 <p>Aktuell beherrschst du alle von Dir dokumentierten Themen zu durchschnittlich <span style="color: green;"><strong><?php echo $skill_data['avg_rating'][0];?> %</strong></span>.</p>
                 <p>Die Grafik gibt dir einen &Uuml;berblick &uuml;ber deine Kenntnisse getrennt nach den einzelnen, hinterlegten Themen. </p>
@@ -30,7 +30,7 @@
         <h3>Anwesenheit</h3>
         <br/>
         <div class="row-fluid">
-            <div class="span8" id="attendanceChart" style="max-width: 500px; height:200px;"></div>
+            <div class="span8" id="attendanceChart" style="max-width: 500px; height:500px;"></div>
             <div class="span4">
                 <p>Du warst im aktuellen Semester bisher bei <span style="color: green;"><strong><?php echo $attended_events; ?></strong></span> von <strong><?php echo $occured_events; # occured events till today ?></strong>
                     Veranstaltungen!</p>

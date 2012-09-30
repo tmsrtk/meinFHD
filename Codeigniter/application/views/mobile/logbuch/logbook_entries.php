@@ -123,7 +123,7 @@
         // send (ajax)request to the achievement controller to check if an new achievement has been unlocked
         $.ajax({
             url: request_url,
-            type: 'POST',
+            type: 'GET',
             success: function(success_data){ // function that handels the ajax response
                 if(success_data != 'no_achievement_unlocked'){ // an achievement has been unlocked by the user. show him the modal
                     // render out the success data to the modal markup
