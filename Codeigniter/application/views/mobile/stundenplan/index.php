@@ -121,7 +121,5 @@
 	</div><!-- /.span12-->
 </div><!-- /.row-fluid -->
 
-
-
 <?php endblock(); ?>
 <?php end_extend(); ?>

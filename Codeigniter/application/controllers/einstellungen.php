@@ -111,7 +111,7 @@ class einstellungen extends FHD_Controller{
             }
                 
             //load view
-            $this->load->view('einstellungen', $data);
+            $this->load->view('einstellungen/index', $data);
           
 	}
 	
