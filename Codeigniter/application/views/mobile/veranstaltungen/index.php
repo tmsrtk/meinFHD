@@ -7,7 +7,7 @@
 <!-- Veranstaltungen -------------------------------- -->
 <!- ------------------------------------------------ -->
 <div class="row-fluid">
-	<div class="span6 well">
+	<div class="span12 well">
 
 		<h6>Veranstaltungsliste</h6>
 		<h1>Semester <?php echo $userdata["act_semester"]; ?></h1>
@@ -29,7 +29,7 @@
 					<tr>
 						<td><?php echo $value['Kursname']; ?></td>
 						<td>
-							<a href="<?php echo base_url('modul/show/' . $value['KursID']); ?>" class="btn btn-primary pull-right">
+							<a href="<?php echo base_url('modul/show/' . $value['KursID']); ?>" class="btn btn-large btn-primary pull-right">
 								<i class="icon-arrow-right icon-white"></i>
 							</a>
 						</td>						
