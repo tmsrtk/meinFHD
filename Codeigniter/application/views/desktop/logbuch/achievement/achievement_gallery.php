@@ -6,10 +6,9 @@
 <div class="well well-small">
     <div class="row-fluid">
         <div class="span12">
-            <a href="<?php print base_url('logbuch/index'); ?>" class="btn btn-medium btn-danger" style="font-weight: bold;"><i class="icon-arrow-left icon-white"></i>&nbsp;Logbuchmen&uuml;</a><br/><br/>
+            <a href="<?php print base_url('logbuch/index'); ?>" class="btn btn-medium btn-danger" style="font-weight: bold;"><i class="icon-arrow-left icon-white"></i>&nbsp;Logbuchmen&uuml;</a>
         </div>
     </div>
-    <br/>
     <hr/>
     <!-- display content if no achievements have been unlocked -->
     <?php if(!$achievement_data) :?>
