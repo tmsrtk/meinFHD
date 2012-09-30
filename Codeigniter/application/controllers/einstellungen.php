@@ -27,7 +27,6 @@ class einstellungen extends FHD_Controller{
             $data['info'] = $this->persDaten_model->getUserInfo();
             $data['stgng'] = $this->persDaten_model->getStudiengang();
 
-            //$this->krumo->dump($data);
             //setting up the rules, to which the user-input of the corresponding form-fields must comply:
             //Note: the form_validation-class is automagically loaded in the config/autoload.php, so there's no need to load it here.
             $this->form_validation->set_rules('login', 'Loginname', 'callback_validateLoginname['.$data['info']['LoginName'].']');
@@ -37,8 +36,6 @@ class einstellungen extends FHD_Controller{
 
             //$this->krumo->dump($data);
             //$this->krumo->dump($_POST);
-            //print_r($this->authentication->user_id());
-            //$this->load->view('einstellungen', $data);
 
             //Form-Validation works like this:
             //  1. is there POST-data to check? if not, it fails -> no database updating
@@ -47,7 +44,7 @@ class einstellungen extends FHD_Controller{
             //      Because of that, every POST-data always gets to the db-update, even if there are no rules set up. (like firstname/lastname etc.)
             if ($this->form_validation->run() == FALSE)
             {
-                echo 'NICHTS PASSIERT';
+                //echo 'NICHTS PASSIERT';
             }
             else
             {		
@@ -69,7 +66,7 @@ class einstellungen extends FHD_Controller{
 
                 if ($this->hasPasswordChanged())
                 {
-                    echo 'Password wurde geändert';
+                    //echo 'Password wurde geändert';
                     //ToDO: Email versenden!
 
                     //add the encrypted passwort
@@ -79,7 +76,7 @@ class einstellungen extends FHD_Controller{
                 //if there is no matrikelnr yet and the POSTfield is set
                 if (($data['info']['MatrikelnummerFlag'] == 0) && isset($_POST['matrikel']))
                 {
-                    echo 'Matrikel wurde geändert';
+                    //echo 'Matrikel wurde geändert';
 
                     //add to the to-be-updated field
                     $fieldarray['Matrikelnummer'] = $_POST['matrikel'];
@@ -95,7 +92,7 @@ class einstellungen extends FHD_Controller{
 
                 if ($this->hasStudycourseChanged($data['info']['StudiengangID']))
                 {
-                    echo 'Studiengang wurde geändert';
+                    //echo 'Studiengang wurde geändert';
 
                     //delete old semesterplan
                     //$this->studienplan_model->deleteAll();
@@ -301,14 +298,14 @@ class einstellungen extends FHD_Controller{
         function validateMatrikel()
         {
             //does it contain any letters or other non-numbery characters?
-            if (!$this->form_validation->is_natural($_POST['Matrikelnummer']))
+            if (!$this->form_validation->is_natural($_POST['matrikel']))
             {
                 $this->message->set('Keine korrekte Matrikelnummer. Überprüfen sie ihre Eingabe', 'error');
                 return FALSE;
             }
             
             //is it already in use by another student?
-            if (!$this->form_validation->is_unique($_POST['Matrikelnummer'], 'benutzer.Matrikelnummer'))
+            if (!$this->form_validation->is_unique($_POST['matrikel'], 'benutzer.Matrikelnummer'))
             {
                 $this->message->set('Matrikelnummer wird schon verwendet. Überprüfen sie ihre Eingabe oder wenden sie sich an den Administrator', 'error');
                 return FALSE;
