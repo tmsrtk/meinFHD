@@ -136,17 +136,12 @@
 <?php endif; ?>	
 
 <div class="row-fluid">
-	
-	<!--optionbox at the end of page-->
 	<div class="span12">
-		<div class="fhd-box clearfix">
-			<a href="<?php echo base_url('stundenplan'); ?>" class="btn btn-large btn-primary" href="#">
-				<i class="icon-arrow-left icon-white"></i>
-				 Stundenplan
-			</a>
+		<div class="fhd-box">
+			<a href="<?php print base_url('dashboard/mobile'); ?>" class="btn btn-large btn-primary">Übersicht</a>
+			<a href="<?php print base_url('stundenplan'); ?>" class="btn btn-large pull-right">Stundenplan</a>
 		</div>
 	</div>
-	
 </div>
 	
 <!-- CONTENT ENDE-->

@@ -18,7 +18,7 @@ $faq[5][0] = 'Woran sehe ich, welche Gruppen zusammengehören, welche Alternativ
 $faq[6][0] = 'Was passiert, wenn ich mich nicht anmelde?';
 $faq[7][0] = 'Wie kann ich eine Gruppe wechseln?';
 $faq[8][0] = 'Muss ich alle Veranstaltungen des Stundenplans besuchen?';
-$faq[9][0] = 'An wen wende ich mich, wenn ich noch weitere Fragen zu meinFHD habe?';
+$faq[9][0] = 'An wen wende ich mich, wenn ich weitere Fragen zu meinFHD habe?';
 
 // $faq[X][1] means "Content belongs to the Title"		
 $faq[0][1] = 'Damit Du direkt einen guten Überblick über die Kurse und Prüfungen, die auf Dich zukommen, hast.';
@@ -34,66 +34,54 @@ $faq[9][1] = 'Per Email an <strong><a href="mailto:meinFHD.medien@fh-duesseldorf
 ?>
 
 
-<!-- begin : CONTENT -->
-<div class="container container-fluid">	
+<div class="row-fluid">
 
-    <!-- begin : the first row -->
-    <div class="row">
+	<div class="span4 well">
+		<h6>Fragen und Antworten</h6>
+		<h1>FAQ</h1>
+	</div>
 
-        <!-- begin : the title of this page -->
-        <div class="span4">
-            <div class="well well-small clearfix">
-                <h6>FAQ</h6>
-            </div>
-        </div>
-        <!-- end : the title of this page -->
+	<div class="span8">
+		<?php for ($n = 0; $n < count($faq); $n++): ?>
+			
+			<div class="accordion">
+				<div class="accordion-group">
+					<!-- begin : FAQ title -->
+					<div class="accordion-heading">
+						<div class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse_<?php echo $n; ?>">
+							<?php echo $faq[$n][0]; ?>
+							<i class="icon-plus pull-right"></i>
+						</div>
+					</div>
+					<!-- end : FAQ title -->
 
-        <!-- begin : the FAQ list -->
-        <div class="span8">
-<?php for ($n = 0; $n < count($faq); $n++): ?>
+					<!-- begin : FAQ content -->
+					<div id="collapse_<?php echo $n; ?>" class="accordion-body collapse">
+						<div class="accordion-inner">
+							<div class="alert alert-info clearfix">
+								<?php echo $faq[$n][1]; ?>
+							</div>
+						</div>
+					</div>
+					<!-- begin : FAQ content-->
+				</div>
+			</div>
+		<?php endfor; ?>
 
-                <div class="accordion">
-                    <div class="accordion-group">
-                        <!-- begin : FAQ title -->
-                        <div class="accordion-heading">
-                            <div class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse_<?php echo $n; ?>">
-    <?php echo $faq[$n][0]; ?>
-                                <i class="icon-plus pull-right"></i>
-                            </div>
-                        </div>
-                        <!-- end : FAQ title -->
-
-                        <!-- begin : FAQ content -->
-                        <div id="collapse_<?php echo $n; ?>" class="accordion-body collapse">
-                            <div class="accordion-inner">
-                                <div class="alert alert-info clearfix">
-    <?php echo $faq[$n][1]; ?>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- begin : FAQ content-->
-                    </div>
-                </div>
-<?php endfor; ?>
-
-        </div>
-        <!-- end : the FAQ list -->
-    </div>
-    <!-- end : the first row -->
-
-    <!-- begin : the second row -->
-    <div class="row">
-        <!-- begin : optionbox -->
-        <div class="span12">
-            <div class="fhd-box clearfix">
-                <a href="http://localhost/meinFHD/Codeigniter/dashboard/index" class="btn btn-large btn-primary pull-left"> <i class="icon-arrow-left icon-white"></i> Dashboard </a>
-            </div>
-        </div>
-        <!-- end : optionbox -->
-    </div>
-    <!-- begin : the second row -->
-
+	</div>
+	<!-- end : the FAQ list -->
 </div>
-<!-- end : CONTENT-->
+<!-- end : the first row -->
+
+
+<div class="row-fluid">
+	<div class="span12">
+		<div class="fhd-box">
+			<a href="<?php print base_url('dashboard/mobile'); ?>" class="btn btn-large btn-primary">Übersicht</a>
+			<a href="<?php print base_url('hilfe'); ?>" class="btn btn-large pull-right">Hilfe</a>
+		</div>
+	</div>
+</div>
+
 <?php endblock(); ?>
 <?php end_extend(); # end extend main template  ?>

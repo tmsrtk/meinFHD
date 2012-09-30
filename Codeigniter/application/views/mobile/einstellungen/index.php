@@ -105,7 +105,7 @@
 	      
 	<div class="fhd-box">
 		<a href="<?php print base_url('dashboard/mobile'); ?>" class="btn btn-large btn-primary">Übersicht</a>
-		<button type="submit" class="btn btn-large pull-right" value="save"><i class="icon-hdd"></i> Speichern</button>
+		<button type="submit" class="btn btn-large pull-right" value="save">Speichern</button>
 	</div>
 
 </form>

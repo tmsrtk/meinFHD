@@ -44,7 +44,7 @@ class einstellungen extends FHD_Controller{
             //      Because of that, every POST-data always gets to the db-update, even if there are no rules set up. (like firstname/lastname etc.)
             if ($this->form_validation->run() == FALSE)
             {
-                echo 'NICHTS PASSIERT';
+                //echo 'NICHTS PASSIERT';
             }
             else
             {		

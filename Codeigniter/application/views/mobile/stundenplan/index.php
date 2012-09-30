@@ -19,7 +19,7 @@
 			<!--Tag-->
 			<div class="day" id= "<?php echo $dayname ?>">
 				<!--Tagestitel-->
-				<div class="span6 well">
+				<div class="span12 well">
 					
 					<h6>Stundenplan</h6>
 					<h1><?php echo $dayname ?>&nbsp;<small><?php echo $tage[$day_number]['Datum'] ?></small></h1>
@@ -112,10 +112,7 @@
 <div class="row-fluid">
 	<div class="span12">
 		<div class="fhd-box clearfix">
-			<a href="<?php print base_url('dashboard/mobile'); ?>" class="btn btn-large btn-primary pull-left">
-				<i class="icon-arrow-left icon-white"></i>
-				zurück
-			</a>
+			<a href="<?php print base_url('dashboard/mobile'); ?>" class="btn btn-large btn-primary">Übersicht</a>
 			<a href="<?php print base_url('stundenplan/woche'); ?>" class="btn btn-large pull-right">Woche</a>
 		</div>
 	</div><!-- /.span12-->

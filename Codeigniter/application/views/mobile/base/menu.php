@@ -7,7 +7,7 @@
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</a>
-						<a class="brand" href="#">meinFHD<span>mobile</span></a>
+						<a class="brand" href="<?php print base_url('dashboard/mobile'); ?>">meinFHD<span>mobile</span></a>
 						<?php endif; ?>
 						<div class="nav-collapse">
 							<ul class="nav level-1"> <!-- .nav.level-1 -->
