@@ -1,31 +1,23 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- * Description of einstellungen
+ * Controller for the "Persönlichen Einstellungen"
  *
  * @author jan
  */
 class einstellungen extends FHD_Controller{
     
-    //private $userid;
-    //var $data;
     
-    public function __construct()
-		{
-			error_reporting(E_ERROR);
-		  parent::__construct();	
-		  $this->load->model('persDaten_model');
-                  $this->load->model('studienplan_model');
-		  
-		  //$this->userid = 1383;
-		  //$this->userid = $this->authentication->user_id();
-                  //$this->data = array();
-		}
+        public function __construct()
+        {
+                error_reporting(E_ERROR);
+          parent::__construct();	
+          $this->load->model('persDaten_model');
+          
+          //For changing the Studienplan:
+          $this->load->model('studienplan_model');
+
+        }
 	
 	
 	function index()
@@ -41,6 +33,7 @@ class einstellungen extends FHD_Controller{
             $this->form_validation->set_rules('login', 'Loginname', 'callback_validateLoginname['.$data['info']['LoginName'].']');
             $this->form_validation->set_rules('pw2', 'Passwort', 'callback_validatePassword');
             $this->form_validation->set_rules('email', 'Email', 'callback_validateEmail');
+            $this->form_validation->set_rules('matrikel', 'Matrikelnummer', 'callback_validateMatrikel');
 
             //$this->krumo->dump($data);
             //$this->krumo->dump($_POST);
@@ -55,7 +48,6 @@ class einstellungen extends FHD_Controller{
             if ($this->form_validation->run() == FALSE)
             {
                 echo 'NICHTS PASSIERT';
-                //echo 'fehler';
             }
             else
             {		
@@ -84,31 +76,46 @@ class einstellungen extends FHD_Controller{
                     $fieldarray['Passwort'] = md5($_POST['pw2']);
                 }
 
+                //if there is no matrikelnr yet and the POSTfield is set
+                if (($data['info']['MatrikelnummerFlag'] == 0) && isset($_POST['matrikel']))
+                {
+                    echo 'Matrikel wurde geändert';
+
+                    //add to the to-be-updated field
+                    $fieldarray['Matrikelnummer'] = $_POST['matrikel'];
+                    $fieldarray['MatrikelnummerFlag'] = 1;
+                }
+
 
 
                 //update database
                 $this->persDaten_model->update($fieldarray);
+                //create log
+                $this->persDaten_model->log($data['info']['TypID'], $data['info']['FachbereichID']);
 
                 if ($this->hasStudycourseChanged($data['info']['StudiengangID']))
                 {
                     echo 'Studiengang wurde geändert';
 
                     //delete old semesterplan
-                    $this->studienplan_model->deleteAll();
+                    //$this->studienplan_model->deleteAll();
 
-                    //update studienplan IDs:
-                    $this->studienplan_model->queryStudycourseId();
                     //and create a new one
-                    $this->studienplan_model->createStudyplan();
+                    //$this->studienplan_model->createStudyplan();
+
+                    //add the studycourse
+                    //$fieldarray['StudiengangID'] = $_POST['stgid'];
                 }
 
                 $data['info'] = $this->persDaten_model->getUserInfo();
                 $data['stgng'] = $this->persDaten_model->getStudiengang();
 
+            //end else
             }
-            
-            //in either case, load the view
+                
+            //load view
             $this->load->view('einstellungen', $data);
+          
 	}
 	
         function studiengangWechseln()
@@ -290,6 +297,26 @@ class einstellungen extends FHD_Controller{
 	    }
 	    return TRUE;
 	}
+        
+        function validateMatrikel()
+        {
+            //does it contain any letters or other non-numbery characters?
+            if (!$this->form_validation->is_natural($_POST['Matrikelnummer']))
+            {
+                $this->message->set('Keine korrekte Matrikelnummer. Überprüfen sie ihre Eingabe', 'error');
+                return FALSE;
+            }
+            
+            //is it already in use by another student?
+            if (!$this->form_validation->is_unique($_POST['Matrikelnummer'], 'benutzer.Matrikelnummer'))
+            {
+                $this->message->set('Matrikelnummer wird schon verwendet. Überprüfen sie ihre Eingabe oder wenden sie sich an den Administrator', 'error');
+                return FALSE;
+            }
+            
+            //if none of the above triggers, the entered number seems valid
+            return TRUE;
+        }
 }
 
 ?>
