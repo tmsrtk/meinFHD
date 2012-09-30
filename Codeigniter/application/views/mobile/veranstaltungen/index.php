@@ -13,7 +13,7 @@
 				<h6>Veranstaltungsliste</h6>
 		
 				<!--Titel-->
-    			<h1>Semester 1</h1>
+    			<h1>Semester <?php echo $userdata["act_semester"]; ?></h1>
 				<hr />
 
 					<?php $alte_kursID = 1; ?>

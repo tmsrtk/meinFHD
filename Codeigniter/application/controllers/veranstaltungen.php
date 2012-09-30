@@ -33,7 +33,7 @@ class Veranstaltungen extends FHD_Controller {
 	
 
     /**
-     * Index-method, loads for testing purposes the Stundenplan_view
+     * Index-method, loads veranstaltungen view
      * 
      * @param type name // nicht vorhanden
      * @return type // nicht vorhanden
@@ -44,7 +44,8 @@ class Veranstaltungen extends FHD_Controller {
 		$stundenplan = $this->Stundenplan_Model->get_stundenplan($this->authentication->user_id());
 		
 		$this->data->add('kurse', $stundenplan[3]);
-			$this->krumo->dump($stundenplan[3]);
+		
+			$this->krumo->dump($this->data->load());
 		
 		$this->load->view('veranstaltungen/index', $this->data->load());
 		
