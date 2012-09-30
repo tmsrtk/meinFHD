@@ -137,6 +137,10 @@ class Stundenplan_Model extends CI_Model {
 			$time_since_monday = $time_since_monday + 86400;
 			$actual_day--;
 		}
+		
+		//Bugfix, if it's Sunday, it's the day before Monday, so the past time is negative 
+		if ($actual_day == 0)
+			$time_since_monday = -86400;
 
 		$date_monday = date('d.m.Y', time() - $time_since_monday);
 
@@ -169,6 +173,11 @@ class Stundenplan_Model extends CI_Model {
 
 			$day_in_loop++;
 
+		}
+
+		//Bugifx, If its Weekend show the next Monday
+		if (($actual_day == 0) or ($actual_day == 6)) {
+			$days[0]["IstHeute"] = 1;
 		}
 
 		return $days;
