@@ -99,9 +99,13 @@
 							<td><?php echo $courselist[0]['VeranstaltungsformAlternative'] ?></td>
 							<td><?php echo substr($veranstaltung['TagName'],0,2); ?>. <?php echo $courselist[0]['Beginn'] ?> - <?php echo $courselist[0]['Ende'] ?> </td>
 							<td>
+
+							<?php if ($courselist[0]['Anmeldung_zulassen'] == 1): ?>
 								<a href="<?php echo base_url('modul/withdraw_from_course/'. $courselist[0]['KursID'].'/'. $courselist[0]['SPKursID'].'/'.  $courselist[0]['GruppeID'] ); ?>" class="btn btn-primary pull-right">
 									<i class="icon-remove icon-white"></i>
 								</a>
+							<?php endif ?>
+
 							</td>
 						</tr><!--belegeter Termin Ende-->
 					<?php endif; ?>
@@ -112,9 +116,13 @@
 								<td><?php echo $veranstaltung['VeranstaltungsformAlternative'] ?></td>
 								<td><?php echo substr($veranstaltung['TagName'],0,2); ?>. <?php echo $veranstaltung['Beginn']; ?> - <?php echo $veranstaltung['Ende']; ?></td>
 								<td>
+
+								<?php if ($courselist[0]['Anmeldung_zulassen'] == 1): ?>
 									<a href="<?php echo base_url('modul/enroll_to_course/'. $veranstaltung['KursID'].'/'. $veranstaltung['SPKursID'].'/'.  $veranstaltung['GruppeID'] ); ?>" class="btn pull-right">
 										<i class="icon-ok"></i>
-									</a>									
+									</a>		
+								<?php endif ?>	
+
 								</td>
 							</tr>
 						<?php endforeach; ?>
