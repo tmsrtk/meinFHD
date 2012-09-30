@@ -302,7 +302,6 @@ class einstellungen extends FHD_Controller{
                 //does it contain any letters or other non-numbery characters?
                 if (!$this->form_validation->is_natural($_POST['matrikel']))
                 {
-                    echo 'is natural <br/>';
                     $this->message->set('Keine korrekte Matrikelnummer. Überprüfen sie ihre Eingabe', 'error');
                     return FALSE;
                 }
@@ -310,7 +309,6 @@ class einstellungen extends FHD_Controller{
                 //is it already in use by another student?
                 if (!$this->form_validation->is_unique($_POST['matrikel'], 'benutzer.Matrikelnummer'))
                 {
-                    echo 'is not unique <br/>';
                     $this->message->set('Matrikelnummer wird schon verwendet. Überprüfen sie ihre Eingabe oder wenden sie sich an den Administrator', 'error');
                     return FALSE;
                 }
