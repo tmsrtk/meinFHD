@@ -112,7 +112,7 @@
 <div class="row-fluid">
 	<div class="span12">
 		<div class="fhd-box clearfix">
-			<a href="<?php print base_url('dashboard/index'); ?>" class="btn btn-large btn-primary pull-left">
+			<a href="<?php print base_url('dashboard/mobile'); ?>" class="btn btn-large btn-primary pull-left">
 				<i class="icon-arrow-left icon-white"></i>
 				zurück
 			</a>
