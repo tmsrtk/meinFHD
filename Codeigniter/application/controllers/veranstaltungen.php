@@ -56,11 +56,7 @@ class Veranstaltungen extends FHD_Controller {
 
 		}
 
-
-
 		$this->data->add('kurse', $kursliste);
-
-		$this->krumo->dump($kursliste);
 		
 		$this->load->view('veranstaltungen/index', $this->data->load());
 		

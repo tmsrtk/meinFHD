@@ -25,7 +25,6 @@
 		
 			<?php foreach ($kurse as $kurs => $value): ?>
 	
-				<?php if ($value['KursID'] != $alte_kursID): ?>
 					<tr>
 						<td><?php echo $value['Kursname']; ?></td>
 						<td>
@@ -34,11 +33,9 @@
 							</a>
 						</td>						
 					</tr>
-				<?php endif ?>
-	
-				<?php $alte_kursID = $value['KursID']; ?>
 	
 			<?php endforeach ?>
+			
 			</tbody>
 		</table>
 		    		    	   									  	
