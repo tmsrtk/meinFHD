@@ -40,6 +40,15 @@
 		</table>
 		    		    	   									  	
 	</div>
+</div>
+
+<div class="row-fluid">
+	<div class="span12">
+		<div class="fhd-box">
+			<a href="<?php print base_url('dashboard/mobile'); ?>" class="btn btn-large btn-primary">Übersicht</a>
+			<a href="<?php print base_url('stundenplan'); ?>" class="btn btn-large pull-right">Stundenplan</a>
+		</div>
+	</div>
 </div>										
 
 <?php endblock(); ?>
