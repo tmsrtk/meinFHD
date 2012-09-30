@@ -44,7 +44,7 @@ class einstellungen extends FHD_Controller{
             //      Because of that, every POST-data always gets to the db-update, even if there are no rules set up. (like firstname/lastname etc.)
             if ($this->form_validation->run() == FALSE)
             {
-                //echo 'NICHTS PASSIERT';
+                echo 'NICHTS PASSIERT';
             }
             else
             {		
@@ -221,7 +221,7 @@ class einstellungen extends FHD_Controller{
 		}
 		
 	    }
-	    
+	    //echo 'pw test <br/>';
 	    //if all of the above doesnt trigger, the pasword is either valid or not entered
 	    return TRUE;
 	}
@@ -273,7 +273,7 @@ class einstellungen extends FHD_Controller{
 		}
 		
 	    }
-	    
+	    //echo 'login test<br/>';
 	    //if all of the above doesnt trigger, the Loginname is either valid or the old one
 	    return TRUE;
 	}
@@ -292,23 +292,28 @@ class einstellungen extends FHD_Controller{
 		return FALSE;
 		
 	    }
+            //echo 'email test<br/>';
 	    return TRUE;
 	}
         
         function validateMatrikel()
         {
-            //does it contain any letters or other non-numbery characters?
-            if (!$this->form_validation->is_natural($_POST['matrikel']))
-            {
-                $this->message->set('Keine korrekte Matrikelnummer. Überprüfen sie ihre Eingabe', 'error');
-                return FALSE;
-            }
-            
-            //is it already in use by another student?
-            if (!$this->form_validation->is_unique($_POST['matrikel'], 'benutzer.Matrikelnummer'))
-            {
-                $this->message->set('Matrikelnummer wird schon verwendet. Überprüfen sie ihre Eingabe oder wenden sie sich an den Administrator', 'error');
-                return FALSE;
+            if (isset($_POST['matrikel'])){
+                //does it contain any letters or other non-numbery characters?
+                if (!$this->form_validation->is_natural($_POST['matrikel']))
+                {
+                    echo 'is natural <br/>';
+                    $this->message->set('Keine korrekte Matrikelnummer. Überprüfen sie ihre Eingabe', 'error');
+                    return FALSE;
+                }
+
+                //is it already in use by another student?
+                if (!$this->form_validation->is_unique($_POST['matrikel'], 'benutzer.Matrikelnummer'))
+                {
+                    echo 'is not unique <br/>';
+                    $this->message->set('Matrikelnummer wird schon verwendet. Überprüfen sie ihre Eingabe oder wenden sie sich an den Administrator', 'error');
+                    return FALSE;
+                }
             }
             
             //if none of the above triggers, the entered number seems valid
