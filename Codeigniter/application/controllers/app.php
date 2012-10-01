@@ -91,7 +91,7 @@ class App extends FHD_Controller {
         }
 
         else { // otherwise perform a regular logut
-            $this->message->set(sprintf('Ausgeloggt! (ID: %s)', $this->authentication->user_id()));
+            //$this->message->set(sprintf('Ausgeloggt! (ID: %s)', $this->authentication->user_id()));
             $this->authentication->logout();
             redirect('app/login');
         }
