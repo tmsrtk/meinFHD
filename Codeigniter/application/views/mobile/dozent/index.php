@@ -58,10 +58,7 @@
 	<!--optionbox at the end of page-->
 	<div class="span12">
 		<div class="fhd-box clearfix">
-			<a href="<?php echo base_url('stundenplan'); ?>" class="btn btn-large btn-primary" href="#">
-				<i class="icon-arrow-left icon-white"></i>
-				 Modulübersicht
-			</a>
+			<a href="<?php print base_url('dashboard/mobile'); ?>" class="btn btn-large btn-primary">Übersicht</a>
 		</div>
 	</div><!-- /.span12-->
 </div>
