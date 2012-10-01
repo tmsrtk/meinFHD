@@ -145,7 +145,7 @@ class einstellungen extends FHD_Controller{
 					
             
             //View
-            $this->load->view('einstellungen_studiengangWechseln', $data);
+            $this->load->view('einstellungen/studiengangWechseln', $data);
         }
 	
 	
