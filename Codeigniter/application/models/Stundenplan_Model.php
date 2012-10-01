@@ -1,6 +1,17 @@
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-<?php   if (!defined('BASEPATH')) exit('No direct script access allowed');
+/**
+ * meinFHD WebApp
+ * 
+ * @version 0.0.1
+ * @copyright Fachhochschule Duesseldorf, 2012
+ * @link http://www.fh-duesseldorf.de
+ * @author Simon vom Eyser (SVE), <simon.vomeyser@fh-duesseldorf.de>
+ */
 
+/**
+ * Stundenplan Model
+ */
 class Stundenplan_Model extends CI_Model {
 
 	private $user;//Debug
@@ -24,24 +35,6 @@ class Stundenplan_Model extends CI_Model {
 	
 		$query = $this->db->query("Select * From benutzer Where BenutzerID Like '".$id."' LIMIT 1");
 		$this->user = $query->row_array();
-	}
-
-	public function enroll_in_course($user_id, $course_id) {
-
-		//Testing, if there is still the possibility to enroll in that course
-
-		$query_students_enrolled = $this->db->query("Select * From gruppenteilnehmer Where GruppeID = '".$course_id."' ");
-		$students_in_course = $query_students_enrolled->num_rows();
-
-		$query_group = $this->db->query("Select * From gruppe Where GruppeID = '".$course_id."' ");
-		$group = $query_group->row();
-
-		echo $students_in_course . " gegen " . $group->TeilnehmerMax ;
- 
-		if (false) {
-			# code...
-		}
-
 	}
 	
 	/**
@@ -89,7 +82,6 @@ class Stundenplan_Model extends CI_Model {
 		// Gebe String zurück
 		return $semester;
 	}	
-
 
 	/**
 	 * Function create_times_array
@@ -139,19 +131,28 @@ class Stundenplan_Model extends CI_Model {
 			$time_since_monday = $time_since_monday + 86400;
 			$actual_day--;
 		}
+		
+		//Bugfix, if it's Sunday, it's the day before Monday, so the past time is negative 
+		if ($actual_day == 0)
+			$time_since_monday = -86400;
 
 		$date_monday = date('d.m.Y', time() - $time_since_monday);
 
 		//Add to the row array the specific date counting from Monday to Friday
 		$actual_date = $date_monday;
-
+		
+		// We need to exclude Saturday and Sunday.
+		// PHP week numbers start at 0 for Sunday, so 6 is for Saturday
+		$valid_days = array(1, 2, 3, 4, 5);
+		
 		//Reset Variable for actual day(Needed to Markup the day in Array)
-		$actual_day = date('w');
+		$day_number = date('w');
+		$actual_day = (in_array($day_number, $valid_days)) ? $day_number : 1;
 
 		$day_in_loop = 1;
-
-		foreach ($days as $key => $value) {
-
+		
+		foreach ($days as $key => $value)
+		{			
 			$days[$key]["Datum"] = $actual_date;
 			$time_since_monday = $time_since_monday - 86400;
 
@@ -168,10 +169,20 @@ class Stundenplan_Model extends CI_Model {
 
 		}
 
+		//Bugifx, If its Weekend show the next Monday
+		if (($actual_day == 0) or ($actual_day == 6)) {
+			$days[0]["IstHeute"] = 1;
+		}
+
 		return $days;
 	}
 
-	//Constructs and returns an empty 2D array which will contain the timetable
+	/**
+	 * Constructs and returns an empty 2D array which will contain the timetable
+	 *
+	 * @param type name // nicht vorhanden
+	 * @return type // empty 2D array which will contain the timetable
+	 */
 	private function create_timetable_array()
 	{
 		$query_days = $this->db->query("SELECT TagName FROM tag");
@@ -283,9 +294,14 @@ class Stundenplan_Model extends CI_Model {
 		return $courses;
 	}
 
+	/**
+	 * Sort courses into timetable-array-structure
+	 *
+	 * @param type name // Record of courses(already set active!!), empty timetabe array
+	 * @return type // filled timetable
+	 */
 	private function courses_into_timetable($courses, $timetable)
 	{
-
 
 		//insert courses in the empty timetable array via for-each
 		foreach ($timetable as $TagName => $TagInhalt) {
@@ -300,8 +316,6 @@ class Stundenplan_Model extends CI_Model {
 
 			}
 		}
-
-
 
 		return $timetable;
 	}
@@ -351,8 +365,6 @@ class Stundenplan_Model extends CI_Model {
 
 		//[3] : The courses in a list, indexed by Numbers, ordered by day and hour
 		array_push($return, $courses);
-
-		//$this->krumo->dump($return);
 		
 		return $return;
 	}

@@ -10,7 +10,7 @@
         <?php foreach ($modul as $data) : ?>
 
             <!-- begin : html for pop window -->
-            <form id="popwinform" name="popwinform" method="post" action="/meinFHD/Codeigniter/studienplan/speichern">
+            <form id="popwinform" name="popwinform" method="post" action="<?php print base_url('studienplan/speichern'); ?>">
                 <?php echo '<div id="popWindow' . $data['KursID'] . '" class="modal hide" >'; ?>
                 <div class="modal-header">
                     <a class="close" data-dismiss="modal">×</a>
@@ -69,27 +69,18 @@
 
 
 
-<!-- begin : CONTENT -->
-<div class="container container-fluid">	
-
-    <!-- begin : the first row -->
-    <div class="row">
-
-        <!-- begin : the title of this page -->
-        <div class="span4">
-            <div class="well well-small clearfix">
-                <h6>Semesterplanung</h6>
-                <a name="jumpkpoint"></a>
-            </div>
-        </div>
-        <!-- end : the title of this page -->
-
-        <!-- begin : the Semester list -->
-        <div class="span8">
-            <?php foreach ($studienplan as $semester) : ?>
-                <?php $semesterNum = 0; ?>
-                <?php foreach ($semester as $modul) : ?>
-                    <div class="accordion">
+<div class="row-fluid">
+	<div class="span4 well">
+		<h6>Semesterplanung</h6>
+		<h1>Übersicht</h1>
+		<a name="jumpkpoint"></a>
+	</div>
+        
+	<div class="span8">
+		<?php foreach ($studienplan as $semester) : ?>
+			<?php $semesterNum = 0; ?>
+				<?php foreach ($semester as $modul) : ?>
+					<div class="accordion">
                         <div class="accordion-group">
 
                             <!-- begin : Semester title -->				
@@ -139,29 +130,23 @@
                         </div>
                     </div>
 
-        <?php $semesterNum++; ?>
+                    <?php $semesterNum++; ?>
                 <?php endforeach; // end : for "Semester"  ?>
             <?php endforeach;    // end : for "Modul"?>	
-        </div>
         <!-- end : the Semester list -->
     </div>
     <!-- end : the first row -->
-
-    <!-- begin : the second row -->
-    <div class="row">
-        <!-- begin : optionbox -->
-        <div class="span12">
-            <div class="fhd-box clearfix">
-                <a href="http://localhost/meinFHD/Codeigniter/dashboard/index" class="btn btn-large btn-primary pull-left"> <i class="icon-arrow-left icon-white"></i> Dashboard </a>
-                <a href="/meinFHD/Codeigniter/studienplan/spalteEinfuegen" class="btn btn-large pull-right"><i class="icon-plus"></i>&nbsp;Semester</a>
-            </div>
-        </div>
-        <!-- end : optionbox -->
-    </div>
-    <!-- begin : the second row -->
-
 </div>
-<!-- end : CONTENT-->
+
+<div class="row-fluid">
+	<div class="span12">
+		<div class="fhd-box clearfix">
+			<a href="<?php print base_url('dashboard/mobile'); ?>" class="btn btn-large btn-primary">Übersicht</a>
+			<a href="<?php print base_url('studienplan/spalteEinfuegen'); ?>" class="btn btn-large pull-right"><i class="icon-plus"></i>&nbsp;Semester</a>
+		</div>
+	</div><!-- /.span12-->
+</div><!-- /.row-fluid -->
+
 <?php endblock();?>
 
 

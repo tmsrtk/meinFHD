@@ -51,8 +51,13 @@ class App extends FHD_Controller {
 			if ($this->authentication->login($username, $password))
 			{
 				// user is logged in -> set message and redirect to frontpage
-				$this->message->set(sprintf('Eingeloggt! (ID: %s)', $this->authentication->user_id()));
-				redirect('dashboard/index');
+				if ($this->agent->is_mobile()) {
+					redirect('dashboard/mobile');
+				}
+				else {
+					redirect('dashboard/index');
+				}
+				
 			}
 			else
 			{
@@ -71,12 +76,25 @@ class App extends FHD_Controller {
 	 *
 	 * .../app/logout
 	 * .../logout
+     * Modifications and minor changes by Christian Kundruss
 	 */
 	public function logout()
 	{
-		$this->message->set(sprintf('Ausgeloggt! (ID: %s)', $this->authentication->user_id()));
-		$this->authentication->logout();
-		redirect('app/login');
+        echo $this->authentication->isLoggedInFromAdmin();
+
+        if ($this->authentication->isLoggedInFromAdmin() == 'TRUE') { // the user is logged in from an admin, change the user data and switch back to admin session
+            $this->authentication->switchBackToAdmin();
+            // show a message that the return into the admin session was successful
+            $this->message->set('Du befindest dich wieder in der Administrator-Session.');
+            // redirect to the 'benutzerverwaltung/benutzer bearbeiten'; outgoing point
+            redirect('admin/edit_user_mask');
+        }
+
+        else { // otherwise perform a regular logut
+            //$this->message->set(sprintf('Ausgeloggt! (ID: %s)', $this->authentication->user_id()));
+            $this->authentication->logout();
+            redirect('app/login');
+        }
 	}
 }
 

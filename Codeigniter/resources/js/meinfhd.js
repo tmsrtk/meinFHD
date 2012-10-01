@@ -1,10 +1,35 @@
 (function($) {
-	// custom js functionality goes here
+
+	// Make the carousel accessible via pointer	
+	$carousel = $('#carousel');
+	// Prevent the carousel from auto playing
+	$carousel.carousel({
+		interval: 0,
+	});
+	
+	initPager();
+	
+	// Get all direct navigation controls, exclude left and right arrows
+	$goto = $('.pagination a').not(':first, :last');
+	
+	// Add click handler
+	$goto.click(function(e){
+		// Dont't do any default stuff
+		e.preventDefault();
+		// Get position in relation to all other selected elements
+		var index = $goto.index(this);
+		// Point the carousel to the element
+		$carousel.carousel(index);
+	});
+	
+	$carousel.on('slid', function(){
+		initPager();
+	});
 	
 	// autoclosing twitter bootstrap alerts
 	function createAutoClosingAlert(selector, delay) {
-		var alert = $(selector).alert();
-		window.setTimeout(function() { alert.alert('close') }, delay);
+		//var alert = $(selector).alert();
+		//window.setTimeout(function() {alert.alert('close')}, delay);
 	}
 	
 	createAutoClosingAlert(".alert.in", 3000);
@@ -34,34 +59,11 @@
 			$(this).addClass('btn-success').find('i').addClass('icon-white');
 		});
 		
-	});
-	
-	$(function(){
-		
-		$('.carousel').carousel('pause');
-		
-		//pagination
-		$('.pagination').find('.slide-montag').click(function(){	
-			$('.carousel').carousel(0);
-		});
-		
-		$('.pagination').find('.slide-dienstag').click(function(){	
-			$('.carousel').carousel(1);
-		});
-		
-		$('.pagination').find('.slide-mittwoch').click(function(){	
-			$('.carousel').carousel(2);
-		});
-		
-		$('.pagination').find('.slide-donnerstag').click(function(){	
-			$('.carousel').carousel(3);
-		});
-		
-		$('.pagination').find('.slide-freitag').click(function(){	
-			$('.carousel').carousel(4);
-		});
-		
-	});
-			
+	});			
 	
 })(jQuery);
+
+function initPager() {
+	var activeIndex = $carousel.find('.item').index($carousel.find('.item.active'));
+	$('.pagination li').not(':first, :last').removeClass('active').eq(activeIndex).addClass('active');
+}

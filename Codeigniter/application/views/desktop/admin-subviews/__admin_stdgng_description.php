@@ -32,14 +32,14 @@
 
 	<div id="stdgng-details-2">
 	    <?php 
-		$stdgng_details_textarea_data = array(
+		$degree_program_details_textarea_data = array(
 			'name' => ($stdgng_details->StudiengangID).'Beschreibung',
 			'id' => 'input-stdgng-beschreibung',
 			'value' => $stdgng_details->Beschreibung,
 			'rows' => 7,
 			'cols' => 40
 		);
-		echo form_textarea($stdgng_details_textarea_data);
+		echo form_textarea($degree_program_details_textarea_data);
 	    ?>
 	</div>
 	

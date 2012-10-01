@@ -122,7 +122,7 @@ local.properties
 # Netbeans files
 ######################################################################################################
 nbproject/private/
-nbproject/*
+nbproject/
 build/
 nbbuild/
 dist/
@@ -134,4 +134,7 @@ nb-configuration.xml
 ######################################################################################################
 .idea/
 CI_phpStorm.php
-/Codeigniter/nbproject/private/
+
+# espresso files
+######################################################################################################
+*.esproj

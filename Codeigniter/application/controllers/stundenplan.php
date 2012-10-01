@@ -1,4 +1,4 @@
-<?php   if (!defined('BASEPATH')) exit('No direct script access allowed');
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
  * meinFHD WebApp
@@ -39,7 +39,6 @@ class Stundenplan extends FHD_Controller {
      */
 	public function index()
 	{
-		//$this->krumo->dump($this->data->load());
 		$stundenplan = $this->Stundenplan_Model->get_stundenplan($this->authentication->user_id());
 		
 		$this->data->add('stundenplan', $stundenplan[0]); 
@@ -47,7 +46,6 @@ class Stundenplan extends FHD_Controller {
 		$this->data->add('zeiten', $stundenplan[2]);
 		$this->data->add('aktivekurse', $stundenplan[3]);
 		
-		//$this->krumo->dump($this->data);
 		$this->load->view('stundenplan/index', $this->data->load());
 	}
 	
@@ -101,6 +99,16 @@ class Stundenplan extends FHD_Controller {
 		$this->data->add('aktivekurse', $plan[3]);
 
 		$this->load->view('stundenplan/week', $this->data->load());
+	}
+	
+	public function timetable_show(){
+	    // TODO pass roles-specific data to view
+	    $this->load->view('stundenplan/tabview_desktop', $this->data->load());
+	}
+
+	public function register_in_course()
+	{
+		$data = $this->input->post();
 	}
 
 }

@@ -32,81 +32,73 @@ $cycleTimes = count($help);
 ?>
 
 
-<!-- begin : CONTENT -->
-<div class="container container-fluid">
+<div class="row-fluid">
 
-    <!-- begin : row -->
-    <div class="row">
+	<!-- begin : carousel -->
+	<div id="carousel" class="carousel slide">
+		<div class="carousel-inner">
 
-        <!-- begin : carousel -->
-        <div id="carousel" class="carousel slide">
-            <div class="carousel-inner">
+			<!-- begin : first div for menu items -->
+			<div class="item active">
+				<div class="row-fluid day" id="itemList">
 
-                <!-- begin : first div for menu items -->
-                <div class="item active">
-                    <div class="row-fluid day" id="itemList">
+					<!-- begin : the title of this page -->
+					<div class="span4">
+						<div class="well well-small clearfix">
+							<h6>Detaillierte Infos</h6>
+							<h1>Hilfe</h1>
+						</div>
+					</div>
+					<!-- end : the title of this page -->						
 
-                        <!-- begin : the title of this page -->
-                        <div class="span4">
-                            <div class="well well-small clearfix">
-                                <h6>Hilfe</h6>
-                            </div>
-                        </div>
-                        <!-- end : the title of this page -->						
+					<!-- begin : the list title -->
+                    <div class="span8">
+	                    <div class="accordion well well-small clearfix">
+		                    <?php for ($n = 1; $n < $cycleTimes; $n++): ?>
+		                    	<a class="helpContent_<?php echo $n; ?> btn btn-large span8 accordion" href="#helpContent_<?php echo $n; ?>"><?php echo $help[$n][0]; ?><i class="icon-chevron-right pull-right"></i></a>
+		                    <?php endfor; ?>
+		                </div>	
+		            </div>
+		            <!-- end : the list title -->
 
-                        <!-- begin : the list title -->
-                        <div class="span8">
-                            <div class="accordion well well-small clearfix">
-<?php for ($n = 1; $n < $cycleTimes; $n++): ?>
-                                    <a class="helpContent_<?php echo $n; ?> btn btn-large span8 accordion" href="#helpContent_<?php echo $n; ?>"><?php echo $help[$n][0]; ?><i class="icon-chevron-right pull-right"></i></a>
-                                <?php endfor; ?>
-                            </div>	
-                        </div>
-                        <!-- end : the list title -->
+		        </div>
+		    </div>
+		    <!-- end : first div for menu items -->
 
-                    </div>
-                </div>
-                <!-- end : first div for menu items -->
+		    <!-- begin : help content -->
+		    <?php for ($n = 1; $n < $cycleTimes; $n++): ?>
+		    	<div class="item">
+			    	<div class="row-fluid day" id="helpContent_<?php echo $n; ?>">
+				    	<div class="span8">
+					    	<div class="accordion well well-small">
 
-                <!-- begin : help content -->
-<?php for ($n = 1; $n < $cycleTimes; $n++): ?>
-                    <div class="item">
-                        <div class="row-fluid day" id="helpContent_<?php echo $n; ?>">
-                            <div class="span8">
-                                <div class="accordion well well-small">
+						    	<a class="backTitle btn span6 pull-left" href="#itemList"><i class="icon-chevron-left pull-left"></i>zur Titelliste</a>
+                                <br />
+                                <p><?php echo $help[$n][1]; ?></p>
+                                <br />
+                                <a class="backTitle btn span6 pull-left" href="#itemList"><i class="icon-chevron-left pull-left"></i>zur Titelliste</a>
 
-                                    <a class="backTitle btn span6 pull-left" href="#itemList"><i class="icon-chevron-left pull-left"></i>zur Titelliste</a>
-                                    <br />
-                                    <p>
-    <?php echo $help[$n][1]; ?>
-                                    </p>
-                                    <br />
-                                    <a class="backTitle btn span6 pull-left" href="#itemList"><i class="icon-chevron-left pull-left"></i>zur Titelliste</a>
-
-                                </div>
                             </div>
                         </div>
                     </div>
-<?php endfor; ?>
-                <!-- end : help content -->
-
-            </div>
-        </div>
-        <!-- end : carousel -->
-
-        <div class="row">
-            <div class="span12">
-                <div class="fhd-box clearfix">
-                    <a href="http://localhost/meinFHD/Codeigniter/dashboard/index" class="btn btn-large btn-primary pull-left"> <i class="icon-arrow-left icon-white"></i> Dashboard </a>
                 </div>
-            </div>
-            <!-- /.span12-->
-        </div>
-        <!-- /.row-fluid -->
+            <?php endfor; ?>
+            <!-- end : help content -->
 
+        </div>
     </div>
-    <!-- end : row -->
+    <!-- end : carousel -->
 </div>
+
+<div class="row-fluid">
+	<div class="span12">
+		<div class="fhd-box">
+			<a href="<?php print base_url('dashboard/mobile'); ?>" class="btn btn-large btn-primary">Übersicht</a>
+			<a href="<?php print base_url('faq'); ?>" class="btn btn-large pull-right">FAQs</a>
+		</div>
+	</div>
+</div>
+
 <?php endblock(); ?>
 
 <?php startblock('customFooterJQueryCode'); ?>
