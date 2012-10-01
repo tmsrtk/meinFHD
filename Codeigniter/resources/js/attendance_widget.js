@@ -32,6 +32,8 @@ $("#attendButton").click(function() {
                 checkForAttendanceAchievement(course_data);
             }
         });
+
+
     }
 
 

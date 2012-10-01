@@ -129,7 +129,7 @@ class Achievement extends FHD_Controller {
                 $result = $this->load->view('logbuch/achievement/achievement_modal', $this->data->load(), TRUE);
             }
             else {
-                $result = 'no_achievment_unlocked';
+                $result = 'no_achievement_unlocked';
             }
         }
         else { // the user has already unlocked the appropriate achievement

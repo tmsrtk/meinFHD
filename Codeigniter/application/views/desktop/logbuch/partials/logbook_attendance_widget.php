@@ -14,7 +14,7 @@
             </div>
         </div>
         <div class="pagination-centered" style="margin-top: 2%;">
-            <span><a href="#" class="btn btn-small btn-danger <?php echo $running_course['btn_attend_state'];?>" id="attendButton"><strong>Ich bin hier!</strong></a></span>
+            <span><a href="#" class="btn btn-small btn-danger <?php echo $running_course['btn_attend_state'];?>" id="attendButton"><strong>Ich nehme jetzt teil!</strong></a></span>
             <span><a href="#" class="btn btn-small" id="switchToLogbookButton"><strong>zum Logbuch</strong></a></span>
         </div>
         <?php else: # display the following if no course is running?>

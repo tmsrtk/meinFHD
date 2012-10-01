@@ -18,7 +18,7 @@
 
 class Logbuch_Model extends CI_Model {
 
-    private $actual_day_date = "2012-10-01"; // debug (development) date to be able to test the attendance widget
+    private $actual_day_date = "2012-10-14"; // debug (development) date to be able to test the attendance widget
     private $actual_time = "16:15:00";
 
     /**
