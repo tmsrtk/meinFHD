@@ -1,4 +1,6 @@
-<?php include('header.php'); ?>
+<?php extend('base/template.php'); # extend main template ?>
+<?php startblock('title');?><?php get_extended_block();?> - Stundenplan - Tag<?php endblock(); ?>
+<?php startblock('content'); # content for this view ?>
 
 <div class="container-fluid">
   <h6 class="row-fluid">Persönliche Einstellungen</h6>
@@ -78,4 +80,11 @@
   </form>
 </div>
 
-<?php include('footer.php'); ?>
+<?php endblock(); ?>
+
+<?php startblock('headJSfiles'); ?>
+	{meinfhd_radiobuttons: "<?php print base_url(); ?>resources/js/meinfhd.radiobuttons.js"},
+	{meinfhd_checkboxes: "<?php print base_url(); ?>resources/js/meinfhd.checkboxes.js"},
+<?php endblock(); ?>
+
+<?php end_extend(); ?>

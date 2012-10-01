@@ -294,6 +294,65 @@ class Stundenplan_Model extends CI_Model {
 		return $courses;
 	}
 
+
+	/**
+	 * Important Function for display in week-view.
+	 *
+	 * Depending on their alternative and if the user is aready enrolled, a flag named "Anzeigen" is added.
+	 *
+	 */
+	private function add_displayflag($courses)
+	{
+
+		//Run throug array
+		foreach ($courses as $key => $course) {
+
+			//when there is no alterntive
+			if ($course["VeranstaltungsformAlternative"] == "") 
+			{
+				$courses[$key]["Anzeigen"] = 1;
+			}  
+			//when there is a alternative
+			else
+			{
+				if ($course["Aktiv"] == 1) 
+				{
+					$courses[$key]["Anzeigen"] = 1;
+				}
+				else //Aktiv == 0
+				{
+
+					//Flag to be altered when there is a active one
+					$user_enrolled = false;
+
+					foreach ($courses as $ikey => $icourse) {
+						//Run through array again, if there is an course with Aktiv flag and same
+						//vernastaltungsformID and same KursID set user_enrolled = true
+						if ($icourse["VeranstaltungsformID"] == $course["VeranstaltungsformID"]  and
+							$icourse["KursID"] == $course["KursID"]  and
+							$icourse["Aktiv"] == 1) 
+						{
+							$user_enrolled = true;
+						}	
+
+						//if user is somwhere else enrolled, the actual curse should not be displayed
+						if ($user_enrolled)
+							$courses[$key]["Anzeigen"] = 0;
+						else	
+							$courses[$key]["Anzeigen"] = 1;
+
+
+					}//End inner foreach
+
+				}
+				
+			}//End else there is alternative
+
+		}//End outer foreach 
+
+		return $courses;
+	}
+
 	/**
 	 * Sort courses into timetable-array-structure
 	 *
@@ -320,6 +379,7 @@ class Stundenplan_Model extends CI_Model {
 		return $timetable;
 	}
 
+
 	/**
 	 * Central function, returns various arrays, the most important one is the "stundenplan"-Array (found under index [0])
 	 * The Array is 3-Demensional.
@@ -341,6 +401,10 @@ class Stundenplan_Model extends CI_Model {
 
 		//Control active-flag of courses, change if necsassary(see function-doc)
 		$courses = $this->set_active($courses);
+
+		//Add display flag(see function-doc)
+		$courses = $this->add_displayflag($courses);
+
 
 		//Create empty structure of timetable
 		$timetable = $this->create_timetable_array();
@@ -365,6 +429,8 @@ class Stundenplan_Model extends CI_Model {
 
 		//[3] : The courses in a list, indexed by Numbers, ordered by day and hour
 		array_push($return, $courses);
+
+		
 		
 		return $return;
 	}
