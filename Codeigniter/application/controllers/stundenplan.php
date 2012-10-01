@@ -62,7 +62,7 @@ class Stundenplan extends FHD_Controller {
 		$plan = $this->Stundenplan_Model->get_stundenplan($this->authentication->user_id());
 		// Save the days in a seperate variable
 		$days = $plan[0];
-		
+
 		// Load helper classes
 		include(APPPATH . 'libraries/events/Event.php');
 		include(APPPATH . 'libraries/events/EventSort.php');
@@ -89,12 +89,13 @@ class Stundenplan extends FHD_Controller {
 					
 				}
 			}
+			
 			// Create a sortable list of events
 			$sort = new EventSort($events);
 			// Optimize the display data for the events
 			$days[$dayname] = $sort->optimize();
 		}
-		
+
 		$this->data->add('stundenplan', $days); 
 		$this->data->add('tage', $plan[1]);
 		$this->data->add('zeiten', $plan[2]);
