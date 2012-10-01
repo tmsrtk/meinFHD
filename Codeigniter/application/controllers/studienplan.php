@@ -19,6 +19,7 @@ class Studienplan extends FHD_Controller
     {
         parent::__construct();
         $this->load->model('admin_model');
+        $this->load->model('studienplan_model');
 
         // userdata
         // $session_userid = $this->authentication->user_id();
@@ -60,6 +61,7 @@ class Studienplan extends FHD_Controller
             $this->modulinfo();
             $this->prozentsatzBerechnen();
             //$this->pruefenTeilnehmenHolen();
+            $this->check_approve_sem();
             
             
             // add the resultset/array to the data-object
@@ -100,7 +102,20 @@ class Studienplan extends FHD_Controller
         $this->load->view('includes/template', $this->data->load());
     }
     
-    
+    /**
+     * Create an approve-semester, e.g. for user who changed their study and already have some
+     * module marks.
+     *
+     * @author Konstantin Voth <konstantin.voth@fh-duesseldorf.de>
+     * @category studienplan/index.php
+     */
+    public function create_approve_sem()
+    {
+        // update Semesterplan.HatAnerkennungsSemester to 1, of given semesterplan id
+
+        $this->load->model('Studienplan_Model');
+        $this->Studienplan_Model->add_approve_sem($this->user_model->get_semesterplanid());
+    }
     
     
     /**
@@ -293,6 +308,13 @@ class Studienplan extends FHD_Controller
     }*/
     
     
+    public function check_approve_sem()
+    {
+        $this->load->model('Studienplan_Model');
+        $approve_sem = $this->Studienplan_Model->query_approve_sem();
+
+        $this->data->add('has_approve_sem', $approve_sem);
+    }
     
     
     /**

@@ -10,8 +10,6 @@
 
 <div class="well well-small admin">
 
-	<?php FB::log($studienplan) ?>
-
 	<?php 
 	// if there is no semesterplan, show create possibility
 	if ( ! isset($userdata['semesterplan_id'])) : ?>
@@ -64,18 +62,20 @@
 						<!-- Head -->
 						<tr>
 						<?php foreach($studienplan as $semester): ?>
-							<?php $i = 1; // semester nr ?>
+							<?php $i = 0; // semester nr ?>
 							<?php $sem_typ = $userdata['studienbeginn_semestertyp'] ?>
 							<?php $sem_jahr = $userdata['studienbeginn_jahr'] ?>
 							<?php foreach($semester as $modul): ?>
-								<th <?php if($i==$userdata['act_semester']) echo 'style="background-color: #dee4c5";'; else echo 'style="background-color: #eee";'; ?> >
-									<h3 style="font-weight: normal;">Semester <?php echo $i ?></h3>
-									<p style="font-size: 10px; color: #bbb;"><?php echo $sem_typ ?> <?php echo $sem_jahr ?></p>
-								</th>
-								<?php 
-									(($i+1)%2 == 0) ? $sem_typ = 'SoSe' : $sem_typ = 'WiSe';		// TODO: look for a better algo
-									(($i+1)%2 == 0) ? $sem_jahr++ : $sem_jahr;
-								?>
+								<?php if($i != 0) : # Anerkennungssemester ?> 
+									<th <?php if($i==$userdata['act_semester']) echo 'style="background-color: #dee4c5";'; else echo 'style="background-color: #eee";'; ?> >
+										<h3 style="font-weight: normal;">Semester <?php echo $i ?></h3>
+										<p style="font-size: 10px; color: #bbb;"><?php echo $sem_typ ?> <?php echo $sem_jahr ?></p>
+									</th>
+									<?php 
+										(($i+1)%2 == 0) ? $sem_typ = 'SoSe' : $sem_typ = 'WiSe';		// TODO: look for a better algo
+										(($i+1)%2 == 0) ? $sem_jahr++ : $sem_jahr;
+									?>
+								<?php endif; ?>
 								<?php $i++ ?>
 							<?php endforeach // $semester ?>
 						<?php endforeach // $studienplan ?>
@@ -85,31 +85,33 @@
 						<!-- Module -->	
 						<tr>
 							<?php foreach($studienplan as $semester): ?>
-								<?php $i = 1; // semester nr ?>
+								<?php $i = 0; // semester nr ?>
 								<?php foreach($semester as $modul): ?>
-									<td <?php if($i==$userdata['act_semester']) echo 'style="background-color: #dee4c5";' ?> >
-										<ul id="<?php echo $i ?>" class="unstyled semesterplanspalte">
-											<?php foreach($modul as $data): ?>
-												<?php if ($data['KursID'] != NULL): ?>
-													<li id="module_<?php echo $data['KursID']; ?>">
-														<div class="semestermodul dropup" data-kursid="<?php echo $data['KursID']; ?>">
-															<i class="arrw icon-align-justify" data-toggle="dropdown" style="height: 10px; width: 3px;"></i>
-															<a class="b_hoeren" href="">H</a>
-															<a class="b_pruefen" href="">P</a>
-															<ul class="dropdown-menu">
-															      <li class="kursinfo"><a href="#">Info</a></li>
-															      <li class="divider"></li>
-															      <li class="reset-kurs"><a href="#">Resetten</a></li>
-															</ul>
-
-															<span class="modulfach"><?php echo $data['Kurzname'] ?></span>
-															<input class="modulnote input-mini" name="modulnote[]" type="text" value="<?php echo $data['Notenpunkte'] ?>">
-														</div>
-													</li>
-												<?php endif; ?>
-											<?php endforeach; // $modul ?>
-										</ul>
-									</td>
+									<?php if($i != 0) : # Anerkennungssemester ?>
+										<td <?php if($i==$userdata['act_semester']) echo 'style="background-color: #dee4c5";' ?> >
+											<ul id="<?php echo $i ?>" class="unstyled semesterplanspalte">
+												<?php foreach($modul as $data): ?>
+													<?php if ($data['KursID'] != NULL): ?>
+														<li id="module_<?php echo $data['KursID']; ?>">
+															<div class="semestermodul dropup" data-kursid="<?php echo $data['KursID']; ?>">
+																<i class="arrw icon-align-justify" data-toggle="dropdown" style="height: 10px; width: 3px;"></i>
+																<a class="b_hoeren" href="">H</a>
+																<a class="b_pruefen" href="">P</a>
+																<ul class="dropdown-menu">
+																      <li class="kursinfo"><a href="#">Info</a></li>
+																      <li class="divider"></li>
+																      <li class="reset-kurs"><a href="#">Resetten</a></li>
+																</ul>
+	
+																<span class="modulfach"><?php echo $data['Kurzname'] ?></span>
+																<input class="modulnote input-mini" name="modulnote[]" type="text" value="<?php echo $data['Notenpunkte'] ?>">
+															</div>
+														</li>
+													<?php endif; ?>
+												<?php endforeach; // $modul ?>
+											</ul>
+										</td>
+									<?php endif; ?>
 									<?php $i++ ?>
 								<?php endforeach; // $semester ?>
 							<?php endforeach; // $studienplan ?>
@@ -117,12 +119,14 @@
 						<!-- SWS/CP -->
 						<tr>
 							<?php foreach($studienplan as $semester): ?>
-								<?php $i = 1; // semester nr ?>
+								<?php $i = 0; // semester nr ?>
 								<?php foreach($semester as $modul): ?>
-									<td <?php if($i==$userdata['act_semester']) echo 'style="background-color: #dee4c5";' ?> >
-										<p>SWS: <span class="badge badge-success pull-right"><?php if( ! empty($swsCp[$i]['SWS_Summe'])) echo $swsCp[$i]['SWS_Summe'] ?></span></p>
-										<p>CP: <span class="badge badge-info pull-right"><?php if( ! empty($swsCp[$i]['CP_Summe'])) echo $swsCp[$i]['CP_Summe']?></span></p>
-									</td>
+									<?php if($i != 0) : # Anerkennungssemester ?>
+										<td <?php if($i==$userdata['act_semester']) echo 'style="background-color: #dee4c5";' ?> >
+											<p>SWS: <span class="badge badge-success pull-right"><?php if( ! empty($swsCp[$i]['SWS_Summe'])) echo $swsCp[$i]['SWS_Summe'] ?></span></p>
+											<p>CP: <span class="badge badge-info pull-right"><?php if( ! empty($swsCp[$i]['CP_Summe'])) echo $swsCp[$i]['CP_Summe']?></span></p>
+										</td>
+									<?php endif; ?>
 									<?php $i++ ?>
 								<?php endforeach; // $semester ?>
 							<?php endforeach; // $studienplan ?>

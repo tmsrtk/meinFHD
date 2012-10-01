@@ -272,18 +272,17 @@ class Studienplan_Model extends CI_Model
         $this->db->order_by('regularSemester', 'ASC');
         $studyplan = $this->db->get();
 
-
         // initial zero semester
-        // $data['plan'][0][] = array(
-        //     'regularSemester'   => null,
-        //     'KursID'            => null,
-        //     'Kursname'          => null,
-        //     'Kurzname'          => null,
-        //     'graduateSemester'  => null,
-        //     'Teilnehmen'        => null,
-        //     'Pruefen'           => null,
-        //     'Notenpunkte'       => null
-        // );
+        $data['plan'][0][] = array(
+            'regularSemester'   => null,
+            'KursID'            => null,
+            'Kursname'          => null,
+            'Kurzname'          => null,
+            'graduateSemester'  => null,
+            'Teilnehmen'        => null,
+            'Pruefen'           => null,
+            'Notenpunkte'       => null
+        );
 
 
         // group the resultset by semester in array
@@ -349,14 +348,25 @@ class Studienplan_Model extends CI_Model
                 );
             }
         }
-        
+
         // sort the studyplan by semester
         ksort($data['plan']);
     
         return $data;
     }
 
+    public function add_approve_sem($semesterplan_id=0)
+    {
+        $this->db->update('semesterplan', array('HatAnerkennungsSemester'=>'1'), "SemesterplanID = {$semesterplan_id}");
+    }
 
+    public function query_approve_sem()
+    {
+        $this->db->select('HatAnerkennungsSemester')
+                 ->from('semesterplan')
+                 ->where('SemesterplanID', $this->studyplanID);
+        return $this->db->get()->row_array();
+    }
     
     /**
      * Creates a new Studyplan if it not already exists
