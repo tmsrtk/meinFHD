@@ -2,10 +2,6 @@
 <?php startblock('title');?><?php get_extended_block();?> - Veranstaltungen<?php endblock(); ?>
 <?php startblock('content'); # content for this view ?>
 	
-
-<!- ------------------------------------------------ -->
-<!-- Veranstaltungen -------------------------------- -->
-<!- ------------------------------------------------ -->
 <div class="row-fluid">
 	<div class="span12 well">
 
@@ -45,7 +41,7 @@
 <div class="row-fluid">
 	<div class="span12">
 		<div class="fhd-box">
-			<a href="<?php print base_url('dashboard/mobile'); ?>" class="btn btn-large btn-primary">Übersicht</a>
+			<a href="<?php print base_url('dashboard/mobile'); ?>" class="btn btn-large btn-primary">Ãœbersicht</a>
 			<a href="<?php print base_url('stundenplan'); ?>" class="btn btn-large pull-right">Stundenplan</a>
 		</div>
 	</div>
