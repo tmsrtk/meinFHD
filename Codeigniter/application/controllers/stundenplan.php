@@ -45,8 +45,6 @@ class Stundenplan extends FHD_Controller {
 		$this->data->add('zeiten', $stundenplan[2]);
 		$this->data->add('aktivekurse', $stundenplan[3]);
 		
-		$this->krumo->dump($this->data->load());
-		
 		$this->load->view('stundenplan/index', $this->data->load());
 	}
 	
@@ -68,7 +66,6 @@ class Stundenplan extends FHD_Controller {
 		// Load helper classes
 		include(APPPATH . 'libraries/events/Event.php');
 		include(APPPATH . 'libraries/events/EventSort.php');
-		
 
 		foreach ($days as $dayname => $day)
 		{
@@ -78,14 +75,18 @@ class Stundenplan extends FHD_Controller {
 			foreach ($day as $row)
 			{
 				foreach ($row as $event) {
-					// To calculate the correct display data, we need
-					// the start, duration and color.
-					$start = (int) $event['StartID'];
-					$duration = (int) $event['Dauer'];
-					$color = $event['Farbe'];
+					// Only show and calculate events that should be displayed
+					if ((bool) $event['Anzeigen']) {
+						// To calculate the correct display data, we need
+						// the start, duration and color.
+						$start = (int) $event['StartID'];
+						$duration = (int) $event['Dauer'];
+						$color = $event['Farbe'];
+	
+						// Create an object for the current event.
+						$events[] = new Event($start, $duration, $color, $event);
+					}
 					
-					// Create an object for the current event.
-					$events[] = new Event($start, $duration, $color, $event);
 				}
 			}
 			// Create a sortable list of events
