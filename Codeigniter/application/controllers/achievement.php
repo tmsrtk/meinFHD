@@ -50,7 +50,7 @@ class Achievement extends FHD_Controller {
      * Checks if the user has unlocked an new attendance achievement. If an new achievement has been unlocked,
      * a modal view as an message will be echoed. The function will usual be called via AJAX.
      * @access public
-     * @param $course_id ID of the course where the attendance achievements should be checked for
+     * @param integer $course_id ID of the course where the attendance achievements should be checked for
      * @return void
      */
     public function ajax_check_for_new_attendance_achievement($course_id){
@@ -71,7 +71,7 @@ class Achievement extends FHD_Controller {
      * Checks if the user has unlocked an new skills achievement. If an new achievement has been unlocked, a message
      * (modal) will bei echoed in the caller view. The function will usual be called via AJAX.
      * @access public
-     * @param $course_id ID of the course where the skills should be checked for.
+     * @param integer $course_id ID of the course where the skills should be checked for.
      * @return void
      */
     public function ajax_check_for_new_skill_achievement($course_id){
@@ -100,9 +100,9 @@ class Achievement extends FHD_Controller {
      * it will be unlocked and an modal message view will be returned as an string.
      * Otherwise there won`t be any action, and an string with the info 'no_achievement_unlocked' will be returned.
      * @access public
-     * @param $matching_achievement Array with information about the achievement type, that matches to the performed
+     * @param array $matching_achievement Array with information about the achievement type, that matches to the performed
      *        course activity.
-     * @param $course_id ID of the course, where the achievement should be unlocked for.
+     * @param integer $course_id ID of the course, where the achievement should be unlocked for.
      * @return string If an achievement has been successfully unlocked the modal view will be returned as an string, otherwise there
      *         there will be 'no_achievement_unlocked' returned.
      */

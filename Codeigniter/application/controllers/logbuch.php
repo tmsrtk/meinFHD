@@ -21,6 +21,7 @@ class Logbuch extends FHD_Controller {
      * Default constructor, used for initialization
      * @access public
      * @return void
+     * @todo embed authentification check, if it has been implemented
      */
     public function __construct() {
         parent::__construct();
@@ -121,8 +122,8 @@ class Logbuch extends FHD_Controller {
     /**
      * Creates an new logbook for the given combination of course and user id.
      * @access public
-     * @param $course_id ID of the course where the logbook should be created for.
-     * @param $user_id ID of the user, who should be the owner for the new logbook.
+     * @param integer $course_id ID of the course where the logbook should be created for.
+     * @param integer $user_id ID of the user, who should be the owner for the new logbook.
      * @return void
      */
     public function create_logbook($course_id){
@@ -141,7 +142,7 @@ class Logbuch extends FHD_Controller {
      * Checks if the value of the selected course is not the default
      * value (Bitte wählen). Callback function for validate_add_logbook_from() - validation
      * @access public
-     * @param $str Value to check
+     * @param string $str Value to check
      * @return bool FALSE if the default value is selected, otherwise TRUE
      */
     public function check_selected_course($str) {
@@ -159,7 +160,7 @@ class Logbuch extends FHD_Controller {
      * Deletes the logbook with the given id, and reloads the logbook library afterwards.
      * Function is usually called from the logbook library
      * @access public
-     * @param $logbook_id id of the logbook that should be deleted
+     * @param integer $logbook_id id of the logbook that should be deleted
      */
     public function delete_logbook($logbook_id) {
         // delete the specified logbook from the database
@@ -172,7 +173,7 @@ class Logbuch extends FHD_Controller {
     /**
      * Opens the logbook content view with the different topic entries for
      * the given logbook id.
-     * @param $logbook_id ID of the selected logbook.
+     * @param integer $logbook_id ID of the selected logbook.
      * @return void
      */
     public function show_logbook_content($logbook_id) {
@@ -194,7 +195,7 @@ class Logbuch extends FHD_Controller {
     /**
      * Displays the input mask to create a new entry for the currently viewed logbook.
      * @access public
-     * @param $logbook_id INTEGER id of the logbook where the entry should be saved in.
+     * @param integer $logbook_id id of the logbook where the entry should be saved in.
      * @return void
      */
     public function create_entry_mask($logbook_id) {
@@ -241,7 +242,7 @@ class Logbuch extends FHD_Controller {
     /**
      * Displays the edit mask for an selected logbook entry.
      * @access public
-     * @param $lb_entry_id ID of the logbook entry, that should be edited.
+     * @param integer $lb_entry_id ID of the logbook entry, that should be edited.
      * @return void
      */
     public function edit_entry_mask($lb_entry_id) {
@@ -289,8 +290,8 @@ class Logbuch extends FHD_Controller {
     /**
      * Deletes an single logbook entry by his id and reloads the logbook entry view afterwards.
      * @access public
-     * @param $lb_entry_id The id of the entry, that should be deleted.
-     * @param $logbook_id ID of the logbook, that corresponds to the entry.
+     * @param integer $lb_entry_id The id of the entry, that should be deleted.
+     * @param integer $logbook_id ID of the logbook, that corresponds to the entry.
      * @return void
      */
     public function delete_single_logbook_entry($lb_entry_id, $logbook_id){
@@ -301,8 +302,8 @@ class Logbuch extends FHD_Controller {
     /**
      * Copies all base topics for the given course id to the given logbook_id. If there are no topics, it looks for the newest
      * 'studiengangkurs'(PO) to copy the base topics. If there are also no base topics, the logbook stays empty.
-     * @param $ourse_id ID of the course that corresponds to the logbook.
-     * @param $logbook_id ID of the logbook, where the topics should be inserted.
+     * @param integer $ourse_id ID of the course that corresponds to the logbook.
+     * @param integer $logbook_id ID of the logbook, where the topics should be inserted.
      * @return void
      */
     public function copy_all_base_topics_for_course($course_id, $logbook_id) {
@@ -329,8 +330,8 @@ class Logbuch extends FHD_Controller {
     /**
      * Selects and opens the course logbook for the given course and user id.
      * @access public
-     * @param $course_id ID of the course that corresponds to the logbook.
-     * @param $user_id ID of the logbook owner.
+     * @param integer $course_id ID of the course that corresponds to the logbook.
+     * @param integer $user_id ID of the logbook owner.
      * @return void
      */
     public function open_logbook_for_course_and_user($course_id, $user_id){

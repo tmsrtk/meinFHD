@@ -23,6 +23,7 @@ class Attendance extends FHD_Controller {
      * Base constructor, used for initialization.
      * @access public
      * @return void
+     * @todo embed authentification check, if it is implemented
      */
     public function __construct() {
         parent::__construct();

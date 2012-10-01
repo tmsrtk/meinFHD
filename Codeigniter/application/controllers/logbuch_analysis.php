@@ -75,7 +75,7 @@ class Logbuch_Analysis extends FHD_Controller {
      * Opens the detail analysis view for the given course id and shows the analysis for the authenticated user
      * and the selected course.
      * @access public
-     * @param $course_id ID of the selected course
+     * @param integer $course_id ID of the selected course
      * @return void
      */
     public function show_analysis_for_course($course_id){
@@ -118,8 +118,8 @@ class Logbuch_Analysis extends FHD_Controller {
     /**
      * Returns the x-axis scaling (range) for the attendance chart depending on the given semester type.
      * @access private
-     * @param $semester_type Type of the Semester(WS / SS)
-     * @return array Returns an one dimensional array with two entries for the attendance chart x-scaling
+     * @param String $semester_type Type of the Semester(WS / SS)
+     * @return Array Returns an one dimensional array with two entries for the attendance chart x-scaling
      */
     private function _get_attendance_chart_scaling($semester_type){
         $scaling = array();
@@ -142,8 +142,8 @@ class Logbuch_Analysis extends FHD_Controller {
     /**
      * Fetches the attendance chart series and adds it to the view. The data is fetched in weekly intervals.
      * @access private
-     * @param $course_id ID of the course where the attendance data should be selected for.
-     * @return array The array with the series data
+     * @param integer $course_id ID of the course where the attendance data should be selected for.
+     * @return Array The array with the series data
      */
     private function _get_data_for_attendance_chart($course_id){
         // get the actual date
@@ -178,8 +178,8 @@ class Logbuch_Analysis extends FHD_Controller {
     /**
      * Get`s and calculates the data for the skills chart.
      * @access private
-     * @param $course_id ID of the course where the skills should be selected for
-     * @return array Array with the skills data
+     * @param integer $course_id ID of the course where the skills should be selected for
+     * @return Array Array with the skills data
      */
     private function _get_data_for_skills_chart($course_id){
         // get the logbook id for the given course and the authenticated user
@@ -202,8 +202,8 @@ class Logbuch_Analysis extends FHD_Controller {
     /**
      * Returns the start and end date of the semester type that is passed as an parameter.
      * @access private
-     * @param $semester_type Type of the semester where the date range should be returned for.
-     * @return array Returns the start and end date of the given semester type in an one
+     * @param integer $semester_type Type of the semester where the date range should be returned for.
+     * @return Array Returns the start and end date of the given semester type in an one
      *               dimensional array with the keys 'start_date' and 'end_date'
      */
     private function _get_semester_dates($semester_type){
@@ -225,8 +225,8 @@ class Logbuch_Analysis extends FHD_Controller {
 
     /**
      * Returns the average course skills rating for the given list (array) of logbook courses.
-     * @param $all_logbook_courses The array with all user logbook courses
-     * @return array Holds the different logbook names and the correspondig skills array
+     * @param Array $all_logbook_courses The array with all user logbook courses
+     * @return Array Holds the different logbook names and the correspondig skills array
      */
     private function _get_overall_skill_chart_data($all_logbook_courses) {
 
@@ -251,8 +251,8 @@ class Logbuch_Analysis extends FHD_Controller {
     /**
      * Returns the attendance data for all documentated courses for the authenticated user.
      * The attendance count is fetched in weekly (7 days) intervals.
-     * @param $all_logbook_courses Array / list with all logbooks for the authenticated user
-     * @return array Array, that holds the attendance count for all courses, the overall attendance count, and the format / series
+     * @param Array $all_logbook_courses Array / list with all logbooks for the authenticated user
+     * @return Array Array, that holds the attendance count for all courses, the overall attendance count, and the format / series
      * dates for the chart.
      */
     private function _get_overall_attendance_chart_data(){

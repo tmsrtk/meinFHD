@@ -59,7 +59,12 @@ class Logbuch_Analysis_Widget extends FHD_Controller {
         return $result;
     }
 
-
+    /**
+     * Calculates the data for the skills dashboard chart, for the given course_id
+     * @param integer $course_id ID of the course, where the skills should be calculated for.
+     * @return array Array with the skills chart. Structure: 'act_skills' => int value of the actual skills
+     *                                                       'missing_skills' => int value of the remaining skills (100-act_skills)
+     */
     private function _calculate_skill_data_for_chart($course_id){
         // get the the logbook id, that corresponds to the authenticated user and the course_id
         $logbook_id = $this->logbuch_model->get_logbook_id($course_id, $this->authentication->user_id());

@@ -20,8 +20,8 @@ class Achievement_Model extends CI_Model {
     /**
      * Searches for the achievement object, that matches to the given achievement type and the given (count) value
      * @access public
-     * @param $activity_name Name of the user triggered event / activity / action type which is configured for the achivement system.
-     * @param $value Actual value of the activity (attendance count, or skill rating)
+     * @param string $activity_name Name of the user triggered event / activity / action type which is configured for the achivement system.
+     * @param integer $value Actual value of the activity (attendance count, or skill rating)
      * @return array Returns the matching achievement dataset in an array.
      */
     public function get_matching_achievement($activity_name, $value){
@@ -45,8 +45,8 @@ class Achievement_Model extends CI_Model {
      * Checks if the user has already unlocked the given achievement (check by using the achievement id, it`s unique) for the
      * given course id.
      * @access public
-     * @param $course_id
-     * @param $achievement_id
+     * @param integer $course_id ID of the course where the achievement should be unlocked for
+     * @param integer $achievement_id ID of the achievement that can be unlocked
      * @return bool TRUE if the user has already unlocked the given achievement, otherwise FALSE
      */
     public function check_user_has_unlocked_achievement_for_course($course_id, $achievement_id){
@@ -69,9 +69,9 @@ class Achievement_Model extends CI_Model {
      * Grant`s the specified achievement for the given course to the specified user and
      * saves it persistent in the user_achievement table.
      * @access public
-     * @param $course_id ID of the course, where the achievement has been unlocked for.
-     * @param $user_id ID of the user who unlocked the achievement.
-     * @param $achievement_id ID of the achievement, that has been unlocked.
+     * @param integer $course_id ID of the course, where the achievement has been unlocked for.
+     * @param integer $user_id ID of the user who unlocked the achievement.
+     * @param integer $achievement_id ID of the achievement, that has been unlocked.
      * @return void
      */
     public function grant_achievement_for_course($course_id, $user_id, $achievement_id){
@@ -89,7 +89,7 @@ class Achievement_Model extends CI_Model {
     /**
      * Fetches all distinct achievement levels, where achievements have been unlocked by the given user.
      * @access private
-     * @param $user_id ID of the user where the distinct achievement levles should be fetched.
+     * @param integer $user_id ID of the user where the distinct achievement levles should be fetched.
      * @return array The array with the different user unlocked achievement levels
      */
     private function _get_distinct_user_achievement_levels($user_id){
@@ -109,8 +109,8 @@ class Achievement_Model extends CI_Model {
     /**
      * Returns the unlocked achievement 'objects' for the given level and the given user_id.
      * @access private
-     * @param $user_id ID of the user, who has unlocked the different achievements
-     * @param $level_nr ID / number of the level for which the unlocked achievements should be fetched.
+     * @param integer $user_id ID of the user, who has unlocked the different achievements
+     * @param integer $level_nr ID / number of the level for which the unlocked achievements should be fetched.
      * @return array The array with the distinct achievements per course.
      */
     private function _get_distinct_user_achievement_objects_for_level($user_id, $level_nr){
@@ -140,8 +140,8 @@ class Achievement_Model extends CI_Model {
     /**
      * Returns all courses, for which the specified (given) achievement has been unlocked by the given user.
      * @access private
-     * @param $user_id ID of the, who has unlocked the achievement type
-     * @param $achievement_id ID of the achievement that has been unlocked by the user.
+     * @param integer $user_id ID of the, who has unlocked the achievement type
+     * @param integer $achievement_id ID of the achievement that has been unlocked by the user.
      * @return array Array with the different courses where the given achievement has been unlocked for.
      */
     private function _get_courses_for_unlocked_achievement($user_id, $achievement_id){
@@ -162,7 +162,7 @@ class Achievement_Model extends CI_Model {
     /**
      * Provides and get`s all necessary data for the achievement gallery for the authenticated (given) user_id.
      * @access public
-     * @param $user_id ID of the user where the achievement data should be generated for
+     * @param integer $user_id ID of the user where the achievement data should be generated for
      * @return array Complex array With the different unlocked achievement levels, the different unlocked achievement objects per level
      *               and the courses, where the achievements have been unlocked for.
      */
@@ -193,7 +193,7 @@ class Achievement_Model extends CI_Model {
     /**
      * Calculates the count of saved topics for the given logbook and returns it.
      * @access public
-     * @param $logbook_id The ID of the logbook where the topics count should be calculated for.
+     * @param integer $logbook_id The ID of the logbook where the topics count should be calculated for.
      * @return integer Count of the saved topics for the given logbook id.
      */
     public function get_saved_topic_count_for_logbook($logbook_id){
