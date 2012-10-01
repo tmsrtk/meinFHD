@@ -12,6 +12,7 @@
  * Logbuch_Analysis_Widget-Controller
  * The Logbuch_Analysis_Widget-Controller provides the analysis widget, which
  * is displayed on the dashboard (frontpage) of meinFHD.
+ *
  * @author Christian Kundruss, <christian.kundruss@fh-duesseldorf.de>
  */
 class Logbuch_Analysis_Widget extends FHD_Controller {
@@ -77,3 +78,5 @@ class Logbuch_Analysis_Widget extends FHD_Controller {
     }
 
 }
+/* End of file logbuch_analysis_widget.php.php */
+/* Location: ./application/controllers/logbuch_analysis_widget.php */

@@ -9,8 +9,11 @@
  */
 
 /**
- * Logbuch-Controller
+ * Logbuch-Controller (class)
+ * The 'logbuch' controller implements the logic and provides the needed
+ * functions to access the logbook.
  *
+ * @author Christian Kundruß (CK), <christian.kundruss@fh-duesseldorf.de>
  */
 class Logbuch extends FHD_Controller {
 
@@ -44,6 +47,7 @@ class Logbuch extends FHD_Controller {
     /**
      * Opens the logbook library and shows all logbooks for the current user
      * @access public
+     * @return void
      */
     public function show_logbooks() {
 
@@ -56,6 +60,7 @@ class Logbuch extends FHD_Controller {
     /**
      * Opens the add logbook view with the necessary data
      * @access public
+     * @return void
      */
     public function add_logbook() {
 
@@ -80,8 +85,10 @@ class Logbuch extends FHD_Controller {
 
     /**
      * Validates the selected course in the add logbook form.
-     * If everything is alright a new logbook will be created.
+     * If everything is alright a new logbook will be created, otherwise the add logbook
+     * form will be repopulated.
      * @access public
+     * @return void
      */
     public function validate_add_logbook_form() {
 
@@ -114,8 +121,9 @@ class Logbuch extends FHD_Controller {
     /**
      * Creates an new logbook for the given combination of course and user id.
      * @access public
-     * @param $course_id Id of the course where the logbook should be created for
-     * @param $user_id Id of the user, who should own the logbook
+     * @param $course_id ID of the course where the logbook should be created for.
+     * @param $user_id ID of the user, who should be the owner for the new logbook.
+     * @return void
      */
     public function create_logbook($course_id){
         // if there is no logbook for the selected course create it, otherwise return a message
@@ -164,7 +172,8 @@ class Logbuch extends FHD_Controller {
     /**
      * Opens the logbook content view with the different topic entries for
      * the given logbook id.
-     * @param $logbook_id ID of the selected logbook
+     * @param $logbook_id ID of the selected logbook.
+     * @return void
      */
     public function show_logbook_content($logbook_id) {
         // get the attendance count and add it to the view
@@ -185,7 +194,8 @@ class Logbuch extends FHD_Controller {
     /**
      * Displays the input mask to create a new entry for the currently viewed logbook.
      * @access public
-     * @param $logbook_id INTEGER id of the logbook where the entry should be saved in
+     * @param $logbook_id INTEGER id of the logbook where the entry should be saved in.
+     * @return void
      */
     public function create_entry_mask($logbook_id) {
 
@@ -197,8 +207,9 @@ class Logbuch extends FHD_Controller {
 
     /**
      * Validates the user input for a new topic. If everything is alright, the new
-     * logbook entry will be created.
+     * logbook entry will be created and saved in the database.
      * @access public
+     * @return void
      */
     public function validate_create_entry_form() {
         $this->form_validation->set_error_delimiters('<div class="alert alert-error">','</div>');
@@ -230,7 +241,8 @@ class Logbuch extends FHD_Controller {
     /**
      * Displays the edit mask for an selected logbook entry.
      * @access public
-     * @param $lb_entry_id ID of the logbook entry, that should be edited
+     * @param $lb_entry_id ID of the logbook entry, that should be edited.
+     * @return void
      */
     public function edit_entry_mask($lb_entry_id) {
         $logbook_entry = $this->logbuch_model->get_single_logbook_entry($lb_entry_id);
@@ -245,8 +257,9 @@ class Logbuch extends FHD_Controller {
 
     /**
      * Validates the user edits for the given entry. If everything is alright,
-     * the edits will be saved.
+     * the edits will be saved. Otherwise the view will be repopulated and displays the validation errors.
      * @access public
+     * @return void
      */
     public function validate_edit_entry_form() {
         $this->form_validation->set_error_delimiters('<div class="alert alert-error">','</div>');
@@ -278,6 +291,7 @@ class Logbuch extends FHD_Controller {
      * @access public
      * @param $lb_entry_id The id of the entry, that should be deleted.
      * @param $logbook_id ID of the logbook, that corresponds to the entry.
+     * @return void
      */
     public function delete_single_logbook_entry($lb_entry_id, $logbook_id){
         $this->logbuch_model->delete_logbook_entry($lb_entry_id); // delete the entry
@@ -285,10 +299,11 @@ class Logbuch extends FHD_Controller {
     }
 
     /**
-     * Copys all base topics for the given course id to the given logbook_id. If there are no topics, it looks for the newest 'studiengangkurs'(PO) to copy the base topics.
-     * If there are also no base topics, the logbook stays empty.
-     * @param $ourse_id ID of the course that corresponds to the logbook
+     * Copies all base topics for the given course id to the given logbook_id. If there are no topics, it looks for the newest
+     * 'studiengangkurs'(PO) to copy the base topics. If there are also no base topics, the logbook stays empty.
+     * @param $ourse_id ID of the course that corresponds to the logbook.
      * @param $logbook_id ID of the logbook, where the topics should be inserted.
+     * @return void
      */
     public function copy_all_base_topics_for_course($course_id, $logbook_id) {
 
@@ -314,8 +329,9 @@ class Logbuch extends FHD_Controller {
     /**
      * Selects and opens the course logbook for the given course and user id.
      * @access public
-     * @param $course_id Id of the course that corresponds to the logbook
-     * @param $user_id Id of the logbook owner
+     * @param $course_id ID of the course that corresponds to the logbook.
+     * @param $user_id ID of the logbook owner.
+     * @return void
      */
     public function open_logbook_for_course_and_user($course_id, $user_id){
         // get the id of the logbook that should be opened
@@ -326,3 +342,5 @@ class Logbuch extends FHD_Controller {
     }
 
 }
+/* End of file logbuch.php */
+/* Location: ./application/controllers/logbuch.php */

@@ -14,12 +14,13 @@
  *
  * The Attendance-Controller / Attendance-Class provides the attendance widget on the dashboard and the base functions to document
  * the students attendance for his courses.
+ * @author Christian Kundruß(CK), <christian.kundruss@fh-duesseldorf.de>
  */
 
 class Attendance extends FHD_Controller {
 
     /**
-     * Base constructor, used for initializations purposes.
+     * Base constructor, used for initialization.
      * @access public
      * @return void
      */
@@ -38,13 +39,13 @@ class Attendance extends FHD_Controller {
      * Initializes and loads the attendance widget as an partial view and returns it
      * as an string.
      * @access public
-     * @return STRING the loaded view in a string.
+     * @return string The loaded attendance widget view in an string.
      */
     public function load_attendance_widget_as_string() {
 
         $result = '';
 
-        $running_course = $this->logbuch_model->get_running_course();
+        $running_course = $this->logbuch_model->get_running_course(); // get the act running course
         $max_events_semester = $this->adminhelper->get_semesterweeks($this->adminhelper->getSemesterTyp()); // get the max. semesterweeks
 
         // only do the following if there is an running course
@@ -76,7 +77,9 @@ class Attendance extends FHD_Controller {
 
     /**
      * Saves a new attendance record to the database with the submitted data for the actual authenticated user.
+     * The function will be called if a user submits the 'Ich bin hier'- Button on the attendance widget.
      * @access public
+     * @return void
      */
     public function save_new_attendance() {
 
@@ -92,16 +95,16 @@ class Attendance extends FHD_Controller {
         }
         // write the attendance record to the database
         $this->logbuch_model->save_attendance_for_course_with_current_time($course_id_to_use, $this->authentication->user_id());
-        // display out the result view
 
+        // display out the result view
         echo $this->load_attendance_widget_as_string();
     }
 
     /**
      * Searches a logbook for the course id that is submitted via POST.
-     * Method is usually called via ajax from the logbook widget.
-     * If there is a logbook the user will be redirected link to the logbook will be returned.
-     * @return string The link, where the user should be redirected to in the view
+     * Method is usually called via ajax from the attendance widget.
+     * If there is an logbook the link to the logbook will be echoed.
+     * @return void
      */
     public function ajax_search_logbook_for_course() {
 
@@ -124,3 +127,5 @@ class Attendance extends FHD_Controller {
     }
 
 }
+/* End of file attendance.php */
+/* Location: ./application/controllers/attendance.php */

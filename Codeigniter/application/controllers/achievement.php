@@ -12,10 +12,10 @@
 /**
  * Achievement Controller (Class)
  *
- * The achievement controller class implements the logic for the achievement-system.
+ * The achievement controller (class) implements the logic for the achievement-system.
  * It check`s for new achievements (the function need to be called after each action),
- * gives the user new achievements, gives the user a feedback if an new achievement is
- * earned.
+ * grants new achievements to the authenticated user and gives the user a feedback,
+ * if an new achievement is unlocked.
  *
  * @author Christian Kundruß (CK), <christian.kundruss@fh-duesseldorf.de>
  */
@@ -23,7 +23,6 @@
 class Achievement extends FHD_Controller {
 
     // declaration of instance variables
-    private $CI;
     private $user_id;
     // variable for the min. count of topics that are necessary for the skills achievments
     private $min_topics_skill_achievment;
@@ -31,11 +30,10 @@ class Achievement extends FHD_Controller {
     /**
      * Default Constructor, used for initialization
      * @access public
+     * @return void
      */
     public function __construct(){
         parent::__construct();
-
-        $this->CI =& get_instance(); // get the ci instance
 
         $this->user_id = $this->authentication->user_id(); // save the uid of the current authenticated user
 
@@ -49,10 +47,11 @@ class Achievement extends FHD_Controller {
     }
 
     /**
-     * Checks if the user has unlocked an new attendance achievement. If he has unlocked an new achievement,
-     * a message will be returned.
+     * Checks if the user has unlocked an new attendance achievement. If an new achievement has been unlocked,
+     * a modal view as an message will be echoed. The function will usual be called via AJAX.
      * @access public
      * @param $course_id ID of the course where the attendance achievements should be checked for
+     * @return void
      */
     public function ajax_check_for_new_attendance_achievement($course_id){
         // get the number of actual attended events, for the given course, the authenticated user and the act semester
@@ -69,10 +68,11 @@ class Achievement extends FHD_Controller {
     }
 
     /**
-     * Checks if the user has unlcoked an new skills achievement. If he has unlocked an new achievement, a message
-     * (modal) will bei displayed in the view.
+     * Checks if the user has unlocked an new skills achievement. If an new achievement has been unlocked, a message
+     * (modal) will bei echoed in the caller view. The function will usual be called via AJAX.
      * @access public
      * @param $course_id ID of the course where the skills should be checked for.
+     * @return void
      */
     public function ajax_check_for_new_skill_achievement($course_id){
 
@@ -81,7 +81,7 @@ class Achievement extends FHD_Controller {
 
         $result = ''; // result variable to hold the information, which should be 'returned' to the view
 
-        // if the user has saved more than 5 topics in the logbook, than check for an achievement
+        // if the user has saved more than the specified number of topics in the logbook, than check for an achievement
         if($this->achievement_model->get_saved_topic_count_for_logbook($logbook_id) >= $this->min_topics_skill_achievment){
             // get the avg course / logbook rating
             $course_skill_rating = $this->logbuch_model->get_avg_rating_for_logbook($logbook_id);
@@ -96,12 +96,12 @@ class Achievement extends FHD_Controller {
     }
 
     /**
-     * Checks if the matching achievement exists and is not already earned for the given course. If the matching achievement
-     * has not been unlocked for the given course, it will be unlocked and the modal message view will be returned as an string.
+     * Checks if the matching achievement has not been unlocked by the user, so far. If it has not been unlocked for the given course,
+     * it will be unlocked and an modal message view will be returned as an string.
      * Otherwise there won`t be any action, and an string with the info 'no_achievement_unlocked' will be returned.
      * @access public
-     * @param $matching_achievement Array with information about the achievement type, that matches
-     *        to the course activity.
+     * @param $matching_achievement Array with information about the achievement type, that matches to the performed
+     *        course activity.
      * @param $course_id ID of the course, where the achievement should be unlocked for.
      * @return string If an achievement has been successfully unlocked the modal view will be returned as an string, otherwise there
      *         there will be 'no_achievement_unlocked' returned.
@@ -141,9 +141,8 @@ class Achievement extends FHD_Controller {
     }
 
     /**
-     * Shows and opens up the achievement gallery to show the user specific
-     * achievements. If the authenticated user hasn`t unlocked any achievements
-     * a motivation message will be displayed.
+     * Opens the achievement gallery and loads the already unlocked achievements for the
+     * authenticated user.
      * @access public
      * @return void
      */

@@ -11,9 +11,11 @@
  * Logbuch Model
  * The 'logbuch model' deals with all necessary db operations for the students 'logbuch'
  * and 'logbuch' administration for course instructors.
+ *
  * @author Christian Kundruß (CK), <christian.kundruss@fh-duesseldorf.de>
  * @todo remove debug / development time class variable and class variables usage.
  */
+
 class Logbuch_Model extends CI_Model {
 
     private $actual_day_date = "2012-10-01"; // debug (development) date to be able to test the attendance widget
@@ -21,10 +23,11 @@ class Logbuch_Model extends CI_Model {
 
     /**
      * Inserts the given array with base topics into the database. Expects an array with the topics to insert.
-     * 1 Array entry is equal to 1 topic
+     * One Array entry is equal to one topic.
      * @access public
-     * @param $course_id
-     * @param $topics array with topics to insert
+     * @param $course_id ID of the course where the base topics should be saved for
+     * @param $topics Array with the topics that should be inserted
+     * @return void
      */
     public function save_all_base_topics($course_id, $topics) {
         // for each element in array insert it
@@ -44,7 +47,8 @@ class Logbuch_Model extends CI_Model {
     /**
      * Deletes all base topics for the given course_id in the table 'basislogbucheintrag'
      * @access public
-     * @param $course_id
+     * @param $course_id ID of the course where the existing base topics should be deleted for.
+     * @return void
      */
     public function delete_all_base_topics($course_id) {
         $this->db->where('KursID', $course_id);
@@ -55,7 +59,7 @@ class Logbuch_Model extends CI_Model {
      * Returns all base topics for the given course id in an array.
      * @access public
      * @param $course_id
-     * @return array Array with all the base topics for the given course id. Every topic is one entry, if there is no base topic for the
+     * @return array Array with all the base topics for the given course id. Every topic is one entry, if there are no base topic for the
      *               given course an empty array will be returned
      */
     public function get_all_base_topics($course_id) {
@@ -77,7 +81,7 @@ class Logbuch_Model extends CI_Model {
     }
 
     /**
-     * Returns all possible courses, for which the user (user_id) is able to create a logbook
+     * Returns all possible courses, for which the user (user_id) is able to create a logbook.
      * @param $user_id ID of the current (asking) user
      * @return array Array with the possible courses, if there are no courses FALSE is returned
      */
@@ -99,7 +103,7 @@ class Logbuch_Model extends CI_Model {
 
         // if there are some results
         if ($query->num_rows() > 0){
-            // prepare the data to return
+            // prepare the data to be returned
             foreach ($query->result() as $row) {
                 $courses[$row->KursID]['KursID'] = $row->KursID;
                 $courses[$row->KursID]['Kursname'] = $row->Kursname;
@@ -111,7 +115,7 @@ class Logbuch_Model extends CI_Model {
     }
 
     /**
-     * Inserts/saves a new logbook for the given course_id and the given user_id
+     * Inserts/saves a new logbook for the given course_id and the given user_id.
      * @access public
      * @param $course_id ID of the specified course
      * @param $user_id ID of the specified user
@@ -135,6 +139,7 @@ class Logbuch_Model extends CI_Model {
     /**
      * Returns all logbooks for a given user id to display them in the view.
      * @param $user_id user_id of the logbooks owner to search for
+     * @return array Array with all logbooks of the given user
      */
     public function get_all_logbooks($user_id){
 
@@ -167,6 +172,7 @@ class Logbuch_Model extends CI_Model {
     /**
      * Deletes an logbook by his id.
      * @param $logbook_id ID of the logbook that should be deleted
+     * @return void
      */
     public function delete_logbook($logbook_id){
         // delete the logbook with the given id
@@ -201,10 +207,11 @@ class Logbuch_Model extends CI_Model {
     }
 
     /**
-     * Deletes an logbook entry by his id. For verification the logbook id will also be passed and used
+     * Deletes an logbook entry by his id. For verification the logbook id will be passed and used
      * while deleting.
      * @access public
      * @param $lb_entry_id ID of the logbook entry to delete
+     * @return void
      */
     public function delete_logbook_entry($lb_entry_id){
         $this->db->where('LogbucheintragID', $lb_entry_id);
@@ -213,6 +220,7 @@ class Logbuch_Model extends CI_Model {
 
     /**
      * Fetches an single logbook entry from the database and returns it.
+     * Used for the logbook entry detail view.
      * @access public
      * @param $lb_entry_id ID of the entry that should be selected.
      * @return array Array with the singe logbook entry
@@ -241,10 +249,11 @@ class Logbuch_Model extends CI_Model {
     /**
      * Saves an new entry for the given (existing) logbook.
      * @access public
-     * @param logbook_id Integer value with the ID of the logbook where the entry should be inserted.
+     * @param $logbook_id Integer value with the ID of the logbook where the entry should be inserted.
      * @param $topic String with the name of the new entry.
      * @param $annotation String with the annotation.
      * @param $rating Integer value with the rating between 0 and 100
+     * @return void
      */
     public function save_new_logbook_entry($logbook_id, $topic, $annotation, $rating) {
         // prepare the data, that should be inserted
@@ -259,12 +268,13 @@ class Logbuch_Model extends CI_Model {
     }
 
     /**
-     * Updates the selected logbook entry with the given informations.
+     * Updates the selected logbook entry with the given information.
      * @access public
      * @param $lb_entry_id ID of the selected logbook entry
      * @param $topic new topic for the entry
      * @param $annotation new annotation for the entry
      * @param $rating new rating for the entry
+     * @return void
      */
     public function update_logbook_entry($lb_entry_id, $topic, $annotation, $rating) {
         // prepare the data array
@@ -279,8 +289,8 @@ class Logbuch_Model extends CI_Model {
     }
 
     /**
-     * Returns the course abbreviation, that corresponds to the given logbook id.
-     * @param $logbook_id
+     * Returns the course name, that corresponds to the given logbook id.
+     * @param $logbook_id ID of the logbook, where the corresponding course should be looked up.
      * @return string String with the coursename abbreviation for the given logbook_id
      */
     public function get_course_name_for_logbook($logbook_id) {
@@ -297,7 +307,7 @@ class Logbuch_Model extends CI_Model {
 
     /**
      * Returns the course id, that corresponds to the given logbook id.
-     * @param $logbook_id
+     * @param $logbook_id ID of the logbook, where the corresponding course should be looked up for.
      * @return int The id of the course, that corresponds to the logbook id
      */
     public function get_course_id_for_logbook($logbook_id){
@@ -313,7 +323,7 @@ class Logbuch_Model extends CI_Model {
     /**
      * Calculates / returns the average rating for the given logbook.
      * @access public
-     * @param $logbook_id ID of the given logbook.
+     * @param $logbook_id ID of the logbook where the rating should be looked up for.
      * @return integer average rating of the given logbook.
      */
     public function get_avg_rating_for_logbook($logbook_id) {
@@ -330,7 +340,7 @@ class Logbuch_Model extends CI_Model {
      * Fetches all base topics for the given course id and returns them in an array.
      * @access public
      * @param $course_id ID of the course, where the topics should be selected for
-     * @return ARRAY Array with all base topics, if there are no base topics an empty array will be returned
+     * @return array Array with all base topics, if there are no base topics an empty array will be returned
      */
     public function get_all_base_topics_for_course($course_id){
         $this->db->select('Thema');
@@ -358,6 +368,7 @@ class Logbuch_Model extends CI_Model {
      * highest degree program.
      * @access public
      * @param $old_course_id ID of the "old course"
+     * @return ID of the newest degree program course that has got the same name as the given course id.
      */
     public function get_newest_course_id($old_course_id){
 
@@ -368,7 +379,7 @@ class Logbuch_Model extends CI_Model {
 
         $course_name = $this->db->get()->row()->Kursname;
 
-        // query for the newes corse
+        // query for the newest course
         $query = $this->db->query("
                         SELECT KursID, studiengangkurs.Kursname, studiengangkurs.StudiengangID
                         FROM studiengangkurs
@@ -391,7 +402,8 @@ class Logbuch_Model extends CI_Model {
      * Inserts / copies the given base topics to the specified logbook.
      * @access public
      * @param $logbook_id ID of the logbook, where the topics should be inserted
-     * @param $base_topics Array with alle Base topics -> Structure per entry Thema => VALUE, Erlaeuterung => Value
+     * @param $base_topics Array with all base topics -> structure per entry 'Thema => VALUE'
+     * @return void
      */
     public function insert_base_topics_into_logbook($logbook_id, $base_topics){
          // prepare the data for being inserted
@@ -409,9 +421,9 @@ class Logbuch_Model extends CI_Model {
     /**
      * Checks if there is already an logbook for the given combination of course and user_id
      * @access public
-     * @param $course_id ID of the selected course
+     * @param $course_id ID of the user selected course
      * @param $user_id ID of the accessing user
-     * @return BOOL TRUE if there is an logbook for the given combination, otherwise FALSE
+     * @return bool TRUE if there is an logbook for the given combination, otherwise FALSE
      */
     public function check_logbook_course_existence_for_user($course_id, $user_id) {
         $this->db->select('*');
@@ -431,7 +443,8 @@ class Logbuch_Model extends CI_Model {
     /**
      * Returns the currently running course for the authenticated user.
      * @access public
-     * @return ARRAY Returns the array with the information about the currently running course
+     * @return array The array with the currently running course
+     * @todo remove development time, needed to be able to test some functions, because of missing time table data
      */
     public function get_running_course(){
 
@@ -452,14 +465,19 @@ class Logbuch_Model extends CI_Model {
         $num_act_semester = $this->get_Semester($user_information['StudienbeginnSemestertyp'], $user_information['StudienbeginnJahr']);
 
         $running_course = $this->_fetch_running_course($num_act_semester, $user_information['BenutzerID'], $actual_week_day, $actual_time);
+
         return $running_course;
     }
 
     /**
-     * Fetches the actual running course and returns the specified informations in an array.
+     * Fetches the actual running course and returns the specified information in an array.
      * Only courses with the 'veranstalungsform 1 = Vorlesung' will be queried.
      * @access private
-     * @return ARRAY Array with the specified information about the running course in an key / value array.
+     * @param $act_semester Actual semester of the authenticated user
+     * @param $user_id ID of the currently authenticated user
+     * @param $act_wekday Act. weekday as an integer (1 = monday, 2 = tuesday, ...)
+     * @param $act_time Act time in the format HH:mm
+     * @return array Array with the specified information about the running course in an key / value array.
      */
     private function _fetch_running_course($act_semester, $user_id, $act_weekday, $act_time){
         $query = $this->db->query("
@@ -507,7 +525,7 @@ class Logbuch_Model extends CI_Model {
     /**
      * Gets all information about the actual authenticated user and returns them in an array.
      * @access private
-     * @return ARRAY The array with the user information.
+     * @return array The array with the user information.
      */
     private function _get_user_information(){
         $this->db->select('*');
@@ -523,8 +541,10 @@ class Logbuch_Model extends CI_Model {
      * Saves a new attendance record for the given user_id in the database table 'anwesenheit'
      * with the current time and the given course id.
      * @access public
-     * @param $course_id Id of the course, where the attendance should be saved for.
+     * @param $course_id ID of the course, where the attendance should be saved for.
      * @param $user_id ID of the specified user
+     * @return void
+     * @todo remove development time usage (class varaiable)
      */
     public function save_attendance_for_course_with_current_time($course_id, $user_id) {
         // get the actual week day
@@ -535,7 +555,6 @@ class Logbuch_Model extends CI_Model {
         // for development purposes static times to be able to test the functionality
         $actual_time = "16:15:00";
         $actual_week_day = "1";
-        //$timestamp_to_insert = '2012-09-03 16:15:00';
         $timestamp_to_insert = $this->actual_day_date . ' ' . $actual_time;
         // end development time data
 
@@ -552,31 +571,32 @@ class Logbuch_Model extends CI_Model {
     /**
      * Returns the count of attended course events for the actual semester and the given user. Checks at first the actual semestertype
      * and then sets the date limits.
-     * @param $course_id
-     * @return INT The count of the attended events for the given user and the given course id is returned. If there are no entries, zero
+     * @param $course_id ID of the course where the attended events should be selected.
+     * @param $user_id ID of the user, for who the attendance should be selected.
+     * @return integer The count of the attended events for the given user and the given course id is returned. If there are no entries, zero
      *              will be returned.
      */
     public function get_attendance_count_for_course_and_act_semester($course_id, $user_id) {
         // get the semester type
         $semester_type = $this->adminhelper->getSemesterTyp();
         // set the date limits according to the type of the semester
-        $beginn_date = '';
+        $begin_date = '';
         $end_date = '';
         $act_year = date('Y', time()); // get the act year
 
         switch($semester_type){
             case 'SS':
-                $beginn_date = $act_year . '-03-01 00:00:00';
+                $begin_date = $act_year . '-03-01 00:00:00';
                 $end_date = $act_year . '-07-31 00:00:00';
                 break;
             case 'WS':
-                $beginn_date = $act_year . '-09-01 00:00:00';
+                $begin_date = $act_year . '-09-01 00:00:00';
                 $end_date = ($act_year+1) . '-02-28 00:00:00';
                 break;
         }
 
         // define the date_range to select for
-        $date_range = 'Datum BETWEEN ' . '"' . $beginn_date . '" AND "' . $end_date . '"';
+        $date_range = 'Datum BETWEEN ' . '"' . $begin_date . '" AND "' . $end_date . '"';
         // query for the count
         $this->db->from('anwesenheit');
         $this->db->where('BenutzerID', $user_id);
@@ -589,9 +609,9 @@ class Logbuch_Model extends CI_Model {
 
     /**
      * Checks if the current authenticated user has already tracked his attendance for the
-     * given course id.
+     * given course id and the actual day.
      * @param $course_id The course id where the attendance should be checked for.
-     * @return BOOL returns TRUE if the user has already tracked his attendance, otherwise FALSE
+     * @return bool TRUE if the user has already tracked his attendance, otherwise FALSE
      */
     public function already_attending_today($course_id){
         // get the actual week day
@@ -625,7 +645,7 @@ class Logbuch_Model extends CI_Model {
      * @access public
      * @param $course_id The course_id from the timetable
      * @param $user_id The id of the currently authenticated user
-     * @return array An array with the selected course_id and the coursename will be returned
+     * @return array Array with the selected course_id and the coursename will be returned
      */
     public function query_right_stdg_course_for_given_course($course_id, $user_id){
         $query = $this->db->query("
@@ -694,7 +714,7 @@ class Logbuch_Model extends CI_Model {
     }
 
     /**
-     * Returns the attendance count for the given courseid in an specified date range.
+     * Returns the attendance count for the given course_id in an specified date range.
      * @access public
      * @param $course_id The course, where the attendance should be counted for
      * @param $begin_date Start date of the range as an string (format YYYY-MM-DD)
@@ -736,9 +756,9 @@ class Logbuch_Model extends CI_Model {
     }
 
     /**
-     * Fetches infos form the 'studiengangkurs'-table for the given course id and returns them.
+     * Fetches information form the 'studiengangkurs'-table for the given course id and returns them.
      * @access public
-     * @param $course_id ID of the course where the infos should be selected for
+     * @param $course_id ID of the course where the information should be selected for
      * @return array Array with the course information
      */
     public function get_course_information($course_id){
@@ -752,8 +772,9 @@ class Logbuch_Model extends CI_Model {
     }
 
     /**
-     * Checks for the given course and the current timestamp, if there is already an event stored.
-     * @param $course_id ID of the course, where the current running
+     * Checks for the given course and the current time, if there is already an event stored.
+     * @param $course_id ID of the course, where it should be checked for, if an event for the act
+     *                  day is already saved
      * @return bool TRUE if an event has already been stored, otherwise FALSE is returned
      */
     public function is_course_event_stored($course_id){
@@ -786,6 +807,7 @@ class Logbuch_Model extends CI_Model {
      * has been happened for the actual day date.
      * @access public
      * @param $course_id ID of the course where the event timestamp should be saved for
+     * @return void
      */
     public function add_course_event($course_id){
 
@@ -812,6 +834,7 @@ class Logbuch_Model extends CI_Model {
      * till today.
      * @access public
      * @param $course_id ID of the course where the number of events should be fetched for.
+     * @return int Number of occured events for the actual day
      */
     public function get_number_of_course_events_till_today($course_id){
 
@@ -844,5 +867,4 @@ class Logbuch_Model extends CI_Model {
 
         return $occured_events;
     }
-
 }

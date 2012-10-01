@@ -1,19 +1,20 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
-    /**
-     * meinFHD WebApp
-     *
-     * @version 0.0.1
-     * @copyright Fachhochschule Duesseldorf, 2012
-     * @link http://www.fh-duesseldorf.de
-     * @author Christian Kundruß (CK), <christian.kundruss@fh-duesseldorf.de>
-     */
+/**
+ * meinFHD WebApp
+ *
+ * @version 0.0.1
+ * @copyright Fachhochschule Duesseldorf, 2012
+ * @link http://www.fh-duesseldorf.de
+ * @author Christian Kundruß (CK), <christian.kundruss@fh-duesseldorf.de>
+ */
 
-    /**
-     * Logbuch_Analysis-Controller
-     * The Logbuch_Analysis-Controller provides the different analysis,
-     * which are part of the logbook functionality.
-     * @author Christisan Kundruss, <christian.kundruss@fh-duesseldorf.de>
-     */
+/**
+ * Logbuch_Analysis-Controller
+ * The Logbuch_Analysis-Controller implements and provides the functions for the different analysis,
+ * that are available for the authenticated user.
+ * which are part of the logbook functionality.
+ * @author Christisan Kundruss, <christian.kundruss@fh-duesseldorf.de>
+ */
 class Logbuch_Analysis extends FHD_Controller {
 
     /**
@@ -33,8 +34,8 @@ class Logbuch_Analysis extends FHD_Controller {
     }
 
     /**
-     * Opens the analysis overview and displays all courses, for which the user created an logbook.
-     * List of all possible courses, where the user can ask for analysis based on his logbook.
+     * Opens the analysis overview and displays all courses, for which the user has created an logbook and is able
+     * to view course based analysis.
      * @access public
      * @return void
      */
@@ -71,7 +72,8 @@ class Logbuch_Analysis extends FHD_Controller {
     }
 
     /**
-     * Opens the detail analysis for the given course id and shows the analysis for the authenticated user.
+     * Opens the detail analysis view for the given course id and shows the analysis for the authenticated user
+     * and the selected course.
      * @access public
      * @param $course_id ID of the selected course
      * @return void
@@ -114,10 +116,10 @@ class Logbuch_Analysis extends FHD_Controller {
     }
 
     /**
-     * Returns the x-axis scaling (range) for the attendance chart
+     * Returns the x-axis scaling (range) for the attendance chart depending on the given semester type.
      * @access private
-     * @param $semester_type
-     * @return array Returns an 1 dimensional array with two entries for the attendance chart x-scaling
+     * @param $semester_type Type of the Semester(WS / SS)
+     * @return array Returns an one dimensional array with two entries for the attendance chart x-scaling
      */
     private function _get_attendance_chart_scaling($semester_type){
         $scaling = array();
@@ -138,10 +140,10 @@ class Logbuch_Analysis extends FHD_Controller {
     }
 
     /**
-     * Fetches the attendance chart series and adds it to the view. The data is fetched in weekly intervalls.
+     * Fetches the attendance chart series and adds it to the view. The data is fetched in weekly intervals.
      * @access private
-     * @param $course_id
-     * @return array Returns the array with the series data
+     * @param $course_id ID of the course where the attendance data should be selected for.
+     * @return array The array with the series data
      */
     private function _get_data_for_attendance_chart($course_id){
         // get the actual date
@@ -176,8 +178,8 @@ class Logbuch_Analysis extends FHD_Controller {
     /**
      * Get`s and calculates the data for the skills chart.
      * @access private
-     * @param $course_id The course id, where the skills should be selected for
-     * @return array The array with the skills data
+     * @param $course_id ID of the course where the skills should be selected for
+     * @return array Array with the skills data
      */
     private function _get_data_for_skills_chart($course_id){
         // get the logbook id for the given course and the authenticated user
@@ -200,8 +202,9 @@ class Logbuch_Analysis extends FHD_Controller {
     /**
      * Returns the start and end date of the semester type that is passed as an parameter.
      * @access private
-     * @param $semester_type
-     * @return array Returns the start and end date of the given semester type
+     * @param $semester_type Type of the semester where the date range should be returned for.
+     * @return array Returns the start and end date of the given semester type in an one
+     *               dimensional array with the keys 'start_date' and 'end_date'
      */
     private function _get_semester_dates($semester_type){
         $semester = array();
@@ -280,10 +283,7 @@ class Logbuch_Analysis extends FHD_Controller {
 
         // return series data
         return $overall_course_attendance;
-
-
-
     }
-
-
 }
+/* End of file logbuch_analysis.php */
+/* Location: ./application/controllers/logbuch_analysis.php */
