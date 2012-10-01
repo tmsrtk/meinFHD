@@ -57,6 +57,8 @@ class User_model extends CI_Model {
 			// get actual Semester every time when the user connects and save it in the db
 			// $this->act_semester = $this->adminhelper->getSemester($this->studienbeginn_typ, $this->studienbeginn_jahr);
 			$this->act_semester = $this->adminhelper->get_act_semester($this->studienbeginn_typ, $this->studienbeginn_jahr);
+			// TODO: need to check if its a student/tutor?
+			$this->update_usersemester($this->user_id, $this->act_semester);
 
 			// log_message('error', $this->act_semester);
 
@@ -85,6 +87,11 @@ class User_model extends CI_Model {
 		// write userdata in global $data
         $this->data->add('userdata', $userdata);
 
+	}
+
+	public function update_usersemester($user_id, $sem_count=0)
+	{
+		$this->db->update('benutzer', array("Semester" => $sem_count), "BenutzerID = {$sem_count}");
 	}
 
 	/** */
@@ -385,6 +392,7 @@ class User_model extends CI_Model {
 	public function get_user_course_ids(){
 	    return $this->user_course_ids;
 	}
+
 
 	
 	

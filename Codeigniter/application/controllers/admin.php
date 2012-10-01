@@ -391,6 +391,10 @@ class Admin extends FHD_Controller {
 		{
 			// call create user mask again
 			// $this->message->set('Beim Erstellen des Users ist ein Fehler unterlaufen.', 'error');
+
+			// set flashdata
+			// $this->session->set_flashdata('item', 'value');
+
 			// redirect(site_url().'admin/create_user_mask');
 			$this->create_user_mask();
 		}
@@ -563,8 +567,8 @@ class Admin extends FHD_Controller {
 			$this->save_user_changes();
 
 			// $this->message->set('Der User wurde erfolgreich bearbeitet.', 'error');
-			// redirect(site_url().'admin/edit_user_mask');
-			$this->edit_user_mask();
+			redirect(site_url().'admin/edit_user_mask');
+			// $this->edit_user_mask();
 		}
 	}
 
@@ -585,11 +589,11 @@ class Admin extends FHD_Controller {
 		$this->admin_model->update_user($new_form_values['user_id'], $data);
 
 		// send email
-		$this->mailhelper->send_meinfhd_mail(											///////////////////////////////////
-			$new_form_values['email'],
-			"Ihr Passwort wurde zurückgesetzt",
-			"Ihr Passwort lautet: {$data['Passwort']}"
-			);
+		// $this->mailhelper->send_meinfhd_mail(											///////////////////////////////////
+		// 	$new_form_values['email'],
+		// 	"Ihr Passwort wurde zurückgesetzt",
+		// 	"Ihr Passwort lautet: {$data['Passwort']}"
+		// 	);
 
 		$this->message->set('Das Passwort wurde erfolgreich zurückgesetzt.', 'error');
 		redirect(site_url().'admin/edit_user_mask');

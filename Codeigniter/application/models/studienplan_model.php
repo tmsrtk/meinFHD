@@ -247,6 +247,115 @@ class Studienplan_Model extends CI_Model
         return $data;
     }
 
+    /**
+     * Queries the whole studyplan of logged user. Desktop version.
+     * @return mixed Studyplan in m-dim Arrays.
+     */
+    public function queryStudyplanDesktop()
+    { 
+        $data = array();
+        
+        // query DB
+        $this->db->select('studiengangkurs.KursID,
+                            studiengangkurs.Semester AS regularSemester, 
+                            studiengangkurs.Kursname,
+                            studiengangkurs.kurs_kurz,
+                            semesterkurs.Semester AS graduateSemester,
+                            semesterkurs.KursHoeren, 
+                            semesterkurs.KursSchreiben, 
+                            semesterkurs.Notenpunkte,
+                            semesterplan.Semesteranzahl');
+        $this->db->from('studiengangkurs');
+        $this->db->join('semesterkurs', 'semesterkurs.KursID = studiengangkurs.KursID');
+        $this->db->join('semesterplan', 'semesterplan.SemesterplanId = semesterkurs.SemesterplanID');
+        $this->db->where('semesterkurs.SemesterplanID', $this->studyplanID);
+        $this->db->order_by('regularSemester', 'ASC');
+        $studyplan = $this->db->get();
+
+
+        // initial zero semester
+        // $data['plan'][0][] = array(
+        //     'regularSemester'   => null,
+        //     'KursID'            => null,
+        //     'Kursname'          => null,
+        //     'Kurzname'          => null,
+        //     'graduateSemester'  => null,
+        //     'Teilnehmen'        => null,
+        //     'Pruefen'           => null,
+        //     'Notenpunkte'       => null
+        // );
+
+
+        // group the resultset by semester in array
+        foreach($studyplan->result() as $sq)
+        {
+            // if graduateSemester doesn't equals regularSemester, set 
+            // graduateSemester as key
+            if($sq->graduateSemester != $sq->regularSemester)
+            {
+                $data['plan'][$sq->regularSemester][] = array(
+                    'regularSemester'   => $sq->regularSemester,
+                    'KursID'            => null,
+                    'Kursname'          => null,
+                    'Kurzname'          => null,
+                    'graduateSemester'  => null,
+                    'Teilnehmen'        => null,
+                    'Pruefen'           => null,
+                    'Notenpunkte'       => null
+                );
+                
+                $data['plan'][$sq->graduateSemester][] = array(
+                    'regularSemester'   => $sq->regularSemester,
+                    'KursID'            => $sq->KursID,
+                    'Kursname'          => $sq->Kursname,
+                    'Kurzname'          => $sq->kurs_kurz,
+                    'graduateSemester'  => $sq->graduateSemester,
+                    'Teilnehmen'        => $sq->KursHoeren,
+                    'Pruefen'           => $sq->KursSchreiben,
+                    'Notenpunkte'       => ($sq->Notenpunkte == 101) ? null : $this->calculateMark($sq->Notenpunkte)
+                );
+            }
+            // else set regularSemester as key
+            else
+            {
+                $data['plan'][$sq->regularSemester][] = array(
+                    'regularSemester'   => $sq->regularSemester,
+                    'KursID'            => $sq->KursID,
+                    'Kursname'          => $sq->Kursname,
+                    'Kurzname'          => $sq->kurs_kurz,
+                    'graduateSemester'  => $sq->graduateSemester,
+                    'Teilnehmen'        => $sq->KursHoeren,
+                    'Pruefen'           => $sq->KursSchreiben,
+                    'Notenpunkte'       => ($sq->Notenpunkte == 101) ? null : $this->calculateMark($sq->Notenpunkte)
+                );
+            }
+        }
+        
+        if($sq->Semesteranzahl > $sq->regularSemester)
+        {
+            $diff = $sq->Semesteranzahl - $sq->regularSemester;
+            
+            for($i=0; $i<=$diff; $i++)
+            {
+                $data['plan'][$sq->regularSemester + $i][] = array(
+                    'regularSemester'   => null,
+                    'KursID'            => null,
+                    'Kursname'          => null,
+                    'Kurzname'          => null,
+                    'graduateSemester'  => null,
+                    'Teilnehmen'        => null,
+                    'Pruefen'           => null,
+                    'Notenpunkte'       => null
+                );
+            }
+        }
+        
+        // sort the studyplan by semester
+        ksort($data['plan']);
+    
+        return $data;
+    }
+
 
     
     /**

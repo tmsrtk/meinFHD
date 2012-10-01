@@ -144,9 +144,9 @@ class Adminhelper {
 	}
 
 	/**
-	 * Returns the sum of the semester, by calculating whit the given 
-	 * @param  [type] $semestertyp   [description]
-	 * @param  [type] $studienbeginn [description]
+	 * Returns the sum of the semester, by calculating the given data
+	 * @param  String $semestertyp   WS / SS
+	 * @param  [type] $studienbeginn Year of users study start, like 2012
 	 * @return [type]                [description]
 	 */
 	public function get_act_semester($semestertyp, $studienbeginn)

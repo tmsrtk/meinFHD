@@ -121,6 +121,9 @@
 								<?php if ( $this->authentication->is_logged_in() ) : ?>
 								<li><a href="<?php print base_url('app/logout'); ?>">Logout</a></li>
 								<?php endif; ?>
+								<?php if ( $this->authentication->is_logged_in() ) : ?>
+								<li><a href="">Semester: <?php echo $userdata["act_semester"] ?></a></li>
+								<?php endif; ?>
 							</ul> <!-- /.nav.level-1 -->
 						</div> <!-- /.nav-collapse -->
 					</div>

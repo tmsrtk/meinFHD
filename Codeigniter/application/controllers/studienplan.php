@@ -45,27 +45,36 @@ class Studienplan extends FHD_Controller
      */
     public function index()
     {
-        // load model
-        $this->load->model('Studienplan_Model');
-        $plan = $this->Studienplan_Model->queryStudyplan();
-        
-        // Calculate needed options
-        $this->swsUndCpBerechnen();
-        $this->durchschnittsnoteBerechnen();
-        $this->modulinfo();
-        $this->prozentsatzBerechnen();
-        //$this->pruefenTeilnehmenHolen();
-        
-        
-        // add the resultset/array to the data-object
+        $semesterplan_id = $this->user_model->get_semesterplanid();
+        $plan = NULL;
+
+        if (isset($semesterplan_id))
+        {
+            // load model
+            $this->load->model('Studienplan_Model');
+            $plan = $this->Studienplan_Model->queryStudyplanDesktop();
+            
+            // Calculate needed options
+            $this->swsUndCpBerechnen();
+            $this->durchschnittsnoteBerechnen();
+            $this->modulinfo();
+            $this->prozentsatzBerechnen();
+            //$this->pruefenTeilnehmenHolen();
+            
+            
+            // add the resultset/array to the data-object
+            // $this->data->add('studienplan', $plan);
+            // $this->load->view('studienplan/index', $this->data->load());
+            
+            // uncomment for desktop-view
+            //$this->load->view('semesterplan_show', $this->data->load()); // leave commented
+    //        $data['main_content'] = 'semesterplan_show';
+    //        $data['global_data'] = $this->data->load();
+    //        $this->load->view('includes/template', $data);
+        }
+
         $this->data->add('studienplan', $plan);
         $this->load->view('studienplan/index', $this->data->load());
-        
-        // uncomment for desktop-view
-        //$this->load->view('semesterplan_show', $this->data->load()); // leave commented
-//        $data['main_content'] = 'semesterplan_show';
-//        $data['global_data'] = $this->data->load();
-//        $this->load->view('includes/template', $data);
     }
 
 
@@ -103,6 +112,8 @@ class Studienplan extends FHD_Controller
         $this->Studienplan_Model->createStudyplan();
         
         $this->message->set(sprintf('Der Studienplan wurde erfolgreich erstellt.'));
+
+        redirect('/studienplan');
     }
     
     
