@@ -6,7 +6,7 @@
  * @version 0.0.1
  * @copyright Fachhochschule Duesseldorf, 2012
  * @link http://www.fh-duesseldorf.de
- * @author Christian Kundruss (CK), <christian.kundruss@fh-duesseldorf.de>
+ * @author Christian Kundruss (CK) <christian.kundruss@fh-duesseldorf.de>
  */
 
 /**
@@ -14,6 +14,8 @@
  *
  * This class deals with the authentication process via the configured Single-Sign-On IdP, if the users chooses the
  * SSO login method on the login page.
+ *
+ * @author Christian Kundruss (CK) <christian.kundruss@fh-duesseldorf.de>
  */
 class SSO extends FHD_Controller {
 
@@ -25,6 +27,9 @@ class SSO extends FHD_Controller {
     /**
      * Default constructor to prepare the controller. Constructor is called, when any of the sso-controller functions is called from
      * any view or any other controller
+     *
+     * @access public
+     * @return void
      * */
     public function __construct() {
         parent::__construct();
@@ -43,7 +48,10 @@ class SSO extends FHD_Controller {
 
     /**
      * Method starts the authentication process with the in the samlauthentication-library
-     * configured idp
+     * configured idp.
+     *
+     * @acces public
+     * @return bool FALSE if an connection to the configured IdP can not be established.
      */
     public function authenticate() {
 
@@ -72,7 +80,10 @@ class SSO extends FHD_Controller {
     }
 
     /**
-     * Function establishes an local session with the account to which the global uid is linked
+     * Establishes an local session with the account to which the global uid is linked.
+     *
+     * @access public
+     * @return void
      */
     public function establish_local_session () {
 
@@ -89,7 +100,10 @@ class SSO extends FHD_Controller {
 
     /**
      * Function returns the information for the linked user. If the user is not linked false will be returned
-     * Wrapper function for multiple calls of the same operation
+     * Wrapper function for multiple calls of the same operation.
+     *
+     * @access public
+     * @return mixed Returns the information about the linked local user account, or FALSE if there isn`t any linked account.
      */
     public function get_linked_user() {
         // check in the database if the authenticated user has got an local linked user account
@@ -105,8 +119,11 @@ class SSO extends FHD_Controller {
     }
 
     /**
-     * Links an global authenticated account with an local identity in. The local identity that should be linked is submitted
-     * by the user.
+     * Links an global authenticated account with an local identity . The local identity that should be linked is submitted / inputted by the user.
+     * If the account was successfully created an email is going to be sent to the user.
+     *
+     * @access public
+     * @return void
      */
     public function link_account() {
 
@@ -184,8 +201,15 @@ class SSO extends FHD_Controller {
     }
 
     /**
-     * Checks if all inputes in the create account form are correct
-     * @return bool
+     * Validates if all user inputs in the create account form are in the correct format.
+     * If they are in the correct format the new account is going to be created, otherwise the form
+     * will be repopulated.
+     * While creating the account the method checks if the asking global UID is blacklisted so far. If the uid is
+     * on the blacklist an invitation is going to be saved and user and support will get an email. If the global uid
+     * is not blacklisted the account will be created and an welcome e-mail will be sent to the user.
+     *
+     * @access public
+     * @return void
      */
     public function validate_create_account_form() {
         // set custom delimiter for validation errors
@@ -310,8 +334,10 @@ class SSO extends FHD_Controller {
     }
 
     /**
-     *  Creates a new user and links him to his global uid.
-     * @param $form_data
+     * Creates a new user and links him to the global userid.
+     *
+     * @access private
+     * @param Array $form_data The user form input from the create account mask.
      */
     private function _create_user ($form_data) {
         // generate a custom password
@@ -332,8 +358,11 @@ class SSO extends FHD_Controller {
     }
 
     /**
-     * Saves a new user request with the global UID to link the account directly
-     * @param $form_data
+     * Saves a new user request(invitation) with the global UID to be able to link the account after submitting
+     * the invitation.
+     *
+     * @access private
+     * @param Array $form_data The user form input from the create account mask.
      */
     private function _save_user_request ($form_data) {
         // add the global uid to the user input

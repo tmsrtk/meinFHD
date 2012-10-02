@@ -6,27 +6,35 @@
  * @version 0.0.1
  * @copyright Fachhochschule Duesseldorf, 2012
  * @link http://www.fh-duesseldorf.de
- * @author Christian Kundruss (CK), <christian.kundruss@fh-duesseldorf.de>
+ * @author Christian Kundruss (CK) <christian.kundruss@fh-duesseldorf.de>
  */
 
 /**
  * SSO Model
- * The sso model deals with the all necessary db operations for the Single-Sign-On-process
+ * The SSO model deals with the all necessary db operations for the Single-Sign-On-process.
+ *
+ * @author Christian Kundruss (CK) <christian.kundruss@fh-duesseldorf.de>
  */
 class SSO_model extends CI_Model {
 
-    // the default constructor
+    /**
+     * Default constructor. Used for initialization purposes.
+     * @access public
+     */
     public function __construct() {
         parent::__construct();
 
     }
 
     /**
-     * Method scans the user table for an account that is linked to the uid of the idp.
-     * Information about the linked account are then returned.
-     * @param $idp_uid uid of the idp, that asks for authentication
-     * @return '0' if there is more than one, or none linked account, otherwise informations
-     * of the linked user will be returned as an array
+     * Method scans the user table for an account that is linked to the given uid of the idp.
+     * If there is already an linked account the information about the local identity will be
+     * returned.
+     *
+     * @access public
+     * @param integer $idp_uid uid of the idp, that asks for authentication
+     * @return mixed '0' if there is more than one, or none linked account, otherwise information
+     *              of the linked user will be returned as an array
      */
     public function get_linked_user($idp_uid) {
         // query the user table and scan for the idp uid in the appropriate coloumn
@@ -57,10 +65,12 @@ class SSO_model extends CI_Model {
     }
 
     /**
-     * Links an account with the local uid to the uid of the global authenticated user
-     * @param $local_uid UID of the local account that should be linked
-     * @param $idp_uid global UID where the local account should be linked to
-     * @return bool returns TRUE if update is okay, otherwise false
+     * Links an account with the given local uid to the global uid.
+     *
+     * @access public
+     * @param integer $local_uid UID of the local account that should be linked
+     * @param integer $idp_uid global UID where the local account should be linked to
+     * @return bool returns TRUE if update is okay, otherwise FALSE will be returned
      */
     public function link_account($local_uid, $idp_uid) {
         $update_data = array (
@@ -79,8 +89,10 @@ class SSO_model extends CI_Model {
     }
 
     /**
-     * Checks in the shibbolethblacklist, if the global uid is on the blacklist
-     * @param $idp_uid the global user id
+     * Checks in the shibbolethblacklist table, if the given global uid is on the blacklist or not.
+     *
+     * @access public
+     * @param integer $idp_uid the global user id
      * @return bool TRUE if the uid is blacklisted, otherwise FALSE
      */
     public function is_blacklisted($idp_uid) {
@@ -98,7 +110,9 @@ class SSO_model extends CI_Model {
     }
 
     /**
-     * Returns all configured departments from the database
+     * Returns all configured departments from the database.
+     *
+     * @access public
      * @return array The array with the departments
      */
     public function get_all_departments() {
@@ -111,7 +125,10 @@ class SSO_model extends CI_Model {
 
     /**
      * Saves a new user in the database and links him to his global shibboleth uid
-     * @param $form_data Array with the provided user input
+     *
+     * @access public
+     * @param Array $form_data Array with the provided user input
+     * @return void
      */
     public function save_new_user($form_data) {
         // prepare data for insert
@@ -147,8 +164,11 @@ class SSO_model extends CI_Model {
     }
 
     /**
-     * Writes an invitation request with the global uid into the database
+     * Writes an invitation request with the global uid into the database.
+     *
+     * @access public
      * @param $form_data Array with the user input
+     * @return void
      */
     public function save_user_invitation($form_data) {
         // prepare data for insert
@@ -170,9 +190,10 @@ class SSO_model extends CI_Model {
 
     /**
      * Checks if there is already an useraccount for the given matrikelnummer
-     * @param $matr_nr matrikelnummer to check
-     * @return bool TRUE if the matrikelnummer has got an account, otherwise FALSE
+     *
      * @access public
+     * @param integer $matr_nr matrikelnummer to check
+     * @return bool TRUE if the given matrikelnummer has got an account, otherwise FALSE
      */
     public function check_matrikelnummer_has_account($matr_nr) {
         $this->db->select('*');
