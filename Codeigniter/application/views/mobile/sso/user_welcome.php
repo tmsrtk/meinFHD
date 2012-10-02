@@ -11,7 +11,7 @@
                         Vielen Dank f&uuml;r deine Anmeldung bei meinFHD. Dein Account wurde erfolgreich erstellt.
                     </p>
                     <p>
-                        <strong>meinFHD</strong> hilft Dir, Dein Studium zu planen, zu organisieren und den &Uuml;berblick zu behalten.
+                        <strong>meinFHD</strong> hilft Dir Dein Studium zu planen, zu organisieren und den &Uuml;berblick zu behalten.
                     </p>
                     <h4>F&uuml;r Erstemester / Erstnutzer</h4>
                     <br/>

@@ -202,7 +202,7 @@ $submitCreateAccountButton = array(
                     <!-- create account accordion -->
                     <div class="accordion-group">
                         <div class="accordion-heading">
-                            <h4 class="accordion-toggle" data-parent="#accordion-app" data-toggle="collapse" data-target="#request-createaccount">Ich m&ouml;chte mir jetzt lokalen einen Account erstellen<i class="icon-plus pull-right"></i></h4>
+                            <h4 class="accordion-toggle" data-parent="#accordion-app" data-toggle="collapse" data-target="#request-createaccount">Ich m&ouml;chte mir jetzt einen lokalen Account erstellen<i class="icon-plus pull-right"></i></h4>
                         </div>
                         <div id="request-createaccount" class="accordion-body collapse">
                            <div class="accordion-inner">
