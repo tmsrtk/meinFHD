@@ -334,7 +334,7 @@ class Studienplan_Model extends CI_Model
         {
             $diff = $sq->Semesteranzahl - $sq->regularSemester;
             
-            for($i=0; $i<=$diff; $i++)
+            for($i=0; $i<$diff; $i++)
             {
                 $data['plan'][$sq->regularSemester + $i][] = array(
                     'regularSemester'   => null,
