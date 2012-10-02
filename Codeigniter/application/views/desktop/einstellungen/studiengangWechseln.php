@@ -43,6 +43,17 @@ Klicke dazu auf den <a href="<?php echo '../'.$filepath; ?> ">Link</a>.</p>
               ?>
             </select>
           </div>
+          <div class="form-elements">
+                    <label for="year">Startjahr</label>
+	            <input class="span special" type="text" id="year" name="year" placeholder="Startjahr"<?php if ( isset($info['StudienbeginnJahr']) ) echo ' value="' . $info['StudienbeginnJahr'] . '"' ?> />
+	            
+	            <label for="start-term-winter" class="radio">
+	            	<input type="radio" id="start-term-winter" name="semester" value="WS"<?php if ( isset($info['StudienbeginnSemestertyp']) && $info['StudienbeginnSemestertyp'] == 'WS' ) echo ' checked' ?> /> Wintersemester
+	            </label>
+	            <label for="start-term-summer" class="radio">
+	            	<input type="radio" id="start-term-summer" name="semester" value="SS"<?php if ( isset($info['StudienbeginnSemestertyp']) && $info['StudienbeginnSemestertyp'] == 'SS' ) echo ' checked' ?> /> Sommersemester
+	            </label>
+            </div>
         </div>
       </fieldset>
     </div>

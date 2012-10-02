@@ -25,6 +25,10 @@
 						<td>Fachsemester</td>
 						<td><?php print $info['Semester'] ?></td>
 					</tr>
+                                        <tr>
+						<td>Studiengang</td>
+						<td><?php print $info['StudiengangAbkuerzung'].' '.$info['Pruefungsordnung'] ?></td>
+					</tr>
 				</tbody>
 			</table>
 	    </div>
@@ -73,9 +77,9 @@
 			<fieldset id="study-course-details">
 				<legend>Studiengang</legend>
 	
-	            <label for="study-course">Studiengang</label>
-	            <select name="stgid" id="study-course" class="span special">
-	              <?php
+	            <label for="study-course"><?php print $info['StudiengangName'].' '.$info['Pruefungsordnung'] ?></label>
+<!--	            <select name="stgid" id="study-course" class="span special">
+	              <?php/*
 	                $option = '<option value="%s">%s</option>';
 	                echo sprintf($option, '0', '--Bitte Wählen--');
 	                $option = '<option value="%s">%s (PO%s)</option>';             
@@ -85,8 +89,8 @@
 	                  else {$s = $option;}
 	                  echo sprintf($s, $stgng[$i]['StudiengangID'], $stgng[$i]['StudiengangName'], $stgng[$i]['Pruefungsordnung']);
 	                }
-	              ?>
-	            </select>
+	              */?>
+	            </select>-->
 	            
 	            <label for="year">Startjahr</label>
 	            <input class="span special" type="text" id="year" name="year" placeholder="Startjahr"<?php if ( isset($info['StudienbeginnJahr']) ) echo ' value="' . $info['StudienbeginnJahr'] . '"' ?> />
