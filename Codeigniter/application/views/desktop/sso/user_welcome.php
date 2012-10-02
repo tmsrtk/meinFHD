@@ -19,7 +19,7 @@
                         Wenn du meinFHD zum ersten Mal benutzt, z.B. weil Du Dein Studium gerade beginnst, also "Erstsemester" bist, gilt f&uuml;r Dich:
                     </p>
                     <ol>
-                        <li>Du gibst in Deinen pers&ouml;nlichen Daten Deinen Studiengang und Dein Startsemester an.</li>
+                        <li>Du gibst in Deinen pers&ouml;nlichen Daten, Deinen Studiengang und Dein Startsemester an.</li>
                         <li>Du l&auml;sst einen neuen Semesterplan f&uuml;r dein Studium anlegen.</li>
                         <li>Du kannst Dich f&uuml;r die Veranstaltungen des ersten Semesters im Stundenplan anmelden.</li>
                     </ol>
