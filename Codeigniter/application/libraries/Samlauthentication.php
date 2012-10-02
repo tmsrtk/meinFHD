@@ -14,14 +14,21 @@
  *
  * This library is a wrapper to integrate simpleSAMLphp into the CI-Framework.
  * Moreover it supplies methods to realize the authentication via an identity provider.
+ * @author Christian Kundruss (CK) <christian.kundruss@fh-duesseldorf.de>
  */
 
 class Samlauthentication {
 
+    /**
+     * @var SimpleSAML_Auth_Simple Variable to store the instance of the IDP (SAML authentication object)
+     */
     private $authSource;
 
     /**
-     * default constructor: loads the library and initializes the authentication source
+     * Default constructor, used for initialization of the authentication object
+     *
+     * @access public
+     * @return void
      */
     public function __construct() {
         // load the simplesamlphp library if it exists
@@ -34,6 +41,9 @@ class Samlauthentication {
     /**
      * Method requires the authentication with the choosen authentication source,
      * if no authentication exists.
+     *
+     * @access public
+     * @return void
      */
     public function require_authentication () {
         // ask for authentication at the idp
@@ -42,7 +52,9 @@ class Samlauthentication {
 
     /**
      * Checks in the existing simplesaml-object if an authentication exists
-     * @return TRUE if an authentication exists, otherwise FALSE
+     *
+     * @access public
+     * @return bool TRUE If an authentication exists, otherwise FALSE
      */
     public function is_authenticated () {
 
@@ -50,8 +62,11 @@ class Samlauthentication {
     }
 
     /**
-     * Method asks the idp for the attributes of the current authenticated user
-     * @return returns the attributes of the user, if someone is authenticated, otherwise false is returned
+     * Method asks the idp for the attributes of the currently authenticated user
+     *
+     * @access public
+     * @return mixed Returns the attributes of the authenticated user in an array. If someone is authenticated, otherwise
+     *         false is going to be returned
      */
     public function get_attributes() {
         // if someone is authenticated return the attributes
@@ -66,13 +81,19 @@ class Samlauthentication {
     /**
      * Method provides the basic login functionality.
      * Each call of the function starts an new authentication process.
+     *
+     * @access public
+     * @return void
      */
      public function login () {
         $this->authSource->login();
      }
 
     /**
-     * Method logs the user out
+     * Method logs the user out. (Single-Logout)
+     *
+     * @access public
+     * @return void
      */
     public function logout() {
 
@@ -81,8 +102,10 @@ class Samlauthentication {
 
 
     /**
-     * Function checks if the global authenticated user has got an already linked local identity
-     * @return bool TRUE if the user has an linked account, otherwise FALSE
+     * Checks if the global authenticated user has already an linked local identity.
+     *
+     * @access public
+     * @return bool TRUE If the user has an linked account, otherwise FALSE will be returned.
      */
     public function has_linked_account () {
         $CI = & get_instance(); // get the ci-instance to access other elements of the application

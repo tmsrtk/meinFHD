@@ -16,18 +16,26 @@
  * SSO login method on the login page.
  *
  * @author Christian Kundruss (CK) <christian.kundruss@fh-duesseldorf.de>
+ * @todo E-Mail function needs to be configured with the productive configuration.
  */
 class SSO extends FHD_Controller {
 
     // --- definition of class variables begin ---
+    /**
+     * @var String Stores the User ID of the global authenticated user.
+     */
     private $idp_auth_uid;
+    /**
+     * @var Array Stores the information of the currently authenticated user in an array.
+     *            Structure -> BenutzerID, LoginName, Passwort, Email, Vorname, Nachname, FHD_IdP_UID
+     */
     private $linked_user;
     // --- definition of class variables end ---
 
     /**
-     * Default constructor to prepare the controller. Constructor is called, when any of the sso-controller functions is called from
-     * any view or any other controller
-     *
+     * Default constructor. Used for initialization.
+     * Is called if an object of this class is created.
+     * Loads information about the configured IdP, the authenticated user and the linked user (If there is an linked user)
      * @access public
      * @return void
      * */
@@ -47,10 +55,9 @@ class SSO extends FHD_Controller {
     }
 
     /**
-     * Method starts the authentication process with the in the samlauthentication-library
-     * configured idp.
+     * Method starts the authentication process with the configured idp.
      *
-     * @acces public
+     * @access public
      * @return bool FALSE if an connection to the configured IdP can not be established.
      */
     public function authenticate() {
@@ -80,7 +87,7 @@ class SSO extends FHD_Controller {
     }
 
     /**
-     * Establishes an local session with the account to which the global uid is linked.
+     * Establishes an local session with the account, that is linked to the global authenticated user.
      *
      * @access public
      * @return void
@@ -103,7 +110,7 @@ class SSO extends FHD_Controller {
      * Wrapper function for multiple calls of the same operation.
      *
      * @access public
-     * @return mixed Returns the information about the linked local user account, or FALSE if there isn`t any linked account.
+     * @return mixed Returns information about the linked local user account in an array, or FALSE if there isn`t an linked account.
      */
     public function get_linked_user() {
         // check in the database if the authenticated user has got an local linked user account
@@ -119,11 +126,12 @@ class SSO extends FHD_Controller {
     }
 
     /**
-     * Links an global authenticated account with an local identity . The local identity that should be linked is submitted / inputted by the user.
+     * Links an global authenticated account with an supplied local identity . The local identity, that should be linked is submitted / inputted by the user.
      * If the account was successfully created an email is going to be sent to the user.
      *
      * @access public
      * @return void
+     * @todo Final configuration of E-Mail function. Messages are already implemented.
      */
     public function link_account() {
 
@@ -205,8 +213,8 @@ class SSO extends FHD_Controller {
      * If they are in the correct format the new account is going to be created, otherwise the form
      * will be repopulated.
      * While creating the account the method checks if the asking global UID is blacklisted so far. If the uid is
-     * on the blacklist an invitation is going to be saved and user and support will get an email. If the global uid
-     * is not blacklisted the account will be created and an welcome e-mail will be sent to the user.
+     * on the blacklist an invitation is going to be saved and an email will be send to the user and support.
+     * If the global uid is not blacklisted the account will be created and an welcome e-mail will be sent to the user.
      *
      * @access public
      * @return void
@@ -334,7 +342,7 @@ class SSO extends FHD_Controller {
     }
 
     /**
-     * Creates a new user and links him to the global userid.
+     * Creates a new user and links him to the global user id.
      *
      * @access private
      * @param Array $form_data The user form input from the create account mask.

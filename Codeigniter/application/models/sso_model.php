@@ -18,8 +18,9 @@
 class SSO_model extends CI_Model {
 
     /**
-     * Default constructor. Used for initialization purposes.
+     * Default constructor. Used for initialization.
      * @access public
+     * @return void
      */
     public function __construct() {
         parent::__construct();
@@ -29,12 +30,13 @@ class SSO_model extends CI_Model {
     /**
      * Method scans the user table for an account that is linked to the given uid of the idp.
      * If there is already an linked account the information about the local identity will be
-     * returned.
+     * returned in an array.
      *
      * @access public
      * @param integer $idp_uid uid of the idp, that asks for authentication
      * @return mixed '0' if there is more than one, or none linked account, otherwise information
-     *              of the linked user will be returned as an array
+     *               of the linked user will be returned as an array. Format of the array:
+     *               BenutzerID, LoginName, Passwort, Email, Vorname, Nachname, FHD_IdP_UID
      */
     public function get_linked_user($idp_uid) {
         // query the user table and scan for the idp uid in the appropriate coloumn
@@ -65,7 +67,7 @@ class SSO_model extends CI_Model {
     }
 
     /**
-     * Links an account with the given local uid to the global uid.
+     * Links an account with the given local uid to the given global uid.
      *
      * @access public
      * @param integer $local_uid UID of the local account that should be linked
@@ -89,7 +91,7 @@ class SSO_model extends CI_Model {
     }
 
     /**
-     * Checks in the shibbolethblacklist table, if the given global uid is on the blacklist or not.
+     * Checks in the 'shibbolethblacklist' table, if the given global uid is on the blacklist or not.
      *
      * @access public
      * @param integer $idp_uid the global user id
@@ -113,7 +115,7 @@ class SSO_model extends CI_Model {
      * Returns all configured departments from the database.
      *
      * @access public
-     * @return array The array with the departments
+     * @return array The array with the departments. For each topic one entry.
      */
     public function get_all_departments() {
         $this->db->select('*');
@@ -167,7 +169,7 @@ class SSO_model extends CI_Model {
      * Writes an invitation request with the global uid into the database.
      *
      * @access public
-     * @param $form_data Array with the user input
+     * @param array $form_data Array with the user input from the create account form.
      * @return void
      */
     public function save_user_invitation($form_data) {
@@ -189,7 +191,7 @@ class SSO_model extends CI_Model {
     }
 
     /**
-     * Checks if there is already an useraccount for the given matrikelnummer
+     * Checks if there is already an user account for the given matrikelnummer.
      *
      * @access public
      * @param integer $matr_nr matrikelnummer to check
