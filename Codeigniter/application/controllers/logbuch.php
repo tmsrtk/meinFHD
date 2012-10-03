@@ -342,6 +342,17 @@ class Logbuch extends FHD_Controller {
         $this->show_logbook_content($logbook_id);
     }
 
+    /**
+     * Opens up the logbook help / faq content view.
+     *
+     * @access public
+     * @return void
+     */
+    public function show_help(){
+
+        // load the help/faq - view
+        $this->load->view('logbuch/logbuch_help.php', $this->data->load());
+    }
 }
 /* End of file logbuch.php */
 /* Location: ./application/controllers/logbuch.php */

@@ -60,8 +60,8 @@
     <div class="row-fluid">
         <div class="span12">
             <img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_question_mark.png" alt="Fragezeichen" width="20" height="20"/>&nbsp;
-            <a href="<?php print base_url('logbuch/index'); ?>" class="btn pull-right"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_thin_right_arrow.png" alt="delete" style="max-width: 18px; height: auto;"/></a>
-            <a href="<?php print base_url('logbuch/index'); ?>"><strong>FAQ</strong></a><br/>
+            <a href="<?php print base_url('logbuch/show_help'); ?>" class="btn pull-right"><img src="<?php print base_url(); ?>resources/img/logbuch-icons/glyphicons_thin_right_arrow.png" alt="delete" style="max-width: 18px; height: auto;"/></a>
+            <a href="<?php print base_url('logbuch/show_help'); ?>"><strong>FAQ</strong></a><br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>Hilfe</em>
         </div>
     </div>
