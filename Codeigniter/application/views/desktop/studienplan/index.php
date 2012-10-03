@@ -147,10 +147,6 @@
 
 </div>
 
-<!-- <button name="resetStudienPlan" id="sB" class="btn btn-warning" >Reset</button> -->
-
-<!-- <button name="resetStudienPlan" id="resetStudienPlan" class="btn btn-warning" >Reset</button> -->
-
 <div id="modalcontent"></div>
 
 <?php #FB::log($userdata['studiengang_data']) ?>

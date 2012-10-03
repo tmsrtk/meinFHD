@@ -451,6 +451,12 @@ class Admin extends FHD_Controller {
 			$rules[] = $this->adminhelper->get_formvalidation_studiengang();
 
 			$this->form_validation->set_rules($rules);
+
+			// generate actual year if "erstsemestler was selected"
+			if (isset($form_values['erstsemestler']) && $form_values['erstsemestler'] == 'accept')
+			{
+				$form_values['startjahr'] = date("Y");
+			}
 		}
 
 		// check for (in)correctness
