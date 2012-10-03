@@ -632,9 +632,15 @@ class Admin extends FHD_Controller {
 		// redirect(site_url().'admin/edit_user_mask');
 	}
 
-	/*
-	* deletes an user by his id
-	*/
+	/**
+	 * <p>deletes an user by his id. The id is submitted via POST.
+     * Modifications by Christian Kundruss: If the local account is linked to an global
+     * user id, the global uid will be add to the 'shibboleth blacklist'.
+     * </p>
+     * @access public
+     * @return void
+     *
+	 */
 	public function delete_user()
 	{
 		$user_id = $this->input->post('user_id');

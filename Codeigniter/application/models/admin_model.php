@@ -185,9 +185,17 @@ class Admin_model extends CI_Model {
 		$this->db->insert('anfrage', $data);
 	}
 
-	/*
-	*
-	*/
+	/**
+	 * <p>
+     * Saves an new user from an invitation with the given id.
+     * Edits by Christian Kundruss: Adding the global uid from the invitation data set
+     * directly to the new created user, to link the local identity with his global account.
+     * </p>
+     * @access public
+     * @param integer $invitation_id ID of the saved invitation data set
+     * @return void
+     * @todo missing email functions
+	 */
 	public function save_new_user_from_invitation($invitation_id)
 	{
 
@@ -692,7 +700,8 @@ class Admin_model extends CI_Model {
      * shibboleth account
      *
      * @author Christian Kundruss (CK)
-     * @param $uid
+     * @access public
+     * @param integer $uid The local uid, that should be checked.
      * @return mixed array with the global uid and username if the user has an linked account, otherwise FALSE
      */
     public function is_user_linked($uid) {
@@ -716,7 +725,9 @@ class Admin_model extends CI_Model {
     /**
      * Adds an global user to the shibbolethblacklist.
      * @author Christian Kundruss (CK)
+     * @access public
      * @param $user_data array with the user data of the user that should be blacklisted (FHD_IdP_UID, Vorname, Nachname)
+     * @return void
      */
     public function add_user_to_blacklist($user_data) {
         // add the user to the shibbolethblacklist
@@ -724,8 +735,10 @@ class Admin_model extends CI_Model {
     }
 
     /**
-     * Removes the global user from the blacklist.
-     * @param $idp_uid
+     * Removes the given global user id from the blacklist.
+     * @author Christian Kundruss
+     * @param string $idp_uid Unique login id from the global user
+     * @return void
      */
     public function remove_user_from_blacklist($idp_uid) {
         $this->db->where('FHD_IdP_UID', $idp_uid);
