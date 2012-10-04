@@ -8,7 +8,7 @@
         </div>
         <div id="chartContainer" style="width:280px; height: 80px;  margin-top: -16px; margin-bottom: -6px;"></div>
         <div class="row-fluid">
-            <div class="span12">Die Themen des Kurses kannst du bisher zu 100%. Schaue dir doch
+            <div class="span12">Die Themen des Kurses kannst du bisher zu <?php echo $act_skills; ?>%. Schaue dir doch
                 detailliertere Auswertungen an.</div>
         </div>
         <div class="pagination-centered" style="margin-top: 1px;">
