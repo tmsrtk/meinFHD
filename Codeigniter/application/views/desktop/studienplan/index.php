@@ -46,6 +46,7 @@
 					<li class="divider"></li>
 					<li class="sp-addsem"><a href="#">Weiteres Semester anlegen</a></li>
 					<li class="sp-remsem"><a href="#">Letztes Semester löschen</a></li>
+					<li class="divider"></li>
 					<li class="sp-approvesem" data-hasapprovesem="<?php echo $has_approve_sem['HatAnerkennungsSemester'] ?>"><a href="#"><?php (empty($has_approve_sem['HatAnerkennungsSemester'])) ? print "Anerkennungssemester anlegen" : print "Anerkennungssemester löschen"; ?></a></li>
 					<li class="divider"></li>
 					<li class="sp-reset"><a href="#">Studienplan resetten</a></li>
