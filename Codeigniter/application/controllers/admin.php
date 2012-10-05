@@ -452,7 +452,7 @@ class Admin extends FHD_Controller {
 
 			$this->form_validation->set_rules($rules);
 
-			// generate actual year if "erstsemestler was selected"
+			// generate actual year for the form value "Startjahr", if "Erstsemestler" was selected
 			if (isset($form_values['erstsemestler']) && $form_values['erstsemestler'] == 'accept')
 			{
 				$form_values['startjahr'] = date("Y");
