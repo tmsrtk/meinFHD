@@ -49,6 +49,8 @@ class Studienplan extends FHD_Controller
         $semesterplan_id = $this->user_model->get_semesterplanid();
         $plan = NULL;
 
+        $laufvar = 1;
+
         if (isset($semesterplan_id))
         {
             // load model
@@ -63,6 +65,15 @@ class Studienplan extends FHD_Controller
             //$this->pruefenTeilnehmenHolen();
             $this->check_approve_sem();
             
+            // needed in the studienplan view, to take care of the zero semester
+            $has_approve_sem = $this->Studienplan_Model->query_approve_sem();
+            log_message('error', 'studienplan controoler : ' . $has_approve_sem['HatAnerkennungsSemester']);
+            if (!($has_approve_sem['HatAnerkennungsSemester']) == 0)
+            {
+                log_message('error', 'studienplan controoler : laufvar auf 0 gesetzt');
+                $laufvar = 0;
+            }
+            
             
             // add the resultset/array to the data-object
             // $this->data->add('studienplan', $plan);
@@ -75,6 +86,7 @@ class Studienplan extends FHD_Controller
     //        $this->load->view('includes/template', $data);
         }
 
+        $this->data->add('laufvar', $laufvar);
         $this->data->add('studienplan', $plan);
         $this->load->view('studienplan/index', $this->data->load());
     }
@@ -115,6 +127,20 @@ class Studienplan extends FHD_Controller
 
         $this->load->model('Studienplan_Model');
         $this->Studienplan_Model->add_approve_sem($this->user_model->get_semesterplanid());
+    }
+
+    /**
+     * Delete the approve-semester
+     *
+     * @author Konstantin Voth <konstantin.voth@fh-duesseldorf.de>
+     * @category studienplan/index.php
+     */
+    public function delete_approve_sem()
+    {
+        // update Semesterplan.HatAnerkennungsSemester to 1, of given semesterplan id
+
+        $this->load->model('Studienplan_Model');
+        $this->Studienplan_Model->remove_approve_sem($this->user_model->get_semesterplanid());
     }
     
     

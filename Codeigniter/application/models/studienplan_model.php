@@ -272,17 +272,24 @@ class Studienplan_Model extends CI_Model
         $this->db->order_by('regularSemester', 'ASC');
         $studyplan = $this->db->get();
 
-        // initial zero semester
-        $data['plan'][0][] = array(
-            'regularSemester'   => null,
-            'KursID'            => null,
-            'Kursname'          => null,
-            'Kurzname'          => null,
-            'graduateSemester'  => null,
-            'Teilnehmen'        => null,
-            'Pruefen'           => null,
-            'Notenpunkte'       => null
-        );
+        $has_approve_sem = $this->query_approve_sem();
+        log_message('error', 'studienplan_model: ' . $has_approve_sem['HatAnerkennungsSemester']);
+        // only if a zero semester is activated
+        if (!$has_approve_sem['HatAnerkennungsSemester'] == 0)
+        {
+            log_message('error', 'studienplan_model: zero semester erstellt');
+            // initial zero semester
+            $data['plan'][0][] = array(
+                'regularSemester'   => null,
+                'KursID'            => null,
+                'Kursname'          => null,
+                'Kurzname'          => null,
+                'graduateSemester'  => null,
+                'Teilnehmen'        => null,
+                'Pruefen'           => null,
+                'Notenpunkte'       => null
+            );
+        }
 
 
         // group the resultset by semester in array
@@ -311,7 +318,7 @@ class Studienplan_Model extends CI_Model
                     'graduateSemester'  => $sq->graduateSemester,
                     'Teilnehmen'        => $sq->KursHoeren,
                     'Pruefen'           => $sq->KursSchreiben,
-                    'Notenpunkte'       => ($sq->Notenpunkte == 101) ? null : $this->calculateMark($sq->Notenpunkte)
+                    'Notenpunkte'       => ($sq->Notenpunkte == 101) ? null : $sq->Notenpunkte
                 );
             }
             // else set regularSemester as key
@@ -325,7 +332,7 @@ class Studienplan_Model extends CI_Model
                     'graduateSemester'  => $sq->graduateSemester,
                     'Teilnehmen'        => $sq->KursHoeren,
                     'Pruefen'           => $sq->KursSchreiben,
-                    'Notenpunkte'       => ($sq->Notenpunkte == 101) ? null : $this->calculateMark($sq->Notenpunkte)
+                    'Notenpunkte'       => ($sq->Notenpunkte == 101) ? null : $sq->Notenpunkte
                 );
             }
         }
@@ -334,7 +341,7 @@ class Studienplan_Model extends CI_Model
         {
             $diff = $sq->Semesteranzahl - $sq->regularSemester;
             
-            for($i=0; $i<$diff; $i++)
+            for($i=0; $i<=$diff; $i++)
             {
                 $data['plan'][$sq->regularSemester + $i][] = array(
                     'regularSemester'   => null,
@@ -358,6 +365,11 @@ class Studienplan_Model extends CI_Model
     public function add_approve_sem($semesterplan_id=0)
     {
         $this->db->update('semesterplan', array('HatAnerkennungsSemester'=>'1'), "SemesterplanID = {$semesterplan_id}");
+    }
+
+    public function remove_approve_sem($semesterplan_id=0)
+    {
+        $this->db->update('semesterplan', array('HatAnerkennungsSemester'=>'0'), "SemesterplanID = {$semesterplan_id}");
     }
 
     public function query_approve_sem()

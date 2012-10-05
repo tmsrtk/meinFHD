@@ -132,13 +132,15 @@ class Ajax_model extends CI_Model {
 	// speichere die übergebene Reihenfolge für ein Semester
 	public function set_reihenfolge($neue_reihenfolge, $semesternr, $hoeren, $pruefen, $mark)
 	{
+        FB::log($neue_reihenfolge);
+
 		// counter für die Reihenfolge
 		$counter = 1;
 		// speichere neue Reihenfolge in die DB
         $i = 0;
 		foreach ($neue_reihenfolge as $serialized_position)
 		{
-            if ( empty($mark[$i]) ) $mark[$i] = 101; else $mark[$i] = 100;
+            if ( empty($mark[$i]) ) $mark[$i] = 101; /*else $mark[$i] = 100;*/
 
 			$data = array(
                //'Semesterposition' => $counter,
