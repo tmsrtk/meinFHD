@@ -42,14 +42,14 @@
 					<span class="caret"></span>
 				</a>
 				<ul class="dropdown-menu">
-					<li class="sp-info"><a href="#">Info</a></li>
+					<li class="sp-info"><a href="#"><i class="icon-info-sign"></i> Info</a></li>
 					<li class="divider"></li>
-					<li class="sp-addsem"><a href="#">Weiteres Semester anlegen</a></li>
-					<li class="sp-remsem"><a href="#">Letztes Semester löschen</a></li>
+					<li class="sp-addsem"><a href="#"><i class="icon-plus"></i> Weiteres Semester anlegen</a></li>
+					<li class="sp-remsem"><a href="#"><i class="icon-minus"></i> Letztes Semester löschen</a></li>
 					<li class="divider"></li>
-					<li class="sp-approvesem" data-hasapprovesem="<?php echo $has_approve_sem['HatAnerkennungsSemester'] ?>"><a href="#"><?php (empty($has_approve_sem['HatAnerkennungsSemester'])) ? print "Anerkennungssemester anlegen" : print "Anerkennungssemester löschen"; ?></a></li>
+					<li class="sp-approvesem" data-hasapprovesem="<?php echo $has_approve_sem['HatAnerkennungsSemester'] ?>"><a href="#"><i class="<?php (empty($has_approve_sem['HatAnerkennungsSemester'])) ? print "icon-plus" : print "icon-minus"; ?>"></i> <?php (empty($has_approve_sem['HatAnerkennungsSemester'])) ? print "Anerkennungssemester anlegen" : print "Anerkennungssemester löschen"; ?></a></li>
 					<li class="divider"></li>
-					<li class="sp-reset"><a href="#">Studienplan resetten</a></li>
+					<li class="sp-reset"><a href="#"><i class="icon-retweet"></i> Studienplan zurücksetzen</a></li>
 				</ul>
 			</div>
 		</div>
@@ -384,7 +384,7 @@
 						self._removeModuleColorClass($module);
 
 						// create and show modal
-						self._showModal('Falscher Wert!', 'Tragen Sie bitte in das Feld einen Wert zwischen 1 - 5 ein.');
+						self._showModal('Falscher Wert!', 'Tragen Sie bitte in das Feld einen Wert zwischen 100 - 0 ein.');
 					} else {
 						hoeren.show();
 						pruefen.show();
