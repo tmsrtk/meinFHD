@@ -582,32 +582,46 @@ class Kursverwaltung extends FHD_Controller {
 		// get the course_id from POST
 		$course_id_to_show = -1;
 		
-		// if there is only one  course_id >> save that one to variable
+		// if there is only one course_id >> save that one to variable
 		// TODO check if correct !!!!!!!!!!!!!
+		// !!!! doesn't work, because user-model returns array with ALL course-ids mapped to role for this course
+		// only working if staff has only one role for that course << which is the default case
+		// either prevent from assigning two different roles for one person and course (+ modals)
+		// or catch 
 		if(count($this->course_ids) === 1){
 			$course_id_to_show = key($this->course_ids);
 		}
 		
-		// if data is passed >> store
-		if($this->input->POST('labs_to_show')){
-			$course_id_to_show = $this->input->POST('labs_to_show');
+//		echo '<div>';
+//		print_r($this->course_ids);
+//		echo '<div>';
+		 
+		// DEBUG
+		echo $this->input->POST('sp_course_id');
+		
+		// if data is passed >> save to variable
+		if($this->input->POST('sp_course_id')){
+			$sp_course_id_to_show = $this->input->POST('sp_course_id');
+			$course_id_to_show = $this->input->POST('course_id');
 		}
 		
-		// 
-		if(count($this->course_ids) > 1 || $course_id_to_show === -1){
+		// if course_ids is NO array and NOT initialized
+		// means: there is more than one course_id stored ???????
+		if(count($this->course_ids) > 1 && $course_id_to_show === -1){
 			// goto overview-view
 			$this->show_labmgt_overview();
 		} else {
-			$this->show_labmgt_groups();
 			// go directly to group-view
+			$this->show_labmgt_group();
 			
-			// put course-id to flashdata
-			// if there is a id via POST
-				// >> take this one
-			// otherwise
-				// >> take the one from 
+			// pass new id via flashdata
+			$this->session->set_flashdata('sp_course_id', $sp_course_id_to_show);
+			$this->session->set_flashdata('course_id', $course_id_to_show);
+
+			// goto view
+			redirect('kursverwaltung/show_labmgt_group');
+			
 		}
-		
 	}
 	
 	/**
@@ -632,12 +646,76 @@ class Kursverwaltung extends FHD_Controller {
 	 * Prepared data and pass into view
 	 * !! little more work to do.
 	 */
-	private function show_labmgt_groups(){
-		$sp_course_details = 'x';
-		$this->data->add('sp_course_details', $sp_course_details);
-	    $this->load->view('courses/labs_overview_show', $this->data->load());
+	public function show_labmgt_group(){
+		// variables to get to correct group (with active group; depending on sp_course_id)
+		$load_sp_course_id = $this->session->flashdata('sp_course_id');
+		$load_course_id = $this->session->flashdata('course_id');
+		
+//		echo $load_course_id;
+		
+		// if there is NO data passed
+		if(!$load_sp_course_id){
+			$load_sp_course_id = -1;
+			$load_sp_course_id = -1;
+		}
+		
+		// ## TODO 
+		// ## fetch all lab-details of each group and pass to view
+		// ## get sp_course_details for course_id - all labs? disable seminar?
+		// init
+		$sp_course_details = '';
+		
+		// defining all eventtypes to fetch data for
+		$eventtypes_to_fetch = array(2,3,4);
+		foreach($eventtypes_to_fetch as $e){
+			// either data has been passed via flashdata >> user chose group (and (implicit) course) to manage
+			// active group in view
+			if($load_sp_course_id != -1){
+				$sp_course_details[$load_course_id.'-'.$e] = $this->kursverwaltung_model->get_course_details($load_course_id, $e);
+			} else {
+				// or there is only one course
+				// >> no active group
+				if(count($this->course_ids)){
+					$c_id = key($this->course_ids);
+					$sp_course_details[$c_id.'-'.$e] = $this->kursverwaltung_model->get_course_details($c_id, $e);
+				}
+			}
+		}
+		
+		// save data and active group to 
+		$this->data->add('sp_course_details', $this->get_details_for_all_labs($sp_course_details));
+		$this->data->add('active_group', $load_sp_course_id);
+	    $this->load->view('courses/labs_group_show', $this->data->load());
 	}
 	
+	
+	/**
+	 * Helper method taking array with all eventtypes (AND groups) for a single course
+	 * Peparing data for view
+	 * >> 
+	 * @param array $sp_course_details containing all course-labs-details sorted by eventtypes
+	 * @return array $group_participants containing all participants sorted by groups
+	 */
+	private function get_details_for_all_labs($sp_course_details){
+		// variable to be returned
+		$lab_participants_plus_notes = array();
+		
+		
+		// running through all course-event-combinations and get participants
+		// 1. check if there are courses with details to fetch
+		foreach($sp_course_details as $key => $groups){
+			// if there are courses for this course-event-combination
+			if($groups){
+				// 2. get participants for each course and save to array
+				foreach($groups as $index => $sp_course_object){
+					echo $sp_course_object->GruppeID;
+					$lab_participants_plus_notes[$key][] = $this->kursverwaltung_model->get_lab_notes($sp_course_object->GruppeID, $sp_course_object->SPKursID);
+				}
+			}
+		}
+		
+		return $lab_participants_plus_notes;
+	}
 	
 	/* 
 	 * 

@@ -12,12 +12,48 @@
 ?>
 
 <?php startblock('content'); # additional markup before content ?>
-		<!-- TODO: run through array of courses and groups and print as table -->
 		
 		<div>
 			<pre>
-				<?php print_r($sp_course_details); ?>
+				<?php // print_r($sp_course_details); ?>
 			</pre>
+		</div>
+		
+		<div>
+			<?php
+				// helper var to save the course before
+				$course_before = -1;
+				
+				// run through all details and print them + button
+				foreach($sp_course_details as $key => $details){
+					$group = 1;
+					// if there are details for that course-eventtype-combination print them
+					if($details){
+						foreach($details as $d){
+							// print headline if the course changes
+							if($course_before === -1){
+								echo '<div class="well"><h4>'.$d->Kursname.'</h4>';
+							} else if($course_before != substr($key, 0, 3)){
+								echo '</div><div class="well"><h4>'.$d->Kursname.'</h4>';
+							}
+							// print lab-groups + buttons
+							echo form_open('kursverwaltung/show_labmgt');
+//							echo 'Gruppe '.$group;
+//							echo $d->TagName;
+//							echo $d->Beginn;
+							echo form_hidden('sp_course_id', $d->SPKursID);
+							echo form_hidden('course_id', substr($key, 0, 3));
+							echo form_submit('show_group', 'Gruppe '.$group);
+							echo form_close();
+							echo '<br />';
+							$group++;
+							// save the course before
+							$course_before = substr($key, 0, 3);
+						}
+					}
+				}
+			
+			?>
 		</div>
 		
 <?php endblock(); ?>

@@ -16,6 +16,12 @@
 		
 		<div>
 			tabview with a single group
+			<pre>
+				<?
+					print_r($active_group);
+					print_r($sp_course_details);
+				?>
+			</pre>
 			
 		</div>
 		

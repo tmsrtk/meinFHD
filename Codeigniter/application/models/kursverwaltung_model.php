@@ -27,21 +27,28 @@ class Kursverwaltung_model extends CI_Model {
 	
     /**
      * Returns lab, seminar, tut - details - eventtype passed
+	 * Method used for showing all lab groups and notes with participants
      * @param int $id
      * @param int $eventtype
      * @return type
      */
     public function get_course_details($course_id, $eventype){
-		$this->db->select('SPKursID, Raum, StartID, EndeID, TagID, GruppeID');
-		$this->db->where('KursID', $course_id);
-		$this->db->where('VeranstaltungsformID', $eventype);
-		$q = $this->db->get('stundenplankurs');
+		$this->db->distinct();
+		$this->db->select('a.SPKursID, b.Kursname, a.Raum, t.TagName, s.Beginn, a.GruppeID, c.VeranstaltungsformName');
+		$this->db->from('stundenplankurs as a');
+		$this->db->join('studiengangkurs as b', 'a.KursID = b.KursID');
+		$this->db->join('veranstaltungsform as c', 'a.VeranstaltungsformID = c.VeranstaltungsformID');
+		$this->db->join('tag as t', 't.TagID = a.TagID');
+		$this->db->join('stunde as s', 's.StundeID = a.StartID');
+		$this->db->where('a.KursID', $course_id);
+		$this->db->where('a.VeranstaltungsformID', $eventype);
+		$q = $this->db->get();
 
 		$data = array(); // init
 
 		if($q->num_rows() > 0){
 			foreach ($q->result() as $row){
-			$data[] = $row;
+				$data[] = $row;
 			}
 		}
 		
@@ -641,7 +648,54 @@ class Kursverwaltung_model extends CI_Model {
 		
 	}
 	
-    
+
+	
+	/* 
+	 * 
+	 * ****************************************** course-mgt
+	 * ************************************** Frank Gottwald
+	 * 
+	 * ***********************************************************************/
+	
+	
+	
+	/* ************************************************************************
+	 * 
+	 * ********************************************* lab-mgt
+	 * ************************************** Frank Gottwald
+	 * 
+	 */
+	
+	
+	/**
+	 * Returns all notes for one lab-group
+	 * @param int $group_id
+	 * @return array
+	 */
+	public function get_lab_notes($group_id, $sp_course_id){
+		$q = ''; // init
+		$data = array(); // init
+		
+		$this->db->from('gruppenteilnehmer_aufzeichnungen');
+		$this->db->where('GruppeID', $group_id);
+		$q = $this->db->get();
+
+		if($q->num_rows() > 0){
+			foreach ($q->result() as $row){
+				$data[$sp_course_id][] = $row;
+			}
+		}
+
+		return $data;
+	}
+	
+	
+	/* 
+	 * 
+	 * ********************************************* lab-mgt
+	 * ************************************** Frank Gottwald
+	 * 
+	 * ***********************************************************************/
     
     
     /**
