@@ -1,6 +1,6 @@
 <?php extend('base/template.php'); # extend main template ?>
 
-<?php startblock('title');?><?php get_extended_block();?> - Auswertungen zu [Kurskurzname]<?php endblock(); ?>
+<?php startblock('title');?><?php get_extended_block();?> - Auswertungen zu <?php echo $course_info['Kursname']; ?><?php endblock(); ?>
 
 <?php startblock('preCodeContent'); # additional markup before content ?>
 
