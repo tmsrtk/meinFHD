@@ -1,6 +1,6 @@
 <?php extend('base/template.php'); # extend main template ?>
 
-<?php startblock('title');?><?php get_extended_block();?> - Logbucheintr&auml;ge zu (Kurs/Logbuchname)<?php endblock(); ?>
+<?php startblock('title');?><?php get_extended_block();?> - Logbucheintr&auml;ge<?php endblock(); ?>
 
 <?php startblock('content'); # content ?>
 <div class="well well-small">
