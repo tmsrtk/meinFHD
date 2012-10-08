@@ -240,7 +240,11 @@ class Stundenplan_Model extends CI_Model {
 			b.Aktiv,
 			b.KursID,b.SPKursID,
 			g.TeilnehmerMax, g.Anmeldung_zulassen,
-			(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.GruppeID = sp.GruppeID) AS 'Anzahl Teilnehmer'
+			(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.GruppeID = sp.GruppeID) AS 'Anzahl Teilnehmer',
+
+			sempla.SemesterplanID,
+
+			sk.KursHoeren
 		FROM 
 			benutzerkurs b,
 			studiengangkurs sg,
@@ -249,7 +253,11 @@ class Stundenplan_Model extends CI_Model {
 			tag t,
 			stunde s_beginn, stunde s_ende,
 			benutzer d,
-			gruppe g
+			gruppe g,
+
+			semesterplan sempla,
+
+			semesterkurs sk
 		WHERE 
 			b.kursID = sg.kursID AND
 			sp.kursID = b.KursID AND
@@ -262,12 +270,20 @@ class Stundenplan_Model extends CI_Model {
 			b.BenutzerID = ".$id." AND 
 			b.SemesterID = ".$this->adminhelper->get_act_semester($this->user['StudienbeginnSemestertyp'] , $this->user['StudienbeginnJahr'])." AND
 			sp.GruppeID = g.GruppeID AND
-			sp.IsWPF = 0
+			sp.IsWPF = 0 AND
+
+			sempla.BenutzerID = ".$id." AND
+
+			sk.SemesterplanID = sempla.SemesterplanID AND
+			sk.KursID = b.KursID AND
+			sk.Semester = ".$this->adminhelper->get_act_semester($this->user['StudienbeginnSemestertyp'] , $this->user['StudienbeginnJahr'])."
 		ORDER BY 
 			sp.tagID, sp.StartID
 		");
 		
 		$result = $query->result_array();
+
+		FB::log($result);
 
 		return $result;
 	}
@@ -303,12 +319,19 @@ class Stundenplan_Model extends CI_Model {
 	 */
 	private function add_displayflag($courses)
 	{
-
 		//Run throug array
 		foreach ($courses as $key => $course) {
 
+			// Konstantin Voth
+			// if KursHoeren was deactivated in the "Studienplan" and course is a Vorlesung, do not show
+			if ($course["KursHoeren"] == 0 
+				&& $course['VeranstaltungsformID'] == 1)
+			{
+				$courses[$key]["Anzeigen"] = 0;
+			}
+
 			//when there is no alterntive
-			if ($course["VeranstaltungsformAlternative"] == "") 
+			elseif ($course["VeranstaltungsformAlternative"] == "") 
 			{
 				$courses[$key]["Anzeigen"] = 1;
 			}  
