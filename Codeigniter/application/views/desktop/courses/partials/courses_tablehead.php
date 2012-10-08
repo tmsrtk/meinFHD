@@ -4,7 +4,8 @@
 	<div class="span9"><h3><?php echo $headline.':'; ?></h3></div>
 	<div class="span2">
 		<?php
-			if($is_lab){
+			// Print button only for labs AND if user is NO Tutor
+			if($is_lab && !$is_tut){
 				$switch_button_label = '<i class="icon-ok"></i> Anmeldung aktivieren';
 				$anchor_attrs = array(
 					'class' => 'btn btn-mini btn-success activation-buttons-'.$course_id,

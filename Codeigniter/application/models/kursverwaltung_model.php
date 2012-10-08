@@ -8,23 +8,54 @@ class Kursverwaltung_model extends CI_Model {
      * @return type
      */
     public function get_lecture_details($course_id, $eventtype){
-	$this->db->select('SPKursID, Raum, StartID, EndeID, TagID, GruppeID');
-	$this->db->where('KursID', $course_id);
-	$this->db->where('VeranstaltungsformID', $eventtype);
-	$q = $this->db->get('stundenplankurs');
-	
-	$data = array(); // init
+		$this->db->select('SPKursID, Raum, StartID, EndeID, TagID, GruppeID');
+		$this->db->where('KursID', $course_id);
+		$this->db->where('VeranstaltungsformID', $eventtype);
+		$q = $this->db->get('stundenplankurs');
 
-	if($q->num_rows() > 0){
-	    foreach ($q->result() as $row){
-		$data[] = $row;
-	    }
-	}
-	
-	return $data[0];
+		$data = array(); // init
+
+		if($q->num_rows() > 0){
+			foreach ($q->result() as $row){
+			$data[] = $row;
+			}
+		}
+
+		return $data[0];
     }
     
+	
+    /**
+     * Returns lab, seminar, tut - details - eventtype passed
+	 * Method used for showing all lab groups and notes with participants
+     * @param int $id
+     * @param int $eventtype
+     * @return type
+     */
+    public function get_course_details($course_id, $eventype){
+		$this->db->distinct();
+		$this->db->select('a.SPKursID, b.Kursname, a.Raum, t.TagName, s.Beginn, a.GruppeID, c.VeranstaltungsformName');
+		$this->db->from('stundenplankurs as a');
+		$this->db->join('studiengangkurs as b', 'a.KursID = b.KursID');
+		$this->db->join('veranstaltungsform as c', 'a.VeranstaltungsformID = c.VeranstaltungsformID');
+		$this->db->join('tag as t', 't.TagID = a.TagID');
+		$this->db->join('stunde as s', 's.StundeID = a.StartID');
+		$this->db->where('a.KursID', $course_id);
+		$this->db->where('a.VeranstaltungsformID', $eventype);
+		$q = $this->db->get();
+
+		$data = array(); // init
+
+		if($q->num_rows() > 0){
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
+		}
+		
+		return $data;
+    }
     
+	
     /**
      * Returns name for given course_id
      * @param int $course_id
@@ -276,25 +307,6 @@ class Kursverwaltung_model extends CI_Model {
 //  ################################################################ SAVING DATA
     
     /**
-     * 
-     * @param type $profs
-     * @param type $labings
-     * @param type $tuts
-     */
-    public function add_person_to_course($profs = '', $labings = '', $tuts = ''){
-		if($profs){
-			// when adding profs as labings >> that relation has to be inserted into benutzer_mm_rolle (>> gets betreuer-role)
-			// when removing persons from course_mgt (OR !!!DELETING courses) the other way round - delete entry from benutzer_mm_rolle
-		}
-		if($labings){
-
-		}
-		if($tuts){
-
-		}
-    }
-    
-    /**
      * Saves course and group-data to db.
      * SPKursID passed separately.
      * Each data passed in separate arrays, too.
@@ -394,7 +406,7 @@ class Kursverwaltung_model extends CI_Model {
 
 		// role-modifications only relevant for labings - roles set/revoked implicitly
 		// note: tut-roles has to be set by admin
-		if($table == 'laboringenieur'){
+		if($table == 'kursbetreuer'){
 			$this->update_roles();	    
 		}
 
@@ -411,7 +423,7 @@ class Kursverwaltung_model extends CI_Model {
 		// get profs with role_id 3 >> i.e. labings
 		$former_prof_ids = $this->get_ids_of_profs_who_have_labing_role();
 
-		// get profs from laboringenieur
+		// get profs from *kurs*betreuer - (laboringenieur table deprecated)
 		$current_prof_ids = $this->get_ids_of_profs_from_labing_table();
 
 
@@ -507,7 +519,7 @@ class Kursverwaltung_model extends CI_Model {
     private function get_ids_of_profs_from_labing_table(){
 		$this->db->distinct();
 		$this->db->select('a.BenutzerID');
-		$this->db->from('laboringenieur as a');
+		$this->db->from('kursbetreuer as a');
 		$this->db->join('benutzer_mm_rolle as b', 'a.BenutzerID = b.BenutzerID');
 		$this->db->where('b.RolleID', 2);
 		$q = $this->db->get();
@@ -636,7 +648,57 @@ class Kursverwaltung_model extends CI_Model {
 		
 	}
 	
-    
+
+	
+	/* 
+	 * 
+	 * ****************************************** course-mgt
+	 * ************************************** Frank Gottwald
+	 * 
+	 * ***********************************************************************/
+	
+	
+	
+	/* ************************************************************************
+	 * 
+	 * ********************************************* lab-mgt
+	 * ************************************** Frank Gottwald
+	 * 
+	 */
+	
+	
+	/**
+	 * Returns all notes for one lab-group
+	 * @param int $group_id
+	 * @return array
+	 */
+	public function get_lab_notes($group_id){
+		$q = ''; // init
+		$data = array(); // init
+		
+		$this->db->select('b.Vorname, b.Nachname, a.*');
+		$this->db->from('gruppenteilnehmer_aufzeichnungen as a');
+		$this->db->join('benutzer as b', 'a.BenutzerID = b.BenutzerID');
+		$this->db->where('GruppeID', $group_id);
+		$this->db->order_by('ende');
+		$q = $this->db->get();
+
+		if($q->num_rows() > 0){
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
+		}
+
+		return $data;
+	}
+	
+	
+	/* 
+	 * 
+	 * ********************************************* lab-mgt
+	 * ************************************** Frank Gottwald
+	 * 
+	 * ***********************************************************************/
     
     
     /**

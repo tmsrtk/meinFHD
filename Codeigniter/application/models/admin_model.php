@@ -819,7 +819,7 @@ class Admin_model extends CI_Model {
 	/**
 	 * Returns PO, name, abbreviation of all degree programs
 	 * >> used with filter-view
-	 * @return unknown
+	 * @return array degree program records
 	 */
 	function get_all_degree_programs(){
 	    $data = array();
@@ -838,7 +838,7 @@ class Admin_model extends CI_Model {
 	
 	/**
 	 * Returns all records belonging to a single degree program (specified by id)
-	 * @param unknown_type $dp_id
+	 * @param int $dp_id
 	 * @return unknown
 	 */
 	function get_degree_program_courses($dp_id){
@@ -851,7 +851,7 @@ class Admin_model extends CI_Model {
 	    $this->db->order_by('Semester', 'asc');
 	    $q = $this->db->get_where('studiengangkurs', array('StudiengangID' => $dp_id));
 
-	    // first line of stdgng-list-view should give the opportunity to create an own course
+	    // first line of degree-program-list-view should give the opportunity to create an own course
 	    // therefore first index of data-array must be filled with a 'default' Kurs
 	    // KursID 0 won't be in studiengangkurs-table and cann be used as flag for course-creating
 //	    $data[] = null;
@@ -933,14 +933,14 @@ class Admin_model extends CI_Model {
 	
 	/**
 	 * Returns all ids belonging to a specified Studiengang
-	 * @param unknown_type $stdgng_id
-	 * @return unknown
+	 * @param int $degree_program_id
+	 * @return array all course ids of a degree program
 	 */
-	function get_degree_program_course_ids($stdgng_id){
+	function get_degree_program_course_ids($degree_program_id){
 	    $data = array();
 	    
 	    $this->db->select('KursID');
-	    $q = $this->db->get_where('studiengangkurs', array('StudiengangID' => $stdgng_id));
+	    $q = $this->db->get_where('studiengangkurs', array('StudiengangID' => $degree_program_id));
 
 	    if($q->num_rows() > 0){
 			foreach ($q->result() as $row){
@@ -951,14 +951,14 @@ class Admin_model extends CI_Model {
 	}
 	
 	/**
-	 * Returns all details from a passed Stdgng
-	 * @param unknown_type $stdgng_id
+	 * Returns all details for a passed degree program id
+	 * @param unknown_type $degree_program_id
 	 * @return unknown
 	 */
-	function get_degree_program_details_asrow($stdgng_id){
+	function get_degree_program_details_asrow($degree_program_id){
 	    $q = '';
 	    
-	    $q = $this->db->get_where('studiengang', array('StudiengangID' => $stdgng_id));
+	    $q = $this->db->get_where('studiengang', array('StudiengangID' => $degree_program_id));
 
 	    if($q->num_rows() == 1){
 // 			foreach ($q->result() as $row){
@@ -971,10 +971,10 @@ class Admin_model extends CI_Model {
 	/**
 	 * Updates a single studiengangkurs-record by given id
 	 * @param unknown_type $data
-	 * @param unknown_type $stdgng_id
+	 * @param unknown_type $course_id
 	 */
-	function update_degree_program_courses($data, $kurs_id){
-	    $this->db->where('KursID', $kurs_id);
+	function update_degree_program_courses($data, $course_id){
+	    $this->db->where('KursID', $course_id);
 	    $this->db->update('studiengangkurs', $data);
 	}
 	
@@ -1066,9 +1066,22 @@ class Admin_model extends CI_Model {
 	/**
 	 * Creates new Studiengang in db
 	 * @param array $data
+	 * @return new created degree_program_id
 	 */
-	function create_new_stdgng($data){
+	function create_new_degree_program($data){
 	    $this->db->insert('studiengang', $data);
+		
+		// get new created dp_id
+		$this->db->select_max('StudiengangID');
+		$q = $this->db->get('studiengang');
+		
+	    if($q->num_rows() == 1){
+			foreach ($q->result_array() as $row){
+				return $row['StudiengangID'];
+			}
+	    }
+				
+		return 0;
 	}
 	
 	/**
@@ -1091,7 +1104,7 @@ class Admin_model extends CI_Model {
 	    $this->db->where('StudiengangID', $id);
 	    $this->db->delete('studiengang');
 
-	    // delete all courses with this stdgng_id from studiengangkurs
+	    // delete all courses with this degree_program_id from studiengangkurs
 	    $this->db->where('StudiengangID', $id);
 	    $this->db->delete('studiengangkurs');
 	    
@@ -1101,14 +1114,14 @@ class Admin_model extends CI_Model {
 	 * Deletes a single course from studiengangkurs-table
 	 * @param int $course_id
 	 */
-	function delete_stdgng_single_course($course_id){
+	function delete_degree_program_single_course($course_id){
 	    $this->db->delete('pruefungssammlung', array('KursID' => $course_id));
 	    $this->db->delete('studiengangkurs', array('KursID' => $course_id));
 	}
 	
 	
 	/**
-	 * Copies stdgng - creates other name
+	 * Copies degree program - alters name and short name (adds [KOPIE]
 	 * @param int $dp_id
 	 */
 	function copy_degree_program($dp_id){
@@ -1124,6 +1137,7 @@ class Admin_model extends CI_Model {
 	    
 	    // alter name of degree program and delete old id!!
 	    $data['StudiengangName'] .= ' - [KOPIE]';
+	    $data['StudiengangAbkuerzung'] .= ' - [KOPIE]';
 	    unset($data['StudiengangID']);
 	    
 	    // inserting new degree program into db 'studiengang'
@@ -1169,6 +1183,9 @@ class Admin_model extends CI_Model {
 
 			} // endforeach courses
 	    }
+		
+		// return new id for reload edit-view
+		return $max_dp_id;
 	}// end
 	
 	/**
@@ -1484,13 +1501,17 @@ class Admin_model extends CI_Model {
 		// fetch new highest group_id
 		
 		// what about gruppenteilnehmer?!?!!?!
+		// shouldn't be critical >> as soon as course is in benutzerkurs there's one new group for each student
+		// gruppenteilnehmer is populated whiles students register in timetable
+		// 
 		
 		// insert new record in stundenplankurs
 		$this->db->insert('stundenplankurs', $data);
 		
 		// fetch new highest spcourse_id
 		
-		// update all users in benutzerkurs who
+		// update all users in benutzerkurs who got this course-id in semesterplan where semester = semester?
+		
 		
 	}
 	

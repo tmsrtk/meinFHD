@@ -3,6 +3,9 @@
 /**
  * Provides data that is needed in several views
  * i.e. dropdown data for times, days, are there any more??
+ * Also methods that are needed at several places
+ * >> logging
+ * 
  * @author frank gottwald
  * 
  */
@@ -200,6 +203,26 @@ class Helper_model extends CI_Model {
 		
 		// Gebe Farbwert zur�ck
 		return $ret; 
+	}
+	
+
+	/**
+	 * Creates array with activity-data of a user to save to db
+	 * Passed data
+	 * @param int $logging_typ_id look at logtyp-table to get the correct logtype
+	 * @param int $zielkurs SPKursID or null if not bound to a course
+	 */
+	public function log_activities ($logging_typ_id, $user_id, $tutor = NULL){
+		
+		// build array with data to be stored
+		$log_data = array(
+			'LogtypID' => $logging_typ_id,
+			'BenutzerID' => $user_id,
+			'TutorID' => $tutor
+		);
+		
+		// save data
+		$this->db->insert('logging_kursverwaltung', $log_data);
 	}
 }
 

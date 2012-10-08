@@ -6,6 +6,7 @@ class Kursverwaltung extends FHD_Controller {
     private $roles;
     private $roleIds;
     private $course_ids;
+	private $user_id;
     
     // eventtype_ids
     const LECTURE = 1;
@@ -15,8 +16,8 @@ class Kursverwaltung extends FHD_Controller {
     const TUT = 6;
     
     // tables to switch between data
-    const LABING = 'laboringenieur';
-    const TUTOR = 'tutor';
+    const LABING = 'kursbetreuer';
+    const TUTOR = 'kurstutor';
     
 
     function __construct(){
@@ -27,10 +28,18 @@ class Kursverwaltung extends FHD_Controller {
 		$this->roleIds = $this->user_model->get_all_roles();
 		// get course ids for that user
 		$this->course_ids = $this->user_model->get_user_course_ids();
-
+		// get user_id - mainly for logging-reasons
+		$this->user_id = $this->user_model->get_userid();
     }
     
-    
+	
+	/* ************************************************************************
+	 * 
+	 * ************************************** Kursverwaltung
+	 * ************************************** Frank Gottwald
+	 * 
+	 */
+	
     function show_coursemgt(){
 		// if user has courses - run through all of them
 		if($this->course_ids){
@@ -58,6 +67,7 @@ class Kursverwaltung extends FHD_Controller {
 
 			// init variables
 			$staff_view_data['is_tutor'] = false;
+			$subview_data['is_tut'] = false;
 			$subview_lecture_to_load = '';
 
 			// switch view - depends on if user is tutor or not
@@ -66,6 +76,7 @@ class Kursverwaltung extends FHD_Controller {
 				$subview_lecture_to_load = 'courses/partials/courses_lecture';
 			} else {
 				$staff_view_data['is_tutor'] = true;
+				$subview_data['is_tut'] = true;
 				$subview_lecture_to_load = 'courses/partials/courses_lecture_tut';
 			}
 
@@ -145,7 +156,7 @@ class Kursverwaltung extends FHD_Controller {
 	
 		// init
 		$subview_data['is_lab'] = FALSE;
-		$subview_data['is_tut'] = FALSE;
+//		$subview_data['is_tut'] = FALSE;
 		$subview_data['lecture_name'] = $this->kursverwaltung_model->get_lecture_name($course_id);
 		$subview_data['course_id'] = $course_id;
 		$subview_data['current_participants'] = '';
@@ -345,9 +356,10 @@ class Kursverwaltung extends FHD_Controller {
 //						print_r($save_group_details_to_db);
 //						echo '</pre>';
 
+					// clean arrays 
 					$save_course_details_to_db = array();
 					$save_group_details_to_db = array();
-
+					
 				}
 				$sp_course_id_temp = $sp_course_id;
 			}
@@ -365,6 +377,9 @@ class Kursverwaltung extends FHD_Controller {
 			$sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
 		
 		$this->kursverwaltung_model->save_course_description($course_id, $description);
+		
+		// log activities once - data has been changed
+		$this->helper_model->log_activities(5, $this->user_id);
 		
 //		echo '<pre>';
 //		echo '<div>course</div>';
@@ -387,22 +402,22 @@ class Kursverwaltung extends FHD_Controller {
     
     
     /**
-     * Switch: calls correct method to save to LABORINGENIEUR-table
+     * Switch: calls correct method to save to *KURS*BETRUER-table (laboringenieur-table deprecated)
      */
     public function save_labings_for_course(){
 		// get incoming data
 		$staff_to_save = $this->input->post();
-		$this->save_staff_to_db('laboringenieur', $staff_to_save);
+		$this->save_staff_to_db(Kursverwaltung::LABING, $staff_to_save);
     }
     
     
     /**
-     * Switch: calls correct method to save to TUTOR-table
+     * Switch: calls correct method to save to *KURS*TUTOR-table (tutor table is deprecated)
      */
     public function save_tuts_for_course(){
 		// get incoming data
 		$staff_to_save = $this->input->post();
-		$this->save_staff_to_db('tutor', $staff_to_save);
+		$this->save_staff_to_db(Kursverwaltung::TUTOR, $staff_to_save);
     }
 
     /**
@@ -539,7 +554,177 @@ class Kursverwaltung extends FHD_Controller {
 //	$this->kursverwaltung_model->update_benutzermmrolle();
 //    }
        
-    
+	
+	/* 
+	 * 
+	 * ************************************** Kursverwaltung
+	 * ************************************** Frank Gottwald
+	 * 
+	 * ***********************************************************************/
+	
+	
+	
+	/* ************************************************************************
+	 * 
+	 * ******************************** Praktikumsverwaltung
+	 * ************************************** Frank Gottwald
+	 * 
+	 */
+	
+	
+	/**
+	 * Single function called from menue and within view
+	 * Behaviour depends on 
+	 * 1. data in POST
+	 * 2. courseIds for current user
+	 */
+	public function show_labmgt(){
+		// get the course_id from POST
+		$course_id_to_show = -1;
+		
+		// if there is only one course_id >> save that one to variable
+		// TODO check if correct !!!!!!!!!!!!!
+		// !!!! doesn't work, because user-model returns array with ALL course-ids mapped to role for this course
+		// only working if staff has only one role for that course << which is the default case
+		// either prevent from assigning two different roles for one person and course (+ modals)
+		// or catch 
+		if(count($this->course_ids) === 1){
+			$course_id_to_show = key($this->course_ids);
+		}
+		
+//		echo '<div>';
+//		print_r($this->course_ids);
+//		echo '<div>';
+		 
+		// DEBUG
+		echo $this->input->POST('sp_course_id');
+		
+		// if data is passed >> save to variable
+		if($this->input->POST('sp_course_id')){
+			$sp_course_id_to_show = $this->input->POST('sp_course_id');
+			$course_id_to_show = $this->input->POST('course_id');
+		}
+		
+		// if course_ids is NO array and NOT initialized
+		// means: there is more than one course_id stored ???????
+		if(count($this->course_ids) > 1 && $course_id_to_show === -1){
+			// goto overview-view
+			$this->show_labmgt_overview();
+		} else {
+			// go directly to group-view
+			$this->show_labmgt_group();
+			
+			// pass new id via flashdata
+			$this->session->set_flashdata('sp_course_id', $sp_course_id_to_show);
+			$this->session->set_flashdata('course_id', $course_id_to_show);
+
+			// goto view
+			redirect('kursverwaltung/show_labmgt_group');
+			
+		}
+	}
+	
+	/**
+	 * Pass course_ids and sp_course_ids into view and call view
+	 */
+	private function show_labmgt_overview(){
+		// get sp_course_details for course_id - all labs? disable seminar?
+		$sp_course_details = '';
+		$eventtypes_to_fetch = array(2,3,4);
+		foreach($this->course_ids as $c_id => $role){
+			foreach($eventtypes_to_fetch as $e){
+				$sp_course_details[$c_id.'-'.$e] = $this->kursverwaltung_model->get_course_details($c_id, $e);
+			}
+		}
+
+		// store for view
+		$this->data->add('sp_course_details', $sp_course_details);
+	    $this->load->view('courses/labs_overview_show', $this->data->load());
+	}
+	
+	/**
+	 * Prepared data and pass into view
+	 * !! little more work to do.
+	 */
+	public function show_labmgt_group(){
+		// variables to get to correct group (with active group; depending on sp_course_id)
+		$load_sp_course_id = $this->session->flashdata('sp_course_id');
+		$load_course_id = $this->session->flashdata('course_id');
+		
+//		echo $load_course_id;
+		
+		// if there is NO data passed
+		if(!$load_sp_course_id){
+			$load_sp_course_id = -1;
+			$load_sp_course_id = -1;
+		}
+		
+		// ## TODO 
+		// ## fetch all lab-details of each group and pass to view
+		// ## get sp_course_details for course_id - all labs? disable seminar?
+		// init
+		$sp_course_details = '';
+		
+		// defining all eventtypes to fetch data for
+		$eventtypes_to_fetch = array(2,3,4);
+		foreach($eventtypes_to_fetch as $e){
+			// either data has been passed via flashdata >> user chose group (and (implicit) course) to manage
+			// active group in view
+			if($load_sp_course_id != -1){
+				$sp_course_details[$load_course_id.'-'.$e] = $this->kursverwaltung_model->get_course_details($load_course_id, $e);
+			} else {
+				// or there is only one course
+				// >> no active group
+				if(count($this->course_ids)){
+					$c_id = key($this->course_ids);
+					$sp_course_details[$c_id.'-'.$e] = $this->kursverwaltung_model->get_course_details($c_id, $e);
+				}
+			}
+		}
+		
+		// save data and active group to 
+		$this->data->add('sp_course_details', $this->get_details_for_all_labs($sp_course_details));
+		$this->data->add('active_group', $load_sp_course_id);
+	    $this->load->view('courses/labs_group_show', $this->data->load());
+	}
+	
+	
+	/**
+	 * Helper method taking array with all eventtypes (AND groups) for a single course
+	 * Peparing data for view
+	 * >> 
+	 * @param array $sp_course_details containing all course-labs-details sorted by eventtypes
+	 * @return array $group_participants containing all participants sorted by groups
+	 */
+	private function get_details_for_all_labs($sp_course_details){
+		// variable to be returned
+		$lab_participants_plus_notes = array();
+		
+		
+		// running through all course-event-combinations and get participants
+		// 1. check if there are courses with details to fetch
+		foreach($sp_course_details as $key => $groups){
+			// if there are courses for this course-event-combination
+			if($groups){
+				// 2. get participants for each course and save to array
+				foreach($groups as $index => $sp_course_object){
+					$lab_participants_plus_notes[$key][$sp_course_object->SPKursID] = $this->kursverwaltung_model->get_lab_notes($sp_course_object->GruppeID, $sp_course_object->SPKursID);
+				}
+			}
+		}
+		
+		return $lab_participants_plus_notes;
+	}
+	
+	/* 
+	 * 
+	 * ******************************** Praktikumsverwaltung
+	 * ************************************** Frank Gottwald
+	 * 
+	 * ***********************************************************************/
+	
+	
+	
 }
 
 

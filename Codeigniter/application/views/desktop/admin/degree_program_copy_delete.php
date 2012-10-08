@@ -112,6 +112,7 @@
 	    return false;
 	});
 	
+	// creates modal
 	function createModal(title, text){
 	    var confirmationModal = $('<div class="modal hide" id="cdc-dialog"></div>')
 		.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
@@ -122,6 +123,8 @@
 	    return confirmationModal;
 	}
 	
+	
+	// when clicking on ok
 	$('#copy-delete-confirmation').on('click', '#confirm-copy-delete-confirmation-dialog', function(){
 	    var submitId = $(this).attr('data-id');
 	    
