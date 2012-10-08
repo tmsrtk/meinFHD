@@ -1,11 +1,35 @@
 (function($) {
-	// custom js functionality goes here
 
+	// Make the carousel accessible via pointer	
+	$carousel = $('#carousel');
+	// Prevent the carousel from auto playing
+	$carousel.carousel({
+		interval: 0,
+	});
+	
+	initPager();
+	
+	// Get all direct navigation controls, exclude left and right arrows
+	$goto = $('.pagination a').not(':first, :last');
+	
+	// Add click handler
+	$goto.click(function(e){
+		// Dont't do any default stuff
+		e.preventDefault();
+		// Get position in relation to all other selected elements
+		var index = $goto.index(this);
+		// Point the carousel to the element
+		$carousel.carousel(index);
+	});
+	
+	$carousel.on('slid', function(){
+		initPager();
+	});
 	
 	// autoclosing twitter bootstrap alerts
 	function createAutoClosingAlert(selector, delay) {
-		var alert = $(selector).alert();
-		window.setTimeout(function() {alert.alert('close')}, delay);
+		//var alert = $(selector).alert();
+		//window.setTimeout(function() {alert.alert('close')}, delay);
 	}
 	
 	createAutoClosingAlert(".alert.in", 3000);
@@ -35,8 +59,14 @@
 			$(this).addClass('btn-success').find('i').addClass('icon-white');
 		});
 		
-	});
+	});			
 	
+})(jQuery);
+
+function initPager() {
+	var activeIndex = $carousel.find('.item').index($carousel.find('.item.active'));
+	$('.pagination li').not(':first, :last').removeClass('active').eq(activeIndex).addClass('active');
+}
 	$(function(){
 		
 		$('.carousel').carousel('pause');
@@ -82,9 +112,9 @@
 function _createModalDialog(title, text, withOK) {
 	myModalDialog =
 		$('<div class="modal hide" id="myModal"></div>')
-		.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">Ã—</button><h3>'+title+'</h3></div>')
+		.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
 		.append('<div class="modal-body"><p>'+text+'</p></div>')
-		.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">SchlieÃŸen</a>');
+		.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Schließen</a>');
 		if (withOK) myModalDialog.find('.modal-footer').append('<a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
 		// <a href="" class="btn btn-primary" data-accept="modal">OK</a></div>
 	return myModalDialog;
@@ -119,7 +149,7 @@ function _showModal(title, text, withOK) {
 			if ( $(this).attr("data-accept") === 'modal' ) {
 				console.log("accept");
 
-				$(event.target).parent().parent().find("div.modal-body").html("Bitte warten, der Befehl wird ausgefÃ¼hrt");
+				$(event.target).parent().parent().find("div.modal-body").html("Bitte warten, der Befehl wird ausgeführt");
 				$(event.target).parent().parent().find("div.modal-footer").hide();
 
 				// get the form name dynamically, to be able to use this in every form

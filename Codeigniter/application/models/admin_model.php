@@ -1479,7 +1479,19 @@ class Admin_model extends CI_Model {
 	 * @param array $data
 	 */
 	public function save_new_course_in_stdplan($data){
+		// create new group
+		
+		// fetch new highest group_id
+		
+		// what about gruppenteilnehmer?!?!!?!
+		
+		// insert new record in stundenplankurs
 		$this->db->insert('stundenplankurs', $data);
+		
+		// fetch new highest spcourse_id
+		
+		// update all users in benutzerkurs who
+		
 	}
 	
 	

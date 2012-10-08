@@ -45,6 +45,7 @@ $route['login'] = 'app/login';
 $route['logout'] = 'app/logout';
 
 $route['modul/(:num)'] = "modul/show/$1";
+$route['dozent/(:num)'] = "dozent/show/$1";
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

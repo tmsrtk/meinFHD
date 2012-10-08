@@ -1,6 +1,5 @@
 <?php start_block_marker('postCodeFooter'); # use for hidden markup like modals ?>
 <?php end_block_marker(); ?>
-		<?php print $messages; ?>
 		<div class="clearfix"></div>
 		<!-- only head.js is required, due to asynchronous js file handling -->
 		<script src="<?php print base_url(); ?>resources/headjs/head.min.js" type="text/javascript"></script>
@@ -17,7 +16,10 @@
 				{bootstrap_modal: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-modal.js"},
 				{bootstrap_transition: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-transition.js"},
 <?php end_block_marker(); ?>
+				{meinfhd: "<?php print base_url(); ?>resources/js/hammer.js"},
+				{meinfhd: "<?php print base_url(); ?>resources/js/jquery.specialevent.hammer.js"},
 				{meinfhd: "<?php print base_url(); ?>resources/js/meinfhd.js"},
+				{meinfhd: "<?php print base_url(); ?>resources/js/meinfhd.mobile.js"},
 				{bootstrap_dropdown: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-dropdown.js"}
 			);
 		</script>

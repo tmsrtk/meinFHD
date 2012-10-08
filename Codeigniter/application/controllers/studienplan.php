@@ -114,7 +114,7 @@ class Studienplan extends FHD_Controller
 
         redirect('/studienplan');
     }
-    
+   
     
     
     
@@ -130,7 +130,7 @@ class Studienplan extends FHD_Controller
     }
     
     
-
+    
     /**
      * Remove a coloumn in semesterplan
      */
@@ -141,7 +141,7 @@ class Studienplan extends FHD_Controller
 
         // header('Location: /meinFHD/Codeigniter/studienplan/');
     }
-
+    
     
     
     
@@ -224,6 +224,8 @@ class Studienplan extends FHD_Controller
         
         $this->message->set(sprintf('Der Studienplan wurde erfolgreich rekonstruiert.'));
     }
+    
+    
     
     
     /**
@@ -349,7 +351,7 @@ class Studienplan extends FHD_Controller
     {
         // locale variables
         $module_id = 0;
-        $mark = 0;
+        $markpoints = 0;
         
         // get post data
         $post= $this->input->post();
@@ -361,12 +363,12 @@ class Studienplan extends FHD_Controller
             {
                 $tempArray = explode('_', $key);
                 $module_id = $tempArray[1];
-                $mark = $value;
+                $markpoints = $value;
             }
         }
         
         $this->load->model('Studienplan_Model');
-        $this->Studienplan_Model->saveMark($module_id, $mark);
+        $this->Studienplan_Model->saveMark($module_id, $markpoints);
     }
     
     

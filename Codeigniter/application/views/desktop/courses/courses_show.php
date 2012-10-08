@@ -3,8 +3,8 @@
 <?php startblock('title');?><?php get_extended_block();?> - Kursverwaltung<?php endblock(); ?>
 
 <?php startblock('preCodeContent'); # additional markup before content ?>
-	<div class="span1"></div>
-		<div class="span10 well well-small">
+<!--	<div class="span1"></div>-->
+		<div class="span12 well well-small">
 <?php endblock(); ?>
 	
 <?php
@@ -76,10 +76,12 @@
 						'class' => 'label label-info',
 					);
 			?>
-
-				<h3>Emailversand:</h3>
+				<div class="span1"></div>
+				<div class="span9"><h3>Emailversand:</h3></div>
+				<div class="span2"></div>
 				<!-- print email-line -->
-				<div id="staff-send-email" class="well well-small clearfix">
+<!--				<div id="staff-send-email" class="well well-small clearfix">-->
+				<div id="staff-send-email" class="clearfix">
 					<?php echo form_open(''); ?>
 					<div class="span1">
 						<?php echo form_checkbox($cb_data); ?>
@@ -94,18 +96,24 @@
 						?>
 					</div>
 				</div>
+				<hr>
+<!--				<hr>-->
 
 			<?php
 				// print staff-table
-				echo '<div class="well well-small">';
+//				echo '<div class="well well-small">';
+				echo '<div class="">';
 				print $staff[$c_id];
 				echo '</div>';
+				echo '<hr>';
+//				echo '<hr>';
 
 				// place for general information
 				echo form_open('kursverwaltung/save_course_details_all_at_once'); 
 
 
-				echo '<div class="well well-small">';
+//				echo '<div class="well well-small">';
+				echo '<div class="">';
 				// $course_details contains mapped details on course_ids
 				foreach ($course_details[$c_id] as $c_details) {
 					// necessary because pr, übung, sem come withing nested array
@@ -116,44 +124,34 @@
 							print($v);
 						}
 					}
+					echo '<hr>';
+//					echo '<hr>';
 				}
-				echo '<hr>';
-				echo form_submit($submit_data_save_all);
-				echo '</div>';
 
-
-				// course-description
-				$course_description_textarea_data = array(
-					'name' => $c_id.'_description',
-					'id' => 'input-course-description',
-					'class' => 'input-xlarge',
-					'value' => $value->Beschreibung,
-					'rows' => 7,
-					'cols' => 40
-				);
 			?>
-
 				<div>
-					<h3>Beschreibung </h3>
-					<div>
-					<?php echo form_textarea($course_description_textarea_data); ?>
-					</div>
-					<?php echo form_close(); // end of form ?>
-				</div>
+					<?php
+//						echo '<hr>';
+						echo $description[$c_id];
+						echo form_submit($submit_data_save_all);
+						echo '</div>';
+						echo form_close(); // end of form 
+					?></div>
 				</div><!-- end of tab -->
 			<?php endforeach; ?>    
 			</div>
+			<div id="testing"></div>
 		</div>
 
 <?php endblock(); ?>
 <?php startblock('postCodeContent'); # additional markup before content ?>
 	</div>
-	<div class="span1"></div>
+<!--	<div class="span1"></div>-->
 <?php endblock(); ?>
 	
 <?php startblock('customFooterJQueryCode');?>
-	
-    // initialize active tab
+
+	// initialize active tab
     $('.tab-content div:first-child').addClass("active");
     $('#course-details-navi li:first-child').addClass("active");
     
@@ -187,27 +185,27 @@
 			var cbAll = $(this);
 			// run through all elements and set un/checked
 			$.each(checkboxesOnSite, function(i, v){
-			var cbSelf = $(this);
-			var cbId = cbSelf.attr('id');
-			var cbName = cbSelf.attr('name');
-			var labelId = labelIdBase+cbName;
+				var cbSelf = $(this);
+				var cbId = cbSelf.attr('id');
+				var cbName = cbSelf.attr('name');
+				var labelId = labelIdBase+cbName;
 
-			// toggle checked/unchecked + color
-			if(cbAll.is(':checked')){
-				$('#'+cbId).attr('checked', true);
-				labelIdOverall.text('Email senden an alle Personen und Kursteilnehmer');
-				$(labelIdOverall).addClass('label-info');
-				$(labelIdOverall).removeClass('label-default');
-				$(labelId).addClass('label-info');
-				$(labelId).removeClass('label-default');
-			} else {
-				$('#'+cbId).attr('checked', false);
-				labelIdOverall.text('keine Auswahl für Email-Versand');
-				$(labelIdOverall).addClass('label-default');
-				$(labelIdOverall).removeClass('label-info');
-				$(labelId).addClass('label-default');
-				$(labelId).removeClass('label-info');
-			}
+				// toggle checked/unchecked + color
+				if(cbAll.is(':checked')){
+					$('#'+cbId).attr('checked', true);
+					labelIdOverall.text('Email senden an alle Personen und Kursteilnehmer');
+					$(labelIdOverall).addClass('label-info');
+					$(labelIdOverall).removeClass('label-default');
+					$(labelId).addClass('label-info');
+					$(labelId).removeClass('label-default');
+				} else {
+					$('#'+cbId).attr('checked', false);
+					labelIdOverall.text('keine Auswahl für Email-Versand');
+					$(labelIdOverall).addClass('label-default');
+					$(labelIdOverall).removeClass('label-info');
+					$(labelId).addClass('label-default');
+					$(labelId).removeClass('label-info');
+				}
 			});
 		});
 
@@ -223,45 +221,45 @@
 
 			// if checkbox changes
 			$('#'+cbId).change(function(){
-			var counter = 0;
+				var counter = 0;
 
-			// affect label-color
-			if($(this).is(':checked')){
-				$(labelId).addClass('label-info');
-				$(labelId).removeClass('label-default');
-			} else {
-				$(labelId).addClass('label-default');
-				$(labelId).removeClass('label-info');
-			}
-
-			// count unchecked checkboxes
-			$.each(checkboxesOnSite, function(i, v){
+				// affect label-color
 				if($(this).is(':checked')){
-				counter++;
+					$(labelId).addClass('label-info');
+					$(labelId).removeClass('label-default');
+				} else {
+					$(labelId).addClass('label-default');
+					$(labelId).removeClass('label-info');
 				}
-			});
-			// if all checkboxes are checked >> check overall checkbox
-			if(counter >= 1){
-				$(overallCbId).attr('checked', true);
-				labelIdOverall.addClass('label-info');
-				labelIdOverall.removeClass('label-default');
-	//		    labelIdOverall.text('Email senden an alle Personen und Kursteilnehmer');
-				labelIdOverall.text('Email senden an Auswahl');
-			// otherwise uncheck overall checkbox
-			} else if(counter == 0) {
-				$(overallCbId).attr('checked', false);
-				labelIdOverall.text('keine Auswahl für Email-Versand');
-				labelIdOverall.addClass('label-default');
-				labelIdOverall.removeClass('label-info');
-			}
-	//		} else {
-			if(counter == numberCbs){
-				$(overallCbId).attr('checked', true);
-	//		    labelIdOverall.addClass('label-info');
-	//		    labelIdOverall.removeClass('label-default');
-	//		    labelIdOverall.text('Email senden an Auswahl');
-				labelIdOverall.text('Email senden an alle Personen und Kursteilnehmer');
-			}
+
+				// count unchecked checkboxes
+				$.each(checkboxesOnSite, function(i, v){
+					if($(this).is(':checked')){
+					counter++;
+					}
+				});
+				// if all checkboxes are checked >> check overall checkbox
+				if(counter >= 1){
+					$(overallCbId).attr('checked', true);
+					labelIdOverall.addClass('label-info');
+					labelIdOverall.removeClass('label-default');
+		//		    labelIdOverall.text('Email senden an alle Personen und Kursteilnehmer');
+					labelIdOverall.text('Email senden an Auswahl');
+				// otherwise uncheck overall checkbox
+				} else if(counter == 0) {
+					$(overallCbId).attr('checked', false);
+					labelIdOverall.text('keine Auswahl für Email-Versand');
+					labelIdOverall.addClass('label-default');
+					labelIdOverall.removeClass('label-info');
+				}
+		//		} else {
+				if(counter == numberCbs){
+					$(overallCbId).attr('checked', true);
+		//		    labelIdOverall.addClass('label-info');
+		//		    labelIdOverall.removeClass('label-default');
+		//		    labelIdOverall.text('Email senden an Auswahl');
+					labelIdOverall.text('Email senden an alle Personen und Kursteilnehmer');
+				}
 			}); // end checkbox-change
 		}); // end run through checkboxes
 
@@ -337,7 +335,7 @@
 		// saving checkboxes into var
 		var cb = $('#labings-panel-'+courseId).children('input');
 
-		console.log(cb);
+		//console.log(cb);
 
 		// activate each panel
 		$.each(panelId, function(index, value){
@@ -354,13 +352,98 @@
 				};
 				if(!self.is(":checked")){
 					$(spanId[index] + id).remove();
-					console.log(spanId[index]+id);
+					//console.log(spanId[index]+id);
 				};
+			});
+		});
+		
+		
+		// ################ handle download-tn-buttons
+		var downloadTnButtonsLab = $('.download-tn-button-'+courseId);
+		var downloadTnButtonCourse = $('.download-tn-button-course-'+courseId);
+		
+		$.each(downloadTnButtonsLab, function(index, value){
+			$(value).click(function(){
+			console.log('test');
+				var spCourseId = $(this).data('id');
+				$.ajax({
+					type: "POST",
+					url: "<?php echo site_url();?>kursverwaltung/ajax_create_participants_file_sp_course/",
+					dataType: 'html',
+					data : {sp_course_id : spCourseId},
+					success: function (data){
+						// TODO ??
+					}
+				});
+			});
+		});
+		
+		$(downloadTnButtonCourse).click(function(){
+			var spCourseId = $(this).data('id');
+			$.ajax({
+				type: "POST",
+				url: "<?php echo site_url();?>kursverwaltung/ajax_create_participants_file_course/",
+				dataType: 'html',
+				data : {sp_course_id : spCourseId},
+				success: function (data){
+					// TODO ??
+				}
+			});
+		});
+		
+		// ################ handle activate-application buttons
+		var switchActivationButtons = $('.activation-buttons-'+courseId);
+		
+		// run through all buttons on site
+		$.each(switchActivationButtons, function(index, value) {
+			var buttonId = '#'+$(value).attr('id');
+			// click behaviour
+			$(buttonId).click(function(){
+				var buttonText = '';
+				var buttonStatus = $(this).data('status');
+				var spCourseId = $(this).data('id');
+				var courseIdStatus = [spCourseId, buttonStatus];
+
+				// alter text and status depending on former status
+				if(buttonStatus == 'disabled'){
+					buttonText = 'Anmeldung deaktivieren';
+					buttonStatus = 'enabled';
+				} else {
+					buttonText = 'Anmeldung aktivieren';
+					buttonStatus = 'disabled';
+				}
+
+				// de/acitvate sp_course
+				$.ajax({
+					type: "POST",
+					url: "<?php echo site_url();?>kursverwaltung/ajax_toggle_activation_of_spcourse/",
+					dataType: 'html',
+					data : {course_id_status : courseIdStatus},
+					success: function (data){
+						$(buttonId).data('status', buttonStatus);
+						$(buttonId).text(buttonText);
+<!--						$('#testing').text(data);-->
+						
+					}
+				});
 			});
 		});
 
 
     }); // end tab-views - all elements has to be prepared for all ids
+	
+	
+	// create dialog element
+	function createModal(title, text) {
+		var myDialog = 
+			$('<div class="modal hide" id="participants-modal"></div>')
+			.html('<div class="modal-header"><button class="close" type="button" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
+			.append('<div class="modal-body" id="modal-body"><p>'+text+'</p></div>')
+			.append('<div class="modal-footer"><a href="#" class="btn" id="part-modal-cancel" data-dismiss="modal">Abbrechen</a>\n\
+			<a href="" class="btn btn-primary" data-id="0" data-delete="0" id="part-modal-confirm" data-accept="modal">Herunterladen</a></div>');
+
+		return myDialog;
+    };
     
 //    
 //    // handle button to add tuts to benutzer_mm_rolle

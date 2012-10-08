@@ -6,7 +6,7 @@
 | -------------------------------------------------------------------
 */
 
-$firewall['login_page'] = 'app/login';
+$firewall['login_page'] = 'login';
 
 /*
 | -------------------------------------------------------------------
@@ -35,17 +35,50 @@ $firewall['access_control'] = array();
 */
 
 $firewall['access_control'] = array(
-	'login' => array(
-		'pattern' => '^/app',
+	
+	'dashboard' => array(
+		'pattern' => '^/dashboard',
 		'roles' => array('user'),
 	),
+	
 	'stundenplan' => array(
 		'pattern' => '^/stundenplan',
 		'roles' => array('user'),
 	),
-	'stundenplan/mach' => array(
-		'pattern' => '^/stundenplan/f2',
-		'roles' => array('dozent'),
+	
+	'studienplan' => array(
+		'pattern' => '^/studienplan',
+		'roles' => array('student'),
+	),
+	
+	'hilfe' => array(
+		'pattern' => '^/hilfe',
+		'roles' => array('user'),
+	),
+	
+	'faq' => array(
+		'pattern' => '^/faq',
+		'roles' => array('user'),
+	),
+	
+	'faq' => array(
+		'pattern' => '^/faq',
+		'roles' => array('user'),
+	),
+	
+	'modul' => array(
+		'pattern' => '^/modul',
+		'roles' => array('user'),
+	),
+	
+	'dozent' => array(
+		'pattern' => '^/dozent',
+		'roles' => array('user'),
+	),
+	
+	'veranstaltungen' => array(
+		'pattern' => '^/veranstaltungen',
+		'roles' => array('user'),
 	),
 );
 

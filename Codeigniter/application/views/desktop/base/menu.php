@@ -112,6 +112,22 @@
 									</ul> <!-- /.nav .level-2 -->
 								</li>
 								<?php endif ?>
+								<?php if ( $this->authentication->has_permissions('hat_kurse') ) : ?>
+								<li class="dropdown">
+									<a href="<?php print base_url('#'); ?>" class="dropdown-toggle" data-toggle="dropdown">
+										Kursverwaltung
+										<b class="caret"></b>
+									</a>
+									<ul class="dropdown-menu level-2">
+										<?php if ( $this->authentication->has_permissions('hat_kurse') ) : ?>
+										<li><a href="<?php print base_url('kursverwaltung/show_coursemgt'); ?>">Meine Kurse</a></li>
+										<?php endif ?>
+										<?php if ( $this->authentication->has_permissions('hat_kurse') ) : ?>
+										<li><a href="<?php print base_url('#'); ?>">Praktikumsverwaltung</a></li>
+										<?php endif ?>
+									</ul> <!-- /.nav .level-2 -->
+								</li>
+								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_faq') ) : ?>
 								<li><a href="<?php print base_url('faq/index'); ?>">FAQ</a></li>
 								<?php endif ?>

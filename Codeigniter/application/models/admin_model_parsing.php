@@ -31,9 +31,6 @@ class Admin_model_parsing extends CI_Model {
     
     function parse_stdplan($file_data){
 	
-//		$this->CI =& get_instance();
-//		$admin_model = $this->load->model('admin_model');
-	
 		// array zum pr�fen ob ein Eintrag bereits darin enthalten ist.
 		$array_check[0][0] = ""; 
 		$array_check[0][1] = ""; 
@@ -50,7 +47,7 @@ class Admin_model_parsing extends CI_Model {
 		// Setze Elementhandler: searchElement und searchEndElement
 		xml_set_element_handler( $xml_parser, array($this, 'searchElement'), array($this, 'searchEndElement') );
 
-		// Wenn die Datei gelesen werden kann, �ffne stream
+		// Wenn die Datei gelesen werden kann, öffne stream
 		if(!is_readable($file_data['file_name'])){
 			$fp = fopen('./resources/uploads/'.$file_data['file_name'], "r");
 		}
@@ -70,8 +67,24 @@ class Admin_model_parsing extends CI_Model {
 		// Entlasse XML-Parser
 		xml_parser_free($xml_parser);
 
-		// get data from parser and prepare for db-queries
-		$this->prepare_parsed_stdplan_data();
+		
+		// find out how many degree-programs with that PO-Abk-Kombi there are
+		$count_dp = 0;
+		$count_dp = $this->count_degree_programs($this->stdg_short, $this->stdg_pov);
+
+		// only if there is exactly one degreep-program with that PO-Abk-Kombi
+		// start parsing - otherwise >> ERROR
+				
+		if($count_dp === 1){
+			// get data from parser and prepare for db-queries
+			$this->prepare_parsed_stdplan_data();
+			return false;
+		} else {
+			// delete file
+//			unlink('./resources/uploads/'.$file_data['file_name']);
+//			die('Studiengang nicht vorhanden');
+			return true;
+		}
     }
     
     
@@ -84,7 +97,7 @@ class Admin_model_parsing extends CI_Model {
 	**		@param	$name	Der Name des Knoten-Elements.
 	**		@param	$attrs	Das assoziative Attribut-Array.
 	*********************************************************/
-    function searchElement( $parser, $knoten_element_name, $attrs ) {
+    function searchElement( $parser, $knoten_element_name, $attrs ) { 
 
 		// wenn Knoten vom typ 'studiengang' ist
 		if( $knoten_element_name == "studiengang" ) {
@@ -92,6 +105,11 @@ class Admin_model_parsing extends CI_Model {
 			$this->stdg_pov = $attrs["poversion"];
 			$this->stdg_semester = $attrs["semester"];
 		}
+		
+//		echo ' Studiengang: '.$this->stdg_short;
+//		echo ' PO: '.$this->stdg_pov;
+//		echo ' Semester: '.$this->stdg_semester;
+//		echo '<br />';
 
 		// wenn Knoten vom typ 'fachtext' ist.
 		if( $knoten_element_name == "fachtext" ) {
@@ -218,6 +236,7 @@ class Admin_model_parsing extends CI_Model {
 
     
     function prepare_parsed_stdplan_data(){
+		$duplicate_event = array();
 		// >> run through parsed data
 		//run through days
 		foreach($this->array_veranstaltungen as $days){
@@ -225,167 +244,251 @@ class Admin_model_parsing extends CI_Model {
 			foreach ($days as $hours) {
 				// run through courses
 				foreach ($hours as $course) {
+					
+					// the xml-files contain one entry for every hour!
+					// >> same course over more than one hour exists more than one time
+					// check if combination already has been saved to $duplicate_event-array 
+					if(! in_array($course[0].'_'.$course[1].'_'.$course[3], $duplicate_event)){
+						
+						// add combination to array
+						$duplicate_event[] = $course[0].'_'.$course[1].'_'.$course[3];
 
-		//		    echo '<pre>';	
-		//		    print_r($course);
-		//		    echo '</pre>';
+//						echo '<pre>';	
+//						print_r($this->array_fachtext[$i][0]);
+//						print_r($course[0]);
+//						print_r($course_name);
+//						echo '</pre>';
 
-					// search array_fachtext for kurs[0](='kursname')
-					for( $i=1 ; $i < count($this->array_fachtext); $i++) {
-						// if there is a kurs then save it to seperate variable $course_name
-						if($this->array_fachtext[$i][0] == $course[0]){
-							$course_name = $this->array_fachtext[$i][2];
+						// search array_fachtext for kurs[0](='kursname')
+						$course_name = '';
+						for( $i=1 ; $i <= count($this->array_fachtext); $i++) {
+							// if there is a kurs then save it to separate variable $course_name
+							if($this->array_fachtext[$i][0] == $course[0]){
+								$course_name = $this->array_fachtext[$i][2];
+								// note:
+								// course_name is needed to identify a course as a wpf and extract the wpf-name
+								// and to create correct entry in studiengangkurs if it doesn't alread exist
+							}
 						}
-					}
+						
 
-					// get dozent_id
-					$dozent_tmp = $this->get_dozentid_for_name($course[3]);
-					// only if there is a known dozent
-					if($dozent_tmp){
-						$dozent_id = $dozent_tmp->BenutzerID;
-					} else {
-						$dozent_id = 999;
-					}
-
-					// if "fachname" contains "WPF" this course is a WPF
-					$isWPF = (strpos($course[0], "WPF") !== false) ? true : false;
-
-					// get rid of "WPF" from course_name
-					$course_name = str_replace("WPF-", "", $course_name);
-
-					// remove brackets with module-number - if there is one 
-					if(strpos($course_name, "(") > 0 ){
-						$course_name = substr($course_name, 0, strpos($course_name, "(")-1);
-					}
-
-					// wenn es sich um ein WPF handelt,
-					if( $isWPF ) {
-						// entnehme WPF-Bezeichnung aus Kursname und speichere sie separat in $wpfname
-						$wpfname = substr($course_name, strpos($course_name," - ")+((strpos($course_name," - ")!==false) ? 3 : 0));
-
-						// entferne anschließend die WPF-Bezeichnung aus dem Kursnamen und speicher ihn separat ab
-						$course_name = substr($course_name,0,strpos($course_name," - "));
-
-						// ermittel fachabkürzung für wpf
-						$wpf_kurz = str_replace("WPF-","",$course[0]);
-					}
-
-					// get stdgng_id
-					$stdgng_tmp = $this->get_stdgng_id($this->stdg_pov, $this->stdg_short);
-					$stdgng_id = $stdgng_tmp->StudiengangID;
-
-
-					// get course_id
-					$course_tmp = 'leer';
-					if($isWPF){
-						$course_tmp = $this->get_course_id($wpf_kurz, $stdgng_id);
-					} else {
-						$course_tmp = $this->get_course_id($course[0], $stdgng_id);
-			//			echo '<pre>';
-			//			print_r($course_tmp);
-			//			print_r($course[0]);
-			//			echo '</pre>';
-					}
-					// only if there is a course_id
-					if($course_tmp){
-						$course_id = $course_tmp->KursID;
-					} else {
-						$course_id = 999;
-					}
-
-					// eventtype_id
-					$event_type_id = "";		
-					// Ermittel anhand von Fallunterscheidung die VeranstaltungsformID
-					// should be done by querying data from db
-					// if types should change we get a problem here!!
-					switch( substr($course[1],0,1) ) {
-						case "V": $event_type_id = 1; break;
-						case "Ü": $event_type_id = 2; break;
-						case "S": $event_type_id = 3; break;
-						case "P": $event_type_id = 4; break;
-						case "L": $event_type_id = 5; break;
-						case "T": $event_type_id = 6; break;
-					}
-
-					// get course_duration
-					// Ermittel anhand der Kurstyp-Zahl die Dauer des Kurses
-					// event_type in xml contains a number that represents the duration of a course
-					$course_duration = "";
-					if( strpos($course[1], "1") !== false ) $course_duration = 1;
-					if( strpos($course[1], "2") !== false ) $course_duration = 2;
-					if( strpos($course[1], "3") !== false ) $course_duration = 3;
-
-
-		//		    // create a new groupe in gruppe and then
-		//		    $this->create_new_group();
-
-					// use this id (get highest group_id from gruppe)
-					$group_tmp = $this->get_max_group_id_from_gruppe();
-					$group_id = $group_tmp->GruppeID;
-
-		//		    // TODO - CHECK!! save data
-		//		    $this->write_stdplan_data(
-		//			$course_id,
-		//			$event_type_id,
-		//			substr($course[1], 2),
-		//			($isWPF ? $wpfname : ''),
-		//			$course[2],
-		//			$dozent_id,
-		//			$course[5] + 1,
-		//			$course[5] + $course_duration,
-		//			$course[4] + 1,
-		//			($isWPF ? '1' : '0'),
-		//			$course[6],
-		//			$group_id,
-		//			99
-		//		    );
-		//		     
-					// get max spkurs_id
-					$spcourse_tmp = $this->get_max_spkurs_id();
-					$spcourse_id = $spcourse_tmp->SPKursID;
-
-
-
-					// ########## update USERS >> benutzerkurs
-					// get all students who 
-					$students = $this->get_student_ids($stdgng_id);
-
-
-
-					// run through students and generate benutzerkurse
-					foreach ($students as $s){
-						// mark courses as active if they are 'vorlesung' = 1 or 'tutorium' = 6
-						if($event_type_id == 1 || $event_type_id == 6){
-							$isActive = true;
+						// get dozent_id
+						$dozent_tmp = array();
+						$dozent_tmp = $this->get_dozentid_for_name($course[3]);
+						// only if there is a known dozent
+						if($dozent_tmp){
+							$dozent_id = $dozent_tmp->BenutzerID;
 						} else {
-							// all other courses are inactive
-							$isActive = false;
-						}
-						// get semester that should be added to benutzerkurs
-						$semester_tmp = $this->get_user_course_semester($s->BenutzerID, $course_id);
-						$semester = '';
-						if($semester_tmp){
-							$semester = $semester_tmp->Semester;
+							$dozent_id = 0;
 						}
 
-			//			echo $this->pre($semester);
+						// if "fachname" contains "WPF" this course is a WPF
+						$isWPF = false;
+						$isWPF = (strpos($course[0], "WPF") !== false) ? true : false;
 
-						// proceed only if there is a course_name
-						// otherwise this part of array is empty (i.e. no courses at this time)
-						if($semester){
-							$this->save_data_to_benutzerkurs(
-								$s->BenutzerID,
-								$course_id,
-								$spcourse_id,
-								$semester,
-								(($isActive) ? 1 : 0),
-								'stdplan_parsing',
-								99 // TODO get session_id from admin
-							);
+						// get rid of "WPF" from course_name
+						$course_name = str_replace("WPF-", "", $course_name);
+
+						// remove everything from opening-bracket (module-number) - if there is one 
+						if(strpos($course_name, "(") > 0 ){
+							$course_name = substr($course_name, 0, strpos($course_name, "(")-1);
 						}
-					}
+
+						// wenn es sich um ein WPF handelt,
+						if( $isWPF ) {
+							// entnehme WPF-Bezeichnung aus Kursname und speichere sie separat in $wpfname
+							$wpfname = substr($course_name, strpos($course_name," - ")+((strpos($course_name," - ")!==false) ? 3 : 0));
+
+							// entferne anschließend die WPF-Bezeichnung aus dem Kursnamen und speicher ihn separat ab
+							$course_name = substr($course_name,0,strpos($course_name," - "));
+
+							// ermittel fachabkürzung für wpf
+							$wpf_kurz = str_replace("WPF-","",$course[0]);
+						}
+
+						// get stdgng_id
+						$stdgng_tmp = array();
+						$stdgng_id = '';
+						$stdgng_tmp = $this->get_stdgng_id($this->stdg_pov, $this->stdg_short);
+						if($stdgng_tmp){
+							$stdgng_id = $stdgng_tmp->StudiengangID;
+						}
 
 
+						// get course_id
+						$course_id_tmp = '';
+						$course_id = '';
+						if($isWPF){
+							// if course is wpf - wpf_kurz has to be cut
+							$course_id_tmp = $this->get_course_id($wpf_kurz, $stdgng_id);
+						} else {
+							// otherwise use parsed course-name
+							$course_id_tmp = $this->get_course_id($course[0], $stdgng_id);
+						}
+
+						// only if there is a course_id
+						if($course_id_tmp){
+							$course_id = $course_id_tmp->KursID;
+						} else {
+							// get short-name
+							$short_name = ($isWPF) ? $wpf_kurz : $course[0];
+							// otherwise empty entry has to be created in studiengangkurs
+							$this->create_new_course_in_stdgng($course_name, $short_name, $this->stdg_semester, $stdgng_id);
+
+							// and new course_id has to be saved to $course_id
+							$new_course_id = $this->get_max_course_id_from_studiengangkurs();
+							$course_id = $new_course_id->KursID;
+	//						$course_id = 999; // DEBUG
+						}
+
+
+						// eventtype_id
+						$event_type_id = '';		
+						// Ermittel anhand von Fallunterscheidung die VeranstaltungsformID
+						// should be done by querying data from db
+						// if types should change we get a problem here!!
+						switch( substr($course[1],0,1) ) {
+							case "V": $event_type_id = 1; break;
+							case "Ü": $event_type_id = 2; break;
+							case "S": $event_type_id = 3; break;
+							case "P": $event_type_id = 4; break;
+							case "L": $event_type_id = 5; break;
+							case "T": $event_type_id = 6; break;
+						}
+
+						// get course_duration
+						// Ermittel anhand der Kurstyp-Zahl die Dauer des Kurses
+						// event_type in xml contains a number that represents the duration of a course
+						$course_duration = '';
+						if( strpos($course[1], "1") !== false ) $course_duration = 1;
+						if( strpos($course[1], "2") !== false ) $course_duration = 2;
+						if( strpos($course[1], "3") !== false ) $course_duration = 3;
+
+
+						// update semester of that course
+//			/*>>*/		$this->update_semester_of_course($course_id, $this->stdg_semester);
+
+						// create a new group in gruppe and then
+//			/*>>*/	    $this->create_new_group();
+
+						// use this id (get highest group_id from gruppe)
+						$group_tmp = array();
+						$group_id = '';
+						$group_tmp = $this->get_max_group_id_from_gruppe();
+						if($group_tmp){
+							$group_id = $group_tmp->GruppeID;
+						}
+
+//						echo '<div class="well">';
+//						echo '<p>********************nächster Datensatz********************</p>';
+//						echo 'KursID:';
+//						print_r($course_id);
+//						echo '<br />';
+//						echo 'VeranstaltungsformID:';
+//						print_r($event_type_id);
+//						echo '<br />';
+//						echo 'VeranstaltungsformAlternative:';
+//						print_r(substr($course[1], 2));
+//						echo '<br />';
+//						echo 'WPFName:';
+//						print_r(($isWPF ? $wpfname : ''));
+//						echo '<br />';
+//						echo 'Raum:';
+//						print_r($course[2]);
+//						echo '<br />';
+//						echo 'DozentID:';
+//						print_r($dozent_id);
+//						echo '<br />';
+//						echo 'StartID:';
+//						print_r($course[5] + 1);
+//						echo '<br />';
+//						echo 'EndeID:';
+//						print_r($course[5] + $course_duration);
+//						echo '<br />';
+//						echo 'TagID:';
+//						print_r($course[4] + 1);
+//						echo '<br />';
+//						echo 'isWPF:';
+//						print_r(($isWPF ? '1' : '0'));
+//						echo '<br />';
+//						echo 'Farbe:';
+//						print_r($course[6]);
+//						echo '<br />';
+//						echo 'GruppeID:';
+//						print_r($group_id);
+//						echo '<br />';
+//						echo 'Editor:';
+//						print_r(99);
+//						echo '</div>';
+
+//						// TODO - CHECK!! save data
+//						$this->write_stdplan_data(
+//							$course_id,
+//							$event_type_id,
+//							substr($course[1], 2),
+//							($isWPF ? $wpfname : ''),
+//							$course[2],
+//							$dozent_id,
+//							$course[5] + 1,
+//							$course[5] + $course_duration,
+//							$course[4] + 1,
+//							($isWPF ? '1' : '0'),
+//							$course[6],
+//							$group_id,
+//							99
+//						);
+
+						// get max spkurs_id
+						$spcourse_tmp = array();
+						$spcourse_tmp = $this->get_max_spkurs_id();
+						if($spcourse_tmp){
+							$spcourse_id = $spcourse_tmp->SPKursID;
+						}
+
+
+						// ########## update USERS >> benutzerkurs
+						// get all students who 
+						$students = array();
+						$students = $this->get_student_ids($stdgng_id);
+
+
+						// run through students and generate benutzerkurse
+						foreach ($students as $s){
+							$isActive = false; // init
+							// mark courses as active if they are 'vorlesung' = 1 or 'tutorium' = 6
+							if($event_type_id == 1 || $event_type_id == 6){
+								$isActive = true;
+							} else {
+								// all other courses are inactive
+								$isActive = false;
+							}
+							// get semester that should be added to benutzerkurs
+							$semester_tmp = array();
+							$semester_tmp = $this->get_user_course_semester($s->BenutzerID, $course_id);
+							$semester = '';
+							if($semester_tmp){
+								$semester = $semester_tmp->Semester;
+							}
+
+	//						echo $this->pre($semester);
+
+							// proceed only if there is a course_name
+							// otherwise this part of array is empty (i.e. no courses at this time)
+							if($semester){
+//								$this->save_data_to_benutzerkurs(
+//									$s->BenutzerID,
+//									$course_id,
+//									$spcourse_id,
+//									$semester,
+//									(($isActive) ? 1 : 0),
+//									'stdplan_parsing',
+//									99 // TODO get session_id from admin
+//								);
+							}
+						}
+
+
+					} //endif duplicate entry
 
 
 				} // end foreach hours
@@ -429,13 +532,31 @@ class Admin_model_parsing extends CI_Model {
     
     
     
+    // ######################################################### HELPER QUERIES
+	/**
+	 * Returns number of found records for that PO-abr-combination
+	 * @param type $dp_abr
+	 * @param type $dp_po
+	 * @return int number of found records or 0
+	 */
+    private function count_degree_programs($dp_abr, $dp_po){
+		$data = array();
+		$data = $this->db->get_where('studiengang', array('Pruefungsordnung' => $dp_po, 'StudiengangAbkuerzung' => $dp_abr));
+
+		if($data){
+			// return number of found records
+			return $data->num_rows;
+		} else {
+			return 0;
+		}
+	}
     
     
-    
-    // ################################################################# QUERIES
+    // ######################################################### PARSING QUERIES
 
     // get all users with role dozent
-    function get_dozentid_for_name($name){
+    private function get_dozentid_for_name($name){
+		$data = array();
 		$this->db->distinct();
 		$this->db->select('a.BenutzerID, a.Nachname');
 		$this->db->from('benutzer as a');
@@ -454,11 +575,12 @@ class Admin_model_parsing extends CI_Model {
     
     
     // get all users with role dozent
-    function get_student_ids($stdgng_id){
+    private function get_student_ids($stdgng_id){
+		$data = array();
 		$this->db->distinct();
 		$this->db->select('a.BenutzerID');
 		$this->db->from('benutzer as a');
-		$this->db->join('benutzer_mm_rolle as b', 'a.BenutzerID = b.BenutzerID and b.RolleID = 4');
+		$this->db->join('benutzer_mm_rolle as b', 'a.BenutzerID = b.BenutzerID and b.RolleID = 5');
 		$this->db->where('StudiengangID', $stdgng_id);
 
 		$q = $this->db->get();
@@ -471,7 +593,8 @@ class Admin_model_parsing extends CI_Model {
 		}
     }
     
-    function get_stdgng_id($po, $stdgng_short){
+    private function get_stdgng_id($po, $stdgng_short){
+		$data = array();
 		$this->db->select('StudiengangID');
 		$this->db->where('Pruefungsordnung', $po);
 		$this->db->where('StudiengangAbkuerzung', $stdgng_short);
@@ -486,7 +609,8 @@ class Admin_model_parsing extends CI_Model {
     }
     
     
-    function get_course_id($course_name, $stdgng_id){
+    private function get_course_id($course_name, $stdgng_id){
+		$data = array();
 		$this->db->select('KursID');
 		$this->db->where('kurs_kurz', $course_name);
 		$this->db->where('StudiengangID', $stdgng_id);
@@ -499,9 +623,73 @@ class Admin_model_parsing extends CI_Model {
 			return $data;
 		}
     }
+	
+	
+	/**
+	 * Creates an empty record in stdgang-table when parsed course doesn't exist yet
+	 * @param type $course_name
+	 * @param type $short_name
+	 * @param type $stdg_semester
+	 * @param type $stdgng_id
+	 */
+	private function create_new_course_in_stdgng($course_name, $short_name, $stdg_semester, $stdgng_id){
+		$data = array(
+			'Kursname' => $course_name,
+			'kurs_kurz' => $short_name,
+			'HisposID' => 0,
+			'Creditpoints' => 0,
+			'SWS_Vorlesung' => 0,
+			'SWS_Uebung' => 0,
+			'SWS_Praktikum' => 0,
+			'SWS_Projekt' => 0,
+			'SWS_Seminar' => 0,
+			'SWS_SeminarUnterricht' => 0,
+			'Semester' => $stdg_semester,
+			'StudiengangID' => $stdgng_id,
+			'Beschreibung' => '',
+			'hatVorlesung' => 0,
+			'hatUebung' => 0,
+			'hatPraktikum' => 0,
+			'hatProjekt' => 0,
+			'hatSeminar' => 0,
+			'hatSeminarUnterricht' => 0
+		);
+		
+		$this->db->insert('studiengangkurs', $data);
+	}
+	
+	
+	/**
+	 * Returns a new created (highest) course_id from table studiengangkurs
+	 * @return type
+	 */
+	private function get_max_course_id_from_studiengangkurs(){
+		$data = array();
+		$this->db->select_max('KursID');
+		$q = $this->db->get('studiengangkurs');
+
+		if($q->num_rows() == 1){
+			foreach ($q->result() as $row){
+				$data = $row;
+			}
+			return $data;
+		}
+	}
+	
+	
+	/**
+	 * Updates record in studiengangkurs
+	 * >> semester will be set to value that has been parsed
+	 * EXPLANATION?!
+	 * @param type $course_id
+	 */
+	private function update_semester_of_course($course_id, $sem){
+		$this->db->where('KursID', $course_id);
+		$this->db->update('studiengangkurs', array('Semester' => $sem));
+	}
     
     
-    function create_new_group(){
+    private function create_new_group(){
 		$a = array(
 			'TeilnehmerMax' => 0,
 			'TeilnehmerWartelisteMax' => 0,
@@ -511,7 +699,8 @@ class Admin_model_parsing extends CI_Model {
     }
     
     
-    function get_max_group_id_from_gruppe(){
+    private function get_max_group_id_from_gruppe(){
+		$data = array();
 		$this->db->select_max('GruppeID');
 		$q = $this->db->get('gruppe');
 
@@ -524,7 +713,8 @@ class Admin_model_parsing extends CI_Model {
     }
     
     
-    function get_max_spkurs_id(){
+    private function get_max_spkurs_id(){
+		$data = array();
 		$this->db->select_max('SPKursID');
 		$q = $this->db->get('stundenplankurs');
 
@@ -539,7 +729,8 @@ class Admin_model_parsing extends CI_Model {
     /**
      * Returns semester in which a given user put the course
      */
-    function get_user_course_semester($user_id, $course_id){
+    private function get_user_course_semester($user_id, $course_id){
+		$data = array();
 		$this->db->select('b.Semester');
 		$this->db->from('semesterplan as a');
 		$this->db->join('semesterkurs as b', 'a.SemesterplanID = b.SemesterplanID');

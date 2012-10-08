@@ -781,11 +781,11 @@ class Admin extends FHD_Controller {
 	    // get all stdgnge for the view
 	    $this->data->add('all_degree_programs', $this->admin_model->get_all_degree_programs());
 
-	    $siteinfo = array(
-		'title' => 'Neuen Studiengang anlegen',
-		'main_content' => 'admin_stdgng_createnew'
-	    );
-	    $this->data->add('siteinfo', $siteinfo);
+//	    $siteinfo = array(
+//		'title' => 'Neuen Studiengang anlegen',
+//		'main_content' => 'admin_stdgng_createnew'
+//	    );
+//	    $this->data->add('siteinfo', $siteinfo);
 
 	    $this->load->view('admin/degree_program_add', $this->data->load());
 
@@ -850,7 +850,8 @@ class Admin extends FHD_Controller {
 	    $this->admin_model->create_new_stdgng($insertNewStdgng);
 
 	    // load stdgng view with dropdown
-	    $this->degree_program_edit();
+//	    $this->degree_program_edit();
+	    redirect('admin/degree_program_edit');
 	}
 	
 	/*** << add ***************************************************************
@@ -901,7 +902,8 @@ class Admin extends FHD_Controller {
 	    $this->admin_model->delete_degree_program($delete_id);
 
 	    // show view again
-	    $this->degree_program_delete(TRUE);
+//	    $this->degree_program_delete();
+	    redirect('admin/degree_program_delete');
 	}
 	
 	/**
@@ -912,7 +914,8 @@ class Admin extends FHD_Controller {
 	    $this->admin_model->copy_degree_program($copy_id);
 
 	    // show view again
-	    $this->degree_program_copy();
+//	    $this->degree_program_copy();
+	    redirect('admin/degree_program_copy');
 	}
 	
 	/*** << copy/delete *******************************************************
@@ -1235,7 +1238,8 @@ class Admin extends FHD_Controller {
 	    }
 
 	    // show StudiengangDetails-List again
-	    $this->degree_program_edit();	
+//	    $this->degree_program_edit();	
+	    redirect('admin/degree_program_edit');	
 	}
 	
 	
@@ -1264,7 +1268,8 @@ class Admin extends FHD_Controller {
 	    $this->admin_model->update_degree_program_description_data($updateStdgngDescriptionData, $stdgngId);
 
 	    // show StudiengangDetails-List again
-	    $this->degree_program_edit();
+//	    $this->degree_program_edit();
+	    redirect('admin/degree_program_edit');
 		
 	}
 	
@@ -1380,14 +1385,6 @@ class Admin extends FHD_Controller {
 
 	    // no autoreload without validation
 	    $this->data->add('stdplan_id_automatic_reload', $reload);
-
-//	    $siteinfo = array(
-//			'title' => 'Stundenplan anzeigen',
-//			'main_content' => 'admin_stdplan_edit'
-//	    );
-//	    $this->data->add('siteinfo', $siteinfo);
-//	    $this->load->view('includes/template', $this->data->load());
-		
 		$this->load->view('admin/stdplan_edit', $this->data->load());
 	}
 	
@@ -1620,7 +1617,8 @@ class Admin extends FHD_Controller {
 	    $this->admin_model->delete_stdplan_related_records($stdgng_ids);
 	    
 	    // reload view
-	    $this->stdplan_delete();
+//	    $this->stdplan_delete();
+	    redirect('admin/stdplan_delete');
 	    
 	}
 	
@@ -1712,8 +1710,14 @@ class Admin extends FHD_Controller {
 	 * 
 	 */
 	
+	/**
+	 * Shows view with upload and all uploaded files till now
+	 * @param String $error upload error
+	 */
 	function stdplan_import($error = ''){
 	    
+		$uplaod_dir = array();
+		
 	    $this->load->helper('directory');
 	    
 	    $this->data->add('error', $error);
@@ -1725,60 +1729,57 @@ class Admin extends FHD_Controller {
 	    
 	    $last_id = 0;
 	    
-	    
-	    // prepare data for view
-	    // generate array, that contains all 
-	    foreach($stdgnge as $sg){
-			$po = $sg->Pruefungsordnung;
-			$abk = $sg->StudiengangAbkuerzung;
-			$id = $sg->StudiengangID;
-			$data['stdgng_uploads_headlines'][$id] = $abk.' - '.$po;
-			// run through dirs and distribute found data to view-array
-			foreach($upload_dir as $dir){
-				$needle_po = strstr($dir, $po);
-				$needle_abk = strstr($dir, $abk);
-				if($needle_po != null && $needle_abk != null){
-					$data['stdgng_uploads'][$id][] = $dir;
+	    if($upload_dir){
+			// prepare data for view
+			// generate array, that contains all 
+			foreach($stdgnge as $sg){
+				$po = $sg->Pruefungsordnung;
+				$abk = $sg->StudiengangAbkuerzung;
+				$id = $sg->StudiengangID;
+				$data['stdgng_uploads_headlines'][$id] = $abk.' - '.$po;
+				// run through dirs and distribute found data to view-array
+				foreach($upload_dir as $dir){
+					$needle_po = strstr($dir, $po);
+					$needle_abk = strstr($dir, $abk);
+					if($needle_po != null && $needle_abk != null){
+						$data['stdgng_uploads'][$id][] = $dir;
+					}
+				}
+				$last_id = $id;
+			}
+
+			if($data['stdgng_uploads'] != null){
+				// prepare data to 
+				foreach($data['stdgng_uploads'] as $nested_array){
+					foreach($nested_array as $file){
+						$files_with_po[] = $file;
+					}
+				}
+
+			//	    echo '<pre>';
+			//	    print_r($clean);
+			//	    echo '</pre>';  
+
+				// one additional field for other
+				// CHECK - will all other files be displayed in here?
+				// perhaps some fine-tuning in recognition of po needed?
+				$data['stdgng_uploads_headlines'][42] = 'Andere:';
+
+				// check if there are dirs, that don't belong to a po
+				// i.e. not in array, that contains the files that are already shown
+				foreach($upload_dir as $dir){
+					if(!in_array($dir, array_values($files_with_po))){
+						$data['stdgng_uploads'][42][] = $dir;
+					}
 				}
 			}
-			$last_id = $id;
-	    }
-	    
-	    if($data['stdgng_uploads'] != null){
-		// prepare data to 
-		foreach($data['stdgng_uploads'] as $nested_array){
-		    foreach($nested_array as $file){
-				$files_with_po[] = $file;
-		    }
 		}
 
-    //	    echo '<pre>';
-    //	    print_r($clean);
-    //	    echo '</pre>';  
-
-		// one additional field for other
-		$data['stdgng_uploads_headlines'][42] = 'Andere:';
-			// check if there are dirs, that don't belong to a po
-			// i.e. not in array, that contains the files that are already shown
-			foreach($upload_dir as $dir){
-				if(!in_array($dir, array_values($files_with_po))){
-					$data['stdgng_uploads'][42][] = $dir;
-				}
-			}
-	    }
-	    
 //	    $this->data->add('stdgng_uploads_headlines', $data['stdgng_uploads_headlines']);
 //	    $this->data->add('stdgng_uploads', $data['stdgng_uploads']);
-	    $this->data->add('stdgng_uploads_list_filelist', $this->load->view(
-		    'admin/partials/stdplan_import_filelist', $data, TRUE));
+		$this->data->add('stdgng_uploads_list_filelist',
+				$this->load->view('admin/partials/stdplan_import_filelist', $data, TRUE));
 	    
-//	    $siteinfo = array(
-//		'title' => 'Stundenplan importieren',
-//		'main_content' => 'admin_stdplan_import'
-//	    );
-//	    $this->data->add('siteinfo', $siteinfo);
-//
-//	    $this->load->view('includes/template', $this->data->load());
 		$this->load->view('admin/stdplan_import', $this->data->load());
 	}
 	
@@ -1793,30 +1794,32 @@ class Admin extends FHD_Controller {
 	    $this->load->model('admin_model_parsing');
 
 	    if ( ! $this->upload->do_upload()){
-			// VIEW
+			// go back to view and show errors
+//			$this->session->set_flashdata('errors', validation_errors());
+//			$this->data->add('error', validation_errors());
+			
 			$this->stdplan_import($this->upload->display_errors());
+//			sleep(5);
+//			redirect('admin/stdplan_import');
+			
+//			$this->stdplan_import($this->upload->display_errors());
 	    } else {
+			// process data and show success view
 			$upload_data = $this->upload->data();
 		
 			$this->data->add('upload_data', $upload_data);
 
-			// start parsing stdplan
-	//		$returned = $this->stdplan_parser->parse_stdplan($data['upload_data']);
-			$this->admin_model_parsing->parse_stdplan($upload_data);
-
-	//		echo '<pre>';
-	//		print_r($returned);
-	//		echo '</pre>';  
-
-	//		// VIEW
-	//		$siteinfo = array(
-	//		    'title' => 'Stundenplan importieren',
-	//		    'main_content' => 'admin_stdplan_import_success'
-	//		);
-	//		$this->data->add('siteinfo', $siteinfo);
-
-	//		$this->load->view('includes/template', $this->data->load());
-			$this->load->view('admin/partials/stdplan_import_success', $this->data->load());
+			// start parsing stdplan - pass data to parsing-model 
+			$delete_file = $this->admin_model_parsing->parse_stdplan($upload_data);
+			
+			// if parser returns error-message (PO not found in DB) show message to user
+			if($delete_file){
+				echo 'Datei wurde nicht hochgeladen - PO noch nicht angelegt.';
+				unlink($config['upload_path'].$upload_data['file_name']);
+			} else {
+				//		$this->load->view('includes/template', $this->data->load());
+				$this->load->view('admin/partials/stdplan_import_success', $this->data->load());
+			}
 	    }
 	}
 	
@@ -1827,7 +1830,22 @@ class Admin extends FHD_Controller {
 	    // delete file
 	    unlink('./resources/uploads/'.$file_to_delete);
 	    
-	    $this->stdplan_import();
+//	    $this->stdplan_import();
+	    redirect('admin/stdplan_import');
+	}
+	
+	
+	
+	function open_stdplan_file(){
+	    $file_to_open = $this->input->post('std_file_to_open');
+	    
+		$file = './resources/uploads/'.$file_to_open;
+		
+	    // open file
+	    shell_exec('start '.$file);
+	    
+//	    $this->stdplan_import();
+	    redirect('admin/stdplan_import');
 	}
 	
 	/* 

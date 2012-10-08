@@ -511,8 +511,9 @@ class Studienplan_Model extends CI_Model
         $this->db->update('semesterplan', $dataarray);
     }
     
-
-
+    
+    
+    
     /**
      * Deletes last coloumn
      */
@@ -542,6 +543,7 @@ class Studienplan_Model extends CI_Model
         $this->db->where('SemesterplanID', $this->studyplanID);
         $this->db->update('semesterplan', $dataarray);
     }
+    
     
     
     
@@ -606,12 +608,8 @@ class Studienplan_Model extends CI_Model
     public function calculateMark($markpoints)
     {   
         $mark = intval($markpoints);
-        
-        if(!is_int($mark))
-        {
-            echo 'Bitte gib eine Punktzahl zwischen 0 und 100 ein.';
-        }
-        else
+
+        if(is_int($mark) && $markpoints != '')
         {
             if($mark <= 100 && $mark >= 95) 
             {
@@ -657,7 +655,11 @@ class Studienplan_Model extends CI_Model
             {
                 return '5';
             }
-        }  
+        } 
+        else
+        {
+            $this->message->set(sprintf('Bitte gib eine Punktzahl zwischen 0 und 100 ein.'));
+        } 
     }
     
     
@@ -784,10 +786,11 @@ class Studienplan_Model extends CI_Model
      * Change the Status of the Pruefung
      * 
      * @param int $moduleID
+     * @param int $markpoints
      */
-    public function changeModuleStatus($moduleID, $mark)
+    public function changeModuleStatus($moduleID, $markpoints)
     {
-        if($mark < 5)
+        if($markpoints >= 50)
         {
             $data = array(
                 'PruefungsstatusID' => 4
@@ -813,14 +816,15 @@ class Studienplan_Model extends CI_Model
     
     
     /**
-     * Save the mark of the module
+     * Save markpoints of the module, NEW: Tries are going to be increased but not considered any more
      * 
      * @param int $moduleID 
+     * @param int $markpoints
      */
-    public function saveMark($moduleID, $mark)
+    public function saveMark($moduleID, $markpoints)
     {
         // get number of tries
-        $this->db->select('VersucheBislang');
+        /*$this->db->select('VersucheBislang');
         $this->db->from('semesterkurs');
         $this->db->where('SemesterplanID', $this->studyplanID);
         $this->db->where('KursID', $moduleID);
@@ -829,14 +833,16 @@ class Studienplan_Model extends CI_Model
         foreach ($try->result() as $t) 
         {
             $tries = $t->VersucheBislang;
-        }
+        }*/
 
+        $markpoint = intval($markpoints);
 
         // if tries are greater than 3, the mark could not be saved
-        if($tries < 3 && $mark != '')
+        //if($tries < 3 && is_int($markpoints))
+        if(is_int($markpoint) && $markpoint != 0)
         {
             $dataarray = array(
-                'Notenpunkte' => $mark
+                'Notenpunkte' => $markpoint
             );
 
             $this->db->where('SemesterplanID', $this->studyplanID);
@@ -847,12 +853,12 @@ class Studienplan_Model extends CI_Model
             $this->increaseTry($moduleID);
 
             // change Pruefungstatus
-            $this->changeModuleStatus($moduleID, $this->calculateMark($mark));
+            $this->changeModuleStatus($moduleID, $markpoint);
         }
-        elseif(tries < 3)
+        /*elseif(tries >= 3)
         {
             $this->message->set(sprintf('Du kannst dieses Modul nicht mehr bearbeiten.'));
-        }
+        }*/
     }
     
     
@@ -908,6 +914,10 @@ class Studienplan_Model extends CI_Model
         // deletes all entries in benutzerkurs
         $this->db->where('BenutzerID', $this->userID);
         $this->db->delete('benutzerkurs');
+        
+        // deletes all entries in gruppenteilnehmer
+        $this->db->where('BenutzerID', $this->userID);
+        $this->db->delete('gruppenteilnehmer');
         
         // reset the studyplanID
         $this->studyplanID = 0;
