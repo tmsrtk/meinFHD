@@ -708,8 +708,7 @@ class Kursverwaltung extends FHD_Controller {
 			if($groups){
 				// 2. get participants for each course and save to array
 				foreach($groups as $index => $sp_course_object){
-					echo $sp_course_object->GruppeID;
-					$lab_participants_plus_notes[$key][] = $this->kursverwaltung_model->get_lab_notes($sp_course_object->GruppeID, $sp_course_object->SPKursID);
+					$lab_participants_plus_notes[$key][$sp_course_object->SPKursID] = $this->kursverwaltung_model->get_lab_notes($sp_course_object->GruppeID, $sp_course_object->SPKursID);
 				}
 			}
 		}

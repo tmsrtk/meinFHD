@@ -672,17 +672,20 @@ class Kursverwaltung_model extends CI_Model {
 	 * @param int $group_id
 	 * @return array
 	 */
-	public function get_lab_notes($group_id, $sp_course_id){
+	public function get_lab_notes($group_id){
 		$q = ''; // init
 		$data = array(); // init
 		
-		$this->db->from('gruppenteilnehmer_aufzeichnungen');
+		$this->db->select('b.Vorname, b.Nachname, a.*');
+		$this->db->from('gruppenteilnehmer_aufzeichnungen as a');
+		$this->db->join('benutzer as b', 'a.BenutzerID = b.BenutzerID');
 		$this->db->where('GruppeID', $group_id);
+		$this->db->order_by('ende');
 		$q = $this->db->get();
 
 		if($q->num_rows() > 0){
 			foreach ($q->result() as $row){
-				$data[$sp_course_id][] = $row;
+				$data[] = $row;
 			}
 		}
 
