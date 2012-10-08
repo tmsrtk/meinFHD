@@ -20,26 +20,7 @@ class Studienplan extends FHD_Controller
         parent::__construct();
         $this->load->model('admin_model');
         $this->load->model('studienplan_model');
-
-        // userdata
-        // $session_userid = $this->authentication->user_id();
-
-        // $loginname = $this->admin_model->get_loginname($session_userid);
-        // $user_permissions = $this->admin_model->get_all_userpermissions($session_userid);
-        // $roles = $this->admin_model->get_all_roles();
-        
-        // $userdata = array(
-        //         'userid' => $session_userid,
-        //         'loginname' => $loginname['LoginName'],
-        //         'userpermissions' => $user_permissions,
-        //         'roles' => $roles
-        //     );
-
-        // $this->data->add('userdata', $userdata);
     }
-
-
-    
 
     /**
      * Index-Method, which loads the Studienplan
@@ -89,29 +70,6 @@ class Studienplan extends FHD_Controller
         $this->data->add('laufvar', $laufvar);
         $this->data->add('studienplan', $plan);
         $this->load->view('studienplan/index', $this->data->load());
-    }
-
-
-    
-
-     /**
-     * Show Studienplan, Testmethod!!!
-     *
-     * @author Konstantin Voth
-     */
-    public function studienplan_show()
-    {
-        $this->load->model('Studienplan_Model');
-
-        $siteinfo = array(
-            'title'         => 'Semesterplan',
-            'main_content'  => 'semesterplan_show'
-            );
-        $this->data->add('siteinfo', $siteinfo);
-
-        $this->data->add('studienplan', $this->Studienplan_Model->queryStudyplan());
-
-        $this->load->view('includes/template', $this->data->load());
     }
     
     /**
@@ -255,6 +213,7 @@ class Studienplan extends FHD_Controller
         $this->message->set(sprintf('Der Studienplan wurde erfolgreich zurükgesetzt.'));
     }
     
+
     /**
      * Deletes and recreates the whole studyplan and dependencies
      */

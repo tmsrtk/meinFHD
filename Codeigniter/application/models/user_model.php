@@ -91,7 +91,7 @@ class User_model extends CI_Model {
 
 	public function update_usersemester($user_id, $sem_count=0)
 	{
-		$this->db->update('benutzer', array("Semester" => $sem_count), "BenutzerID = {$sem_count}");
+		$this->db->update('benutzer', array("Semester" => $sem_count), "BenutzerID = {$user_id}");
 	}
 
 	/** */

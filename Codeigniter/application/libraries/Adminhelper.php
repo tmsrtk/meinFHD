@@ -162,8 +162,9 @@ class Adminhelper {
 
 		// return $act_semester_count;
 
-		//           delta of years     two sem per year      act. semtype         same as given type?      if yes add one  otherwise two
-		return (abs(date("Y"))-$studienbeginn) * 2 + ((($this->getSemesterTyp() == $semestertyp) ? true : false) ? 1 : 2);
+		//           delta of years     two sem per year      act. semtype         same as given type?      if yes add one  otherwise zero
+		return (abs(date("Y"))-$studienbeginn) * 2 + ((($this->getSemesterTyp() == $semestertyp) ? true : false) ? 1 : 0);
+		// return 4;
 	}
 
 	/************************************************************************

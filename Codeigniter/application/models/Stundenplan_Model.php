@@ -247,7 +247,7 @@ class Stundenplan_Model extends CI_Model {
 			t.TagID = sp.TagID AND
 			sp.DozentID = d.BenutzerID AND
 			b.BenutzerID = ".$id." AND 
-			b.SemesterID = ".$this->get_Semester($this->user['StudienbeginnSemestertyp'] , $this->user['StudienbeginnJahr'])." AND
+			b.SemesterID = ".$this->adminhelper->get_act_semester($this->user['StudienbeginnSemestertyp'] , $this->user['StudienbeginnJahr'])." AND
 			sp.GruppeID = g.GruppeID AND
 			sp.IsWPF = 0
 		ORDER BY 
