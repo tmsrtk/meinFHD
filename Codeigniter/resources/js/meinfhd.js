@@ -1,10 +1,10 @@
 (function($) {
 
-	// Make the carousel accessible via pointer	
+	// Make the carousel accessible via pointer
 	$carousel = $('#carousel');
 	// Prevent the carousel from auto playing
 	$carousel.carousel({
-		interval: 0,
+		interval: 0
 	});
 	
 	initPager();
@@ -39,7 +39,7 @@
 		$('.accordion')
 			.on('hidden', function(e) {
 				
-				$(e.target).parent().find('.accordion-heading i').removeClass('icon-minus').addClass('icon-plus');						
+				$(e.target).parent().find('.accordion-heading i').removeClass('icon-minus').addClass('icon-plus');
 			})
 			.on('shown', function(e){
 				
@@ -50,7 +50,7 @@
 	/*color toggle for attendance-buttons in stundenplan*/
 	$(function(){
 		
-		//disabling already attended courses and painting them green	
+		//disabling already attended courses and painting them green
 		$('.attendant:disabled').addClass('btn-success').find('i').addClass('icon-white');
 		
 		//painting a button on click
@@ -59,7 +59,7 @@
 			$(this).addClass('btn-success').find('i').addClass('icon-white');
 		});
 		
-	});			
+	});
 	
 })(jQuery);
 
@@ -72,32 +72,27 @@ function initPager() {
 		$('.carousel').carousel('pause');
 		
 		//pagination
-		$('.pagination').find('.slide-montag').click(function(){	
+		$('.pagination').find('.slide-montag').click(function(){
 			$('.carousel').carousel(0);
 		});
 		
-		$('.pagination').find('.slide-dienstag').click(function(){	
+		$('.pagination').find('.slide-dienstag').click(function(){
 			$('.carousel').carousel(1);
 		});
 		
-		$('.pagination').find('.slide-mittwoch').click(function(){	
+		$('.pagination').find('.slide-mittwoch').click(function(){
 			$('.carousel').carousel(2);
 		});
 		
-		$('.pagination').find('.slide-donnerstag').click(function(){	
+		$('.pagination').find('.slide-donnerstag').click(function(){
 			$('.carousel').carousel(3);
 		});
 		
-		$('.pagination').find('.slide-freitag').click(function(){	
+		$('.pagination').find('.slide-freitag').click(function(){
 			$('.carousel').carousel(4);
 		});
 		
 	});
-
-
-
-
-})(jQuery);
 
 
 /**

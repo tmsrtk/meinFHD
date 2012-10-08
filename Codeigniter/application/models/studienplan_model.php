@@ -251,8 +251,8 @@ class Studienplan_Model extends CI_Model
      * Queries the whole studyplan of logged user. Desktop version.
      * @return mixed Studyplan in m-dim Arrays.
      */
-    public function queryStudyplanDesktop()
-    { 
+    public function desktop_queryStudyplan()
+    {
         $data = array();
         
         // query DB
@@ -273,7 +273,6 @@ class Studienplan_Model extends CI_Model
         $studyplan = $this->db->get();
 
         $has_approve_sem = $this->query_approve_sem();
-        log_message('error', 'studienplan_model: ' . $has_approve_sem['HatAnerkennungsSemester']);
         // only if a zero semester is activated
         if (!$has_approve_sem['HatAnerkennungsSemester'] == 0)
         {
