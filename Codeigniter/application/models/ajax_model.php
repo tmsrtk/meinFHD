@@ -135,9 +135,9 @@ class Ajax_model extends CI_Model {
         FB::log($neue_reihenfolge);
 
 		// counter für die Reihenfolge
-		$counter = 1;
+		// $counter = 1;
 		// speichere neue Reihenfolge in die DB
-        $i = 0;
+         $i = 0;
 		foreach ($neue_reihenfolge as $serialized_position)
 		{
             if ( empty($mark[$i]) ) $mark[$i] = 101; /*else $mark[$i] = 100;*/
@@ -156,11 +156,29 @@ class Ajax_model extends CI_Model {
             $this->db->update('semesterkurs', $data);
 
             $i++;
-            $counter++;
+            // $counter++;
         }
-            // FB::log($data);
-            // return;
 	}
+
+
+    public function set_reihenfolge_benutzerkurs($neue_reihenfolge, $semesternr)
+    {
+        foreach ($neue_reihenfolge as $kursid)
+        {
+            $data = array(
+                'SemesterID'        => $semesternr,
+                'changed_at'        => 'studienplan_semesterplan: Änderung vornehmen',
+                'edited_by'         => $this->user_model->get_userid()
+                );
+            $this->db->where('BenutzerID', $this->user_model->get_userid());
+            $this->db->where('KursID', $kursid);                                            ///////////// EVLT. kursreferenz!!!!!!!!!!!!!!!!!!!!
+            $this->db->update('benutzerkurs', $data);                                       ///////////// WHERE `KursID` = (
+                                                                                            ///////////// SELECT referenzkursid
+                                                                                            ///////////// FROM kursreferenz
+                                                                                            ///////////// WHERE kursid = '".$_POST["kursid".$i]."'
+                                                                                            ///////////// )
+        }
+    }
 
 
 }

@@ -14,12 +14,14 @@ class User_model extends CI_Model {
 	
 	// course_ids (mapped with roles)
 	private $user_course_ids = array();
+
 	// studienplan
 	private $studiengang_id = 0;
 	private $semesterplan_id = 0;
 	private $act_semester = 0;
 	private $studienbeginn_jahr = 0;
 	private $studienbeginn_typ = '';
+	
 	private $studiengang_data = array();
 
 	/**

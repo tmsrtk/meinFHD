@@ -60,6 +60,7 @@ class Ajax extends CI_Controller {
 
 		// speichere die neue Reihenfolge in die Datenbank
 		$this->ajax_model->set_reihenfolge($neue_reihenfolge, $semesternr, $hoeren, $pruefen, $mark);
+		$this->ajax_model->set_reihenfolge_benutzerkurs($neue_reihenfolge, $semesternr);
 	}
 
 
