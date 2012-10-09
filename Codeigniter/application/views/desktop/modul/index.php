@@ -1,5 +1,5 @@
 <?php extend('base/template.php'); # extend main template ?>
-<?php startblock('title');?><?php get_extended_block();?> - Modul<?php endblock(); ?>
+<?php startblock('title');?><?php get_extended_block();?> - Modulübersicht<?php endblock(); ?>
 <?php startblock('content'); # content for this view ?>
 
 	<!- ------------------------------------------------ -->
@@ -12,9 +12,7 @@
 			<div class="span8">
 				<div class="well well-small clearfix">
 			
-					<h6>Modulübersicht</h6>
-			
-					<!--Titel-->
+				<!--Titel-->
 	    			<h1><?php echo $courseinfo['Modulinfo']['kurs_kurz']; ?></h1>
 	    			<h4><?php echo $courseinfo['Modulinfo']['DozentTitel'] . " " . $courseinfo['Modulinfo']['DozentVorname'] . " " . $courseinfo['Modulinfo']['DozentNachname'];                                                ?></h4>
 					<hr />
@@ -67,12 +65,12 @@
 
 
 			
-				<div class="span4">
 
 
 					<?php //--------------------If there is any course of that kind --------------------?>
 					<?php if (!empty($courselist))  { ?>
 				
+				<div class="span4">
 
 					<div class="well well-small">
 						<h2><?php echo $key; ?>&nbsp;<small></small></h2>
@@ -158,11 +156,12 @@
 
 							</div>
 							<?php //--------------------EndIF there is any course of that kind  -------------------- ?>
+							
+				</div><!-- /.span4-->
 							<?php } ?>
 
 
 
-				</div><!-- /.span4-->
 
 
 
