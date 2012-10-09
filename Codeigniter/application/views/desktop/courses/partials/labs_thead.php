@@ -4,8 +4,7 @@
 		<th>Nachname</th>
 		<?php 
 			for($i = 0; $i < $number_of_events; $i++){
-//				echo '<th class="thead-labmgt">';
-				echo '<th>';
+				echo '<th><div class="thead-labmgt label">';
 				
 				// print header for each tab depending on stored data in db
 				if($event_dates[$sp_course_id][$i]){
@@ -13,7 +12,7 @@
 				} else {
 					echo 'T'.($i+1);
 				}
-				echo '</th>';
+				echo '</div></th>';
 			}
 		?>
 		<th>Finales Testat</th>

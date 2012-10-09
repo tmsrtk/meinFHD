@@ -545,6 +545,40 @@ class Kursverwaltung extends FHD_Controller {
 		
 	}
 	
+	
+	/**
+	 * Called from within view (modal to search for student by matrno)
+	 * @echo string holding view (in fact only first & last name to be shown in search-by-matrno-modal
+	 */
+	public function ajax_search_student_by_matrno(){
+		$return = ''; // init
+		
+		$matrno_from_post = $this->input->post('matr_number');
+//		$t = $this->input->post('matr_number');
+//		echo $t;
+		if(is_numeric($matrno_from_post)){
+			$return = $this->kursverwaltung_model->search_student_by_matrno($matrno_from_post);
+		} else {
+			// nothing to do
+		}
+		
+		print_r($return);
+		
+		// only return if there is something to return
+		if($return){
+			echo $return->Vorname.' '.$return->Nachname;
+		} else {
+			echo 'Student wurde nicht gefunden';
+		}
+	}
+	
+	
+	public function ajax_add_student_as_tutor(){
+
+		
+		echo 'Student ist nun Tutor und kann den Kurs verwalten';
+	}
+	
 
 
     /**
@@ -769,6 +803,7 @@ class Kursverwaltung extends FHD_Controller {
 		return $event_dates;
 	}
 	
+
 	/* 
 	 * 
 	 * ******************************** Praktikumsverwaltung

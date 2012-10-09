@@ -138,10 +138,14 @@
 						echo form_close(); // end of form 
 					?></div>
 				</div><!-- end of tab -->
+				
+				<!--	container need to be unique for each panel,
+					otherwise there would have been lot of (more than now ^^) workarounds in jq-part -->
+				<div id="add-tutor-dialog-container-<?php echo $c_id; ?>"></div>
 			<?php endforeach; ?>    
 			</div>
-			<div id="testing"></div>
 		</div>
+
 
 <?php endblock(); ?>
 <?php startblock('postCodeContent'); # additional markup before content ?>
@@ -151,18 +155,23 @@
 	
 <?php startblock('customFooterJQueryCode');?>
 
+
+
 	// initialize active tab
     $('.tab-content div:first-child').addClass("active");
     $('#course-details-navi li:first-child').addClass("active");
     
-    // contains all sp_course_ids in that view
+    // create variable that contains all course_ids in that view
     var courseIdsInView = <?php echo json_encode($course_ids_jq); ?>;
     
     // run through all ids and assign functions
+	// > email-functionality
     // - un/check all boxes if overall cb changes
     // - uncheck overall cb if ONE or more of the single cb is NOT checked
     // - check overall cb if all single cb are checked
     // - click on email-button
+	// > panels
+	// > activate-application-buttons
     $.each(courseIdsInView, function(indexAll, courseId){
 
 		// save checkboxes for that course to array
@@ -297,7 +306,7 @@
 			);
 		});
 
-		// handle PANELS
+		// ################ handle PANELS
 		// ids of sliders
 		var buttonId = ['#labings-slider-'+courseId, '#tuts-slider-'+courseId];
 		var panelId = ['#labings-panel-'+courseId, '#tuts-panel-'+courseId]; 
@@ -337,7 +346,7 @@
 
 		//console.log(cb);
 
-		// activate each panel
+		// ################ activate each panel
 		$.each(panelId, function(index, value){
 			// show labings in table when clicked - NOT saved yet!
 			$(value + ' input').change(function () {
@@ -362,6 +371,7 @@
 		var downloadTnButtonsLab = $('.download-tn-button-'+courseId);
 		var downloadTnButtonCourse = $('.download-tn-button-course-'+courseId);
 		
+		// each button in that course-view has to be handled separately
 		$.each(downloadTnButtonsLab, function(index, value){
 			$(value).click(function(){
 			console.log('test');
@@ -390,6 +400,53 @@
 				}
 			});
 		});
+		
+		// ################ assign-new-tutor button
+		var assignNewTutorButton = $('#add-tutor-button-'+courseId);
+		
+		$('#tuts-panel-button-'+courseId).on('click', assignNewTutorButton, function(){
+//			console.log('modal-testing');
+//			var test = $(assignNewTutorButton).data('test');
+//			console.log(test);
+			// TODO show modal with prompt to 
+			var dialog = createSearchModal('Einen Studenten zum Tutor machen',
+				'Suchen Sie einen Studenten über die Matrikelnummer und weisen Sie ihm die Tutorrolle zu. \n\
+				Er wird danach automatisch Tutor des Kurses und kann Tutorientermine verwalten.',
+				courseId);
+			$('#add-tutor-dialog-container-'+courseId).html(dialog);
+			
+			// function of dialog
+			$('#add-tutor-dialog').modal({
+				keyboard: false
+			// !! important part: on 'show' set data-id= courseId (the one to delete)
+			}).on('show', function(){
+				$('#add-tutor-dialog-confirm').data('id', courseId);
+			// on hide hide ^^
+			}).on('hide', function(){
+				console.log('hidden');
+			}).modal('show');
+
+			return false;
+		});
+		
+		// behaviour when search started
+		$('#add-tutor-dialog-container-'+courseId).on('click', '#add-tutor-dialog-search', function(){
+			matrno = $('#matrnr-input').attr('value');
+			
+			$('.modal-body').html('Student wird gesucht.');
+			$.ajax({
+				   type: "POST",
+				   url: "<?php echo site_url();?>kursverwaltung/ajax_search_student_by_matrno/",
+				   dataType: 'html',
+				   data : {matr_number : matrno},
+				   success: function (data){
+				       $('.modal-body').html(data);
+				   }
+				});
+				
+			return false;
+		});
+		
 		
 		// ################ handle activate-application buttons
 		var switchActivationButtons = $('.activation-buttons-'+courseId);
@@ -433,14 +490,16 @@
     }); // end tab-views - all elements has to be prepared for all ids
 	
 	
-	// create dialog element
-	function createModal(title, text) {
+	// ################ create modal to find students via
+	function createSearchModal(title, text, courseId) {
 		var myDialog = 
-			$('<div class="modal hide" id="participants-modal"></div>')
+			$('<div class="modal hide" id="add-tutor-dialog"></div>')
 			.html('<div class="modal-header"><button class="close" type="button" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
-			.append('<div class="modal-body" id="modal-body"><p>'+text+'</p></div>')
-			.append('<div class="modal-footer"><a href="#" class="btn" id="part-modal-cancel" data-dismiss="modal">Abbrechen</a>\n\
-			<a href="" class="btn btn-primary" data-id="0" data-delete="0" id="part-modal-confirm" data-accept="modal">Herunterladen</a></div>');
+			.append('<div class="modal-body" id="modal-body"><p>'+text+'</p>\n\
+			<p>Matrikelnummer eingeben: <input type="text" id="matrnr-input" name="matrnr" placeholder="Matrikelnummer">\n\
+			<input type="submit" class="btn-info" id="add-tutor-dialog-search" value="Suchen"</div>')
+			.append('<div class="modal-footer"><a href="#" class="btn" id="add-tutor-dialog-cancel" data-dismiss="modal">Abbrechen</a>\n\
+			</div>');
 
 		return myDialog;
     };

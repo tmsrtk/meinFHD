@@ -38,7 +38,6 @@
 			
 		</div>
 		
-		<div class="tab-content">
 <!--			<pre>
 				<?
 //					print_r($event_dates);
@@ -53,89 +52,92 @@
 			</pre>-->
 			
 				
-					<?
-						foreach($sp_course_participants_details as $group_details){
-							// index for counting groups
-							$index_groups = 1;
-							foreach($group_details as $sp_course_id => $participants){
-								echo '<div class="tab-pane" id="'.$sp_course_id.'"> ';
-								
-								// button for adding dates - must be generated with unique id!
-								$header_button_data = array(
-									'name' => 'change-dates-button',
-									'id' => 'change-dates-button'.$sp_course_id,
-									'class' => 'btn btn-info',
-									'value' => 'true',
-									'content' => 'Termine der Gruppe '.$index_groups.' anpassen'
-								);
-								echo form_button($header_button_data);
-								
-								echo '<table class="table">';
-								echo $theads[$sp_course_id];
-								echo '<tbody>';
-								foreach($participants as $index => $one_participant){
-									// ## preparing some data
-									// notes area - to be generated for each element therefore inside loop
-									$notes_attr = array(
-										'name' => 'user-notes'.$one_participant->BenutzerID,
-										'id' => 'user-notes'.$one_participant->BenutzerID,
-										'class' => 'user-notes',
-										'rows' => 3,
-										'value' => $one_participant->notizen
-									);
-									
-									// build row from data
-									echo '<tr class="row"><td>';
-									
-									// print labels - name
-									echo form_label($one_participant->Vorname, 'first_name'.$one_participant->BenutzerID);
-									echo '</td><td>';
-									echo form_label($one_participant->Nachname, 'last_name'.$one_participant->BenutzerID);
-									echo '</td><td>';
-									
-									// print two lines of checkboxes (1. presence, 2. testat)
-									for($i = 0; $i < $number_of_events; $i++){
-										if(substr($one_participant->anwesenheit, $i, 1) == '1'){
-											// check
-											echo form_checkbox('presence'.$i, 'accept', TRUE);
-										} else {
-											// uncheck
-											echo form_checkbox('presence'.$i, 'accept', FALSE);
-										}
-										
-										if(substr($one_participant->testat, $i, 1) == '1'){
-											// check
-											echo form_checkbox('testat'.$i, 'accept', TRUE);
-										} else {
-											// uncheck
-											echo form_checkbox('testat'.$i, 'accept', FALSE);
-										}
-										echo '</td><td>';
-									}
-									
-									// final testat
-									echo form_checkbox('final_testat', 'accept', ($one_participant->gesamttestat ? TRUE:FALSE));
-									echo '</td><td>';
-									
-									// print  notes
-									echo form_textarea($notes_attr);
-									echo '</td><td>';
-									
-									// print disable participant
-									echo form_checkbox('final_testat', 'accept', ($one_participant->ende ? TRUE:FALSE));
-									echo '</td></tr>';
+		<div class="tab-content">
+			<?
+				foreach($sp_course_participants_details as $group_details){
+					// index for counting groups
+					$index_groups = 1;
+					foreach($group_details as $sp_course_id => $participants){
+						echo '<div class="tab-pane" id="'.$sp_course_id.'"> ';
+
+						// button for adding dates - must be generated with unique id!
+						$header_button_data = array(
+							'name' => 'change-dates-button',
+							'id' => 'change-dates-button'.$sp_course_id,
+							'class' => 'btn btn-info',
+							'value' => 'true',
+							'content' => 'Termine der Gruppe '.$index_groups.' anpassen'
+						);
+						echo form_button($header_button_data);
+
+						echo '<table class="table lab-tab">';
+						echo $theads[$sp_course_id];
+						echo '<tbody>';
+						foreach($participants as $index => $one_participant){
+							// ## preparing some data
+							// notes area - to be generated for each element therefore inside loop
+							$notes_attr = array(
+								'name' => 'user-notes'.$one_participant->BenutzerID,
+								'id' => 'user-notes'.$one_participant->BenutzerID,
+								'class' => 'user-notes',
+								'rows' => 1,
+								'value' => $one_participant->notizen
+							);
+
+							// build row from data
+							echo '<tr class="row"><td>';
+
+							// print labels - name
+							echo form_label($one_participant->Vorname, 'first_name'.$one_participant->BenutzerID);
+							echo '</td><td>';
+							echo form_label($one_participant->Nachname, 'last_name'.$one_participant->BenutzerID);
+							echo '</td><td>';
+
+							// print two lines of checkboxes (1. presence, 2. testat)
+							for($i = 0; $i < $number_of_events; $i++){
+								if(substr($one_participant->anwesenheit, $i, 1) == '1'){
+									// check
+									echo form_checkbox('presence'.$i, 'accept', TRUE);
+								} else {
+									// uncheck
+									echo form_checkbox('presence'.$i, 'accept', FALSE);
 								}
-								
-								
-								echo '</tbody>';
-								echo '</table>';
-								echo '</div>';
-								$index_groups++;
+								echo '<br>';
+
+								if(substr($one_participant->testat, $i, 1) == '1'){
+									// check
+									echo form_checkbox('testat'.$i, 'accept', TRUE);
+								} else {
+									// uncheck
+									echo form_checkbox('testat'.$i, 'accept', FALSE);
+								}
+								echo '</td><td>';
 							}
+
+							// final testat
+							echo form_checkbox('final_testat', 'accept', ($one_participant->gesamttestat ? TRUE:FALSE));
+							echo '</td><td>';
+
+							// print  notes
+							echo form_textarea($notes_attr);
+							echo '</td><td>';
+
+							// print disable participant
+							echo form_checkbox('final_testat', 'accept', ($one_participant->ende ? TRUE:FALSE));
+							echo '</td></tr>';
 						}
-					?>
-				
-		</div>
+
+
+						echo '</tbody>';
+						echo '</table>';
+						echo '</div>';
+						$index_groups++;
+					}
+				}
+			?>
+		</div> <!-- end of tabcontainer -->
+		
+		<div class="hidden update-group-dates-modal"></div>
 		
 <?php endblock(); ?>
 <?php startblock('postCodeContent'); # additional markup before content ?>

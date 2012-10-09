@@ -648,6 +648,31 @@ class Kursverwaltung_model extends CI_Model {
 		
 	}
 	
+	
+
+	/**
+	 * 
+	 * @param type $matrno
+	 * @return array holding 
+	 */
+	public function search_student_by_matrno($matrno){
+		$q = ''; // init
+		$data = array(); // init
+		
+		$this->db->select('Vorname, Nachname, Matrikelnummer');
+		$this->db->from('benutzer');
+		$this->db->where('Matrikelnummer', $matrno);
+		$q = $this->db->get();
+
+		if($q->num_rows() > 0){
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
+		}
+		return $data;
+		
+	}
+	
 
 	
 	/* 

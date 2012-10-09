@@ -2,7 +2,9 @@
 
     $add_tutor_button_data = array(
 		'name' => 'add-tutor-button',
-		'id' => 'tutor-button',
+		'id' => 'add-tutor-button-'.$course_id,
+		'data-course-id' => $course_id,
+		'class' => 'span12 btn',
 		'content' => 'Tutor hinzufügen'
     );
 
@@ -23,7 +25,7 @@
 		$current_staff = $current_tuts;
 		$label_id_prefix = 'tut-label-';
 		$save_data = 'kursverwaltung/save_tuts_for_course';
-		$tut_button = form_button($add_tutor_button_data);
+		$tut_button = '<div id="tuts-panel-button-'.$course_id.'">'.form_button($add_tutor_button_data).'</div>';
     }
     
     $form_attributes = array('id' => $form_id);
@@ -32,7 +34,7 @@
     
 ?>
 
-<div class="well well-small clearfix" id="<?php echo $panel_id_prefix.$course_id; ?>" style="display:none;">
+<div class="well well-small clearfix staff-panel" id="<?php echo $panel_id_prefix.$course_id; ?>" style="display:none;">
 <!--    <hr />-->
 
     <?php
@@ -40,9 +42,6 @@
 	if(!$is_tutor){
 	    print form_open($save_data, $form_attributes);
 	    echo form_submit($course_id, 'Speichern', $submit_attributes);
-	    
-	    // print add-tut-button
-	    echo $tut_button;
 
 	    // counter for creating 3 collumns
 	    $counter = 0;
@@ -104,6 +103,9 @@
 	    } // endforeach
 	    echo '</div>';
 	    echo form_close();
+
+		// print add-tut-button
+		echo $tut_button;
 	} // endif
     ?>
 </div>
