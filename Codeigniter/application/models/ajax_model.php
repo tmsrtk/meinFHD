@@ -1,10 +1,10 @@
 <?php
 
-/*
+/**
  * meinFHD 2.0
  * http://www..de/
  *
- * Konstantin Voth
+ * @author Konstantin Voth
  * Copyright 2012
  *
  */
@@ -130,15 +130,15 @@ class Ajax_model extends CI_Model {
 	}
 
 	// speichere die übergebene Reihenfolge für ein Semester
-	public function set_reihenfolge($neue_reihenfolge, $semesternr, $hoeren, $pruefen, $mark)
+	public function set_reihenfolge($module, $semesternr, $hoeren, $pruefen, $mark)
 	{
-        FB::log($neue_reihenfolge);
+        FB::log($module);
 
 		// counter für die Reihenfolge
 		// $counter = 1;
 		// speichere neue Reihenfolge in die DB
          $i = 0;
-		foreach ($neue_reihenfolge as $serialized_position)
+		foreach ($module as $kursid)
 		{
             if ( empty($mark[$i]) ) $mark[$i] = 101; /*else $mark[$i] = 100;*/
 
@@ -152,7 +152,7 @@ class Ajax_model extends CI_Model {
 
 
             $this->db->where('SemesterplanID', $this->user_model->get_semesterplanid());
-            $this->db->where('KursID', $serialized_position);
+            $this->db->where('KursID', $kursid);
             $this->db->update('semesterkurs', $data);
 
             $i++;
@@ -161,9 +161,9 @@ class Ajax_model extends CI_Model {
 	}
 
 
-    public function set_reihenfolge_benutzerkurs($neue_reihenfolge, $semesternr)
+    public function set_reihenfolge_benutzerkurs($module, $semesternr)
     {
-        foreach ($neue_reihenfolge as $kursid)
+        foreach ($module as $kursid)
         {
             $data = array(
                 'SemesterID'        => $semesternr,
@@ -178,6 +178,28 @@ class Ajax_model extends CI_Model {
                                                                                             ///////////// WHERE kursid = '".$_POST["kursid".$i]."'
                                                                                             ///////////// )
         }
+    }
+
+
+    /**
+     * Get all events, where the user is able to sub-/unsubscribe. (All, except VL)
+     *
+     * @param  int $kursid      Which Studiengangkurs should be looked for.
+     *
+     * @return mixed            all withdrawable events. [SPKursID, GruppeID]
+     */
+    public function get_withdrawable_events($kursid)
+    {
+        $this->db->select('bk.SPKursID, spk.GruppeID, bk.SemesterID, sk.Semester')
+                 ->from('benutzerkurs bk')
+                 ->join('stundenplankurs spk', 'spk.KursID = bk.KursID AND spk.SPKursID = bk.SPKursID')
+                 ->join('studiengangkurs sk', 'sk.KursID = spk.KursID')
+                 ->where('bk.KursID', $kursid)
+                 ->where('bk.BenutzerID', $this->user_model->get_userid())
+                 ->where('spk.VeranstaltungsformID !=', 1);
+        $q = $this->db->get();
+
+        return $q->result_array();
     }
 
 
