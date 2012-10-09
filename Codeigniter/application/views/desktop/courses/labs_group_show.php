@@ -16,26 +16,76 @@
 ?>
 
 <?php startblock('content'); # additional markup before content ?>
-		<!-- TODO: run through array of courses and groups and print as table -->
 		
 		<div>
-			tabview with a single group
-			<pre>
+			<ul class="nav nav-tabs" id="lab-details-navi">
+				<?php 
+					// printing tab for each group - key= SPKursID !
+					foreach($sp_course_details as $details){
+						if($details){
+							$index = 1;
+							foreach($details as $d){
+								echo '<li id="lab-tab-'.$d->SPKursID.'">';
+								echo '<a href="#'.$d->SPKursID.'" data-toggle="tab">'.$d->kurs_kurz.' - Gruppe '.$index.'</a>';
+								echo '</li>';
+								$index++;
+							}
+						}
+					}
+
+				?>
+			</ul>
+			
+		</div>
+		
+		<div class="tab-content">
+<!--			<pre>
 				<?
+//					print_r($event_dates);
 //					print_r($active_group);
 //					print_r($sp_course_details);
+//					print_r($sp_course_participants_details);
+//					foreach($theads as $head){
+//						print_r($head);
+//					}
+						
 				?>
-			</pre>
+			</pre>-->
 			
-			<table class="table">
-				<thead></thead>
-				<tbody>
+				
 					<?
-						foreach($sp_course_details as $details_type){
-							foreach($details_type as $participants){
+						foreach($sp_course_participants_details as $group_details){
+							// index for counting groups
+							$index_groups = 1;
+							foreach($group_details as $sp_course_id => $participants){
+								echo '<div class="tab-pane" id="'.$sp_course_id.'"> ';
+								
+								// button for adding dates - must be generated with unique id!
+								$header_button_data = array(
+									'name' => 'change-dates-button',
+									'id' => 'change-dates-button'.$sp_course_id,
+									'class' => 'btn btn-info',
+									'value' => 'true',
+									'content' => 'Termine der Gruppe '.$index_groups.' anpassen'
+								);
+								echo form_button($header_button_data);
+								
+								echo '<table class="table">';
+								echo $theads[$sp_course_id];
+								echo '<tbody>';
 								foreach($participants as $index => $one_participant){
+									// ## preparing some data
+									// notes area - to be generated for each element therefore inside loop
+									$notes_attr = array(
+										'name' => 'user-notes'.$one_participant->BenutzerID,
+										'id' => 'user-notes'.$one_participant->BenutzerID,
+										'class' => 'user-notes',
+										'rows' => 3,
+										'value' => $one_participant->notizen
+									);
+									
 									// build row from data
-									echo '<tr><td>';
+									echo '<tr class="row"><td>';
 									
 									// print labels - name
 									echo form_label($one_participant->Vorname, 'first_name'.$one_participant->BenutzerID);
@@ -62,26 +112,29 @@
 										}
 										echo '</td><td>';
 									}
-									echo '</td><td>';
 									
 									// final testat
 									echo form_checkbox('final_testat', 'accept', ($one_participant->gesamttestat ? TRUE:FALSE));
 									echo '</td><td>';
 									
 									// print  notes
-									echo form_textarea();
+									echo form_textarea($notes_attr);
 									echo '</td><td>';
 									
 									// print disable participant
 									echo form_checkbox('final_testat', 'accept', ($one_participant->ende ? TRUE:FALSE));
 									echo '</td></tr>';
 								}
+								
+								
+								echo '</tbody>';
+								echo '</table>';
+								echo '</div>';
+								$index_groups++;
 							}
 						}
 					?>
-				</tbody>
-			</table>
-			
+				
 		</div>
 		
 <?php endblock(); ?>
@@ -90,6 +143,11 @@
 <?php endblock(); ?>
 	
 <?php startblock('customFooterJQueryCode');?>
+
+	// initialize active tab
+    $('.tab-content div:first-child').addClass("active");
+    $('#lab-details-navi li:first-child').addClass("active");
+	
 <?php endblock(); ?>
 
 <?php end_extend(); ?>

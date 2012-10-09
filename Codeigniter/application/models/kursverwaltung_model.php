@@ -34,7 +34,7 @@ class Kursverwaltung_model extends CI_Model {
      */
     public function get_course_details($course_id, $eventype){
 		$this->db->distinct();
-		$this->db->select('a.SPKursID, b.Kursname, a.Raum, t.TagName, s.Beginn, a.GruppeID, c.VeranstaltungsformName');
+		$this->db->select('a.SPKursID, b.Kursname, b.kurs_kurz, a.Raum, t.TagName, s.Beginn, a.GruppeID, c.VeranstaltungsformName');
 		$this->db->from('stundenplankurs as a');
 		$this->db->join('studiengangkurs as b', 'a.KursID = b.KursID');
 		$this->db->join('veranstaltungsform as c', 'a.VeranstaltungsformID = c.VeranstaltungsformID');
@@ -686,6 +686,36 @@ class Kursverwaltung_model extends CI_Model {
 		if($q->num_rows() > 0){
 			foreach ($q->result() as $row){
 				$data[] = $row;
+			}
+		}
+
+		return $data;
+	}
+	
+	/**
+	 * Returns all dates - as far as some labing stored dates before
+	 * @param array $group_id holding GruppeID (always) and all dates (if stored otherwise nothing)
+	 */
+	public function get_lab_dates($group_id){
+		$q = ''; // init
+		$data = array(); // init
+		
+		$this->db->from('gruppentermin');
+		$this->db->where('GruppeID', $group_id);
+		$q = $this->db->get();
+
+		$index = 0;
+		if($q->num_rows() > 0){
+			foreach ($q->result_array() as $row ){
+				// preparing data to get array (starting with GruppeID, then counting up from 0 to 19
+				foreach($row as $i => $r){
+					if($i == 'GruppeID'){
+						$data['GruppeID'] = $r;
+					} else {
+						$data[$index] = $r;
+						$index++;
+					}
+				}
 			}
 		}
 

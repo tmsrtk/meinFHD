@@ -664,6 +664,8 @@ class Kursverwaltung extends FHD_Controller {
 		// ## get sp_course_details for course_id - all labs? disable seminar?
 		// init
 		$sp_course_details = '';
+		$lab_theads = '';
+		
 		
 		// defining all eventtypes to fetch data for
 		$eventtypes_to_fetch = array(2,3,4);
@@ -671,19 +673,41 @@ class Kursverwaltung extends FHD_Controller {
 			// either data has been passed via flashdata >> user chose group (and (implicit) course) to manage
 			// active group in view
 			if($load_sp_course_id != -1){
-				$sp_course_details[$load_course_id.'-'.$e] = $this->kursverwaltung_model->get_course_details($load_course_id, $e);
+				$course_id = $load_course_id;
 			} else {
 				// or there is only one course
 				// >> no active group
-				if(count($this->course_ids)){
-					$c_id = key($this->course_ids);
-					$sp_course_details[$c_id.'-'.$e] = $this->kursverwaltung_model->get_course_details($c_id, $e);
+				$course_id = key($this->course_ids);
+			}
+			
+			// fetch data
+			if(count($this->course_ids)){
+				$sp_course_details[$course_id.'-'.$e] = $this->kursverwaltung_model->get_course_details($course_id, $e);
+			}
+
+		}
+		
+		// preparing group-table-head data
+		$number_of_events = 15;
+		$thead_data['number_of_events'] = $number_of_events;
+		$thead_data['event_dates'] = $this->get_dates_for_all_labs($sp_course_details);
+		
+		// running through array to pass SPKursID to fetch dates for
+		foreach($sp_course_details as $details){
+			foreach($details as $d){
+				if($d){
+					$thead_data['sp_course_id'] = $d->SPKursID;
+					// storing 
+					$lab_theads[$d->SPKursID] = $this->load->view('courses/partials/labs_thead', $thead_data, TRUE);
 				}
 			}
 		}
 		
 		// save data and active group to 
-		$this->data->add('sp_course_details', $this->get_details_for_all_labs($sp_course_details));
+		$this->data->add('theads', $lab_theads);
+		$this->data->add('sp_course_details', $sp_course_details);
+		$this->data->add('sp_course_participants_details', $this->get_details_for_all_labs($sp_course_details));
+		$this->data->add('event_dates', $this->get_dates_for_all_labs($sp_course_details));
 		$this->data->add('active_group', $load_sp_course_id);
 	    $this->load->view('courses/labs_group_show', $this->data->load());
 	}
@@ -714,6 +738,35 @@ class Kursverwaltung extends FHD_Controller {
 		}
 		
 		return $lab_participants_plus_notes;
+	}
+	
+	
+	
+	/**
+	 * Helper method taking array with all eventtypes (AND groups) for a single course
+	 * Peparing data for view
+	 * >> 
+	 * @param array $sp_course_details containing all course-labs-details sorted by eventtypes
+	 * @return array $group_participants containing all dates if stored before
+	 */
+	private function get_dates_for_all_labs($sp_course_details){
+		// variable to be returned
+		$event_dates = array();
+		
+		
+		// running through all course-event-combinations and get participants
+		// 1. check if there are courses with details to fetch
+		foreach($sp_course_details as $key => $groups){
+			// if there are courses for this course-event-combination
+			if($groups){
+				// 2. get participants for each course and save to array
+				foreach($groups as $index => $sp_course_object){
+					$event_dates[$sp_course_object->SPKursID] = $this->kursverwaltung_model->get_lab_dates($sp_course_object->GruppeID);
+				}
+			}
+		}
+		
+		return $event_dates;
 	}
 	
 	/* 
