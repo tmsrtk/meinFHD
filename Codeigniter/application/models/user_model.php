@@ -21,7 +21,7 @@ class User_model extends CI_Model {
 	private $act_semester = 0;
 	private $studienbeginn_jahr = 0;
 	private $studienbeginn_typ = '';
-	
+
 	private $studiengang_data = array();
 
 	/**
@@ -282,6 +282,8 @@ class User_model extends CI_Model {
 	 * @return array
 	 */
 	private function _get_user_course_ids_from_spkurs(){
+	    $data = ''; // init
+
 	    $this->db->distinct();
 	    $this->db->select('KursID');
 	    $this->db->from('stundenplankurs');
@@ -294,7 +296,10 @@ class User_model extends CI_Model {
 			$data[] = $row;
 	    }
 
-	    $data = $this->clean_nested_array($data);
+	    if ($data) {
+			$data = $this->clean_nested_array($data);
+	    }
+
 	    
 	    return $data;
 	}
@@ -384,6 +389,22 @@ class User_model extends CI_Model {
 		if ( ! empty($this->act_semester) )
 		{
 			return $this->act_semester;
+		}
+	}
+
+	public function get_studienbeginn_semestertyp()
+	{
+		if ( ! empty($this->studienbeginn_typ) )
+		{
+			return $this->studienbeginn_typ;
+		}
+	}
+
+	public function get_studienbeginn_jahr()
+	{
+		if ( ! empty($this->studienbeginn_jahr) )
+		{
+			return $this->studienbeginn_jahr;
 		}
 	}
 	

@@ -13,7 +13,7 @@
 class Admin extends FHD_Controller {
 	
 	private $permissions;
-	private $roles;
+	public $roles;
 	private $roleIds;
 	
 	function __construct(){
