@@ -57,9 +57,10 @@ class Kursverwaltung_model extends CI_Model {
     
 	
     /**
-     * Returns name for given course_id
-     * @param int $course_id
-     * @return String 
+     * Returns name and description for given course_id
+     * @param int $course_id course_id to get the name for
+     * @return String $data[0] first index of the result - 
+	 * containing the shortname and the description for that course
      */
     public function get_lecture_name($course_id){
 		$this->db->select('kurs_kurz, Beschreibung')->where('KursID', $course_id);
@@ -686,6 +687,45 @@ class Kursverwaltung_model extends CI_Model {
 	}
 	
 
+	/**
+	 * 
+	 * @param array $student_data [0] => matrno; [1] => courseId
+	 * @return int
+	 */
+	public function assign_tut_role_to_student($student_data){
+		$q = ''; // init
+
+		// find user_id for that matrno
+		$this->db->select('BenutzerID');
+		$this->db->where('Matrikelnummer', $student_data[0]);
+		$this->db->from('benutzer');
+		$q = $this->db->get();
+		
+		if($q->num_rows() == 1){
+			$user_id = '';
+			foreach ($q->result_array() as $row) {
+				$user_id = $row['BenutzerID'];
+			}
+			
+			// check if matrno isn't already assigned as tutor
+			$this->db->select('*');
+			$this->db->where('BenutzerID', $user_id);
+			$this->db->from('benutzer_mm_rolle');
+			$q = $this->db->get();
+						
+			// assign tut-role to that user_id - rolle 4=tutor
+			$this->db->insert('benutzer_mm_rolle', array('BenutzerID' => $user_id, 'RolleID' => '4'));
+
+			// add course to kurstutor-table
+			$this->db->insert('kurstutor', array('BenutzerID' => $user_id, 'KursID' => $student_data[1]));
+			
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	
 	
 	/* 
 	 * 
@@ -760,45 +800,6 @@ class Kursverwaltung_model extends CI_Model {
 	}
 	
 
-	/**
-	 * 
-	 * @param array $student_data [0] => matrno; [1] => courseId
-	 * @return int
-	 */
-	public function assign_tut_role_to_student($student_data){
-		$q = ''; // init
-
-		// find user_id for that matrno
-		$this->db->select('BenutzerID');
-		$this->db->where('Matrikelnummer', $student_data[0]);
-		$this->db->from('benutzer');
-		$q = $this->db->get();
-		
-		if($q->num_rows() == 1){
-			$user_id = '';
-			foreach ($q->result_array() as $row) {
-				$user_id = $row['BenutzerID'];
-			}
-			
-			// check if matrno isn't already assigned as tutor
-			$this->db->select('*');
-			$this->db->where('BenutzerID', $user_id);
-			$this->db->from('benutzer_mm_rolle');
-			$q = $this->db->get();
-						
-			// assign tut-role to that user_id - rolle 4=tutor
-			$this->db->insert('benutzer_mm_rolle', array('BenutzerID' => $user_id, 'RolleID' => '4'));
-
-			// add course to kurstutor-table
-			$this->db->insert('kurstutor', array('BenutzerID' => $user_id, 'KursID' => $student_data[1]));
-			
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	
 	/* 
 	 * 
 	 * ********************************************* lab-mgt

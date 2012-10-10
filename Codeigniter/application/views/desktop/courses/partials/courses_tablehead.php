@@ -1,4 +1,4 @@
-<!--building custom table >> header-->
+<!-- building custom table >> header -->
 <div class="clearfix">
 	<div class="span1"></div>
 	<div class="span9"><h3><?php echo $headline.':'; ?></h3></div>
