@@ -431,20 +431,49 @@
 		
 		// behaviour when search started
 		$('#add-tutor-dialog-container-'+courseId).on('click', '#add-tutor-dialog-search', function(){
-			matrno = $('#matrnr-input').attr('value');
+			// creating array to pass courseId and matrikelno to search fot
+			// courseId is needed, to generate dom-elements with unique id >> assign tutor-status
+			var serverData = new Array(
+				$('#matrnr-input').attr('value'),
+				courseId
+			);
+				
 			
 			$('.modal-body').html('Student wird gesucht.');
 			$.ajax({
 				   type: "POST",
 				   url: "<?php echo site_url();?>kursverwaltung/ajax_search_student_by_matrno/",
 				   dataType: 'html',
-				   data : {matr_number : matrno},
+				   data : {server_data : serverData},
 				   success: function (data){
 				       $('.modal-body').html(data);
 				   }
 				});
 				
 			return false;
+		});
+		
+		// behaviour when tutor was added
+		$('#add-tutor-dialog-container-'+courseId).on('click', '#add-tutor-dialog-assign-'+courseId, function(){
+			
+			var studentData = new Array(
+				$('#add-tutor-dialog-assign-'+courseId).data('matrno'),
+				courseId
+			);
+		
+			$.ajax({
+				   type: "POST",
+				   url: "<?php echo site_url();?>kursverwaltung/ajax_add_student_as_tutor/",
+				   dataType: 'html',
+				   data : {student_data: studentData},
+				   success: function (data){
+					   $('.modal-body').html(data);
+				       $('.modal-footer').html('<a href="" class="btn btn-primary" id="add-tutor-dialog-confirm" data-accept="modal">OK</a>');
+				       $('.modal-header button').hide();
+				   }
+				});
+			
+			return true;
 		});
 		
 		
@@ -497,7 +526,7 @@
 			.html('<div class="modal-header"><button class="close" type="button" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
 			.append('<div class="modal-body" id="modal-body"><p>'+text+'</p>\n\
 			<p>Matrikelnummer eingeben: <input type="text" id="matrnr-input" name="matrnr" placeholder="Matrikelnummer">\n\
-			<input type="submit" class="btn-info" id="add-tutor-dialog-search" value="Suchen"</div>')
+			<input type="submit" class="btn-info" id="add-tutor-dialog-search" value="Suchen"></div>')
 			.append('<div class="modal-footer"><a href="#" class="btn" id="add-tutor-dialog-cancel" data-dismiss="modal">Abbrechen</a>\n\
 			</div>');
 

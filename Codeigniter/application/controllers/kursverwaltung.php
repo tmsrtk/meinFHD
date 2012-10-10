@@ -553,30 +553,66 @@ class Kursverwaltung extends FHD_Controller {
 	public function ajax_search_student_by_matrno(){
 		$return = ''; // init
 		
-		$matrno_from_post = $this->input->post('matr_number');
-//		$t = $this->input->post('matr_number');
-//		echo $t;
-		if(is_numeric($matrno_from_post)){
-			$return = $this->kursverwaltung_model->search_student_by_matrno($matrno_from_post);
+		// fetching data from post - array with
+		// [0] => matrikelno to search for
+		// [1] => courseId (needed to generate unique dom-element
+		$data_from_post = $this->input->post('server_data');
+
+		if(is_numeric($data_from_post[0])){
+			$return = $this->kursverwaltung_model->search_student_by_matrno($data_from_post[0]);
 		} else {
 			// nothing to do
 		}
 		
-		print_r($return);
-		
-		// only return if there is something to return
+		// build element to be shown in modal and echo
+		// >> Student-Details plus Button to assign tutor-role
 		if($return){
-			echo $return->Vorname.' '.$return->Nachname;
+			echo $this->build_modal_content($data_from_post[1], $return);
+		// >> message, that there is no student with this matr-no and input-field to repeat search
 		} else {
-			echo 'Student wurde nicht gefunden';
+			echo $this->build_modal_content($data_from_post[1]);
 		}
 	}
 	
 	
-	public function ajax_add_student_as_tutor(){
+	/**
+	 * 
+	 * @param int $course_id course
+	 * @param type $student_detail
+	 * @return string dom-element used for modal
+	 */
+	private function build_modal_content($course_id, $student_detail = ''){
+		$element = '<div>'; // init
 
+		// if student was found
+		if($student_detail){
+			$value = $student_detail[0]->Vorname.' '.$student_detail[0]->Nachname.' ('.$student_detail[0]->Matrikelnummer.')';
+			$element .= '<input type="submit" value="'.$value.' zum Tutor machen" id="add-tutor-dialog-assign-'.$course_id.'" data-matrno="'.$student_detail[0]->Matrikelnummer.'" class="span12 btn-danger">';
+		// otherwise
+		} else {
+			$element .= '<div class="span12">Unter dieser Matrikelnummer wurde im System kein Student gefunden.</div>';
+			$element .= '<div class="span12">Neue Suche:';
+			$element .= '<input type="text" placeholder="Matrikelnummer" name="matrnr" id="matrnr-input">';
+			$element .= '<input type="submit" value="Suchen" id="add-tutor-dialog-search" class="btn-info"></div>';
+		}
 		
-		echo 'Student ist nun Tutor und kann den Kurs verwalten';
+		$element .= '</div>';
+		return $element;
+	}
+	
+	
+	public function ajax_add_student_as_tutor(){
+		// fetching course_id from post
+		// [0] => matrikelno to search for
+		// [1] => courseId (needed to generate unique dom-element
+		$student_data = $this->input->post('student_data');
+		
+		// assign tut-role to student and for passed course_id
+		if($this->kursverwaltung_model->assign_tut_role_to_student($student_data)){
+			echo 'Der Student ist nun Tutor des Kurses und kann Tutorien verwalten.';
+		} else {
+			echo 'Fehler bei der Verarbeitung. Kontaktieren Sie einen Administrator.';
+		}
 	}
 	
 

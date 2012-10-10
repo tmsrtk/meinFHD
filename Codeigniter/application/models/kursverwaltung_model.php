@@ -747,6 +747,39 @@ class Kursverwaltung_model extends CI_Model {
 		return $data;
 	}
 	
+
+	/**
+	 * 
+	 * @param array $student_data [0] => matrno; [1] => courseId
+	 * @return boolean
+	 */
+	public function assign_tut_role_to_student($student_data){
+		$q = ''; // init
+
+		// find user_id for that matrno
+		$this->db->select('BenutzerID');
+		$this->db->where('Matrikelnummer', $student_data[0]);
+		$this->db->from('benutzer');
+		$q = $this->db->get();
+		
+		if($q->num_rows() == 1){
+			$user_id = '';
+			foreach ($q->result_array() as $row) {
+				$user_id = $row['BenutzerID'];
+			}
+						
+			// assign tut-role to that user_id - rolle 4=tutor
+			$this->db->insert('benutzer_mm_rolle', array('BenutzerID' => $user_id, 'RolleID' => '4'));
+
+			// add course to kurstutor-table
+			$this->db->insert('kurstutor', array('BenutzerID' => $user_id, 'KursID' => $student_data[1]));
+			
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	
 	/* 
 	 * 
