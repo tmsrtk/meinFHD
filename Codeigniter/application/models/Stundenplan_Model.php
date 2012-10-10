@@ -14,7 +14,7 @@
  */
 class Stundenplan_Model extends CI_Model {
 
-	private $user;//Debug
+	// private $user;//Debug
 
 	
 	public function __construct()
@@ -30,58 +30,12 @@ class Stundenplan_Model extends CI_Model {
 	 * @param integer // ID of a User
 	 * @return row_array // Information about User
 	 */	
-	private function define_user($id)
-	{
+	// private function define_user($id)
+	// {
 	
-		$query = $this->db->query("Select * From benutzer Where BenutzerID Like '".$id."' LIMIT 1");
-		$this->user = $query->row_array();
-	}
-	
-	/**
-	 * get_Semester_Typ()													
-	 *																		
-	 * wirtten by Jochen Sauer, copyed function								
-	 *																		
-	 * @return Actual Typ of Semester (Winter or Summer)						
-	 */
-	private function get_Semester_Typ() 
-	{		
-		// Errechne aktuellen Semestertyp
-		return (date("n") >= 3 && date("n") <= 8) ? "SS" : "WS";		
-	}
-	 
-	/**
-	 *	printSemesterInteger()												
-	 *							
-	 *  wirtten by Jochen Sauer, copyed function	
-	 *											
-	 *	Gibt anhand der übergebenen persönlichen Daten das aktuelle 		
-	 *	Semester des Studenten zurück.										
-	 *																		
-	 *	@param	$semestertyp	 (WS or SS)	
-	 *											
-	 *	@param	$studienbeginn	Four-digit-number, year the study started	
-	 *																		
-	 *	@return	$semester 		Actual Semester as String.				
-	 */
-	private function get_Semester( $semestertyp, $studienbeginn ) 
-	{
-		
-		// definiere Rückgabewert
-		$semester = "";
-		
-		// ermittel semestertyp
-		$errechneter_semestertyp = $this->get_Semester_Typ();
-		
-		// stimmt aktueller Semestertyp mit Studienbeginn-Semestertyp überein?
-		$gleicher_semestertyp = ($errechneter_semestertyp == $semestertyp) ? true : false;
-		
-		// Errechne aktuelles Semester
-		$semester = (($gleicher_semestertyp) ? 1 : 0) + 2 * ((($gleicher_semestertyp && date("n") < 3) ? date("Y")-1 : date("Y")) - $studienbeginn);
-		
-		// Gebe String zurück
-		return $semester;
-	}	
+	// 	$query = $this->db->query("Select * From benutzer Where BenutzerID Like '".$id."' LIMIT 1");
+	// 	$this->user = $query->row_array();
+	// }
 
 	/**
 	 * Function create_times_array
@@ -216,9 +170,10 @@ class Stundenplan_Model extends CI_Model {
 	 * @param Integer // ID of User
 	 * @return row-array // List of all courses in this semster linked to the USER-ID
 	 */	
-	private function get_courses($id) 
+	private function get_courses() 
 	{
-		
+		$id = $this->user_model->get_userid();
+
 		//benutzerkurs: Enthält die aktiven Module
 		//studiengangkurs: Die Namen im Klartext (Nur deswegen in Query)
 		//stundenplankurs: Genauere Informationen zu Kursen(Startzeit, Typ)
@@ -268,7 +223,7 @@ class Stundenplan_Model extends CI_Model {
 			t.TagID = sp.TagID AND
 			sp.DozentID = d.BenutzerID AND
 			b.BenutzerID = ".$id." AND 
-			b.SemesterID = ".$this->adminhelper->get_act_semester($this->user['StudienbeginnSemestertyp'] , $this->user['StudienbeginnJahr'])." AND
+			b.SemesterID = ".$this->adminhelper->get_act_semester($this->user_model->get_studienbeginn_semestertyp() , $this->user_model->get_studienbeginn_jahr() )." AND
 			sp.GruppeID = g.GruppeID AND
 			sp.IsWPF = 0 AND
 
@@ -276,14 +231,12 @@ class Stundenplan_Model extends CI_Model {
 
 			sk.SemesterplanID = sempla.SemesterplanID AND
 			sk.KursID = b.KursID AND
-			sk.Semester = ".$this->adminhelper->get_act_semester($this->user['StudienbeginnSemestertyp'] , $this->user['StudienbeginnJahr'])."
+			sk.Semester = ".$this->adminhelper->get_act_semester($this->user_model->get_studienbeginn_semestertyp() , $this->user_model->get_studienbeginn_jahr() )."
 		ORDER BY 
 			sp.tagID, sp.StartID
 		");
 		
 		$result = $query->result_array();
-
-		FB::log($result);
 
 		return $result;
 	}
@@ -413,14 +366,16 @@ class Stundenplan_Model extends CI_Model {
 	 * @param integer // The ID of a User
 	 * @return array // Various arrays
 	 */	
-	public function get_stundenplan($id)
+	public function get_stundenplan()
 	{
 		//Set global variable in this class for informtion concering the User.
-		$this->define_user($id);
+		// $this->define_user($id);
 		
 
 		//Query all courses from Database
-		$courses = $this->get_courses($id);
+		$courses = $this->get_courses();
+
+		// FB::log($courses);
 
 		//Control active-flag of courses, change if necsassary(see function-doc)
 		$courses = $this->set_active($courses);
@@ -457,5 +412,14 @@ class Stundenplan_Model extends CI_Model {
 		
 		return $return;
 	}
+
+
+	// Konstantin Voth
+	public function get_stundenplan_student()
+	{
+		return $this->get_stundenplan();
+	}
+
+
 	
 }
