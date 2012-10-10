@@ -653,13 +653,13 @@ class Kursverwaltung_model extends CI_Model {
 	/**
 	 * 
 	 * @param type $matrno
-	 * @return array holding 
+	 * @return array holding user-data OR -1 if user already has the role to be assigned
 	 */
 	public function search_student_by_matrno($matrno){
 		$q = ''; // init
 		$data = array(); // init
 		
-		$this->db->select('Vorname, Nachname, Matrikelnummer');
+		$this->db->select('Vorname, Nachname, Matrikelnummer, BenutzerID');
 		$this->db->from('benutzer');
 		$this->db->where('Matrikelnummer', $matrno);
 		$q = $this->db->get();
@@ -668,7 +668,19 @@ class Kursverwaltung_model extends CI_Model {
 			foreach ($q->result() as $row){
 				$data[] = $row;
 			}
+		
+			// check if matrno isn't already assigned as tutor
+			$this->db->select('*');
+			$this->db->where('BenutzerID', $row->BenutzerID);
+			$this->db->where('RolleID', 4); // tutor-role-id = 4
+			$this->db->from('benutzer_mm_rolle');
+			$q = $this->db->get();
+
+			if($q->num_rows() == 1){
+				return -1;
+			}
 		}
+		
 		return $data;
 		
 	}
@@ -751,7 +763,7 @@ class Kursverwaltung_model extends CI_Model {
 	/**
 	 * 
 	 * @param array $student_data [0] => matrno; [1] => courseId
-	 * @return boolean
+	 * @return int
 	 */
 	public function assign_tut_role_to_student($student_data){
 		$q = ''; // init
@@ -767,6 +779,12 @@ class Kursverwaltung_model extends CI_Model {
 			foreach ($q->result_array() as $row) {
 				$user_id = $row['BenutzerID'];
 			}
+			
+			// check if matrno isn't already assigned as tutor
+			$this->db->select('*');
+			$this->db->where('BenutzerID', $user_id);
+			$this->db->from('benutzer_mm_rolle');
+			$q = $this->db->get();
 						
 			// assign tut-role to that user_id - rolle 4=tutor
 			$this->db->insert('benutzer_mm_rolle', array('BenutzerID' => $user_id, 'RolleID' => '4'));

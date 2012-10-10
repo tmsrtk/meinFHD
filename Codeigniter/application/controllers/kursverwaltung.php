@@ -586,8 +586,14 @@ class Kursverwaltung extends FHD_Controller {
 
 		// if student was found
 		if($student_detail){
-			$value = $student_detail[0]->Vorname.' '.$student_detail[0]->Nachname.' ('.$student_detail[0]->Matrikelnummer.')';
-			$element .= '<input type="submit" value="'.$value.' zum Tutor machen" id="add-tutor-dialog-assign-'.$course_id.'" data-matrno="'.$student_detail[0]->Matrikelnummer.'" class="span12 btn-danger">';
+			// check ifthe user already has the tutor-role
+			if($student_detail != -1){
+				$value = $student_detail[0]->Vorname.' '.$student_detail[0]->Nachname.' ('.$student_detail[0]->Matrikelnummer.')';
+				$element .= '<input type="submit" value="'.$value.' zum Tutor machen" id="add-tutor-dialog-assign-'.$course_id.'" data-matrno="'.$student_detail[0]->Matrikelnummer.'" class="span12 btn-danger">';
+			// otherwise return error-message				
+			} else {
+				$element .= '<div class="span12">Der Student ist bereits Tutor. Wählen Sie ihn aus der Liste der Tutoren aus.</div>';
+			}
 		// otherwise
 		} else {
 			$element .= '<div class="span12">Unter dieser Matrikelnummer wurde im System kein Student gefunden.</div>';
