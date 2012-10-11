@@ -1,12 +1,16 @@
 // CUSTOM STYLES
 // -----
 
-h1.maintitle{
-	color:@fhdRed;
+body {
+	min-height: 582px !important; // iPhone
 }
 
-h1.maintitle span{
-	color:@black;
+h1.maintitle {
+	margin-bottom: 6px;
+}
+
+h1.maintitle span {
+	color:@fhdRed;
 	font-weight:normal;
 	font-family:@pacifico;
 }
@@ -25,7 +29,8 @@ h1.maintitle span{
 .fhd-box{
 	.alert;
 	.alert-error;
-	padding: 8px 14px 8px 14px;
+	.clearfix;
+	padding: 8px !important;
 }
 
 // Full widths buttons
@@ -43,6 +48,58 @@ a.btn-fullwidth{
 	width: auto;
 }
 
-button.btn-fullwidth{
+button.btn-fullwidth {
 	width: 100%;
+}
+
+.carousel{
+	margin-bottom: 0;
+}
+
+.pagination{
+	margin-top:0;
+}
+
+.table.table-condensed{
+	&:last-child{
+		margin-bottom: 0;
+	}
+	
+	th, td{
+		padding:6px 0 !important;
+	}
+}
+
+.table.table-condensed small{
+	font-size: 0.8em;
+	color:@grayLight;
+}
+
+legend {
+	border-bottom: 0 !important;
+}
+
+// Important stuff for week view
+
+.std-rel { position: relative; }
+.std-abs { position: absolute; }
+
+.std-event {
+	overflow: hidden;
+	color: #fff;
+	display: block;
+	
+	&:hover {
+		text-decoration: none;
+	}
+}
+
+.std-event-container {
+	padding: 4px;
+	word-break: break-word;
+}
+
+#stundenplan .table-condensed td.std-time-cell {
+	padding: 0 !important;
+	background-image: url('../img/std-time-stripes.png');
 }

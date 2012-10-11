@@ -29,7 +29,13 @@ class App extends FHD_Controller {
 	 */
 	public function index()
 	{
-		$this->load->view('app/index', $this->data->load());
+		// user is logged in -> set message and redirect to frontpage
+		if ($this->agent->is_mobile()) {
+			redirect('dashboard/mobile');
+		}
+		else {
+			redirect('dashboard/index');
+		}
 	}
 	
 	/**
@@ -50,15 +56,19 @@ class App extends FHD_Controller {
 			// call the login funtion from the authentication class
 			if ($this->authentication->login($username, $password))
 			{
-				// user is logged in -> set message and redirect to frontpage
-				$this->message->set(sprintf('Eingeloggt! (ID: %s)', $this->authentication->user_id()));
-				redirect('dashboard/index');
+				if ($this->agent->is_mobile()) {
+					redirect('dashboard/mobile');
+				}
+				else {
+					redirect('dashboard/index');
+				}
+
 			}
 			else
 			{
 				// something got wrong -> set message and redirect to login page
 				$this->message->set('User oder Passwort falsch!', 'error');
-				redirect('app/login');
+				redirect('login');
 			}
 		}
 		
@@ -86,9 +96,9 @@ class App extends FHD_Controller {
         }
 
         else { // otherwise perform a regular logut
-            $this->message->set(sprintf('Ausgeloggt! (ID: %s)', $this->authentication->user_id()));
+            //$this->message->set(sprintf('Ausgeloggt! (ID: %s)', $this->authentication->user_id()));
             $this->authentication->logout();
-            redirect('app/login');
+            redirect('login');
         }
 	}
 }

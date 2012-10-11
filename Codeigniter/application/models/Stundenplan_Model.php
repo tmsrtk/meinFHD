@@ -1,7 +1,20 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * meinFHD WebApp
+ * 
+ * @version 0.0.1
+ * @copyright Fachhochschule Duesseldorf, 2012
+ * @link http://www.fh-duesseldorf.de
+ * @author Simon vom Eyser (SVE), <simon.vomeyser@fh-duesseldorf.de>
+ */
+
+/**
+ * Stundenplan Model
+ */
 class Stundenplan_Model extends CI_Model {
 
-	private $user;//Debug
+	// private $user;//Debug
 
 	
 	public function __construct()
@@ -17,77 +30,12 @@ class Stundenplan_Model extends CI_Model {
 	 * @param integer // ID of a User
 	 * @return row_array // Information about User
 	 */	
-	private function define_user($id)
-	{
+	// private function define_user($id)
+	// {
 	
-		$query = $this->db->query("Select * From benutzer Where BenutzerID Like '".$id."' LIMIT 1");
-		$this->user = $query->row_array();
-	}
-
-	public function enroll_in_course($user_id, $course_id) {
-
-		//Testing, if there is still the possibility to enroll in that course
-
-		$query_students_enrolled = $this->db->query("Select * From gruppenteilnehmer Where GruppeID = '".$course_id."' ");
-		$students_in_course = $query_students_enrolled->num_rows();
-
-		$query_group = $this->db->query("Select * From gruppe Where GruppeID = '".$course_id."' ");
-		$group = $query_group->row();
-
-		echo $students_in_course . " gegen " . $group->TeilnehmerMax ;
- 
-		if (false) {
-			# code...
-		}
-
-	}
-	
-	/**
-	 * get_Semester_Typ()													
-	 *																		
-	 * wirtten by Jochen Sauer, copyed function								
-	 *																		
-	 * @return Actual Typ of Semester (Winter or Summer)						
-	 */
-	private function get_Semester_Typ() 
-	{		
-		// Errechne aktuellen Semestertyp
-		return (date("n") >= 3 && date("n") <= 8) ? "SS" : "WS";		
-	}
-	 
-	/**
-	 *	printSemesterInteger()												
-	 *							
-	 *  wirtten by Jochen Sauer, copyed function	
-	 *											
-	 *	Gibt anhand der übergebenen persönlichen Daten das aktuelle 		
-	 *	Semester des Studenten zurück.										
-	 *																		
-	 *	@param	$semestertyp	 (WS or SS)	
-	 *											
-	 *	@param	$studienbeginn	Four-digit-number, year the study started	
-	 *																		
-	 *	@return	$semester 		Actual Semester as String.				
-	 */
-	private function get_Semester( $semestertyp, $studienbeginn ) 
-	{
-		
-		// definiere Rückgabewert
-		$semester = "";
-		
-		// ermittel semestertyp
-		$errechneter_semestertyp = $this->get_Semester_Typ();
-		
-		// stimmt aktueller Semestertyp mit Studienbeginn-Semestertyp überein?
-		$gleicher_semestertyp = ($errechneter_semestertyp == $semestertyp) ? true : false;
-		
-		// Errechne aktuelles Semester
-		$semester = (($gleicher_semestertyp) ? 1 : 0) + 2 * ((($gleicher_semestertyp && date("n") < 3) ? date("Y")-1 : date("Y")) - $studienbeginn);
-		
-		// Gebe String zurück
-		return $semester;
-	}	
-
+	// 	$query = $this->db->query("Select * From benutzer Where BenutzerID Like '".$id."' LIMIT 1");
+	// 	$this->user = $query->row_array();
+	// }
 
 	/**
 	 * Function create_times_array
@@ -137,19 +85,28 @@ class Stundenplan_Model extends CI_Model {
 			$time_since_monday = $time_since_monday + 86400;
 			$actual_day--;
 		}
+		
+		//Bugfix, if it's Sunday, it's the day before Monday, so the past time is negative 
+		if ($actual_day == 0)
+			$time_since_monday = -86400;
 
 		$date_monday = date('d.m.Y', time() - $time_since_monday);
 
 		//Add to the row array the specific date counting from Monday to Friday
 		$actual_date = $date_monday;
-
+		
+		// We need to exclude Saturday and Sunday.
+		// PHP week numbers start at 0 for Sunday, so 6 is for Saturday
+		$valid_days = array(1, 2, 3, 4, 5);
+		
 		//Reset Variable for actual day(Needed to Markup the day in Array)
-		$actual_day = date('w');
+		$day_number = date('w');
+		$actual_day = (in_array($day_number, $valid_days)) ? $day_number : 1;
 
 		$day_in_loop = 1;
-
-		foreach ($days as $key => $value) {
-
+		
+		foreach ($days as $key => $value)
+		{			
 			$days[$key]["Datum"] = $actual_date;
 			$time_since_monday = $time_since_monday - 86400;
 
@@ -166,10 +123,20 @@ class Stundenplan_Model extends CI_Model {
 
 		}
 
+		//Bugifx, If its Weekend show the next Monday
+		if (($actual_day == 0) or ($actual_day == 6)) {
+			$days[0]["IstHeute"] = 1;
+		}
+
 		return $days;
 	}
 
-	//Constructs and returns an empty 2D array which will contain the timetable
+	/**
+	 * Constructs and returns an empty 2D array which will contain the timetable
+	 *
+	 * @param type name // nicht vorhanden
+	 * @return type // empty 2D array which will contain the timetable
+	 */
 	private function create_timetable_array()
 	{
 		$query_days = $this->db->query("SELECT TagName FROM tag");
@@ -203,9 +170,10 @@ class Stundenplan_Model extends CI_Model {
 	 * @param Integer // ID of User
 	 * @return row-array // List of all courses in this semster linked to the USER-ID
 	 */	
-	private function get_courses($id) 
+	private function get_courses() 
 	{
-		
+		$id = $this->user_model->get_userid();
+
 		//benutzerkurs: Enthält die aktiven Module
 		//studiengangkurs: Die Namen im Klartext (Nur deswegen in Query)
 		//stundenplankurs: Genauere Informationen zu Kursen(Startzeit, Typ)
@@ -227,7 +195,11 @@ class Stundenplan_Model extends CI_Model {
 			b.Aktiv,
 			b.KursID,b.SPKursID,
 			g.TeilnehmerMax, g.Anmeldung_zulassen,
-			(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.GruppeID = sp.GruppeID) AS 'Anzahl Teilnehmer'
+			(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.GruppeID = sp.GruppeID) AS 'Anzahl Teilnehmer',
+
+			sempla.SemesterplanID,
+
+			sk.KursHoeren
 		FROM 
 			benutzerkurs b,
 			studiengangkurs sg,
@@ -236,7 +208,11 @@ class Stundenplan_Model extends CI_Model {
 			tag t,
 			stunde s_beginn, stunde s_ende,
 			benutzer d,
-			gruppe g
+			gruppe g,
+
+			semesterplan sempla,
+
+			semesterkurs sk
 		WHERE 
 			b.kursID = sg.kursID AND
 			sp.kursID = b.KursID AND
@@ -247,9 +223,15 @@ class Stundenplan_Model extends CI_Model {
 			t.TagID = sp.TagID AND
 			sp.DozentID = d.BenutzerID AND
 			b.BenutzerID = ".$id." AND 
-			b.SemesterID = ".$this->get_Semester($this->user['StudienbeginnSemestertyp'] , $this->user['StudienbeginnJahr'])." AND
+			b.SemesterID = ".$this->adminhelper->get_act_semester($this->user_model->get_studienbeginn_semestertyp() , $this->user_model->get_studienbeginn_jahr() )." AND
 			sp.GruppeID = g.GruppeID AND
-			sp.IsWPF = 0
+			sp.IsWPF = 0 AND
+
+			sempla.BenutzerID = ".$id." AND
+
+			sk.SemesterplanID = sempla.SemesterplanID AND
+			sk.KursID = b.KursID AND
+			sk.Semester = ".$this->adminhelper->get_act_semester($this->user_model->get_studienbeginn_semestertyp() , $this->user_model->get_studienbeginn_jahr() )."
 		ORDER BY 
 			sp.tagID, sp.StartID
 		");
@@ -281,9 +263,80 @@ class Stundenplan_Model extends CI_Model {
 		return $courses;
 	}
 
+
+	/**
+	 * Important Function for display in week-view.
+	 *
+	 * Depending on their alternative and if the user is aready enrolled, a flag named "Anzeigen" is added.
+	 *
+	 */
+	private function add_displayflag($courses)
+	{
+		//Run throug array
+		foreach ($courses as $key => $course) {
+
+			// Konstantin Voth
+			// if KursHoeren was deactivated in the "Studienplan" and course is a Vorlesung, do not show
+			if ($course["KursHoeren"] == 0 
+				&& $course['VeranstaltungsformID'] == 1)
+			{
+				$courses[$key]["Anzeigen"] = 0;
+			}
+
+			//when there is no alterntive
+			elseif ($course["VeranstaltungsformAlternative"] == "") 
+			{
+				$courses[$key]["Anzeigen"] = 1;
+			}  
+			//when there is a alternative
+			else
+			{
+				if ($course["Aktiv"] == 1) 
+				{
+					$courses[$key]["Anzeigen"] = 1;
+				}
+				else //Aktiv == 0
+				{
+
+					//Flag to be altered when there is a active one
+					$user_enrolled = false;
+
+					foreach ($courses as $ikey => $icourse) {
+						//Run through array again, if there is an course with Aktiv flag and same
+						//vernastaltungsformID and same KursID set user_enrolled = true
+						if ($icourse["VeranstaltungsformID"] == $course["VeranstaltungsformID"]  and
+							$icourse["KursID"] == $course["KursID"]  and
+							$icourse["Aktiv"] == 1) 
+						{
+							$user_enrolled = true;
+						}	
+
+						//if user is somwhere else enrolled, the actual curse should not be displayed
+						if ($user_enrolled)
+							$courses[$key]["Anzeigen"] = 0;
+						else	
+							$courses[$key]["Anzeigen"] = 1;
+
+
+					}//End inner foreach
+
+				}
+				
+			}//End else there is alternative
+
+		}//End outer foreach 
+
+		return $courses;
+	}
+
+	/**
+	 * Sort courses into timetable-array-structure
+	 *
+	 * @param type name // Record of courses(already set active!!), empty timetabe array
+	 * @return type // filled timetable
+	 */
 	private function courses_into_timetable($courses, $timetable)
 	{
-
 
 		//insert courses in the empty timetable array via for-each
 		foreach ($timetable as $TagName => $TagInhalt) {
@@ -299,10 +352,9 @@ class Stundenplan_Model extends CI_Model {
 			}
 		}
 
-
-
 		return $timetable;
 	}
+
 
 	/**
 	 * Central function, returns various arrays, the most important one is the "stundenplan"-Array (found under index [0])
@@ -314,17 +366,23 @@ class Stundenplan_Model extends CI_Model {
 	 * @param integer // The ID of a User
 	 * @return array // Various arrays
 	 */	
-	public function get_stundenplan($id)
+	public function get_stundenplan()
 	{
 		//Set global variable in this class for informtion concering the User.
-		$this->define_user($id);
+		// $this->define_user($id);
 		
 
 		//Query all courses from Database
-		$courses = $this->get_courses($id);
+		$courses = $this->get_courses();
+
+		// FB::log($courses);
 
 		//Control active-flag of courses, change if necsassary(see function-doc)
 		$courses = $this->set_active($courses);
+
+		//Add display flag(see function-doc)
+		$courses = $this->add_displayflag($courses);
+
 
 		//Create empty structure of timetable
 		$timetable = $this->create_timetable_array();
@@ -350,9 +408,18 @@ class Stundenplan_Model extends CI_Model {
 		//[3] : The courses in a list, indexed by Numbers, ordered by day and hour
 		array_push($return, $courses);
 
-		//$this->krumo->dump($return);
+		
 		
 		return $return;
 	}
+
+
+	// Konstantin Voth
+	public function get_stundenplan_student()
+	{
+		return $this->get_stundenplan();
+	}
+
+
 	
 }

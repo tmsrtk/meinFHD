@@ -12,11 +12,11 @@ class Adminhelper {
 	 */
 	public function __construct()
 	{
-
 	}
 
 	/**
-	* creates a random pw with a length of 10 chars - jochens function
+	* Creates a random pw with a length of 10 chars - jochens function
+	*
 	* @return random password
 	*/
 	function passwort_generator() 
@@ -28,7 +28,7 @@ class Adminhelper {
 		 
 		$password = substr($string, $start, $laenge);
 		 
-		return md5($password);
+		return $password;
 	}
 
 	// modular form validation rules
@@ -58,7 +58,8 @@ class Adminhelper {
 		return array(
 			'field' => 'forename',
 			'label' => 'Vorname',
-			'rules' => 'alpha|max_length[50]'
+			// 'rules' => 'alpha|max_length[50]'
+			'rules' => 'alpha_dash_space|max_length[50]'
 			);
 	}
 
@@ -68,7 +69,8 @@ class Adminhelper {
 		return array(
 			'field' => 'lastname',
 			'label' => 'Nachname',
-			'rules' => 'alpha|max_length[50]'
+			// 'rules' => 'alpha|max_length[50]'
+			'rules' => 'alpha_dash_space|max_length[50]'
 			);
 	}
 
@@ -136,9 +138,33 @@ class Adminhelper {
 	{
 		return array(
 			'field' => 'erstsemestler',
-			'label' => 'erstsemestler',
+			'label' => 'Erstsemestler',
 			'rules' => ''
 			);
+	}
+
+	/**
+	 * Returns the sum of the semester, by calculating the given data
+	 * @param  String $semestertyp   WS / SS
+	 * @param  [type] $studienbeginn Year of users study start, like 2012
+	 * @return [type]                [description]
+	 */
+	public function get_act_semester($semestertyp, $studienbeginn)
+	{
+		// $act_semester_count = 0;
+
+		// $act_semtype = $this->getSemesterTyp();
+		// $is_same_semtype = ($act_semtype == $semestertyp) ? true : false;
+
+		// $jahresdelta = abs(date("Y") - $studienbeginn);
+		// $sem_tmp = ($gleicher_semestertyp) ? 1 : 2;
+		// $act_semester_count = $jahresdelta * 2 + $sem_tmp;
+
+		// return $act_semester_count;
+
+		//           delta of years     two sem per year      act. semtype         same as given type?      if yes add one  otherwise zero
+		return (abs(date("Y"))-$studienbeginn) * 2 + ((($this->getSemesterTyp() == $semestertyp) ? true : false) ? 1 : 0);
+		// return 4;
 	}
 
 	/************************************************************************
@@ -164,6 +190,7 @@ class Adminhelper {
 		// stimmt aktueller Semestertyp mit Studienbeginn-Semestertyp �berein?
 		$gleicher_semestertyp = ($errechneter_semestertyp == $semestertyp) ? true : false;
 		
+
 		// Errechne aktuelles Semester
 		$semester = (($gleicher_semestertyp) ? 1 : 0) + 2 * ((($gleicher_semestertyp && date("n") < 3) ? date("Y")-1 : date("Y")) - $studienbeginn + ((date("n")>2) ? 1 : 0));
 		

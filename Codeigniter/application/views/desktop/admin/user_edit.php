@@ -26,7 +26,7 @@
 ?>
 	<div class="row-fluid">
 		<?php echo form_open('', $data_formopen); ?>
-		<div class="span4"><h2>Benutzer bearbeiten</h2></div>
+		<div class="span4"><h2>Benutzer bearbeiten</h2>Anzahl: <span class="studentcounter badge badge-success"></span></div>
 		<div class="span4"><h5>Filter</h5><?php echo form_dropdown('user_change_rolle_dd', $data_role, '0', $data_role_ext); ?></div>
 		<div class="span4"><h5>Suche</h5><?php echo form_input($data_search); ?></div>
 		<?php echo form_close(); ?>
@@ -66,7 +66,7 @@
 
 <?php startblock('customFooterJQueryCode');?>
 
-	var xhr; 
+	var xhr, usercount;
 
 	var UsersEditAjax = {
 		init : function( config ) {
@@ -121,6 +121,13 @@
 					data,
 					function(response) {
 						self.config.dataContent.html(response);
+					}).done(function() {
+						$.get(
+						"<?php echo site_url();?>admin/ajax_show_user_count/",
+						data,
+						function(response) {
+							self.config.counter.text(response);
+						});
 					});
 				
 			}, 400);
@@ -215,81 +222,10 @@
 	UsersEditAjax.init({
 		roleDropdown : $('#user_cr_role'),
 		searchInput : $('#user_cr_search'),
-		dataContent : $('tbody#user_content')
+		dataContent : $('tbody#user_content'),
+		counter : $('.studentcounter')
 	});
 
-
-
-	// prompt dialogs
-	/**
-	 * 
-	 */
-	// function createDialog(title, text) {
-	// 	var $mydialog = $('<div id="dialog-confirm" title="'+title+'"></div>')
-	// 				.html('<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>'+text+'</p>')
-	// 				.dialog({
-	// 					autoOpen: false,
-	// 					resizable: false,
-	// 					height: 200,
-	// 					modal: true,
-	// 					buttons: {
-	// 						OK: function() {
-	// 							$("input[type=submit][clicked=true]").parents("form#edit_user_row").submit();
-	// 							$("td.user_content_row input#save").removeAttr("clicked");
-	// 							$( this ).dialog( "close" );
-	// 						},
-	// 						Abbrechen: function() {
-	// 							$("td.user_content_row input#save").removeAttr("clicked");
-	// 							$( this ).dialog( "close" );
-	// 						}
-	// 					}
-	// 				});
-	// 	return $mydialog;
-	// }
-
-	function createModalDialog(title, text, withOK) {
-		myModalDialog = 
-			$('<div class="modal hide" id="myModal"></div>')
-			.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
-			.append('<div class="modal-body"><p>'+text+'</p></div>')
-			.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Schließen</a>');
-			if (withOK) myModalDialog.find('.modal-footer').append('<a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
-			// <a href="" class="btn btn-primary" data-accept="modal">OK</a></div>
-		return myModalDialog;
-	}
-
-	function _showModal(title, text, withOK) {
-		mm = createModalDialog(title, text, withOK);
-		$('#modalcontent').html(mm);
-
-		$('#myModal').modal({
-			keyboard: false
-		}).on('hide', function () {
-			$("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
-		}).modal('show');
-
-		if (withOK) {
-			// if there are any click listener, remove them
-			$('#modalcontent').off('click');
-			// add new
-			$("#modalcontent").on( 'click', 'button, a', function(event) {
-				event.preventDefault();
-
-				if ( $(this).attr("data-accept") === 'modal' ) {
-					console.log("accept");
-
-					$(event.target).parent().parent().find("div.modal-body").html("Bitte warten, der Befehl wird ausgeführt");
-					$(event.target).parent().parent().find("div.modal-footer").hide();
-
-					$("input[type=submit][data-clicked=true]").parents("form#edit_user_row").submit();
-
-				} else {
-					console.log("cancel");
-				}
-
-			});
-		}
-	}
 
 	// live click listener (because of ajax and new content) to override default submit button function
 	// to open the prompt dialog 
@@ -303,11 +239,10 @@
 			// createDialog('Änderungen speichern', 'Sollen die Änderungen wirklich gespeichert werden?').dialog("open");
 			_showModal('Änderungen speichern', 'Sollen die Änderungen wirklich gespeichert werden?', true);
 		} else if (user_function === '1') {
-			// $(this).attr("data-clicked", "true");
-			// createDialog('Passwort resetten', 'Möchten Sie das Passwort für diesen Benutzer wirklich zurücksetzen?').dialog("open");
+			$(this).attr("data-clicked", "true");
+			_showModal('Passwort resetten', 'Möchten Sie das Passwort für diesen Benutzer wirklich zurücksetzen?', true);
 		} else if (user_function === '2') {
 			$(this).attr("data-clicked", "true");
-			// createDialog('Studienplan resetten', 'Möchten Sie den Studienplan für diesen Benutzer wirklich zurücksetzen?').dialog("open");
 			_showModal('Studienplan resetten', 'Möchten Sie den Studienplan für diesen Benutzer wirklich zurücksetzen?', true);
 		} else if (user_function === '3') {
 			$(this).attr("data-clicked", "true");

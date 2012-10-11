@@ -18,7 +18,7 @@ class EventSort {
 	public function __construct($events = array())
 	{
 		// Check if we got an array with more than 1 entry
-		if (is_array($events) && count($events) > 1)
+		if (is_array($events) && count($events) > 0)
 		{
 			// Assign to instance variable
 			$this->events = $events;
@@ -26,6 +26,7 @@ class EventSort {
 			// Init the marker
 			$this->_initMarker();
 		}
+
 	}
 	
 	/**

@@ -63,6 +63,41 @@
 									break;
 								}
 							}
+
+							// wenn aktueller user ein student ist, und die aktuelle checkbox admin, dozent oder betreuer
+							// darstellt, zeige diese nicht an
+							// etc..
+							// foreach ($user['roles'] as $key => $value)
+							// {
+							// 	// log_message('error', $value);
+
+							// 	if (in_array('5', $value) && ($i == 1 || $i == 2 || $i == 3))
+							// 	{
+							// 		// do not show these checkboxes
+							// 	}
+							// 	// elseif (in_array(array('1', '2', '3'), $value) && ($i == 4 || $i == 5)) {  not worknig??
+							// 	elseif (in_array('1', $value) && ($i == 4 || $i == 5))
+							// 	{
+							// 		// do not show these checkboxes
+							// 	}
+							// 	elseif (in_array('2', $value) && ($i == 4 || $i == 5))
+							// 	{
+							// 		// do not show these checkboxes
+							// 	}
+							// 	elseif (in_array('3', $value) && ($i == 4 || $i == 5))
+							// 	{
+							// 		// do not show these checkboxes
+							// 	}
+							// 	else
+							// 	{
+							// 		// print the role checkbox
+							// 		echo form_checkbox('cb_userroles[]', $i, $tmp);
+							// 		echo $all_roles[$i];
+							// 		echo br();
+							// 		break;
+							// 	}
+							// }
+
 							// print the role checkbox
 							echo form_checkbox('cb_userroles[]', $i, $tmp);
 							echo $all_roles[$i];
