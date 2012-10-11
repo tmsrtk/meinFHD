@@ -1,5 +1,19 @@
 <?php
 
+	/**
+	 * Provides a panel with all staff which has the role (labing=3 or tutor=4)
+	 * For tutor-panel there is a button added which provides the possility to
+	 * 'create' a new tutor. >> Dialog with search-function.
+	 * 
+	 * IMPORTANT:
+	 * Partial is used to build labing and tut-panel.
+	 * Therefore the variables has to be assigned dependant on flag (print_tuts)
+	 * 
+	 * Panel is only built when user NO tutor!
+	 * 
+	 */
+
+	 // prepare button-data
     $add_tutor_button_data = array(
 		'name' => 'add-tutor-button',
 		'id' => 'add-tutor-button-'.$course_id,
@@ -17,7 +31,7 @@
     $save_data = 'kursverwaltung/save_labings_for_course';
     $tut_button = '';
 
-    // switch if it is tut-view
+    // override if it is tut-view
     if($print_tuts){
 		$panel_id_prefix = 'tuts-panel-';
 		$form_id = 'course-tut-save-button';
@@ -28,6 +42,7 @@
 		$tut_button = '<div id="tuts-panel-button-'.$course_id.'">'.form_button($add_tutor_button_data).'</div>';
     }
     
+	
     $form_attributes = array('id' => $form_id);
     $submit_attributes = 'id=course-staff-save-button class="btn-warning"';
     
@@ -38,12 +53,24 @@
 <!--    <hr />-->
 
     <?php
+	/**
+	 * 
+	 */
+	
 	// building checkbox panel with all possible staff for a course
 	if(!$is_tutor){
-	    print form_open($save_data, $form_attributes);
-	    echo form_submit($course_id, 'Speichern', $submit_attributes);
+		print form_open($save_data, $form_attributes);
+		echo form_submit($course_id, 'Speichern', $submit_attributes);
 
-	    // counter for creating 3 collumns
+	    /**
+		 * Staff is displayed in 3 collumns.
+		 * Therefore:
+		 * - counter for creating 3 collumns
+		 * - get all staff for that category
+		 * - calculate one third of that >> 3 collumns
+		 * 
+		 * >> Then run over all staff and build panel.
+		 */
 	    $counter = 0;
 	    $number_staff = count($possible_staff);
 	    $third_staff = ceil($number_staff / 3);
@@ -53,12 +80,15 @@
 			// building three columns
 			if($counter % $third_staff == 0){
 				if($counter == 0){
+					// first div
 					echo '<div class="span3" style="float:left;">';
 				} else {
+					// second, third div
 					echo '</div><div class="span3" style="float:left;">';
 				}
 			}
 
+			// provide correct state of checkbox
 			$checked = FALSE; // init
 
 			// only if there are labings in variable
@@ -71,12 +101,13 @@
 				}
 			}
 
+			// one field (cb plus label)
 			echo '<p>';
-				// print checkbox
+				// prepare checkbox-data
 				$cb_name = $p_staff->BenutzerID;
 				$cb_id = $course_id.'-'.$p_staff->BenutzerID;
 
-				// checkbox data
+				// define checkbox attrs-array
 				$cb_data = array(
 					'name' => $cb_name,
 					'id' => $cb_id,
@@ -85,9 +116,20 @@
 				);
 				echo form_checkbox($cb_data);
 
-				// print label
+				// init
+				$label_id = '';
+				$label_text = '';
+				
+				// prepare label-data
 				$label_id = $label_id_prefix.$course_id.'-'.$p_staff->BenutzerID;
 				$label_text = $p_staff->Vorname.' '.$p_staff->Nachname;
+				
+				// check if staff stored a name
+				if($label_text == ' '){
+					$label_text = 'keine Angabe';
+				}
+				
+				// define label attrs-array
 				$label_attrs = array(
 					'id' => $label_id,
 					'style' => 'display:inline'

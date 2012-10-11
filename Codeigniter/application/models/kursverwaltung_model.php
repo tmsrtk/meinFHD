@@ -30,7 +30,7 @@ class Kursverwaltung_model extends CI_Model {
 	 * Method used for showing all lab groups and notes with participants
      * @param int $id
      * @param int $eventtype
-     * @return type
+     * @return array
      */
     public function get_course_details($course_id, $eventype){
 		$this->db->distinct();
@@ -57,16 +57,17 @@ class Kursverwaltung_model extends CI_Model {
     
 	
     /**
-     * Returns name and description for given course_id
+     * Returns course-name and -description for given course_id
      * @param int $course_id course_id to get the name for
      * @return String $data[0] first index of the result - 
 	 * containing the shortname and the description for that course
      */
     public function get_lecture_name($course_id){
+		$data = array(); // init
+		$q = '';
+		
 		$this->db->select('kurs_kurz, Beschreibung')->where('KursID', $course_id);
 		$q = $this->db->get_where('studiengangkurs');
-
-		$data = array(); // init
 
 		if($q->num_rows() > 0){
 			foreach ($q->result() as $row){
@@ -138,19 +139,19 @@ class Kursverwaltung_model extends CI_Model {
 
     /**
      * Returns first and last name of prof for given course
-     * @param int $course_id
-     * @return array
+     * @param int $course_id the course-id
+     * @return array simple array with data
      */
     public function get_profname_for_course($course_id){
+		$data = array(); // init
+		$q = ''; // init
+		
 		$this->db->distinct();
 		$this->db->select('Titel, Vorname, Nachname');
 		$this->db->from('stundenplankurs as a');
 		$this->db->join('benutzer as b', 'a.DozentID = b.BenutzerID');
 		$this->db->where('KursID', $course_id);
-
 		$q = $this->db->get();
-
-		$data = array(); // init
 
 		if($q->num_rows() > 0){
 			foreach ($q->result() as $row){
@@ -171,6 +172,9 @@ class Kursverwaltung_model extends CI_Model {
      * @return type
      */
     public function get_lab_details($course_id, $eventtype){
+		$data = array(); // init
+		$q = ''; // init
+		
 		$this->db->select('SPKursID, Raum, StartID, EndeID, TagID, VeranstaltungsformAlternative, TeilnehmerMax');
 		$this->db->from('stundenplankurs as a');
 		$this->db->join('gruppe as b', 'a.GruppeID = b.GruppeID');
@@ -178,7 +182,6 @@ class Kursverwaltung_model extends CI_Model {
 		$this->db->where('VeranstaltungsformID', $eventtype);
 		$q = $this->db->get();
 
-		$data = array(); // init
 
 		if($q->num_rows() > 0){
 			foreach ($q->result() as $row){
@@ -196,12 +199,13 @@ class Kursverwaltung_model extends CI_Model {
      * @return array holding all eventtypes a course has
      */
     public function get_eventtypes_for_course($course_id){
+		$data = array(); // init
+		$q = ''; // init
+		
 		$this->db->distinct();
 		$this->db->select('VeranstaltungsformID');
 		$this->db->order_by('VeranstaltungsformID', 'asc');
 		$q = $this->db->get_where('stundenplankurs', array('KursID'=>$course_id));
-
-		$data = array(); // init
 
 		foreach ($q->result_array() as $row) { 
 			$data[] = $row;
@@ -221,14 +225,15 @@ class Kursverwaltung_model extends CI_Model {
      * @return array
      */
     public function get_current_labings_tuts_for_course($course_id, $table){
+		$data = array(); // init
+		$q = ''; // init
+		
 		$this->db->distinct();
 		$this->db->select('a.Vorname, a.Nachname, a.BenutzerID');
 		$this->db->from('benutzer as a');
 		$this->db->join($table.' as b', 'a.BenutzerID = b.BenutzerID');
 		$this->db->where('b.KursID', $course_id);
 		$q = $this->db->get();
-
-		$data = array(); // init
 
 		foreach ($q->result_array() as $row){
 			$data[$course_id][] = $row;
@@ -244,6 +249,9 @@ class Kursverwaltung_model extends CI_Model {
      * @return array
      */
     public function get_all_possible_labings(){
+		$data = array(); // init
+		$q = ''; // init
+		
 		$this->db->distinct();
 		$this->db->select('a.Vorname, a.Nachname, a.BenutzerID');
 		$this->db->from('benutzer as a');
@@ -251,8 +259,6 @@ class Kursverwaltung_model extends CI_Model {
 		$this->db->where('b.RolleID', 2)->or_where('b.RolleID', 3);
 		$this->db->order_by('a.Nachname', 'ASC');
 		$q = $this->db->get();
-
-		$data = array(); // init
 
 		if($q->num_rows() > 0){
 			foreach ($q->result() as $row){
@@ -271,6 +277,9 @@ class Kursverwaltung_model extends CI_Model {
      * @return type
      */
     public function get_all_tuts(){
+		$data = array(); // init
+		$q = ''; // init
+		
 		$this->db->distinct();
 		$this->db->select('a.Vorname, a.Nachname, a.BenutzerID');
 		$this->db->from('benutzer as a');
@@ -335,7 +344,7 @@ class Kursverwaltung_model extends CI_Model {
      * @return object
      */
     private function get_group_id_for_spkursid($spkurs_id){
-	$this->db->select('GruppeID');
+		$this->db->select('GruppeID');
 		$this->db->from('stundenplankurs');
 		$this->db->where('SPKursID', $spkurs_id);
 		$q = $this->db->get();

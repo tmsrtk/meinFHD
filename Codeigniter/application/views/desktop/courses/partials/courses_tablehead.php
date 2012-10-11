@@ -1,10 +1,18 @@
-<!-- building custom table >> header -->
+<?php 
+	/**
+	 * Building custom-tableheader.
+	 * Depending on lab- and tutor-flag a button is added to activate the application.
+	 * Only LABS get the button when the user is NO tutor.
+	 */
+?>
 <div class="clearfix">
 	<div class="span1"></div>
 	<div class="span9"><h3><?php echo $headline.':'; ?></h3></div>
 	<div class="span2">
 		<?php
 			// Print button only for labs AND if user is NO Tutor
+			// TODO - $lecutre_details come from the row before
+			// if lab-row is the first row >> ERROR because those lecture-details are not known
 			if($is_lab && !$is_tut){
 				$switch_button_label = '<i class="icon-ok"></i> Anmeldung aktivieren';
 				$anchor_attrs = array(

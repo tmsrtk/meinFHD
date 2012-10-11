@@ -348,11 +348,19 @@ class User_model extends CI_Model {
 
 	// getter and setter
 
+	/**
+	 * Returns all roles one user is assigned to
+	 * @return array simple array containing all roles
+	 */
 	public function get_all_roles()
 	{
 		return $this->user_roles;
 	}
 
+	/**
+	 * Returns all course_id-role-combinations for one user
+	 * @return array associative array [course-id] => [role]
+	 */
 	public function get_all_permissions()
 	{
 		return $this->user_permissions_all;
@@ -368,6 +376,10 @@ class User_model extends CI_Model {
 
 	}
 
+	/**
+	 * Returns the user-id
+	 * @return int the user-id
+	 */
 	public function get_userid()
 	{
 		if ( ! empty($this->user_id) )

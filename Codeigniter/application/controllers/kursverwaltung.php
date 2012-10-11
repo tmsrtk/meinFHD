@@ -13,7 +13,6 @@ class Kursverwaltung extends FHD_Controller {
 
 	//
     private $permissions;
-    public $roles;
     private $roleIds;
     private $course_ids;
 	private $user_id;
@@ -36,7 +35,7 @@ class Kursverwaltung extends FHD_Controller {
 	 * Loading 'kursverwaltung_model' for usage
 	 * Loading necessary data from user-model.
 	 * - all roles the user has
-	 * - course ids for that user
+	 * - course ids for that user [course-id] => [role-id]
 	 * - user_id - mainly for logging-reasons
 	 */
     function __construct(){
@@ -664,17 +663,24 @@ class Kursverwaltung extends FHD_Controller {
 	
 	
 	/**
-	 * Called from within view (modal to search for student by matrno)
-	 * @echo string holding view (in fact only first & last name to be shown in search-by-matrno-modal
+	 * Returns the modal-content for search-user-modal to the view
+	 * Method is called from within view (hitting the search button in user-search-modal)
+	 * Data passed from view contains array:
+	 * - [0] => matrikelno to search for
+	 * - [1] => courseId (needed to generate unique dom-element - necessary because of tab-view)
+	 * 
+	 * The only validation is to check for numeric value.
+	 * In any other case a message is returned that user, could not be found + new input-field 
+	 * 
+	 * @echo string final dom-element depending on search-result
 	 */
 	public function ajax_search_student_by_matrno(){
 		$return = ''; // init
 		
-		// fetching data from post - array with
-		// [0] => matrikelno to search for
-		// [1] => courseId (needed to generate unique dom-element
+		// fetching data from post
 		$data_from_post = $this->input->post('server_data');
 
+		// check if passed data is numeric
 		if(is_numeric($data_from_post[0])){
 			$return = $this->kursverwaltung_model->search_student_by_matrno($data_from_post[0]);
 		} else {
@@ -682,10 +688,10 @@ class Kursverwaltung extends FHD_Controller {
 		}
 		
 		// build element to be shown in modal and echo
-		// >> Student-Details plus Button to assign tutor-role
+		// either student-details + button to assign role
 		if($return){
 			echo $this->build_studentsearch_modal_content($data_from_post[1], $return);
-		// >> message, that there is no student with this matr-no and input-field to repeat search
+		// or error-message, that there is no student with this matr-no and input-field to repeat search
 		} else {
 			echo $this->build_studentsearch_modal_content($data_from_post[1]);
 		}
@@ -693,10 +699,16 @@ class Kursverwaltung extends FHD_Controller {
 	
 	
 	/**
+	 * Building the modal-content for search-user-modal
+	 * Returns a final-dom element which is put into the modal
+	 * Depending on the search-result (student found or not) the content differs:
+	 * - student found: button to assign role to student
+	 * - student already tutor: message to have a look at the list
+	 * - not found: message plus inputfield to search again - same id as defined in view >> reusable functions
 	 * 
-	 * @param int $course_id course
-	 * @param type $student_detail
-	 * @return string dom-element used for modal
+	 * @param int $course_id the course the student should be added as tutor
+	 * @param array $student_detail some student-details (atm: first, last name and matrno)
+	 * @return string final dom-element to put into modal
 	 */
 	private function build_studentsearch_modal_content($course_id, $student_detail = ''){
 		$element = '<div>'; // init
@@ -724,10 +736,18 @@ class Kursverwaltung extends FHD_Controller {
 	}
 	
 	
+	/**
+	 * Method to assign tutor-role to a student and make him tutor for a course.
+	 * Therefore following data is passed via POST - array:
+	 * - [0] => matrikelno to search for
+	 * - [1] => courseId (needed to generate unique dom-element
+	 * 
+	 * After assignment return success-message as string or
+	 * error-message (shouldn't happen).
+	 * 
+	 */
 	public function ajax_add_student_as_tutor(){
-		// fetching course_id from post
-		// [0] => matrikelno to search for
-		// [1] => courseId (needed to generate unique dom-element
+		// fetching data from post
 		$student_data = $this->input->post('student_data');
 		
 		// assign tut-role to student and for passed course_id
