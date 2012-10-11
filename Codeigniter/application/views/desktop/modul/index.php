@@ -23,7 +23,7 @@
    		    				<i class="icon-pencil"></i>
    		    				 Notizen
    		    			</a>
-		    			<a href="dozent" class="btn btn-large btn-primary pull-right">
+		    			<a href="<?php echo base_url('dozent/show/'.$courseinfo['Modulinfo']['DozentID']) ?>" class="btn btn-large btn-primary pull-right">
 		    				<i class="icon-arrow-right icon-white"></i>
 		    				 Dozent
 		    			</a>
@@ -94,9 +94,15 @@
 											<td><?php echo $veranstaltung['VeranstaltungsformAlternative'] ?></td>
 											<td><?php echo substr($veranstaltung['TagName'],0,2); ?>/ <?php echo $veranstaltung['Beginn']; ?> - <?php echo $veranstaltung['Ende']; ?></td>
 											<td>
+											<?php if ($veranstaltung['Anmeldung_zulassen'] == 0) : ?>								
+												<a href="#" class="btn btn-large pull-right">
+													<i class="icon-minus-sign"></i>
+												</a>
+											<?php else: ?>
 												<a href="<?php echo base_url('modul/enroll_to_course/'. $veranstaltung['KursID'].'/'. $veranstaltung['SPKursID'].'/'.  $veranstaltung['GruppeID'] ); ?>" class="btn btn-large pull-right">
 													<i class="icon-ok"></i>
-												</a>									
+												</a>
+											<?php endif; ?>
 											</td>
 										</tr>
 
