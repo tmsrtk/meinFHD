@@ -13,7 +13,7 @@ class Kursverwaltung extends FHD_Controller {
 
 	//
     private $permissions;
-    private $roles;
+    public $roles;
     private $roleIds;
     private $course_ids;
 	private $user_id;
