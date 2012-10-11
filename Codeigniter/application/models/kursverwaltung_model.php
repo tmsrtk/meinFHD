@@ -219,10 +219,11 @@ class Kursverwaltung_model extends CI_Model {
     
     /**
      * Returns array with all labings/tuts belonging to a single course-id
-     * switch labings/tuts with passed table
-     * @param int $course_id
-     * @param String $table
-     * @return array
+     * Depending on passed table, passedswitch labings/tuts with passed table
+	 * 
+     * @param int $course_id the course-id to get staff for
+     * @param String $table table to get staff from
+     * @return array array with all labings/tuts mapped to course-id [course_id] => [staff]
      */
     public function get_current_labings_tuts_for_course($course_id, $table){
 		$data = array(); // init
@@ -245,8 +246,9 @@ class Kursverwaltung_model extends CI_Model {
     
     /**
      * Returns array with all possible labings
-     * i.e. Role 2 and Role 3
-     * @return array
+     * Labings for a course are profs (RolleID=2) AND labings (RolleID=3)
+	 * 
+     * @return array simple array with all labings
      */
     public function get_all_possible_labings(){
 		$data = array(); // init
@@ -266,15 +268,15 @@ class Kursverwaltung_model extends CI_Model {
 			}
 		}
 
-	//	$data = $this->clean_nested_array($data);
-
 		return $data;
     }
     
     
     /**
-     * 
-     * @return type
+     * Returns array with all possible tutors
+     * Tutors (RolleID=4)
+	 * 
+     * @return array simple array with all tutors
      */
     public function get_all_tuts(){
 		$data = array(); // init
@@ -293,18 +295,19 @@ class Kursverwaltung_model extends CI_Model {
 				$data[] = $row;
 			}
 		}
-	//	$data = $this->clean_nested_array($data);
+		
 		return $data;
     }
     
-    
-    /**
-    * Runs through nested array and returns simple indexed array with values
-    * @param type $array
-    * @return type
-    */
+	/**
+	 * Helper function to clean a nested array
+	 * Runs through nested array and returns simple indexed array with values
+	 * 
+	 * @param array $array the array to clean
+	 * @return array simple indexed array
+	 */
     private function clean_nested_array($array){
-		$clean = array();
+		$clean = array(); // init
 		foreach ($array as $a) {
 			foreach ($a as $key => $value) {
 				$clean[] = $value;

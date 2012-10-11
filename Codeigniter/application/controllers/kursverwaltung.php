@@ -209,6 +209,25 @@ class Kursverwaltung extends FHD_Controller {
 					$course_data[$id][] = $this->get_course_event_view($id, $e, $subview_data, $subview_lecture_to_load);
 				}
 				
+				print_r($eventtypes);
+				
+				/**
+				 * Add information if save-button should be showed depending on
+				 * role (profs & labings see buttons always)
+				 * and existance of tut-event (tuts only see button if tut also exists)
+				 * 
+				 */
+				if(in_array(2, $this->roleIds) || in_array(3, $this->roleIds)){
+					$show_save_button[$id] = true; 
+				} else {
+					if(in_array('6', $eventtypes)){
+						$show_save_button[$id] = true; 
+					} else {
+						$show_save_button[$id] = false; 
+					}
+				}
+				$this->data->add('show_save_button', $show_save_button);
+				
 				// getting description depending on role
 				$description_field[$id] = $this->load->view('courses/partials/courses_description', $staff_view_data, TRUE);
 
@@ -217,6 +236,7 @@ class Kursverwaltung extends FHD_Controller {
 				$this->data->add('course_details', $course_data);
 				$this->data->add('description', $description_field);
 				$this->data->add('offset', 0);
+				$this->data->add('');
 			}
 
 			// load course-view
@@ -548,6 +568,28 @@ class Kursverwaltung extends FHD_Controller {
 		if(count($staff) === 1){
 	//	    echo 'if'; // DEBUG
 			// get course_id i.e. first element key
+			// TODO redirect!!!!!!!!!!!!!!!
+			// Following error appeared when saving staff (removed one person from labings)
+			// then without reloading added new tutor via dialog
+			/*
+			 * <h4>A PHP Error was encountered</h4>
+
+				<p>Severity: Warning</p>
+				<p>Message:  reset() expects parameter 1 to be array, boolean given</p>
+				<p>Filename: controllers/kursverwaltung.php</p>
+				<p>Line Number: 551</p>
+
+				</div><div style="border:1px solid #990000;padding-left:20px;margin:0 0 10px 0;">
+
+				<h4>A PHP Error was encountered</h4>
+
+				<p>Severity: Warning</p>
+				<p>Message:  key() expects parameter 1 to be array, boolean given</p>
+				<p>Filename: controllers/kursverwaltung.php</p>
+				<p>Line Number: 552</p>
+
+				</div>
+			 */
 			reset($staff); // setting pointer to first element - necessary?!?!
 			$course_id = key($staff);
 			// delete staff for that course_id

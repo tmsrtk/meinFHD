@@ -133,7 +133,9 @@
 					<?php
 //						echo '<hr>';
 						echo $description[$c_id];
-						echo form_submit($submit_data_save_all);
+						if($show_save_button[$c_id]){
+							echo form_submit($submit_data_save_all);
+						}
 						echo '</div>';
 						echo form_close(); // end of form 
 					?></div>
