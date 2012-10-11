@@ -13,7 +13,16 @@
 								<li><a href="<?php print base_url('dashboard/index'); ?>">Dashboard</a></li>
 								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_stundenplan') ) : ?>
-								<li><a href="<?php print base_url('stundenplan/index'); ?>">Stundenplan</a></li>
+								<li class="dropdown">
+									<a href="<?php print base_url('#'); ?>" class="dropdown-toggle" data-toggle="dropdown">
+										Stundenplan
+										<b class="caret"></b>
+									</a>
+									<ul class="dropdown-menu level-2">
+										<li><a href="<?php print base_url('stundenplan/index'); ?>">Tagesansicht</a></li>
+										<li><a href="<?php print base_url('stundenplan/woche'); ?>">Wochenansicht</a></li>
+									</ul> <!-- /.nav .level-2 -->
+								</li>
 								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_semesterplan') ) : ?>
 								<li><a href="<?php print base_url('studienplan/index'); ?>">Studienplan</a></li>
