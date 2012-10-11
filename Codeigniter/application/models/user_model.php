@@ -407,6 +407,15 @@ class User_model extends CI_Model {
 			return $this->studienbeginn_jahr;
 		}
 	}
+
+
+
+
+
+
+
+
+
 	
 	/**
 	 * Returns course-ids for a single user mapped to roles

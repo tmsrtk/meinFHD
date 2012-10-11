@@ -122,7 +122,7 @@ class Stundenplan extends FHD_Controller {
 
 		if ( in_array(Roles::$dozent, $roles) )
 		{
-			$stundenplaene[Roles::$dozent] = $this->Stundenplan_Model->get_stundenplan_student();
+			$stundenplaene[Roles::$dozent] = $this->Stundenplan_Model->get_stundenplan_dozent();
 
 			$this->data->add('tage', $stundenplaene[Roles::$dozent][1]);
 			$this->data->add('zeiten', $stundenplaene[Roles::$dozent][2]);
