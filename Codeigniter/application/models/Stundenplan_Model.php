@@ -269,6 +269,7 @@ class Stundenplan_Model extends CI_Model {
 					->where('sgk.KursID = spk.KursID 
 						AND vf.VeranstaltungsformID = spk.VeranstaltungsformID
 						AND ben.BenutzerID = spk.DozentID
+						AND ben.BenutzerID = '.$id.'
 						AND tag.TagID = spk.TagID
 						AND s_beginn.StundeID = spk.StartID
 						AND s_ende.StundeID = spk.EndeID
@@ -324,6 +325,7 @@ class Stundenplan_Model extends CI_Model {
 					->where('sgk.KursID = spk.KursID 
 						AND vf.VeranstaltungsformID = spk.VeranstaltungsformID
 						AND ben.BenutzerID = kt.BenutzerID
+						AND kt.BenutzerID = '.$id.'
 						AND spk.KursID = kt.KursID
 						AND tag.TagID = spk.TagID
 						AND s_beginn.StundeID = spk.StartID
