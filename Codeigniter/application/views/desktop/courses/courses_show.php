@@ -171,7 +171,6 @@
 	var activeTabId = <?php echo $active_course; ?>;
 
 	// initialize active tab
-	
 	if(activeTabId == 0){
 		$('.tab-content div:first-child').addClass("active");
 		$('#course-details-navi li:first-child').addClass("active");

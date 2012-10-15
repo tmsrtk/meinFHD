@@ -17,6 +17,11 @@
 
 <?php startblock('content'); # additional markup before content ?>
 		
+		<div class="row-fluid">
+			<h2>Meine Praktikumsgruppen</h2>
+			<p><a class="label label-info" href="<?php echo base_url(); ?>/kursverwaltung/show_labmgt">Zurück zur Übersicht</a></p>
+		</div>
+		
 		<div>
 			<ul class="nav nav-tabs" id="lab-details-navi">
 				<?php 
@@ -26,7 +31,7 @@
 							$index = 1;
 							foreach($details as $d){
 								echo '<li id="lab-tab-'.$d->SPKursID.'">';
-								echo '<a href="#'.$d->SPKursID.'" data-toggle="tab">'.$d->kurs_kurz.' - Gruppe '.$index.'</a>';
+								echo '<a href="#tab-panel-'.$d->SPKursID.'" data-toggle="tab">'.$d->kurs_kurz.' - Gruppe '.$index.'</a>';
 								echo '</li>';
 								$index++;
 							}
@@ -41,7 +46,6 @@
 <!--			<pre>
 				<?
 //					print_r($event_dates);
-//					print_r($active_group);
 //					print_r($sp_course_details);
 //					print_r($sp_course_participants_details);
 //					foreach($theads as $head){
@@ -58,9 +62,10 @@
 					// index for counting groups
 					$index_groups = 1;
 					foreach($group_details as $sp_course_id => $participants){
-						echo '<div class="tab-pane" id="'.$sp_course_id.'"> ';
+						echo '<div class="tab-pane" id="tab-panel-'.$sp_course_id.'"> ';
 
 						// button for adding dates - must be generated with unique id!
+						// therefore here within code
 						$header_button_data = array(
 							'name' => 'change-dates-button',
 							'id' => 'change-dates-button'.$sp_course_id,
@@ -95,38 +100,80 @@
 
 							// print two lines of checkboxes (1. presence, 2. testat)
 							for($i = 0; $i < $number_of_events; $i++){
+								// prepare cb-data
+								$cb_data_presence = array(
+									'name' => 'presence-uid-'.$i.'-'.$one_participant->BenutzerID,
+									'id' => 'presence-uid-'.$i.'-'.$one_participant->BenutzerID,
+									'data-uid' => $one_participant->BenutzerID,
+									'data-eid' => $i,
+									'class' => 'lab-cb',
+									'value' => 'accept',
+									'checked' => 'TRUE'
+								);
+								$cb_data_testat = array(
+									'name' => 'testat-uid-'.$i.'-'.$one_participant->BenutzerID,
+									'id' => 'testat-uid-'.$i.'-'.$one_participant->BenutzerID,
+									'data-uid' => $one_participant->BenutzerID,
+									'data-eid' => $i,
+									'class' => 'lab-cb',
+									'value' => 'accept',
+									'checked' => 'TRUE'
+								);
+								
+								// print checkboxes
 								if(substr($one_participant->anwesenheit, $i, 1) == '1'){
 									// check
-									echo form_checkbox('presence'.$i, 'accept', TRUE);
+									echo form_checkbox($cb_data_presence);
 								} else {
 									// uncheck
-									echo form_checkbox('presence'.$i, 'accept', FALSE);
+									$cb_data_presence['checked'] = FALSE;
+									echo form_checkbox($cb_data_presence);
 								}
 								echo '<br>';
 
 								if(substr($one_participant->testat, $i, 1) == '1'){
 									// check
-									echo form_checkbox('testat'.$i, 'accept', TRUE);
+									echo form_checkbox($cb_data_testat);
 								} else {
 									// uncheck
-									echo form_checkbox('testat'.$i, 'accept', FALSE);
+									$cb_data_testat['checked'] = FALSE;
+									echo form_checkbox($cb_data_testat);
 								}
 								echo '</td><td>';
 							}
 
+							// prepare final-testat checkbox
+							$cb_data_final = array(
+								'name' => 'final-uid-'.$i.'-'.$one_participant->BenutzerID,
+								'id' => 'final-uid-'.$i.'-'.$one_participant->BenutzerID,
+								'data-uid' => $one_participant->BenutzerID,
+								'data-eid' => 0,
+								'class' => 'lab-cb',
+								'value' => 'accept',
+								'checked' => ($one_participant->gesamttestat ? TRUE:FALSE)
+							);
 							// final testat
-							echo form_checkbox('final_testat', 'accept', ($one_participant->gesamttestat ? TRUE:FALSE));
+							echo form_checkbox($cb_data_final);
 							echo '</td><td>';
 
 							// print  notes
 							echo form_textarea($notes_attr);
 							echo '</td><td>';
 
+							// prepare disable checkbox
+							$cb_data_disable = array(
+								'name' => 'disable-uid-'.$i.'-'.$one_participant->BenutzerID,
+								'id' => 'disable-uid-'.$i.'-'.$one_participant->BenutzerID,
+								'data-uid' => $one_participant->BenutzerID,
+								'data-eid' => 0,
+								'class' => 'lab-cb',
+								'value' => 'accept',
+								'checked' => ($one_participant->ende ? TRUE:FALSE)
+							);
 							// print disable participant
-							echo form_checkbox('final_testat', 'accept', ($one_participant->ende ? TRUE:FALSE));
+							echo form_checkbox($cb_data_disable);
 							echo '</td></tr>';
 						}
-
 
 						echo '</tbody>';
 						echo '</table>';
@@ -146,9 +193,42 @@
 	
 <?php startblock('customFooterJQueryCode');?>
 
+<!--<script>-->
+
+	// getting tab-status and id of active-tab from controller
+	var activeTabId = <?php echo $active_group; ?>;
+
 	// initialize active tab
-    $('.tab-content div:first-child').addClass("active");
-    $('#lab-details-navi li:first-child').addClass("active");
+	if(activeTabId == 0){
+		$('.tab-content div:first-child').addClass("active");
+		$('#course-details-navi li:first-child').addClass("active");
+	} else {
+		$('#tab-panel-'+activeTabId).addClass("active");
+		$('#lab-tab-'+activeTabId).addClass("active");
+	}
+	
+	
+	// saving EVERY change in checkbox-checked-status
+	$('.lab-cb').change(function (){
+		// getting cb-data
+		var elementName = $(this).attr('name');
+		var cbStatus = $(this).attr('checked');
+		var userId = $(this).data('uid');
+		var eventId = $(this).data('eid');
+		var dataToSave = [elementName, cbStatus, userId, eventId];
+		
+		// save checkbox-status for user and event
+		$.ajax({
+			type: "POST",
+			url: "<?php echo site_url();?>kursverwaltung/ajax_save_lab_checkboxes/",
+			dataType: 'html',
+			data : {lab_cb_data : dataToSave},
+			success: function (data){
+				// TODO show modal ??
+			}
+		});
+	});
+	
 	
 <?php endblock(); ?>
 

@@ -1077,6 +1077,42 @@ class Kursverwaltung extends FHD_Controller {
 		return $event_dates;
 	}
 	
+	
+	/**
+	 * Saving data from lab-notes-view - CHECKBOXES ONLY
+	 * Array with bunch of data passed via POST. Includes the following:
+	 * array[0] element_name
+	 * array[1] cb_status
+	 * array[2] user_id
+	 * array[3] event_id starts with 0 runs to number set by user for this lab
+	 * Depending on the checkbox that has been clicked db is updated
+	 * 
+	 * @echo boolean 
+	 */
+	public function ajax_save_lab_checkboxes(){
+		$cb_data= ''; // init
+		$cb_data = $this->input->post('lab_cb_data');
+		
+		$cb_name = $cb_data[0];
+
+//		if(strstr($cb_name, 'presence')){
+//			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'anwesenheit', $cb_data[3]);
+//		} else if(strstr($cb_name, 'testat')){
+//			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'testat', $cb_data[3]);
+//		} else if(strstr($cb_name, 'final')){
+//			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'gesamttestat');
+//		} else if(strstr($cb_name, 'disable')){
+//			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'ende');
+//		}
+		
+		
+	}
+	
+	
+	public function ajax_save_lab_notes(){
+		
+	}
+	
 
 	/* 
 	 * 

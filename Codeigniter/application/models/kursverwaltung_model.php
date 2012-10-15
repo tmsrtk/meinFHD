@@ -906,7 +906,58 @@ class Kursverwaltung_model extends CI_Model {
 
 		return $data;
 	}
+
 	
+	/**
+	 * 
+	 * @param string $cb_status 
+	 * @param int $user_id user to store the data for
+	 * @param string $attr attribute in table to store data to
+	 * @param int $event_id the event to store the data for - only for testat and presence
+	 */
+	public function update_group_cbs($cb_status, $user_id, $attr, $event_id = ''){
+		if($event_id){
+			$q = '';
+			
+			// TODO get current status and generate new string that reprensents new status
+			$this->db->select($attr);
+			$this->db->where('BenutzerID', $user_id);
+			$q = $this->db->get();
+			
+			if($q->num_rows() > 0){
+				foreach($q->result as $row){
+					$current_status = $row->$attr;
+				}
+			}
+			
+			// get length of string in db
+			$length = strlen($current_status);
+			
+			
+			// check each position and save to new string
+			for($i = 0; $i <= $length; $i++){
+				if($i == $event_id+1){
+					
+				// take the value that was stored before
+				} else {
+					
+				}
+			}
+			
+			
+			
+			$save = array(
+				$attr => $new_status
+			);
+		} else {
+			$save = array(
+				$attr => $cb_status=='checked' ? 1 : 0
+			);
+		}
+		// save to gruppenteilnehmer_aufzeichnungen for that user
+		$this->db->where('BenutzerID', $user_id);
+		$this->db->update('gruppenteilnehmer_aufzeichnungen');
+	}
 
 	/* 
 	 * 
