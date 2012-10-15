@@ -33,7 +33,7 @@
 				// print navigation depending on courses this user has
 				foreach ($course_names_ids as $key => $value) {
 					echo '<li id="course-tab-'.$key.'">';
-					echo '<a href="#'.$value->kurs_kurz.'-'.$key.'" data-toggle="tab">'.$value->kurs_kurz.'</a>';
+					echo '<a href="#tab-panel-'.$key.'" data-toggle="tab">'.$value->kurs_kurz.'</a>';
 					echo '</li>';
 				}
 			?>
@@ -46,7 +46,7 @@
 			<?php 
 				// print div for each course
 				foreach($course_names_ids as $c_id => $value) :
-					echo '<div class="tab-pane" id="'.$value->kurs_kurz.'-'.$c_id.'"> ';
+					echo '<div class="tab-pane" id="tab-panel-'.$c_id.'"> ';
 
 					// checkbox data - has to be generate each time because of course_id!
 					$cb_data = array(
@@ -167,10 +167,18 @@
 <?php startblock('customFooterJQueryCode');?>
 
 
+	// getting tab-status and id of active-tab from controller
+	var activeTabId = <?php echo $active_course; ?>;
 
 	// initialize active tab
-    $('.tab-content div:first-child').addClass("active");
-    $('#course-details-navi li:first-child').addClass("active");
+	
+	if(activeTabId == 0){
+		$('.tab-content div:first-child').addClass("active");
+		$('#course-details-navi li:first-child').addClass("active");
+	} else {
+		$('#tab-panel-'+activeTabId).addClass("active");
+		$('#course-tab-'+activeTabId).addClass("active");
+	}
     
     // create variable that contains all course_ids in that view
     var courseIdsInView = <?php echo json_encode($course_ids_jq); ?>;

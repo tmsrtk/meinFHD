@@ -16,7 +16,7 @@
  * Description...
  */
 class Student_log extends FHD_Controller {
-{
+
     /**
      * Index
      *

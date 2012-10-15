@@ -70,6 +70,14 @@ class Kursverwaltung extends FHD_Controller {
 	 * 
 	 */
     public function show_coursemgt(){
+		// get flash-data - necessaray to reload correct tab (class="active")
+		$reload_course = $this->session->flashdata('reload_course');
+		if($reload_course){
+			$this->data->add('active_course', $reload_course);
+		} else {
+			$this->data->add('active_course', 0);
+		}
+		
 		// if user has courses - run through all of them
 		if($this->course_ids){
 			$course_names_ids = array(); // init
@@ -270,7 +278,6 @@ class Kursverwaltung extends FHD_Controller {
 				$this->data->add('course_details', $course_data);
 				$this->data->add('description', $description_field);
 				$this->data->add('offset', 0);
-				$this->data->add('');
 			}
 
 			// load course-view
@@ -564,12 +571,17 @@ class Kursverwaltung extends FHD_Controller {
     
     
     /**
-     * Switch: calls correct method to save to *KURS*BETRUER-table (laboringenieur-table deprecated)
+     * S
+	 * Switch: calls correct method to save to *KURS*BETRUER-table (laboringenieur-table deprecated)
      */
     public function save_labings_for_course(){
 		// get incoming data
 		$staff_to_save = $this->input->post();
 		$this->save_staff_to_db(Kursverwaltung::LABING, $staff_to_save);
+		
+		// redirecting to show-coursemgt-view
+		$this->session->set_flashdata('reload_course', key($staff_to_save));
+		redirect('kursverwaltung/show_coursemgt');
     }
     
     
@@ -580,6 +592,10 @@ class Kursverwaltung extends FHD_Controller {
 		// get incoming data
 		$staff_to_save = $this->input->post();
 		$this->save_staff_to_db(Kursverwaltung::TUTOR, $staff_to_save);
+		
+		// redirecting to show-coursemgt-view
+		$this->session->set_flashdata('reload_course', key($staff_to_save));
+		redirect('kursverwaltung/show_coursemgt');
     }
 
     /**
