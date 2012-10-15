@@ -12,17 +12,11 @@
 								<?php if ( $this->authentication->has_permissions('hat_dashboard') ) : ?>
 								<li><a href="<?php print base_url('dashboard/index'); ?>">Dashboard</a></li>
 								<?php endif ?>
+								<?php if ( $this->authentication->has_permissions('hat_persoenlichedaten_verwaltung') ) : ?>
+								<li><a href="<?php print base_url('einstellungen/index'); ?>">Persönliche Daten</a></li>
+								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_stundenplan') ) : ?>
-								<li class="dropdown">
-									<a href="<?php print base_url('#'); ?>" class="dropdown-toggle" data-toggle="dropdown">
-										Stundenplan
-										<b class="caret"></b>
-									</a>
-									<ul class="dropdown-menu level-2">
-										<li><a href="<?php print base_url('stundenplan/index'); ?>">Tagesansicht</a></li>
-										<li><a href="<?php print base_url('stundenplan/woche'); ?>">Wochenansicht</a></li>
-									</ul> <!-- /.nav .level-2 -->
-								</li>
+								<li><a href="<?php print base_url('stundenplan/woche'); ?>">Stundenplan</a></li>
 								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_semesterplan') ) : ?>
 								<li><a href="<?php print base_url('studienplan/index'); ?>">Studienplan</a></li>
@@ -145,9 +139,6 @@
 								<?php endif ?>
 								<?php if ( $this->authentication->is_logged_in() ) : ?>
 								<li><a href="<?php print base_url('app/logout'); ?>">Logout</a></li>
-								<?php endif; ?>
-								<?php if ( $this->authentication->is_logged_in() ) : ?>
-								<li><a href="">Semester: <?php echo $userdata["act_semester"] ?></a></li>
 								<?php endif; ?>
 							</ul> <!-- /.nav.level-1 -->
 						</div> <!-- /.nav-collapse -->

@@ -84,8 +84,32 @@
 		// print navigation depending on roles this user has
 		foreach ($stundenplaene as $r_id => $content)
 		{
+			$role_name = '';
+
+			switch ($r_id)
+			{
+				case 1:
+					$role_name = 'Admin';
+					break;
+				case 2:
+					$role_name = 'Dozent';
+					break;
+				case 3:
+					$role_name = 'Betreuer';
+					break;
+				case 4:
+					$role_name = 'Tutor';
+					break;
+				case 5:
+					$role_name = 'Student';
+					break;
+				default:
+					# code...
+					break;
+			}
+
 			echo '<li id="tt-tab-'.$r_id.'">';
-			echo '<a href="#'.$r_id.'-tt" data-toggle="tab">'.$r_id.'</a>';
+			echo '<a href="#'.$r_id.'-tt" data-toggle="tab">'.$role_name.'</a>';
 			echo '</li>';
 		}
 	?>
@@ -201,4 +225,14 @@
 
 </div>
 <?php endblock(); ?>
+
+<?php startblock('customFooterJQueryCode');?>
+
+$(function() {
+	$('#tt-tab-navi a:last').tab('show');
+
+});
+
+<?php endblock(); ?>
+
 <?php end_extend(); ?>

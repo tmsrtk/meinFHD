@@ -237,6 +237,8 @@ class User_model extends CI_Model {
 	}
 
 	
+
+	
 	/**
 	 * Returns all ids for this user mapped to containing roles.
 	 * @return array(int => int) all ids mapped to roles

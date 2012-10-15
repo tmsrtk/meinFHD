@@ -7,9 +7,9 @@
 */
 class Roles
 {
-	public static $admin 		= 1;
-	public static $dozent 		= 2;
-	public static $betreuer 	= 3;
-	public static $tutor 		= 4;
-	public static $student 	= 5;
+	CONST ADMIN 		= 1;
+	CONST DOZENT 		= 2;
+	CONST BETREUER 	= 3;
+	CONST TUTOR 		= 4;
+	CONST STUDENT 	= 5;
 }

@@ -143,6 +143,24 @@ class Adminhelper {
 			);
 	}
 
+	function get_formvalidation_password()
+	{
+		return array(
+			'field'	=>	'password',
+			'label'	=>	'Passwort',
+			'rules'	=>	'required|matches[password2]|min_length[5]|max_length[15]|alpha_dash'
+			);
+	}
+
+	function get_formvalidation_password_confirm()
+	{
+		return array(
+			'field'	=>	'password2',
+			'label'	=>	'"Passwort bestätigen"',
+			'rules'	=>	'required'
+			);
+	}
+
 	/**
 	 * Returns the sum of the semester, by calculating the given data
 	 * @param  String $semestertyp   WS / SS
