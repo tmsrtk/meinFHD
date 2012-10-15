@@ -107,7 +107,16 @@
 				echo '</div>';
 				echo '<hr>';
 //				echo '<hr>';
-
+				
+				// if there are groups to activate application for
+				if(isset($activate_application[$c_id])){
+					// print activate-application-row
+					echo '<div class="">';
+					print $activate_application[$c_id];
+					echo '</div>';
+					echo '<hr>';
+				}
+				
 				// place for general information
 				echo form_open('kursverwaltung/save_course_details_all_at_once'); 
 
@@ -479,9 +488,8 @@
 		});
 		
 		
-		// ################ handle activate-application buttons
+		// ################ handle activate-application buttons and status-texts
 		var switchActivationButtons = $('.activation-buttons-'+courseId);
-		
 		// run through all buttons on site
 		$.each(switchActivationButtons, function(index, value) {
 			var buttonId = '#'+$(value).attr('id');
@@ -494,9 +502,11 @@
 
 				// alter text and status depending on former status
 				if(buttonStatus == 'disabled'){
+					$('#activation-status-'+courseId+' p').text('Anmeldung aktivert');
 					buttonText = 'Anmeldung deaktivieren';
 					buttonStatus = 'enabled';
 				} else {
+					$('#activation-status-'+courseId+' p').text('Anmeldung deaktivert');
 					buttonText = 'Anmeldung aktivieren';
 					buttonStatus = 'disabled';
 				}
@@ -520,7 +530,7 @@
 
     }); // end tab-views - all elements has to be prepared for all ids
 	
-	
+
 	// ################ create modal to find students via
 	function createSearchModal(title, text, courseId) {
 		var myDialog = 

@@ -2,22 +2,31 @@
 class Kursverwaltung_model extends CI_Model {
     
     /**
-     * Returns course/tut-data.
-     * @param int $id
-     * @param int $eventtype
-     * @return type
+     * Returns course/ or tut-details for passed course-id & eventtype.
+	 * This implementation is used for lectures (Vorlesungen) and tuts (Tutorien).
+	 * 
+	 * IMPORTANT:
+	 * function returns only first!! index of the found data.
+	 * That means only one lecture or tut is being returned and showed.
+	 * 
+	 * For more than one lecture or tut another implementation is necessary.
+	 * 
+     * @param int $course_id the course-id to get the details for
+     * @param int $eventtype the eventtype to get the details for
+     * @return array array with all details for that lecture/tut
      */
     public function get_lecture_details($course_id, $eventtype){
+		$data = array(); // init
+		$q = '';
+		
 		$this->db->select('SPKursID, Raum, StartID, EndeID, TagID, GruppeID');
 		$this->db->where('KursID', $course_id);
 		$this->db->where('VeranstaltungsformID', $eventtype);
 		$q = $this->db->get('stundenplankurs');
 
-		$data = array(); // init
-
 		if($q->num_rows() > 0){
 			foreach ($q->result() as $row){
-			$data[] = $row;
+				$data[] = $row;
 			}
 		}
 
@@ -33,6 +42,9 @@ class Kursverwaltung_model extends CI_Model {
      * @return array
      */
     public function get_course_details($course_id, $eventype){
+		$data = array(); // init
+		$q = '';
+		
 		$this->db->distinct();
 		$this->db->select('a.SPKursID, b.Kursname, b.kurs_kurz, a.Raum, t.TagName, s.Beginn, a.GruppeID, c.VeranstaltungsformName');
 		$this->db->from('stundenplankurs as a');
@@ -43,8 +55,6 @@ class Kursverwaltung_model extends CI_Model {
 		$this->db->where('a.KursID', $course_id);
 		$this->db->where('a.VeranstaltungsformID', $eventype);
 		$q = $this->db->get();
-
-		$data = array(); // init
 
 		if($q->num_rows() > 0){
 			foreach ($q->result() as $row){
@@ -58,6 +68,7 @@ class Kursverwaltung_model extends CI_Model {
 	
     /**
      * Returns course-name and -description for given course_id
+	 * 
      * @param int $course_id course_id to get the name for
      * @return String $data[0] first index of the result - 
 	 * containing the shortname and the description for that course
@@ -195,8 +206,9 @@ class Kursverwaltung_model extends CI_Model {
     
     /**
      * Returns all eventtypes for a course
-     * @param int $course_id 
-     * @return array holding all eventtypes a course has
+	 * 
+     * @param int $course_id the course id to get the eventtypes for
+     * @return array simple indexed array, holding all eventtypes a course has
      */
     public function get_eventtypes_for_course($course_id){
 		$data = array(); // init
@@ -211,6 +223,7 @@ class Kursverwaltung_model extends CI_Model {
 			$data[] = $row;
 		}
 
+		// clean to have simple indexed array
 		$data = $this->clean_nested_array($data);
 
 		return $data;
@@ -640,9 +653,10 @@ class Kursverwaltung_model extends CI_Model {
 	/**
 	 * Counts all participants belonging to a single sp_course
 	 * courses and sp_courses (differentiation necessary for labs) depending on passed boolean
+	 * 
 	 * @param int $id always sp_course_id
 	 * @param boolean $is_sp_course sp_course or course
-	 * @return int
+	 * @return int number of participants in that course/sp_course
 	 */
 	public function count_participants_for_course($id, $is_sp_course){
 		// getting participants
@@ -657,7 +671,89 @@ class Kursverwaltung_model extends CI_Model {
 	}
 	
 	
+	/**
+	 * De/activation of application - for whole course (course_id)
+	 * Find all sp_course_ids / group_ids for a course that should be activated.
+	 * 
+	 * @param int $id course_id to de/activate courses for
+	 * @param boolean $enable current status
+	 */
 	public function update_benutzerkurs_activation($id, $enable){
+		$data = array(); // init
+		$q = ''; // init
+		
+		// find all group_ids and eventtypes for that course_id
+		$this->db->select('KursID, GruppeID');
+		$this->db->from('stundenplankurs');
+		$this->db->where('VeranstaltungsformID', 2);
+		$this->db->or_where('VeranstaltungsformID', 3);
+		$this->db->or_where('VeranstaltungsformID', 4);
+		$q = $this->db->get();
+
+		if($q->num_rows() > 0){
+			foreach ($q->result() as $row){
+				// if the id to search for matches
+				if($row->KursID == $id){
+					$data[] = $row;
+				}
+			}
+		}
+		
+		// switch status to save depending on passed flag
+		if($enable){
+			$status = 1;
+		} else {
+			$status = 0;
+		}
+		
+		// run through all found group-ids and activate applicaton
+		// activate all found courses with 
+		foreach($data as $d){
+			$this->db->where('GruppeID', $d->GruppeID);
+			$this->db->update('gruppe', array('Anmeldung_zulassen' => $status));
+		}
+		
+	}
+	
+	/**
+	 * Checks if application for that course is already enabled or not.
+	 * 
+	 * @param int $course_id the id to check application-status for
+	 * @return int flag that shows if activation is enabled (1) or not (2);
+	 * returns -1 if there is no course to enable
+	 */
+	public function get_application_status($course_id){
+		$data = array(); // init
+		$q = ''; // init
+		
+		// find all group_ids and eventtypes for that course_id
+		$this->db->select('a.KursID, a.GruppeID, b.Anmeldung_zulassen');
+		$this->db->from('stundenplankurs as a');
+		$this->db->join('gruppe as b', 'a.GruppeID = b.GruppeID');
+		$this->db->where('VeranstaltungsformID', 2);
+		$this->db->or_where('VeranstaltungsformID', 3);
+		$this->db->or_where('VeranstaltungsformID', 4);
+		$q = $this->db->get();
+
+		// if there are results, get status
+		if($q->num_rows() > 0){
+			foreach ($q->result() as $row){
+				// if the id to search for matches
+				if($row->KursID == $course_id){
+					$data[] = $row;
+				}
+			}
+		// otherwise there are no courses to set status for
+		} else {
+			return -1;
+		}
+		
+		// return status
+		if($data[0]->Anmeldung_zulassen == 1){
+			return 1;
+		} else {
+			return 2;
+		}
 		
 	}
 	
