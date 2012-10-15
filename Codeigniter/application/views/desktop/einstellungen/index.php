@@ -27,7 +27,6 @@
 				<label class="control-label" for="loginname">Loginname</label>
 				<div class="controls">
 					<input type="text" name="loginname" placeholder="Loginname" value="<?php echo set_value('loginname', $formdata['LoginName']) ?>">
-					<?php FB::log($this->user_model->get_actsemester()) ?>
 				</div>
 			</div>
 			<div class="control-group">
@@ -101,18 +100,12 @@
 
 		<?php echo form_close() ?>
 	</div>
-
-
-
-
-
-	<?php if($info['MatrikelnummerFlag'] != 1) : ?>
-	<p>Bitte geben Sie zunächst ihre Matrikelnummer an. Diese Eingabe ist einmalig und wichtig für Ihre Zuordnung zu Kursen.</p>
-	<?php endif; ?>
-
 </div><!-- END well well-small -->
 
 <!-- ######################################################################################################################## -->
+
+<?php
+/*
 
 <!-- Old -->
 <div class="container-fluid">
@@ -191,6 +184,8 @@
   </form>
 </div>
 
+ */
+?>
 <?php endblock(); ?>
 
 
