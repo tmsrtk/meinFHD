@@ -120,31 +120,31 @@ class Stundenplan extends FHD_Controller {
 
 		$roles = $this->user_model->get_all_roles();
 
-		if ( in_array(Roles::$dozent, $roles) )
+		if ( in_array(Roles::DOZENT, $roles) )
 		{
-			$stundenplaene[Roles::$dozent] = $this->Stundenplan_Model->get_stundenplan_student();
+			$stundenplaene[Roles::DOZENT] = $this->Stundenplan_Model->get_stundenplan_dozent();
 
-			$this->data->add('tage', $stundenplaene[Roles::$dozent][1]);
-			$this->data->add('zeiten', $stundenplaene[Roles::$dozent][2]);
-			$this->data->add('aktivekurse', $stundenplaene[Roles::$dozent][3]);
+			$this->data->add('tage', $stundenplaene[Roles::DOZENT][1]);
+			$this->data->add('zeiten', $stundenplaene[Roles::DOZENT][2]);
+			$this->data->add('aktivekurse', $stundenplaene[Roles::DOZENT][3]);
 		}
 
-		if ( in_array(Roles::$tutor, $roles) )
+		if ( in_array(Roles::TUTOR, $roles) )
 		{
-			$stundenplaene[Roles::$tutor] = $this->Stundenplan_Model->get_stundenplan_tutor();
+			$stundenplaene[Roles::TUTOR] = $this->Stundenplan_Model->get_stundenplan_tutor();
 
-			$this->data->add('tage', $stundenplaene[Roles::$tutor][1]);
-			$this->data->add('zeiten', $stundenplaene[Roles::$tutor][2]);
-			$this->data->add('aktivekurse', $stundenplaene[Roles::$tutor][3]);
+			$this->data->add('tage', $stundenplaene[Roles::TUTOR][1]);
+			$this->data->add('zeiten', $stundenplaene[Roles::TUTOR][2]);
+			$this->data->add('aktivekurse', $stundenplaene[Roles::TUTOR][3]);
 		}
 
-		if ( in_array(Roles::$student, $roles) )
+		if ( in_array(Roles::STUDENT, $roles) )
 		{
-			$stundenplaene[Roles::$student] = $this->Stundenplan_Model->get_stundenplan_student();
+			$stundenplaene[Roles::STUDENT] = $this->Stundenplan_Model->get_stundenplan_student();
 
-			$this->data->add('tage', $stundenplaene[Roles::$student][1]);
-			$this->data->add('zeiten', $stundenplaene[Roles::$student][2]);
-			$this->data->add('aktivekurse', $stundenplaene[Roles::$student][3]);
+			$this->data->add('tage', $stundenplaene[Roles::STUDENT][1]);
+			$this->data->add('zeiten', $stundenplaene[Roles::STUDENT][2]);
+			$this->data->add('aktivekurse', $stundenplaene[Roles::STUDENT][3]);
 		}
 
 		// FB::log($stundenplaene); return;

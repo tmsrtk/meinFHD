@@ -19,7 +19,7 @@
 		
 		<div class="row-fluid">
 			<h2>Meine Praktikumsgruppen</h2>
-			<p><a class="label label-info" href="<?php echo base_url(); ?>/kursverwaltung/show_labmgt">ZurÃ¼ck zur Ãœbersicht</a></p>
+			<p><a class="label label-info" href="<?php echo base_url(); ?>/kursverwaltung/show_labmgt">Zurück zur Übersicht</a></p>
 		</div>
 		
 		<div>

@@ -13,6 +13,9 @@
 <?php endblock(); ?>
 
 <?php startblock('content'); # content for this view ?>
+
+<?php /*
+
 				<div class="span4 flipBox" style="position: relative;">
 					<div class="well widget frontSide">
 						<div class="widgetHeader">
@@ -169,6 +172,12 @@
 					</div>
 				</div><!-- /.span4-->
 				<!-- CONTENT ENDE-->
+
+
+ */
+ ?>
+
+
 <?php endblock(); ?>
 		
 <?php startblock('headJSfiles'); ?>

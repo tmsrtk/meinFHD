@@ -67,41 +67,44 @@ function initPager() {
 	var activeIndex = $carousel.find('.item').index($carousel.find('.item.active'));
 	$('.pagination li').not(':first, :last').removeClass('active').eq(activeIndex).addClass('active');
 }
-	$(function(){
-		
-		$('.carousel').carousel('pause');
-		
-		//pagination
-		$('.pagination').find('.slide-montag').click(function(){
-			$('.carousel').carousel(0);
-		});
-		
-		$('.pagination').find('.slide-dienstag').click(function(){
-			$('.carousel').carousel(1);
-		});
-		
-		$('.pagination').find('.slide-mittwoch').click(function(){
-			$('.carousel').carousel(2);
-		});
-		
-		$('.pagination').find('.slide-donnerstag').click(function(){
-			$('.carousel').carousel(3);
-		});
-		
-		$('.pagination').find('.slide-freitag').click(function(){
-			$('.carousel').carousel(4);
-		});
-		
+
+$(function(){
+	
+	$('.carousel').carousel('pause');
+	
+	//pagination
+	$('.pagination').find('.slide-montag').click(function(){
+		$('.carousel').carousel(0);
 	});
+	
+	$('.pagination').find('.slide-dienstag').click(function(){
+		$('.carousel').carousel(1);
+	});
+	
+	$('.pagination').find('.slide-mittwoch').click(function(){
+		$('.carousel').carousel(2);
+	});
+	
+	$('.pagination').find('.slide-donnerstag').click(function(){
+		$('.carousel').carousel(3);
+	});
+	
+	$('.pagination').find('.slide-freitag').click(function(){
+		$('.carousel').carousel(4);
+	});
+	
+});
 
 
 /**
  * Creates the needed HTML Markup for the desired Bootstrap Modal.
+ *
  * @author Konstantin Voth
  * @param  {String} title  Title of the modal.
  * @param  {String} text   Message in the modal.
  * @param  {bool} withOK Should there be an OK button?
- * @return {jQuery Object}
+ *
+ * @return {jQuery Object} HTML Markup for the Modal
  * @private
  */
 function _createModalDialog(title, text, withOK) {
@@ -118,10 +121,12 @@ function _createModalDialog(title, text, withOK) {
 /**
  * Shows the Bootstrap Modal. There have to be additional HTML markup in your view file to
  * show the modal correctly. Place <div id="modalcontent"></div> at the bottom of your view file.
+ *
  * @author Konstantin Voth
  * @param   {String} title  Title of the dialog.
- * @param   {[type]} text   Message in the modal.
- * @param   {[type]} withOK Should there be an OK button?
+ * @param   {String} text   Message in the modal.
+ * @param   {String} withOK Should there be an OK button?
+ *
  * @private
  */
 function _showModal(title, text, withOK) {

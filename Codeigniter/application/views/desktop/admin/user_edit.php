@@ -58,8 +58,6 @@
 
 	<div id="modalcontent"></div>
 
-	<?php FB::log($_POST);FB::log($_GET) ?>
-
 <?php endblock(); ?>
 
 

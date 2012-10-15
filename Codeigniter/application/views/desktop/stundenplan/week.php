@@ -84,8 +84,32 @@
 		// print navigation depending on roles this user has
 		foreach ($stundenplaene as $r_id => $content)
 		{
+			$role_name = '';
+
+			switch ($r_id)
+			{
+				case 1:
+					$role_name = 'Admin';
+					break;
+				case 2:
+					$role_name = 'Dozent';
+					break;
+				case 3:
+					$role_name = 'Betreuer';
+					break;
+				case 4:
+					$role_name = 'Tutor';
+					break;
+				case 5:
+					$role_name = 'Student';
+					break;
+				default:
+					# code...
+					break;
+			}
+
 			echo '<li id="tt-tab-'.$r_id.'">';
-			echo '<a href="#'.$r_id.'-tt" data-toggle="tab">'.$r_id.'</a>';
+			echo '<a href="#'.$r_id.'-tt" data-toggle="tab">'.$role_name.'</a>';
 			echo '</li>';
 		}
 	?>
@@ -97,8 +121,6 @@
 		// print div for each timetable
 		foreach($stundenplaene as $r_id => $content) : ?>
 		<div class="tab-pane" id="<?php echo "{$r_id}" ?>-tt">
-
-			
 
 			<?php // print role-specific timetable ?>
 			
@@ -128,53 +150,53 @@
 									</div>
 								<?php endforeach; ?>
 								</td>
-							<?php foreach ($content as $dayname => $day) : ?>
-								<td class="std-time-cell" <?php if($i == $wochentag) print 'style="background-color: #dee4c5;"'; ?> >
-									<div class="std-rel">
-										<?php foreach ($day as $event) : ?>
-											
-											<?php
-												switch ($event['VeranstaltungsformID'])
-												{
-													case 1: $color = '3a87ad'; break; // Vorlesung - blau
-													case 2: $color = 'b94a48'; break; // Übung - rot
-													case 3: $color = 'f89406'; break; // Seminar - gelb
-													case 4: $color = '468847'; break; // Praktikum - grün
-													case 5: $color = '999999'; break; // 
-													case 6: $color = '999999'; break; // Tutorium - grau
-												}
+								<?php foreach ($content as $dayname => $day) : ?>
+									<td class="std-time-cell" <?php if($i == $wochentag) print 'style="background-color: #dee4c5;"'; ?> >
+										<div class="std-rel">
+											<?php foreach ($day as $event) : ?>
 												
-												switch ($event['VeranstaltungsformID'])
-												{
-													case 1: $class = 'btn-info'; break; // Vorlesung - blau
-													case 2: $class = 'btn-primary'; break; // Übung - rot
-													case 3: $class = 'btn-warning'; break; // Seminar - gelb
-													case 4: $class = 'btn-success'; break; // Praktikum - grün
-													case 5: $class = 'btn-inverse'; break; // 
-													case 6: $class = 'btn-warning'; break; // Tutorium - grau
-												}
+												<?php
+													switch ($event['VeranstaltungsformID'])
+													{
+														case 1: $color = '3a87ad'; break; // Vorlesung - blau
+														case 2: $color = 'b94a48'; break; // Übung - rot
+														case 3: $color = 'f89406'; break; // Seminar - gelb
+														case 4: $color = '468847'; break; // Praktikum - grün
+														case 5: $color = '999999'; break; // 
+														case 6: $color = '999999'; break; // Tutorium - grau
+													}
+													
+													switch ($event['VeranstaltungsformID'])
+													{
+														case 1: $class = 'btn-info'; break; // Vorlesung - blau
+														case 2: $class = 'btn-primary'; break; // Übung - rot
+														case 3: $class = 'btn-warning'; break; // Seminar - gelb
+														case 4: $class = 'btn-success'; break; // Praktikum - grün
+														case 5: $class = 'btn-inverse'; break; // 
+														case 6: $class = 'btn-warning'; break; // Tutorium - grau
+													}
+													
+													//$css  = 'background-color:'	. $event['display_data']['color'] . ';';
+													//$css  = 'background-color:#'	. $color . ';';
+													//$css .= 'width:'			. $event_width * $event['display_data']['width'] . 'px;';
+													$css = 'width:'			. $event['display_data']['width'] * 100 . '%;';
+													$css .= 'height:'			. $event_height * $event['display_data']['duration'] . 'px;';
+													$css .= 'margin-top:'		. $event_height * ($event['display_data']['start']-1) . 'px;';								
+													$css .= 'margin-left:'		. 100 * (1 / $event['display_data']['max_cols']) * $event['display_data']['column'] . '%;';
+													$css .= 'z-index:'			. (100 - $event['display_data']['column']);
+												?>
 												
-												//$css  = 'background-color:'	. $event['display_data']['color'] . ';';
-												//$css  = 'background-color:#'	. $color . ';';
-												//$css .= 'width:'			. $event_width * $event['display_data']['width'] . 'px;';
-												$css = 'width:'			. $event['display_data']['width'] * 100 . '%;';
-												$css .= 'height:'			. $event_height * $event['display_data']['duration'] . 'px;';
-												$css .= 'margin-top:'		. $event_height * ($event['display_data']['start']-1) . 'px;';								
-												$css .= 'margin-left:'		. 100 * (1 / $event['display_data']['max_cols']) * $event['display_data']['column'] . '%;';
-												$css .= 'z-index:'			. (100 - $event['display_data']['column']);
-											?>
-											
-											<a href="<?php print base_url('modul/show/' . $event['KursID']); ?>" class="std-abs std-event <?php print $class; ?>" style="<?php print $css; ?>">
-												<div class="std-event-container">
-													<h5><?php print $event['kurs_kurz']; ?> <?php print $event['VeranstaltungsformName']; ?></h5>
-													<p><?php print $event['VeranstaltungsformAlternative']; ?></p>
-												</div>
-											</a>
-										<?php endforeach; ?>
-									</div>
-								</td>
-								<?php $i++; ?>
-							<?php endforeach; ?>
+												<a href="<?php print base_url('modul/show/' . $event['KursID']); ?>" class="std-abs std-event <?php print $class; ?>" style="<?php print $css; ?>">
+													<div class="std-event-container">
+														<h5><?php print $event['kurs_kurz']; ?> <?php print $event['VeranstaltungsformName']; ?></h5>
+														<p><?php print $event['VeranstaltungsformAlternative']; ?></p>
+													</div>
+												</a>
+											<?php endforeach; ?>
+										</div>
+									</td>
+									<?php $i++; ?>
+								<?php endforeach; ?>
 							</tr>
 						</tbody>
 					</table>
@@ -203,4 +225,14 @@
 
 </div>
 <?php endblock(); ?>
+
+<?php startblock('customFooterJQueryCode');?>
+
+$(function() {
+	$('#tt-tab-navi a:last').tab('show');
+
+});
+
+<?php endblock(); ?>
+
 <?php end_extend(); ?>

@@ -9,42 +9,29 @@
 	<!-- CONTENT -->
 	<div class="container container-fluid">
 		<div class="row">
-			<div class="span12">
-
-				<div class="well well-small clearfix">
-			
-				<!--Titel-->
-	    			<h1><?php echo $courseinfo['Modulinfo']['kurs_kurz']; ?></h1>
-	    			<h4><?php echo $courseinfo['Modulinfo']['DozentTitel'] . " " . $courseinfo['Modulinfo']['DozentVorname'] . " " . $courseinfo['Modulinfo']['DozentNachname'];                                                ?></h4>
-					<hr />
-					<!--Optionen-->
-		    		<div class="alert alert-info clearfix">
-   		    			<a href="#" class="btn btn-large pull-left">
-   		    				<i class="icon-pencil"></i>
-   		    				 Notizen
-   		    			</a>
-		    			<a href="dozent" class="btn btn-large btn-primary pull-right">
-		    				<i class="icon-arrow-right icon-white"></i>
-		    				 Dozent
-		    			</a>
-		    		</div>	    		    	   
-		    		<!--Bar-Widget-->
-		    		<h4>Anwesenheit dieses Semester</h4>
-		    		<div class="progress progress-striped">
-  						<div class="bar" style="width: 45%;"></div>
-					</div>									  
+			<div class="well well-small">
+				<div class="span10">
+					<!--Titel-->
+		    			<h1><?php echo $courseinfo['Modulinfo']['kurs_kurz'] ?> | <?php echo $courseinfo['Modulinfo']['Kursname'] ?></h1>
+		    			<h4><span>bei </span><?php echo $courseinfo['Modulinfo']['DozentTitel'] . " " . $courseinfo['Modulinfo']['DozentVorname'] . " " . $courseinfo['Modulinfo']['DozentNachname'];                                                ?></h4>
 				</div>
-				
-			</div><!-- /.span12-->				
-			
+				<div class="span2">
+					<a href="<?php echo base_url('dozent/show/'.$courseinfo['Modulinfo']['DozentID']) ?>" class="btn btn-large btn-primary pull-right">
+						<i class="icon-arrow-right icon-white"></i>
+						Dozent
+					</a>
+				</div>
+				<div class="clearfix"></div>
+				<hr />
+			</div>
 		</div><!--first row ends here-->
-		
+
 		<div class="row">
 			<?php //--------------------Loop for kurse --------------------?>			
 			<?php foreach ($courseinfo['Kurse'] as $key => $courselist) : ?>
 
 				<?php //--------------------If there is any course of that kind --------------------?>
-				<?php if (!empty($courselist))  { ?>
+				<?php if ( ! empty($courselist))  : ?>
 				
 				<div class="span4">
 
@@ -53,7 +40,7 @@
 						<h3><?php echo $courselist[0]['Raum']; ?>
 
 						<?php //--------------------If there are alternatives --------------------?>
-						<?php if (!$courselist[0]['VeranstaltungsformAlternative'] == '')  { ?>
+						<?php if ( ! $courselist[0]['VeranstaltungsformAlternative'] == '')  { ?>
 						
 						</h3>
 						
@@ -94,13 +81,19 @@
 											<td><?php echo $veranstaltung['VeranstaltungsformAlternative'] ?></td>
 											<td><?php echo substr($veranstaltung['TagName'],0,2); ?>/ <?php echo $veranstaltung['Beginn']; ?> - <?php echo $veranstaltung['Ende']; ?></td>
 											<td>
+											<?php if ($veranstaltung['Anmeldung_zulassen'] == 0 || 
+														$veranstaltung['Anzahl Teilnehmer'] >= $veranstaltung['TeilnehmerMax']) : ?>								
+												<a href="#" class="btn btn-large pull-right">
+													<i class="icon-minus-sign"></i>
+												</a>
+											<?php else: ?>
 												<a href="<?php echo base_url('modul/enroll_to_course/'. $veranstaltung['KursID'].'/'. $veranstaltung['SPKursID'].'/'.  $veranstaltung['GruppeID'] ); ?>" class="btn btn-large pull-right">
 													<i class="icon-ok"></i>
-												</a>									
+												</a>
+											<?php endif; ?>
 											</td>
+											<td><?php echo $veranstaltung['Anzahl Teilnehmer'] ?> / <?php echo $veranstaltung['TeilnehmerMax'] ?></td>
 										</tr>
-
-									<?php //--------------------End Loop for all alternatives --------------------?>			
 									<?php endforeach; ?>
 
 								<?php //--------------------EndIf user already is enrolled -------------------- ?>
@@ -127,10 +120,10 @@
 						<hr class="hidden-phone" />
 
 					</div>
-							<?php //--------------------EndIF there is any course of that kind  -------------------- ?>
+					<?php //--------------------EndIF there is any course of that kind  -------------------- ?>
 
 				</div><!-- /.span4-->
-				<?php } ?>
+				<?php endif; ?>
 
 			<?php //--------------------End Loop for Veranstaltung --------------------?>			
 			<?php endforeach; ?>

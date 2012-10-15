@@ -19,22 +19,33 @@ class Dozent_Model extends CI_Model {
 	 * @return result_array // Array of docentinfo
 	 */	
 	public function get_dozentinfo($dozent_id)
-	{	
+	{
+		// $this->db->get_compiled_select(); 
 
-		$return = array();
+		$this->db->select('*')
+				->from('benutzer')
+				->where('BenutzerID', $dozent_id)
+				;
+		// FB::log($this->db->last_query());
+		$q = $this->db->get();
 
-		$query = $this->db->query("
-		SELECT 
-		*
-		FROM 
-			benutzer b
-		WHERE 
-			b.BenutzerID = ".$dozent_id." 
-		");
+
+		return $q->result_array();
+
+		// $return = array();
+
+		// $query = $this->db->query("
+		// SELECT
+		// *
+		// FROM 
+		// 	benutzer b
+		// WHERE 
+		// 	b.BenutzerID = ".$dozent_id." 
+		// ");
 		
-		$result = $query->result_array();
+		// $result = $query->result_array();
 
-		return $result;
+		// return $result;
 	}
 
 
