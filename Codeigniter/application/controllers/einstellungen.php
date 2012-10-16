@@ -117,7 +117,11 @@ class einstellungen extends FHD_Controller{
 		  
 	}
 
-
+	/**
+	 * Desktop
+	 *
+	 * @return [type] [description]
+	 */
 	public function validate()
 	{
 		// set custom delimiter for validation errors
@@ -133,43 +137,79 @@ class einstellungen extends FHD_Controller{
 		$current_user_data = $this->einstellungen_model->query_userdata($this->user_model->get_userid());
 
 
-		// check if current value is different from the value in db
-		if ($current_user_data['LoginName'] != $new_form_values['loginname']) 
+		if ( array_key_exists('loginname', $new_form_values))
 		{
-			$rules[] = $this->adminhelper->get_formvalidation_loginname();
+			// check if current value is different from the value in db
+			if ($current_user_data['LoginName'] != $new_form_values['loginname']) 
+			{
+				$rules[] = $this->adminhelper->get_formvalidation_loginname();
+			}
 		}
 
-		// even if these fields do not need any validation rules, they have to be set, otherwise
-		// they are not avaliable after the ->run() method
-		if ($current_user_data['Vorname'] != $new_form_values['forename'])
+		if ( array_key_exists('title', $new_form_values))
 		{
-			$rules[] = $this->adminhelper->get_formvalidation_forename();
+			if ($current_user_data['Titel'] != $new_form_values['title'])
+			{
+				$rules[] = $this->adminhelper->get_formvalidation_title();
+			}
 		}
 
-		if ($current_user_data['Nachname'] != $new_form_values['lastname'])
+		if ( array_key_exists('forename', $new_form_values))
 		{
-			$rules[] = $this->adminhelper->get_formvalidation_lastname();
+			if ($current_user_data['Vorname'] != $new_form_values['forename'])
+			{
+				$rules[] = $this->adminhelper->get_formvalidation_forename();
+			}
 		}
 
-		// same procedure for the other form inputs
-		if ($current_user_data['Email'] != $new_form_values['email']) 
+		if ( array_key_exists('lastname', $new_form_values))
 		{
-			$rules[] = $this->adminhelper->get_formvalidation_email();
+			if ($current_user_data['Nachname'] != $new_form_values['lastname'])
+			{
+				$rules[] = $this->adminhelper->get_formvalidation_lastname();
+			}
 		}
 
-		if ($current_user_data['StudienbeginnJahr'] != $new_form_values['startjahr'])
+		if ( array_key_exists('email', $new_form_values))
 		{
-			$rules[] = $this->adminhelper->get_formvalidation_startjahr();
+			if ($current_user_data['Email'] != $new_form_values['email']) 
+			{
+				$rules[] = $this->adminhelper->get_formvalidation_email();
+			}
 		}
 
-		if ( ! empty($new_form_values['password']))
+		if ( array_key_exists('room', $new_form_values))
 		{
-			$rules[] = $this->adminhelper->get_formvalidation_password();
-			$rules[] = $this->adminhelper->get_formvalidation_password_confirm();
+			if ($current_user_data['Raum'] != $new_form_values['room'])
+			{
+				$rules[] = $this->adminhelper->get_formvalidation_room();
+			}
 		}
 
-		$rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
+		if ( array_key_exists('startjahr', $new_form_values))
+		{
+			if ($current_user_data['StudienbeginnJahr'] != $new_form_values['startjahr'])
+			{
+				$rules[] = $this->adminhelper->get_formvalidation_startjahr();
+			}
+		}
 
+		if ( array_key_exists('password', $new_form_values))
+		{
+			if ( ! empty($new_form_values['password']))
+			{
+				$rules[] = $this->adminhelper->get_formvalidation_password();
+				$rules[] = $this->adminhelper->get_formvalidation_password_confirm();
+			}
+		}
+
+		if ( array_key_exists('semesteranfang', $new_form_values))
+		{
+			if ($current_user_data['StudienbeginnSemestertyp'] != $new_form_values['semesteranfang'])
+			{
+				$rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
+			}
+		}
 
 		// set rules
 		$this->form_validation->set_rules($rules);
@@ -196,120 +236,24 @@ class einstellungen extends FHD_Controller{
 	public function desktop_index()
 	{
 		// query all needed userinfo
-		$data = $this->einstellungen_model->query_userdata($this->user_model->get_userid());
+		if ( in_array(Roles::STUDENT, $this->user_model->get_all_roles()))
+		{
+			$data = $this->einstellungen_model->query_userdata_student($this->user_model->get_userid());
+		}
+		else
+		{
+			$data = $this->einstellungen_model->query_userdata($this->user_model->get_userid());
+		}
 
-		FB::log($data);
+
+		// DEBUG
+		// $data['testlabel'] = 'testlabeltext';
+
+		// FB::log($data);
 
 		$this->data->add('formdata', $data);
 
 		$this->load->view('einstellungen/index', $this->data->load());
-
-		return;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		//initial database-query to get als required information of the user
-		$data['info'] = $this->persDaten_model->getUserInfo();
-		$data['stgng'] = $this->persDaten_model->getStudiengang();
-
-		//setting up the rules, to which the user-input of the corresponding form-fields must comply:
-		//Note: the form_validation-class is automagically loaded in the config/autoload.php, so there's no need to load it here.
-		$this->form_validation->set_rules('login', 'Loginname', 'callback_validateLoginname['.$data['info']['LoginName'].']');
-		$this->form_validation->set_rules('pw2', 'Passwort', 'callback_validatePassword');
-		$this->form_validation->set_rules('email', 'Email', 'callback_validateEmail');
-		$this->form_validation->set_rules('matrikel', 'Matrikelnummer', 'callback_validateMatrikel');
-
-		//$this->krumo->dump($data);
-		//$this->krumo->dump($_POST);
-
-		//Form-Validation works like this:
-		//  1. is there POST-data to check? if not, it fails -> no database updating
-		//  2. if there is POST-data, it checks every rule above for validation ->if something is wrong -> no update
-		//  3. the checked fields (login, pw, email) are either valid in empty state (pw) OR get filled with the current data (login,email), if the user doesn't change anything
-		//      Because of that, every POST-data always gets to the db-update, even if there are no rules set up. (like firstname/lastname etc.)
-		if ($this->form_validation->run() == FALSE)
-		{
-			//echo 'NICHTS PASSIERT';
-		}
-		else
-		{		
-			//array of all input-fields
-			$fieldarray = array(
-				'LoginName' => $_POST['login'],
-				'Email' => $_POST['email'],
-				'Titel' => $_POST['title'],
-				'Raum' => $_POST['room'],
-				'Vorname' => $_POST['firstname'],
-				'Nachname' => $_POST['lastname'],
-				'StudienbeginnJahr' => $_POST['year'],
-				'StudienbeginnSemestertyp' => $_POST['semester'],
-				'StudiengangID' => $_POST['stgid'] 
-				);
-
-			//set emailflag. required, because a not checked checkbox results in no $_POST-entry
-			$fieldarray['EmailDarfGezeigtWerden'] = isset($_POST['emailflag']) ? 1 : 0;
-
-			if ($this->hasPasswordChanged())
-			{
-				//echo 'Password wurde geändert';
-				//ToDO: Email versenden!
-
-				//add the encrypted passwort
-				$fieldarray['Passwort'] = md5($_POST['pw2']);
-			}
-
-			//if there is no matrikelnr yet and the POSTfield is set
-			if (($data['info']['MatrikelnummerFlag'] == 0) && isset($_POST['matrikel']))
-			{
-				//echo 'Matrikel wurde geändert';
-
-				//add to the to-be-updated field
-				$fieldarray['Matrikelnummer'] = $_POST['matrikel'];
-				$fieldarray['MatrikelnummerFlag'] = 1;
-			}
-
-
-
-			//update database
-			$this->persDaten_model->update($fieldarray);
-			//create log
-			$this->persDaten_model->log($data['info']['TypID'], $data['info']['FachbereichID']);
-
-			if ($this->hasStudycourseChanged($data['info']['StudiengangID']))
-			{
-				//echo 'Studiengang wurde geändert';
-
-				//delete old semesterplan
-				//$this->studienplan_model->deleteAll();
-
-				//and create a new one
-				//$this->studienplan_model->createStudyplan();
-
-				//add the studycourse
-				//$fieldarray['StudiengangID'] = $_POST['stgid'];
-			}
-
-			$data['info'] = $this->persDaten_model->getUserInfo();
-			$data['stgng'] = $this->persDaten_model->getStudiengang();
-
-		//end else
-		}
-			
-		//load view
-		$this->load->view('einstellungen/index', $data);
-		  
 	}
 
 

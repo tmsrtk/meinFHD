@@ -2,6 +2,10 @@
 <?php startblock('title');?><?php get_extended_block();?> - Persönliche Einstellungen<?php endblock(); ?>
 <?php startblock('content'); # content for this view ?>
 
+<?php 
+$userroles = $this->user_model->get_all_roles();
+?>
+
 <!-- New -->
 <div class="well well-small">
 
@@ -29,6 +33,7 @@
 					<input type="text" name="loginname" placeholder="Loginname" value="<?php echo set_value('loginname', $formdata['LoginName']) ?>">
 				</div>
 			</div>
+
 			<div class="control-group">
 				<label class="control-label" for="password">Passwort</label>
 				<div class="controls">
@@ -36,7 +41,18 @@
 					<input type="password" name="password2" placeholder="Passwort bestätigen">
 				</div>
 			</div>
+
 			<hr />
+
+			<?php if ( in_array(Roles::DOZENT, $userroles)) : ?>
+			<div class="control-group">
+				<label class="control-label" for="forename">Titel</label>
+				<div class="controls">
+					<input type="text" name="title" placeholder="Titel" value="<?php echo set_value('title', $formdata['Titel']) ?>">
+				</div>
+			</div>
+			<?php endif ?>
+
 			<div class="control-group">
 				<label class="control-label" for="forename">Vor&Nachname</label>
 				<div class="controls">
@@ -44,14 +60,27 @@
 					<input type="text" name="lastname" placeholder="Nachname" value="<?php echo set_value('lastname', $formdata['Nachname']) ?>">
 				</div>
 			</div>
+
 			<hr />
+
 			<div class="control-group">
 				<label class="control-label" for="email">E-Mail Adresse</label>
 				<div class="controls">
 					<input type="text" name="email" placeholder="E-Mail" value="<?php echo set_value('email', $formdata['Email']) ?>">
 				</div>
 			</div>
+
+			<?php if ( in_array(Roles::DOZENT, $userroles)) : ?>
+			<div class="control-group">
+				<label class="control-label" for="room">Raum</label>
+				<div class="controls">
+					<input type="text" name="room" placeholder="Raum" value="<?php echo set_value('room', $formdata['Raum']) ?>">
+				</div>
+			</div>
 			<hr />
+			<?php endif ?>
+
+			<?php if ( in_array(Roles::STUDENT, $userroles)) : ?>
 			<div class="control-group">
 				<label class="control-label" for="studiengang">Studiengang</label>
 				<div class="controls">
@@ -59,12 +88,18 @@
 					<a href="<?php echo base_url('einstellungen/studiengang_wechseln') ?>" class="btn btn-warning">Studiengang wechseln</a>
 				</div>
 			</div>
+			<?php endif ?>
+
+			<?php if ( in_array(Roles::STUDENT, $userroles)) : ?>
 			<div class="control-group">
 				<label class="control-label" for="matrikelnummer">Matrikelnummer</label>
 				<div class="controls">
 					<input type="text" name="matrikelnummer" placeholder="Matrikelnummer" value="<?php print $formdata['Matrikelnummer'] ?>" disabled>
 				</div>
 			</div>
+			<?php endif ?>
+
+			<?php if ( in_array(Roles::STUDENT, $userroles)) : ?>
 			<div class="control-group">
 				<label class="control-label" for="semesteranfang">Semesteranfang</label>
 				<div class="controls">
@@ -87,12 +122,16 @@
 					</div>
 				</div>
 			</div>
+			<?php endif ?>
+
+			<?php if ( in_array(Roles::STUDENT, $userroles)) : ?>
 			<div class="control-group">
 				<label class="control-label" for="startjahr">Startjahr</label>
 				<div class="controls">
 					<input class="span1" type="text" name="startjahr" value="<?php echo set_value('startjahr', $formdata['StudienbeginnJahr']) ?>">
 				</div>
 			</div>
+			<?php endif ?>
 
 			<div class="form-actions">
 				<button type="submit" class="btn btn-primary span3">Änderungen Speichern</button>
