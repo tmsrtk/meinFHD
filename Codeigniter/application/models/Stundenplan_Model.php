@@ -274,6 +274,7 @@ class Stundenplan_Model extends CI_Model {
 						AND s_beginn.StundeID = spk.StartID
 						AND s_ende.StundeID = spk.EndeID
 						AND gruppe.GruppeID = spk.GruppeID
+						AND spk.IsWPF = 0
 						')
 					;
 
@@ -332,6 +333,7 @@ class Stundenplan_Model extends CI_Model {
 						AND s_ende.StundeID = spk.EndeID
 						AND gruppe.GruppeID = spk.GruppeID
 						AND spk.VeranstaltungsformID = 4
+						AND spk.IsWPF = 0
 						')
 					;
 
