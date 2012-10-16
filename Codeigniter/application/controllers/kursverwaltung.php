@@ -72,6 +72,7 @@ class Kursverwaltung extends FHD_Controller {
     public function show_coursemgt(){
 		// get flash-data - necessaray to reload correct tab (class="active")
 		$reload_course = $this->session->flashdata('reload_course');
+		print_r($reload_course);
 		if($reload_course){
 			$this->data->add('active_course', $reload_course);
 		} else {
@@ -468,15 +469,26 @@ class Kursverwaltung extends FHD_Controller {
 //    }
     
     /**
-     * Alternative function to save all details at once.
+	 * Alternative function to save all details at once.
+	 * Use method above to save each row on its own.
      * 
+	 * Saving the course-changes made by a user and submitted.
+	 * Data in post contain ALL details from the form.
+	 * Every field which is not empty will be saved to db.
+	 * 
+	 * Data is structures as described below:
+	 * - course-details: [SPKursID_Spaltenname-DB] => value (empty if no value)
+	 * - description: [KursID_description] => value (empty if no value)
+	 * 
      */
     public function save_course_details_all_at_once(){
+		// get data from POST
 		$input_data = $this->input->post();
-//		echo '<pre>';
-//		echo '<div>POST</div>';
-//		print_r($input_data);
-//		echo '</pre>';
+		
+		echo '<pre>';
+		echo '<div>POST</div>';
+		print_r($input_data);
+		echo '</pre>';
 
 		// init
 		$input_data_filtered = array();
@@ -488,11 +500,15 @@ class Kursverwaltung extends FHD_Controller {
 		$course_id = '';
 		$description = '';
 
-		// first filter
-		// - remove empty fields from email-checkboxes
-		// - get description
+		/**
+		 * 1. Run through passed data and filter.
+		 * - Empty fields will be removed here.
+		 * - Last field containing the descpription will be saved separately.
+		 * - Other data stored to new array.
+		 * 
+		 */
 		foreach ($input_data as $key => $value) {
-			// empty fields
+			// only empty fields
 			if($value !== ''){
 				// description
 				if(!strstr($key, 'description')){
@@ -502,22 +518,35 @@ class Kursverwaltung extends FHD_Controller {
 					$course_id = $desc_split[0];
 					$description = $value;
 				}
+			// description, room and number of participants has to be stored!!
+			// >> override the number will an "empty string"
+			} else {
+				// handle room and number of participants
+				if(strstr($key, 'Raum') || strstr($key, 'Teilnehmer')){
+					$input_data_filtered[$key] = $value;
+				}
+				// handle description
+				if(strstr($key, 'description')){
+					$desc_split = explode('_', $key);
+					$course_id = $desc_split[0];
+					$description = $value;
+				}
+				
 			}
 		}
 
-		// run through input
+		// run through the filtered input
 		foreach ($input_data_filtered as $key => $value) {
 			// get key and field-name
 			$split_key = explode('_', $key);
 			// save spkursid
 			$sp_course_id = $split_key[0];
-			// if sp_course_id changed >> buidl arrays to save in db
+			// if sp_course_id changed >> build arrays to save in db
 			if($sp_course_id !== $sp_course_id_temp){
 				// if old spkursid is not initial value 0 - there are data to save
 				if($sp_course_id_temp !== 0){
 					// save that data each time course_id changes
-					$this->kursverwaltung_model->save_course_details(
-						$sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
+					$this->kursverwaltung_model->save_course_details($sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
 //						echo '<pre>';
 //						echo '<div>course</div>';
 //						print_r($save_course_details_to_db);
@@ -540,10 +569,12 @@ class Kursverwaltung extends FHD_Controller {
 			}
 		}
 
-		// save that data - a last time
-		// >> because last data won't be detected by change of course_id (there is no new course-id)
-		$this->kursverwaltung_model->save_course_details(
-			$sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
+		/**
+		 * Data has to be saved a last time
+		 * Array is build of spcourse_ids as keys, therefore a last change won't be destected.
+		 * Data is stored correctly though.
+		 */
+		$this->kursverwaltung_model->save_course_details($sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
 		
 		$this->kursverwaltung_model->save_course_description($course_id, $description);
 		
@@ -564,8 +595,9 @@ class Kursverwaltung extends FHD_Controller {
 	//	echo '<div>POST</div>';
 	//	print_r($input_data_filtered);
 	//	echo '</pre>';
-
-//		$this->show_coursemgt();
+		
+		// redirecting to show-coursemgt-view
+		$this->session->set_flashdata('reload_course', $course_id);
 		redirect('kursverwaltung/show_coursemgt');
     }
     
