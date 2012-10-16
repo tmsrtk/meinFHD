@@ -909,6 +909,11 @@ class Kursverwaltung_model extends CI_Model {
 
 	
 	/**
+	 * Updating all checkboxes in lab-notes-view.
+	 * Each checkbox is updated separately.
+	 * Because data is stored as string of 1 and 0 in one field,
+	 * old data has to be fetched before and updated at the desired position.
+	 * 
 	 * 
 	 * @param string $cb_status 
 	 * @param int $user_id user to store the data for
@@ -917,34 +922,44 @@ class Kursverwaltung_model extends CI_Model {
 	 */
 	public function update_group_cbs($cb_status, $user_id, $attr, $event_id = ''){
 		// event-checkbox changed
-		if($event_id){
+		if($event_id != -1){
 			$q = '';
 			
-			// TODO get current status and generate new string that reprensents new status
+			// get current status
 			$this->db->select($attr);
 			$this->db->where('BenutzerID', $user_id);
-			$q = $this->db->get();
+			$q = $this->db->get('gruppenteilnehmer_aufzeichnungen');
 			
 			if($q->num_rows() > 0){
-				foreach($q->result as $row){
+				foreach($q->result() as $row){
 					$current_status = $row->$attr;
 				}
 			}
 			
-			// get length of string in db
+			// get length of string in db - needed in for-loop
 			$length = strlen($current_status);
+			// new variable, that represents the new status
 			$new_status = '';
 			
+			print_r($cb_status);
+			echo '--';
+			
+			// generate new string that reprensents the new status
 			// find position that has been changed and append to string
-			for($i = 1; $i <= $length; $i++){
-				if($i == $event_id+1){
-					$new_status .= '1';
-				// take the value that was stored before
+			for($i = 0; $i < $length; $i++){
+				// replace value for changed event with new status
+				if($i == $event_id){
+					$new_status .= $cb_status;
+				// otherwise take the value that was stored before
 				} else {
 					$new_status .= substr($current_status, $i, 1);
 				}
 			}
 			
+			print_r($current_status);
+			echo '--';
+			print_r($new_status);
+
 			$save = array(
 				$attr => $new_status
 			);

@@ -1126,16 +1126,18 @@ class Kursverwaltung extends FHD_Controller {
 		$cb_data = $this->input->post('lab_cb_data');
 		
 		$cb_name = $cb_data[0];
+		
+//		print_r($cb_data);
 
-//		if(strstr($cb_name, 'presence')){
-//			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'anwesenheit', $cb_data[3]);
-//		} else if(strstr($cb_name, 'testat')){
-//			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'testat', $cb_data[3]);
-//		} else if(strstr($cb_name, 'final')){
-//			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'gesamttestat');
-//		} else if(strstr($cb_name, 'disable')){
-//			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'ende');
-//		}
+		if(strstr($cb_name, 'presence')){
+			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'anwesenheit', $cb_data[3]);
+		} else if(strstr($cb_name, 'testat')){
+			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'testat', $cb_data[3]);
+		} else if(strstr($cb_name, 'final')){
+			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'gesamttestat');
+		} else if(strstr($cb_name, 'disable')){
+			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'ende');
+		}
 		
 		
 	}

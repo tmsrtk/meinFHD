@@ -201,20 +201,21 @@
 	var activeTabId = <?php echo $active_group; ?>;
 
 	// initialize active tab
-	if(activeTabId == 0){
+	//if(activeTabId == 0){
 		$('.tab-content div:first-child').addClass("active");
-		$('#course-details-navi li:first-child').addClass("active");
-	} else {
+		$('#lab-details-navi li:first-child').addClass("active");
+	/*} else {
 		$('#tab-panel-'+activeTabId).addClass("active");
 		$('#lab-tab-'+activeTabId).addClass("active");
-	}
+	}*/
 	
 	
 	// saving EVERY change in checkbox-checked-status
 	$('.lab-cb').change(function (){
+		var cbId = $(this).attr('id');
 		// getting cb-data
 		var elementName = $(this).attr('name');
-		var cbStatus = $(this).attr('checked');
+		var cbStatus = $('#'+cbId).attr('checked') ? 1 : 0;
 		var userId = $(this).data('uid');
 		var eventId = $(this).data('eid');
 		var dataToSave = [elementName, cbStatus, userId, eventId];
