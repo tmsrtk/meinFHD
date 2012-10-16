@@ -1,7 +1,7 @@
 <thead>
 	<tr class="row">
-		<th>Vorname</th>
-		<th>Nachname</th>
+		<th>Name</th>
+		<th>Überprüfung</th>
 		<?php 
 			for($i = 0; $i < $number_of_events; $i++){
 				echo '<th><div class="thead-labmgt label">';

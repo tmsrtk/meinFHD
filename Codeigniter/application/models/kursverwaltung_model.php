@@ -916,6 +916,7 @@ class Kursverwaltung_model extends CI_Model {
 	 * @param int $event_id the event to store the data for - only for testat and presence
 	 */
 	public function update_group_cbs($cb_status, $user_id, $attr, $event_id = ''){
+		// event-checkbox changed
 		if($event_id){
 			$q = '';
 			
@@ -932,19 +933,17 @@ class Kursverwaltung_model extends CI_Model {
 			
 			// get length of string in db
 			$length = strlen($current_status);
+			$new_status = '';
 			
-			
-			// check each position and save to new string
-			for($i = 0; $i <= $length; $i++){
+			// find position that has been changed and append to string
+			for($i = 1; $i <= $length; $i++){
 				if($i == $event_id+1){
-					
+					$new_status .= '1';
 				// take the value that was stored before
 				} else {
-					
+					$new_status .= substr($current_status, $i, 1);
 				}
 			}
-			
-			
 			
 			$save = array(
 				$attr => $new_status
@@ -956,7 +955,7 @@ class Kursverwaltung_model extends CI_Model {
 		}
 		// save to gruppenteilnehmer_aufzeichnungen for that user
 		$this->db->where('BenutzerID', $user_id);
-		$this->db->update('gruppenteilnehmer_aufzeichnungen');
+		$this->db->update('gruppenteilnehmer_aufzeichnungen', $save);
 	}
 
 	/* 

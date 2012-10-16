@@ -19,7 +19,7 @@
 		
 		<div class="row-fluid">
 			<h2>Meine Praktikumsgruppen</h2>
-			<p><a class="label label-info" href="<?php echo base_url(); ?>/kursverwaltung/show_labmgt">Zurück zur Übersicht</a></p>
+			<p><a class="label label-info" href="<?php echo base_url(); ?>/kursverwaltung/show_labmgt">ZurÃ¼ck zur Ãœbersicht</a></p>
 		</div>
 		
 		<div>
@@ -94,8 +94,10 @@
 
 							// print labels - name
 							echo form_label($one_participant->Vorname, 'first_name'.$one_participant->BenutzerID);
-							echo '</td><td>';
 							echo form_label($one_participant->Nachname, 'last_name'.$one_participant->BenutzerID);
+							echo '</td><td>';
+							echo form_label('Anwesenheit', '5');
+							echo form_label('Testat', '5');
 							echo '</td><td>';
 
 							// print two lines of checkboxes (1. presence, 2. testat)
