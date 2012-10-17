@@ -428,7 +428,8 @@ class Admin_model extends CI_Model {
 		$this->db->distinct()
 				 ->select('benutzer.*')
 				 ->from('benutzer')
-				 ->join('benutzer_mm_rolle', 'benutzer_mm_rolle.BenutzerID = benutzer.BenutzerID');
+				 ->join('benutzer_mm_rolle', 'benutzer_mm_rolle.BenutzerID = benutzer.BenutzerID')
+				 ;
 		// if role_id was set
 		if( ! empty($role_id))
 		{
@@ -437,8 +438,9 @@ class Admin_model extends CI_Model {
 		// if searchstring was set
 		if( ! empty($searchstring))
 		{
-			$this->db->like('Email', $searchstring);
-			// $this->db->or_like('Vorname', $searchstring); //////////////////////////////////////// WTF
+			$this->db->where("benutzer.Email LIKE '%{$searchstring}%' OR benutzer.Vorname LIKE '%{$searchstring}%' OR benutzer.Nachname LIKE '%{$searchstring}%'");
+			// $this->db->like('benutzer.Email', $searchstring);
+			// $this->db->or_like('benutzer.Vorname', $searchstring); // did´t work
 		}
 
 		return $this->db->get()->result_array();

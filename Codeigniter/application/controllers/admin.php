@@ -709,7 +709,10 @@ class Admin extends FHD_Controller {
 				$result .= $this->load->view('admin/partials/user_single_form', $value, TRUE);
 			}
 		}
-		echo $result;
+
+		( empty($result)) ? print 'Kein Ergebnis' : print $result;
+
+		// echo $result;
 	}
 
 	/**
