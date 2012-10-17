@@ -120,7 +120,7 @@
 		<?php 
 		// print div for each timetable
 		foreach($stundenplaene as $r_id => $content) : ?>
-		<div class="tab-pane" id="<?php echo "{$r_id}" ?>-tt">
+		<div class="tab-pane fade in active" id="<?php echo "{$r_id}" ?>-tt">
 
 			<?php // print role-specific timetable ?>
 			
@@ -242,7 +242,6 @@
 
 $(function() {
 	$('#tt-tab-navi a:last').tab('show');
-
 });
 
 <?php endblock(); ?>
