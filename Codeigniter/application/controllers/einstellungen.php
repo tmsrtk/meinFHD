@@ -244,13 +244,7 @@ class einstellungen extends FHD_Controller{
 		{
 			$data = $this->einstellungen_model->query_userdata($this->user_model->get_userid());
 		}
-
-
-		// DEBUG
-		// $data['testlabel'] = 'testlabeltext';
-
-		// FB::log($data);
-
+		
 		$this->data->add('formdata', $data);
 
 		$this->load->view('einstellungen/index', $this->data->load());
