@@ -579,9 +579,10 @@ class Admin extends FHD_Controller {
 			// save in db
 			$this->save_user_changes();
 
-			// $this->message->set('Der User wurde erfolgreich bearbeitet.', 'error');
+			$this->message->set('Der User wurde erfolgreich bearbeitet.', 'error');
+			$this->session->set_flashdata('searchbox', $new_form_values['email']);
+
 			redirect(site_url().'admin/edit_user_mask');
-			// $this->edit_user_mask();
 		}
 	}
 
