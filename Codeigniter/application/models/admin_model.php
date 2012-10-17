@@ -335,7 +335,7 @@ class Admin_model extends CI_Model {
 	public function get_all_studiengaenge()
 	{
 		// query raw data
-		$this->db->select('StudiengangID, StudiengangName')
+		$this->db->select('StudiengangID, StudiengangName, Pruefungsordnung')
 				 ->from('studiengang');
 		$q = $this->db->get();
 
@@ -345,7 +345,7 @@ class Admin_model extends CI_Model {
 		foreach ($q->result_array() as $row)
 		{
 			// array_push($my_result, $row['StudiengangName']/*.' '.$row['Pruefungsordnung']*/);
-			$my_result[$row['StudiengangID']] = $row['StudiengangName'];
+			$my_result[$row['StudiengangID']] = $row['StudiengangName'] . ' [' . $row['Pruefungsordnung'] . ']';
 		}
 
 		return $my_result;
