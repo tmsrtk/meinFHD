@@ -186,7 +186,19 @@
 													$css .= 'z-index:'			. (100 - $event['display_data']['column']);
 												?>
 												
-												<a href="<?php print base_url('modul/show/' . $event['KursID']); ?>" class="std-abs std-event <?php print $class; ?>" style="<?php print $css; ?>">
+												<?php 
+												$url = '';
+												if ( in_array(Roles::DOZENT, $this->user_model->get_all_roles()))
+												{
+													$url = 'kursverwaltung/show_coursemgt/'; // call_coursemgt_from_view
+													$_POST['course_id'] = $event['KursID'];
+												}
+												else
+												{
+													$url = 'modul/show/' . $event['KursID'];
+												}
+												?>
+												<a href="<?php print base_url($url) ?>" class="std-abs std-event <?php print $class; ?>" style="<?php print $css; ?>">
 													<div class="std-event-container">
 														<h5><?php print $event['kurs_kurz']; ?> <?php print $event['VeranstaltungsformName']; ?></h5>
 														<p><?php print $event['VeranstaltungsformAlternative']; ?></p>
