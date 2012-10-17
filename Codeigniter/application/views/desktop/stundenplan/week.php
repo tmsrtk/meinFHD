@@ -190,8 +190,8 @@
 												$url = '';
 												if ( in_array(Roles::DOZENT, $this->user_model->get_all_roles()))
 												{
-													$url = 'kursverwaltung/show_coursemgt/'; // call_coursemgt_from_view
-													$_POST['course_id'] = $event['KursID'];
+													$url = 'kursverwaltung/call_coursemgt_from_view/'.$event['KursID']; // show_coursemgt
+													log_message('error', $url);
 												}
 												else
 												{
