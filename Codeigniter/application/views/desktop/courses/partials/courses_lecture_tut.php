@@ -1,4 +1,22 @@
 <?php
+	/**
+	 * Partial that provides a single row in course-table - FOR TUTORS
+	 * 
+	 * The tutor-view is much more static than the view for non-tutors.
+	 * Therefore this part has an own partial where the rows are build.
+	 * 
+	 * As in standard course_lecture.php-partial all fields, that should provide
+	 * the possibility to save data has to be bound to a specific SPKursID (name, id - whatever is used)
+	 * 
+	 * As in the other courses_lecture-partial the rows are part of one big form
+	 * which is opened and closed in the main view (courses_show.php).
+	 * To provide the possibility to save only one row, deactivate comments.
+	 * 
+	 * Furthermore same structure as in mentioned file (courses_lecture.php)
+	 * For more detailed comments have a look at that file.
+	 * 
+	 */
+
     $label_attrs = array(
 		'name' => 'group_label',
 		'id' => 'course-mgt-label-'.$lecture_details->SPKursID,

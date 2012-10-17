@@ -1,9 +1,18 @@
 <?php
 
+/**
+ * Course management
+ * Controller used to prepare both course-management-views.
+ * 1. 'Meine Kurse'
+ * 2. 'Praktikumsverwaltung'
+ * 
+ * @author Frank Gottwald
+ */
+
 class Kursverwaltung extends FHD_Controller {
 
+	//
     private $permissions;
-    public $roles;
     private $roleIds;
     private $course_ids;
 	private $user_id;
@@ -15,20 +24,26 @@ class Kursverwaltung extends FHD_Controller {
     const LAB_PRA = 4;
     const TUT = 6;
     
-    // tables to switch between data
+    // The constants are used within the kursverwaltung_model.
+	// By passing the table-name the same method of the model can be used.
     const LABING = 'kursbetreuer';
     const TUTOR = 'kurstutor';
     
 
+	/**
+	 * Construct
+	 * Loading 'kursverwaltung_model' for usage
+	 * Loading necessary data from user-model.
+	 * - all roles the user has
+	 * - course ids for that user [course-id] => [role-id]
+	 * - user_id - mainly for logging-reasons
+	 */
     function __construct(){
 		parent::__construct();
 		$this->load->model('kursverwaltung_model');
 
-		// get all roles the user has
 		$this->roleIds = $this->user_model->get_all_roles();
-		// get course ids for that user
 		$this->course_ids = $this->user_model->get_user_course_ids();
-		// get user_id - mainly for logging-reasons
 		$this->user_id = $this->user_model->get_userid();
     }
     
@@ -40,18 +55,37 @@ class Kursverwaltung extends FHD_Controller {
 	 * 
 	 */
 	
-    function show_coursemgt(){
+	/**
+	 * MAIN-FUNCTION FOR COURSE-MGT
+	 * Depending on the course_ids that are stored for the user, this function
+	 * calls a single/multi-tab-view with course-details or a 'no-courses-assigned' view.
+	 * 
+	 * IMPORTANT:
+	 * The same view is used for all roles (Dozent, Betreuer, Tutor).
+	 * Therefore the data has to be prepared depending on all courses the user is assigned to
+	 * AND the (potentially) different roles the user has in each course.
+	 * 
+	 * More comments further down within the code
+	 * Implementation details directly stuck to the relevant code.
+	 * 
+	 */
+    public function show_coursemgt(){
+		// get flash-data - necessaray to reload correct tab (class="active")
+		$reload_course = $this->session->flashdata('reload_course');
+		print_r($reload_course);
+		if($reload_course){
+			$this->data->add('active_course', $reload_course);
+		} else {
+			$this->data->add('active_course', 0);
+		}
+		
 		// if user has courses - run through all of them
 		if($this->course_ids){
+			$course_names_ids = array(); // init
 
-			$course_names_ids = array();
-
-			// getting course_ids
-			$course_ids = $this->course_ids;
-
-
-			// getting short-names labeling
-			foreach ($course_ids as $cid => $role) {
+			// ## preparing data to print tabs in view
+			// running through all courses and get the short-names as label for the different tabs
+			foreach ($this->course_ids as $cid => $role) {
 				// comes from studiengangkurs
 		//		$course_names_ids[$cid] = $this->kursverwaltung_model->get_lecture_name($cid)->kurs_kurz;
 				$course_names_ids[$cid] = $this->kursverwaltung_model->get_lecture_name($cid);
@@ -60,18 +94,50 @@ class Kursverwaltung extends FHD_Controller {
 			// add course_names to view
 			$this->data->add('course_names_ids', $course_names_ids);
 
-			// dropdown data
+			// ## preparing dropdown data
+			// get options of all dropdowns - starttime, endtime, days
 			$subview_data['starttime_options'] = $this->helper_model->get_dropdown_options('starttimes');
 			$subview_data['endtime_options'] = $this->helper_model->get_dropdown_options('endtimes');
 			$subview_data['day_options'] = $this->helper_model->get_dropdown_options('days');
 
-			// init variables
-			$staff_view_data['is_tutor'] = false;
-			$subview_data['is_tut'] = false;
+			/**
+			 * The main view is build of several partials.
+			 * The basic structure of these partials is the same, therefore they are
+			 * reused for every role. Due to this re-use, there are some flags needed,
+			 * which indicate, for which role the view is build.
+			 * 
+			 * The following partials (+path) are used - from top to bottom in view:
+			 * (More detailed comments on the views within the views)
+			 * - staff (/partials/courses_staff):
+			 * >> lists staff (prof, labings, tuts) for course
+			 * - staff checkbox panel (/partials/courses_staff_cb_panel):
+			 * >> list of users (labings, profs, tuts) who can be assigned to course
+			 * - course description (/partials/courses_description):
+			 * >> textarea with desc from db or static text (tutor)
+			 * - tablehead for courses (/partials/courses_tablehead):
+			 * >> as name says -- the tablehead for each course
+			 * - course lecture (1 row) (/partials/course_lecture):
+			 * >> 1 row showing all changeable details for the lecture
+			 * - course lecture for tutor-view (1 row) (/partials/course_lecture_tut):
+			 * >> 1 row showing all details for the tutor-event -
+			 * >> own partial because changable for everyone! (role-independant)
+			 * 
+			 * Depending on role the details provided in these views are changeable.
+			 * - Tutors (RolleID = 4) may change only the details of tuts
+			 * - Profs & Labings (RolleID = 2 & 3) may change everything
+			 * >>More detailed comments on the views within the views
+			 */
+			
+			// init helper-variables used in partials
+			$staff_view_data['is_tutor'] = false; // tutor-flag for staff-partial
+			$subview_data['is_tut'] = false; // tutor-flag for all other partials
 			$subview_lecture_to_load = '';
 
-			// switch view - depends on if user is tutor or not
-			// TODO? hard coded ints at the moment - perhaps better via function?
+			/**
+			 * Switch the views to use, depending on the user-role.
+			 * If PROF(2)or LABING(3): simple lecture-partial is used
+			 * otherwise: setting flags and use tutor-partial.
+			 */
 			if(in_array(2, $this->roleIds) || in_array(3, $this->roleIds)){
 				$subview_lecture_to_load = 'courses/partials/courses_lecture';
 			} else {
@@ -80,22 +146,37 @@ class Kursverwaltung extends FHD_Controller {
 				$subview_lecture_to_load = 'courses/partials/courses_lecture_tut';
 			}
 
-			// get data for each course
+			/**
+			 * Building data for each course
+			 * Each tab in the view contains data for a single course.
+			 * Therefore the array passed to the view is structured by the course-id.
+			 */
 			foreach($this->course_ids as $id => $role){
 				$name = array(); // init
 
-				// save course_id and course_description for partial view
+				// save course_id and course_description for staff-partial
 				$staff_view_data['course_id'] = $id;
 				$staff_view_data['course_description'] = $course_names_ids[$id]->Beschreibung;
 
-				// get staff-overview view
-				// get active staff
+				/**
+				 * Preparing data for the staff-part of the view
+				 */
+				
+				// getting prof-name from db otherwise only text
 				$name = $this->kursverwaltung_model->get_profname_for_course($id);
 				if($name){
 					$staff_view_data['prof'] = $name[0].' '.$name[1].' '.$name[2];
 				} else {
 					$staff_view_data['prof'] = 'keine Angabe';
 				}
+				
+				/**
+				 * Getting staff from DB
+				 * Current labings/tuts for that course and possible labings/tuts
+				 * has to be treated separately.
+				 * Data is the base for the checkboxes (possible) in view and
+				 * active status (current).
+				 */
 				$staff_view_data['current_labings'] = 
 					$this->kursverwaltung_model->get_current_labings_tuts_for_course($id, Kursverwaltung::LABING);
 				$staff_view_data['possible_labings'] = 
@@ -105,7 +186,10 @@ class Kursverwaltung extends FHD_Controller {
 				$staff_view_data['possible_tuts'] = 
 					$this->kursverwaltung_model->get_all_tuts();
 
-				// get labing/tut partials for printing checkbox-panels
+				/**
+				 * Build checkbox-views for labings and tuts:
+				 * Same partial is used, therefore print_tuts flag toggles.
+				 */
 				$staff_view_data['print_tuts'] = false;
 				$staff_view_data['labing_panel'] =
 					$this->load->view('courses/partials/courses_staff_cb_panel', $staff_view_data, TRUE);
@@ -113,60 +197,135 @@ class Kursverwaltung extends FHD_Controller {
 				$staff_view_data['tut_panel'] =
 					$this->load->view('courses/partials/courses_staff_cb_panel', $staff_view_data, TRUE);
 
+				/**
+				 * Build final staff-view:
+				 * The partials build above are assembled in one more partial.
+				 */
 				// get staff-view
 		//		$course_data[$id][] = $this->load->view('courses/partials/courses_staff', $staff_view_data, TRUE); // old version - bound to array
 				$staff[$id] = $this->load->view('courses/partials/courses_staff', $staff_view_data, TRUE);
 		//		$staff[$id] = $this->load->view('courses/partials/courses_staff_dummy', '', TRUE); // DEBUG VIEW
 
-				// get view for each eventtype
+				// fetching eventtypes for that course_id
 				$eventtypes = $this->kursverwaltung_model->get_eventtypes_for_course($id);
+				
+				/**
+				 * Building activate-application-row
+				 * TODO depending on existance of a course, that can be activated
+				 * >> eventtypes 2,3,4
+				 */
+				$act_app_data[] = array(); // init
+				
+				// get application-status for that course
+				// 1 = application
+				// returns -1 if there are no courses, that can be activated
+				$application_status = $this->kursverwaltung_model->get_application_status($id);
+				
+				// if there are courses to activate application for
+				if($application_status != -1){
+					$act_app_data['course_id'] = $id;
+					$act_app_data['headline'] = 'Gruppenanmeldung:';
+
+					// switch labels depending on status
+					if($application_status == 1){
+						$act_app_data['status_label'] = 'Anmeldung aktiviert';
+						$act_app_data['status_css'] = 'enabled';
+						$act_app_data['button_label'] = 'Anmeldung deaktivieren';
+					} else {
+						$act_app_data['status_label'] = 'Anmeldung deaktiviert';
+						$act_app_data['status_css'] = 'disabled';
+						$act_app_data['button_label'] = 'Anmeldung aktivieren';
+					}
+
+					// getting data and save for view
+					if(in_array(2, $eventtypes) || in_array(3, $eventtypes) || in_array(4, $eventtypes)){
+						$activate_application[$id] = $this->load->view('courses/partials/courses_activate_application', $act_app_data, TRUE);
+					}
+				}
+				
+				/**
+				 * Building details-view:
+				 * Get all eventtypes for the course, get view for each of the types
+				 * and store to structured array (mentioned above))
+				 */
 				foreach($eventtypes as $e){
-					// must be an array because (final) view (courses_show.php) runs data in foreach loop 
+					// must be an array because (final) view (/courses_show.php) runs data in foreach loop 
 					$course_data[$id][] = $this->get_course_event_view($id, $e, $subview_data, $subview_lecture_to_load);
 				}
+				
+				/**
+				 * Add information if save-button should be shown depending on
+				 * role (profs & labings see buttons always)
+				 * and existance of tut-event (tuts only see button if tut also exists)
+				 * 
+				 */
+				if(in_array(2, $this->roleIds) || in_array(3, $this->roleIds)){
+					$show_save_button[$id] = true; 
+				} else {
+					if(in_array('6', $eventtypes)){
+						$show_save_button[$id] = true; 
+					} else {
+						$show_save_button[$id] = false; 
+					}
+				}
+				$this->data->add('show_save_button', $show_save_button);
 				
 				// getting description depending on role
 				$description_field[$id] = $this->load->view('courses/partials/courses_description', $staff_view_data, TRUE);
 
+				// adding all data to view
 				$this->data->add('staff', $staff);
+				$this->data->add('activate_application', $activate_application);
 				$this->data->add('course_details', $course_data);
 				$this->data->add('description', $description_field);
 				$this->data->add('offset', 0);
 			}
 
+			// load course-view
 			$this->load->view('courses/courses_show', $this->data->load());
 
 		} else {
-			// no courses assigned view
+			// load no-courses-assigned-view
 			$this->load->view('courses/courses_no', $this->data->load());
 		}
     }
     
     
     /**
-     * Returns part of the course view for ONE lecture, lab, tut
-     * Depending on eventtype that was passed.
-     * @param type $course_id
-     * @param type $eventtype
-     * @param type $subview_data
-     * @param type $subview_to_load
-     * @return type
+	 * Returning one part of the view for each eventtype
+     * ONLY ONE part of the view (lecture or lab or tut)
+	 * depending on eventtype that was passed.
+	 * 
+     * @param int $course_id the course id
+     * @param int $eventtype eventtype of that event
+     * @param array $subview_data containing dropdown-data and flags
+     * @param string $subview_to_load defining the subview to load (changable or static - role-dependant)
+     * @return string containing the part of the course-view (eventtype-dependant)
      */
     private function get_course_event_view($course_id, $eventtype, $subview_data, $subview_to_load){
-	
-		// init
-		$subview_data['is_lab'] = FALSE;
+		// initing some variables needed in the partials
+		$subview_data['is_lab'] = FALSE; // flag for lab
 //		$subview_data['is_tut'] = FALSE;
-		$subview_data['lecture_name'] = $this->kursverwaltung_model->get_lecture_name($course_id);
-		$subview_data['course_id'] = $course_id;
-		$subview_data['current_participants'] = '';
+		$subview_data['lecture_name'] = $this->kursverwaltung_model->get_lecture_name($course_id); // for labels - line
+		$subview_data['course_id'] = $course_id; // adding course_id for view
+		$subview_data['current_participants'] = ''; // variable needed for participant-buttons
 
+		/**
+		 * In this switch-case the views are put together - depending on the eventtype passed.
+		 * 1. setting flag (LAB or not)
+		 * >> lab: print 'Gruppe #' as label and a number of participants-limit
+		 * 2. setting headline
+		 * 3. putting view together
+		 * >> LECTURE & TUT can get directly put together (with tablehead)
+		 * >> other types need some special handling because tablehead only once for (potentially) multiple rows
+		 *    >> get_lab_view()
+		 * 
+		 */
 		switch($eventtype) {
 			case Kursverwaltung::LECTURE :
-				// data for subviews
 				$subview_data['headline'] = 'Vorlesung';
 
-				//get lecture-data - only changable for NO-tuts
+				//get lecture-data - only changeable for NON-tuts
 				$subview_data['lecture_details'] = $this->kursverwaltung_model->get_lecture_details($course_id, $eventtype);
 				$subview_data['current_participants'] = $this->kursverwaltung_model->count_participants_for_course($subview_data['lecture_details']->SPKursID, FALSE);
 				$lecture = $this->load->view('courses/partials/courses_tablehead', $subview_data, TRUE);
@@ -187,7 +346,7 @@ class Kursverwaltung extends FHD_Controller {
 			case Kursverwaltung::TUT :
 				$subview_data['is_tut'] = TRUE;
 				$subview_data['headline'] = 'Tutorium';
-				// get tut data view - always visible to every role
+				// get tut data view - always visible to AND changeable for any role
 				$subview_data['lecture_details'] = $this->kursverwaltung_model->get_lecture_details($course_id, $eventtype);
 				$tut = $this->load->view('courses/partials/courses_tablehead', $subview_data, TRUE);
 				// !! view has to be courses_lecture because tut should be able to save changes in tut
@@ -198,11 +357,15 @@ class Kursverwaltung extends FHD_Controller {
     }
     
     /**
-     * Returns lab-part of course-view
-     * Necessary because of headlines >> tablehead
-     * @param int $course_id
-     * @param int $eventtype
-     */
+	 * Returns lab-part of course-view
+     * Necessary because one tablehead (potentially) for multiple rows
+	 * 
+	 * @param int $course_id the course-id
+	 * @param int $eventtype the eventtype
+     * @param string $subview_to_load defining the subview to load (changable or static - role-dependant)
+     * @param array $subview_data containing dropdown-data and flags + additional data
+     * @return string containing the part of the course-view (eventtype-dependant)
+	 */
     private function get_lab_view($course_id, $eventtype, $subview_to_load, $subview_data){
 		$lab = array(); // init/clean
 		
@@ -211,10 +374,29 @@ class Kursverwaltung extends FHD_Controller {
 		$subview_data['current_participants'] = '';
 		$subview_data['download_file'] = '';
 		
-		//get lab-data-view (
+		/**
+		 * Get lab-data-view:
+		 * At first fetch all the course-details for that course from db
+		 * 
+		 * Then initially the tablehead is loaded into an empty array (lab)
+		 * after that a row for each group is added.
+		 * >> getting number of participants and participants themselves
+		 * >> and create a location a file can be stored
+		 */
+		
 		// get data from db - array containing lab-data
 		$lab_details = $this->kursverwaltung_model->get_lab_details($course_id, $eventtype);
+		
+		// IMPORTANT:
+		// method get_lab_details returns the details for ALL labs
+		// to have one unique id (not the course-id) for each table-header
+		// only the first entry in array is passed into view
+		// means: when reading data, groups has to be generated by knowing one of them
+		$subview_data['lab_details'] = $lab_details[0];
+		
+		// init lab with tablehead
 		$lab[] = $this->load->view('courses/partials/courses_tablehead', $subview_data, TRUE);
+		
 		foreach($lab_details as $details){
 	//	    echo '<pre>';
 	//	    print_r($l);
@@ -222,6 +404,7 @@ class Kursverwaltung extends FHD_Controller {
 			// getting all participants and count them to show current participants
 			$count_participants = 0;
 			$count_participants = $this->kursverwaltung_model->count_participants_for_course($details->SPKursID, TRUE);
+			
 			// create location of potential downloaded file
 			$dl_file = '';
 			$dl_file = './resources/downloads/participants/gruppe-'.md5($details->SPKursID);
@@ -230,34 +413,21 @@ class Kursverwaltung extends FHD_Controller {
 			$subview_data['download_file'] = $dl_file;
 			$subview_data['lecture_details'] = $details;
 			$subview_data['current_participants'] = $count_participants;
+			
+			// save new row to view
 			$lab[] = $this->load->view($subview_to_load, $subview_data, TRUE);
 		}
+		
+		// returning final (sub)view
 		return $lab;
     }
     
-//    
-//    private function get_headlines_for_view($eventtype){
-//	switch($eventtype){
-//	    case Kursverwaltung::LECTURE : 
-//		return 'Vorlesung';
-//	    case Kursverwaltung::LAB_SEM : 
-//		return 'Seminar';
-//	    case Kursverwaltung::LAB_UEB : 
-//		return 'Uebung';
-//	    case Kursverwaltung::LAB_PRA : 
-//		return 'Praktikum';
-//	    case Kursverwaltung::TUT : 
-//		return 'Tutorium';
-//		break;
-//	}
-//    }
-//    
-//    
     
 //    ############################################################## SAVING DATA
     
 //    /**
 //     * outdated / needed, if just one course should be saved
+//     * form_fields still in partial but outcommented
 //     */
 //    public function save_course_details(){
 //
@@ -299,15 +469,26 @@ class Kursverwaltung extends FHD_Controller {
 //    }
     
     /**
-     * Alternative function to save all details at once.
+	 * Alternative function to save all details at once.
+	 * Use method above to save each row on its own.
      * 
+	 * Saving the course-changes made by a user and submitted.
+	 * Data in post contain ALL details from the form.
+	 * Every field which is not empty will be saved to db.
+	 * 
+	 * Data is structures as described below:
+	 * - course-details: [SPKursID_Spaltenname-DB] => value (empty if no value)
+	 * - description: [KursID_description] => value (empty if no value)
+	 * 
      */
     public function save_course_details_all_at_once(){
+		// get data from POST
 		$input_data = $this->input->post();
-//		echo '<pre>';
-//		echo '<div>POST</div>';
-//		print_r($input_data);
-//		echo '</pre>';
+		
+		echo '<pre>';
+		echo '<div>POST</div>';
+		print_r($input_data);
+		echo '</pre>';
 
 		// init
 		$input_data_filtered = array();
@@ -319,11 +500,15 @@ class Kursverwaltung extends FHD_Controller {
 		$course_id = '';
 		$description = '';
 
-		// first filter
-		// - remove empty fields from email-checkboxes
-		// - get description
+		/**
+		 * 1. Run through passed data and filter.
+		 * - Empty fields will be removed here.
+		 * - Last field containing the descpription will be saved separately.
+		 * - Other data stored to new array.
+		 * 
+		 */
 		foreach ($input_data as $key => $value) {
-			// empty fields
+			// only empty fields
 			if($value !== ''){
 				// description
 				if(!strstr($key, 'description')){
@@ -333,22 +518,35 @@ class Kursverwaltung extends FHD_Controller {
 					$course_id = $desc_split[0];
 					$description = $value;
 				}
+			// description, room and number of participants has to be stored!!
+			// >> override the number will an "empty string"
+			} else {
+				// handle room and number of participants
+				if(strstr($key, 'Raum') || strstr($key, 'Teilnehmer')){
+					$input_data_filtered[$key] = $value;
+				}
+				// handle description
+				if(strstr($key, 'description')){
+					$desc_split = explode('_', $key);
+					$course_id = $desc_split[0];
+					$description = $value;
+				}
+				
 			}
 		}
 
-		// run through input
+		// run through the filtered input
 		foreach ($input_data_filtered as $key => $value) {
 			// get key and field-name
 			$split_key = explode('_', $key);
 			// save spkursid
 			$sp_course_id = $split_key[0];
-			// if sp_course_id changed >> buidl arrays to save in db
+			// if sp_course_id changed >> build arrays to save in db
 			if($sp_course_id !== $sp_course_id_temp){
 				// if old spkursid is not initial value 0 - there are data to save
 				if($sp_course_id_temp !== 0){
 					// save that data each time course_id changes
-					$this->kursverwaltung_model->save_course_details(
-						$sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
+					$this->kursverwaltung_model->save_course_details($sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
 //						echo '<pre>';
 //						echo '<div>course</div>';
 //						print_r($save_course_details_to_db);
@@ -371,10 +569,12 @@ class Kursverwaltung extends FHD_Controller {
 			}
 		}
 
-		// save that data - a last time
-		// >> because last data won't be detected by change of course_id (there is no new course-id)
-		$this->kursverwaltung_model->save_course_details(
-			$sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
+		/**
+		 * Data has to be saved a last time
+		 * Array is build of spcourse_ids as keys, therefore a last change won't be destected.
+		 * Data is stored correctly though.
+		 */
+		$this->kursverwaltung_model->save_course_details($sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
 		
 		$this->kursverwaltung_model->save_course_description($course_id, $description);
 		
@@ -395,19 +595,25 @@ class Kursverwaltung extends FHD_Controller {
 	//	echo '<div>POST</div>';
 	//	print_r($input_data_filtered);
 	//	echo '</pre>';
-
-//		$this->show_coursemgt();
+		
+		// redirecting to show-coursemgt-view
+		$this->session->set_flashdata('reload_course', $course_id);
 		redirect('kursverwaltung/show_coursemgt');
     }
     
     
     /**
-     * Switch: calls correct method to save to *KURS*BETRUER-table (laboringenieur-table deprecated)
+     * S
+	 * Switch: calls correct method to save to *KURS*BETRUER-table (laboringenieur-table deprecated)
      */
     public function save_labings_for_course(){
 		// get incoming data
 		$staff_to_save = $this->input->post();
 		$this->save_staff_to_db(Kursverwaltung::LABING, $staff_to_save);
+		
+		// redirecting to show-coursemgt-view
+		$this->session->set_flashdata('reload_course', key($staff_to_save));
+		redirect('kursverwaltung/show_coursemgt');
     }
     
     
@@ -418,6 +624,10 @@ class Kursverwaltung extends FHD_Controller {
 		// get incoming data
 		$staff_to_save = $this->input->post();
 		$this->save_staff_to_db(Kursverwaltung::TUTOR, $staff_to_save);
+		
+		// redirecting to show-coursemgt-view
+		$this->session->set_flashdata('reload_course', key($staff_to_save));
+		redirect('kursverwaltung/show_coursemgt');
     }
 
     /**
@@ -432,6 +642,28 @@ class Kursverwaltung extends FHD_Controller {
 		if(count($staff) === 1){
 	//	    echo 'if'; // DEBUG
 			// get course_id i.e. first element key
+			// TODO redirect!!!!!!!!!!!!!!!
+			// Following error appeared when saving staff (removed one person from labings)
+			// then without reloading added new tutor via dialog
+			/*
+			 * <h4>A PHP Error was encountered</h4>
+
+				<p>Severity: Warning</p>
+				<p>Message:  reset() expects parameter 1 to be array, boolean given</p>
+				<p>Filename: controllers/kursverwaltung.php</p>
+				<p>Line Number: 551</p>
+
+				</div><div style="border:1px solid #990000;padding-left:20px;margin:0 0 10px 0;">
+
+				<h4>A PHP Error was encountered</h4>
+
+				<p>Severity: Warning</p>
+				<p>Message:  key() expects parameter 1 to be array, boolean given</p>
+				<p>Filename: controllers/kursverwaltung.php</p>
+				<p>Line Number: 552</p>
+
+				</div>
+			 */
 			reset($staff); // setting pointer to first element - necessary?!?!
 			$course_id = key($staff);
 			// delete staff for that course_id
@@ -533,6 +765,7 @@ class Kursverwaltung extends FHD_Controller {
 		$data = $this->input->post('course_id_status');
 		// sp_course_id = $data[0]; status (enabled/disabled) = $data[1]
 		
+		echo print_r($data);
 		
 		// update benutzerkurs
 		if($data[1] == 'enabled'){
@@ -543,6 +776,103 @@ class Kursverwaltung extends FHD_Controller {
 			$this->kursverwaltung_model->update_benutzerkurs_activation($data[0], TRUE);
 		}
 		
+	}
+	
+	
+	/**
+	 * Returns the modal-content for search-user-modal to the view
+	 * Method is called from within view (hitting the search button in user-search-modal)
+	 * Data passed from view contains array:
+	 * - [0] => matrikelno to search for
+	 * - [1] => courseId (needed to generate unique dom-element - necessary because of tab-view)
+	 * 
+	 * The only validation is to check for numeric value.
+	 * In any other case a message is returned that user, could not be found + new input-field 
+	 * 
+	 * @echo string final dom-element depending on search-result
+	 */
+	public function ajax_search_student_by_matrno(){
+		$return = ''; // init
+		
+		// fetching data from post
+		$data_from_post = $this->input->post('server_data');
+
+		// check if passed data is numeric
+		if(is_numeric($data_from_post[0])){
+			$return = $this->kursverwaltung_model->search_student_by_matrno($data_from_post[0]);
+		} else {
+			// nothing to do
+		}
+		
+		// build element to be shown in modal and echo
+		// either student-details + button to assign role
+		if($return){
+			echo $this->build_studentsearch_modal_content($data_from_post[1], $return);
+		// or error-message, that there is no student with this matr-no and input-field to repeat search
+		} else {
+			echo $this->build_studentsearch_modal_content($data_from_post[1]);
+		}
+	}
+	
+	
+	/**
+	 * Building the modal-content for search-user-modal
+	 * Returns a final-dom element which is put into the modal
+	 * Depending on the search-result (student found or not) the content differs:
+	 * - student found: button to assign role to student
+	 * - student already tutor: message to have a look at the list
+	 * - not found: message plus inputfield to search again - same id as defined in view >> reusable functions
+	 * 
+	 * @param int $course_id the course the student should be added as tutor
+	 * @param array $student_detail some student-details (atm: first, last name and matrno)
+	 * @return string final dom-element to put into modal
+	 */
+	private function build_studentsearch_modal_content($course_id, $student_detail = ''){
+		$element = '<div>'; // init
+
+		// if student was found
+		if($student_detail){
+			// check ifthe user already has the tutor-role
+			if($student_detail != -1){
+				$value = $student_detail[0]->Vorname.' '.$student_detail[0]->Nachname.' ('.$student_detail[0]->Matrikelnummer.')';
+				$element .= '<input type="submit" value="'.$value.' zum Tutor machen" id="add-tutor-dialog-assign-'.$course_id.'" data-matrno="'.$student_detail[0]->Matrikelnummer.'" class="span12 btn-danger">';
+			// otherwise return error-message				
+			} else {
+				$element .= '<div class="span12">Der Student ist bereits Tutor. Wählen Sie ihn aus der Liste der Tutoren aus.</div>';
+			}
+		// otherwise
+		} else {
+			$element .= '<div class="span12">Unter dieser Matrikelnummer wurde im System kein Student gefunden.</div>';
+			$element .= '<div class="span12">Neue Suche:';
+			$element .= '<input type="text" placeholder="Matrikelnummer" name="matrnr" id="matrnr-input">';
+			$element .= '<input type="submit" value="Suchen" id="add-tutor-dialog-search" class="btn-info"></div>';
+		}
+		
+		$element .= '</div>';
+		return $element;
+	}
+	
+	
+	/**
+	 * Method to assign tutor-role to a student and make him tutor for a course.
+	 * Therefore following data is passed via POST - array:
+	 * - [0] => matrikelno to search for
+	 * - [1] => courseId (needed to generate unique dom-element
+	 * 
+	 * After assignment return success-message as string or
+	 * error-message (shouldn't happen).
+	 * 
+	 */
+	public function ajax_add_student_as_tutor(){
+		// fetching data from post
+		$student_data = $this->input->post('student_data');
+		
+		// assign tut-role to student and for passed course_id
+		if($this->kursverwaltung_model->assign_tut_role_to_student($student_data)){
+			echo 'Der Student ist nun Tutor des Kurses und kann Tutorien verwalten.';
+		} else {
+			echo 'Fehler bei der Verarbeitung. Kontaktieren Sie einen Administrator.';
+		}
 	}
 	
 
@@ -572,14 +902,24 @@ class Kursverwaltung extends FHD_Controller {
 	 */
 	
 	
+
 	/**
-	 * Single function called from menue and within view
-	 * Behaviour depends on 
-	 * 1. data in POST
+	 * MAIN-FUNCTION FOR LAB-MGT
+	 * Provides two different views with one single function called from menue
+	 * and from within view. The views that are shown depend on:
+	 * 
+	 * 1. data passed via POST
+	 * If there is data passed via POST, then view has been called from within
+	 * overview view. That means the user already chose one group and
+	 * the view to be shown is a detail-view of a lab with one defined active tab.
+	 * 
 	 * 2. courseIds for current user
+	 * If the current user has more than one course_id to manage AND there is NO data passed
+	 * he is directed to an overview view, that provides the possibility to chose from
+	 * all groups he manages.
 	 */
 	public function show_labmgt(){
-		// get the course_id from POST
+		// init course_id with -1
 		$course_id_to_show = -1;
 		
 		// if there is only one course_id >> save that one to variable
@@ -607,7 +947,7 @@ class Kursverwaltung extends FHD_Controller {
 		
 		// if course_ids is NO array and NOT initialized
 		// means: there is more than one course_id stored ???????
-		if(count($this->course_ids) > 1 && $course_id_to_show === -1){
+		if(count($this->course_ids) > 1 && $course_id_to_show == -1){
 			// goto overview-view
 			$this->show_labmgt_overview();
 		} else {
@@ -664,6 +1004,8 @@ class Kursverwaltung extends FHD_Controller {
 		// ## get sp_course_details for course_id - all labs? disable seminar?
 		// init
 		$sp_course_details = '';
+		$lab_theads = '';
+		
 		
 		// defining all eventtypes to fetch data for
 		$eventtypes_to_fetch = array(2,3,4);
@@ -671,19 +1013,41 @@ class Kursverwaltung extends FHD_Controller {
 			// either data has been passed via flashdata >> user chose group (and (implicit) course) to manage
 			// active group in view
 			if($load_sp_course_id != -1){
-				$sp_course_details[$load_course_id.'-'.$e] = $this->kursverwaltung_model->get_course_details($load_course_id, $e);
+				$course_id = $load_course_id;
 			} else {
 				// or there is only one course
 				// >> no active group
-				if(count($this->course_ids)){
-					$c_id = key($this->course_ids);
-					$sp_course_details[$c_id.'-'.$e] = $this->kursverwaltung_model->get_course_details($c_id, $e);
+				$course_id = key($this->course_ids);
+			}
+			
+			// fetch data
+			if(count($this->course_ids)){
+				$sp_course_details[$course_id.'-'.$e] = $this->kursverwaltung_model->get_course_details($course_id, $e);
+			}
+
+		}
+		
+		// preparing group-table-head data
+		$number_of_events = 15;
+		$thead_data['number_of_events'] = $number_of_events;
+		$thead_data['event_dates'] = $this->get_dates_for_all_labs($sp_course_details);
+		
+		// running through array to pass SPKursID to fetch dates for
+		foreach($sp_course_details as $details){
+			foreach($details as $d){
+				if($d){
+					$thead_data['sp_course_id'] = $d->SPKursID;
+					// storing 
+					$lab_theads[$d->SPKursID] = $this->load->view('courses/partials/labs_thead', $thead_data, TRUE);
 				}
 			}
 		}
 		
 		// save data and active group to 
-		$this->data->add('sp_course_details', $this->get_details_for_all_labs($sp_course_details));
+		$this->data->add('theads', $lab_theads);
+		$this->data->add('sp_course_details', $sp_course_details);
+		$this->data->add('sp_course_participants_details', $this->get_details_for_all_labs($sp_course_details));
+		$this->data->add('event_dates', $this->get_dates_for_all_labs($sp_course_details));
 		$this->data->add('active_group', $load_sp_course_id);
 	    $this->load->view('courses/labs_group_show', $this->data->load());
 	}
@@ -716,6 +1080,74 @@ class Kursverwaltung extends FHD_Controller {
 		return $lab_participants_plus_notes;
 	}
 	
+	
+	
+	/**
+	 * Helper method taking array with all eventtypes (AND groups) for a single course
+	 * Peparing data for view
+	 * >> 
+	 * @param array $sp_course_details containing all course-labs-details sorted by eventtypes
+	 * @return array $group_participants containing all dates if stored before
+	 */
+	private function get_dates_for_all_labs($sp_course_details){
+		// variable to be returned
+		$event_dates = array();
+		
+		
+		// running through all course-event-combinations and get participants
+		// 1. check if there are courses with details to fetch
+		foreach($sp_course_details as $key => $groups){
+			// if there are courses for this course-event-combination
+			if($groups){
+				// 2. get participants for each course and save to array
+				foreach($groups as $index => $sp_course_object){
+					$event_dates[$sp_course_object->SPKursID] = $this->kursverwaltung_model->get_lab_dates($sp_course_object->GruppeID);
+				}
+			}
+		}
+		
+		return $event_dates;
+	}
+	
+	
+	/**
+	 * Saving data from lab-notes-view - CHECKBOXES ONLY
+	 * Array with bunch of data passed via POST. Includes the following:
+	 * array[0] element_name
+	 * array[1] cb_status
+	 * array[2] user_id
+	 * array[3] event_id starts with 0 runs to number set by user for this lab
+	 * Depending on the checkbox that has been clicked db is updated
+	 * 
+	 * @echo boolean 
+	 */
+	public function ajax_save_lab_checkboxes(){
+		$cb_data= ''; // init
+		$cb_data = $this->input->post('lab_cb_data');
+		
+		$cb_name = $cb_data[0];
+		
+//		print_r($cb_data);
+
+		if(strstr($cb_name, 'presence')){
+			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'anwesenheit', $cb_data[3]);
+		} else if(strstr($cb_name, 'testat')){
+			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'testat', $cb_data[3]);
+		} else if(strstr($cb_name, 'final')){
+			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'gesamttestat');
+		} else if(strstr($cb_name, 'disable')){
+			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'ende');
+		}
+		
+		
+	}
+	
+	
+	public function ajax_save_lab_notes(){
+		
+	}
+	
+
 	/* 
 	 * 
 	 * ******************************** Praktikumsverwaltung

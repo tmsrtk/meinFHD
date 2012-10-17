@@ -148,3 +148,8 @@ CI_phpStorm.php
 # File created by saving the Semesterplan:
 ######################################################################################################
 Codeigniter/upload/
+
+
+# meinfhd.css & meinfhd-responsive.css:
+######################################################################################################
+Codeigniter/resources/css/meinfhd.css
