@@ -438,7 +438,7 @@ class Admin_model extends CI_Model {
 		// if searchstring was set
 		if( ! empty($searchstring))
 		{
-			$this->db->where("benutzer.Email LIKE '%{$searchstring}%' OR benutzer.Vorname LIKE '%{$searchstring}%' OR benutzer.Nachname LIKE '%{$searchstring}%'");
+			$this->db->where("benutzer.Email LIKE '%{$searchstring}%' OR benutzer.Vorname LIKE '%{$searchstring}%' OR benutzer.Nachname LIKE '%{$searchstring}%' OR benutzer.LoginName LIKE '%{$searchstring}%'");
 			// $this->db->like('benutzer.Email', $searchstring);
 			// $this->db->or_like('benutzer.Vorname', $searchstring); // did´t work
 		}
