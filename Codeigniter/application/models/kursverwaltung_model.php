@@ -920,7 +920,7 @@ class Kursverwaltung_model extends CI_Model {
 	 * @param string $attr attribute in table to store data to
 	 * @param int $event_id the event to store the data for - only for testat and presence
 	 */
-	public function update_group_cbs($cb_status, $user_id, $attr, $event_id = ''){
+	public function update_group_cbs($cb_status, $user_id, $attr, $event_id = '-1'){
 		// event-checkbox changed
 		if($event_id != -1){
 			$q = '';
@@ -941,8 +941,8 @@ class Kursverwaltung_model extends CI_Model {
 			// new variable, that represents the new status
 			$new_status = '';
 			
-			print_r($cb_status);
-			echo '--';
+//			print_r($cb_status);
+//			echo '--';
 			
 			// generate new string that reprensents the new status
 			// find position that has been changed and append to string
@@ -956,21 +956,63 @@ class Kursverwaltung_model extends CI_Model {
 				}
 			}
 			
-			print_r($current_status);
-			echo '--';
-			print_r($new_status);
+//			print_r($current_status);
+//			echo '--';
+//			print_r($new_status);
 
 			$save = array(
 				$attr => $new_status
 			);
 		} else {
 			$save = array(
-				$attr => $cb_status=='checked' ? 1 : 0
+				$attr => $cb_status
 			);
 		}
+		
 		// save to gruppenteilnehmer_aufzeichnungen for that user
 		$this->db->where('BenutzerID', $user_id);
 		$this->db->update('gruppenteilnehmer_aufzeichnungen', $save);
+	}
+	
+	
+	/**
+	 * Method to update user-notes in gruppenteilnehmer_aufzeichnungen
+	 * 
+	 * @param int $user_id
+	 * @param string $user_notes
+	 */
+	public function update_group_notes($user_id, $user_notes){
+		$save = array(
+			'notizen' => $user_notes
+		);
+		
+		// save to gruppenteilnehmer_aufzeichnungen for that user
+		$this->db->where('BenutzerID', $user_id);
+		$this->db->update('gruppenteilnehmer_aufzeichnungen', $save);
+	}
+	
+	
+	/**
+	 * Helper methode to get the notes stored for a passed user-id
+	 * @param int $user_id user-id
+	 * @return string notes that has been stored for that user
+	 */
+	public function get_participant_notes($user_id){
+		$user_notes = ''; // init
+		$q = '';
+		
+		// get current notes
+		$this->db->select('notizen');
+		$this->db->where('BenutzerID', $user_id);
+		$q = $this->db->get('gruppenteilnehmer_aufzeichnungen');
+
+		if($q->num_rows() > 0){
+			foreach($q->result() as $row){
+				$user_notes = $row->notizen;
+			}
+		}
+		
+		return $user_notes;
 	}
 
 	/* 

@@ -3,6 +3,7 @@
 		<th>Name</th>
 		<th>Überprüfung</th>
 		<?php 
+			// TODO must be dynamic - number of events
 			for($i = 0; $i < $number_of_events; $i++){
 				echo '<th><div class="thead-labmgt label">';
 				

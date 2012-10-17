@@ -56,6 +56,17 @@ class Kursverwaltung extends FHD_Controller {
 	 */
 	
 	/**
+	 * Helper method to call course-mgt from view and pass data via flashdata.
+	 */
+	public function call_coursemgt_from_view($c_id){
+//		$course_id = $this->input->post('course_id');
+		
+		// redirecting to show-coursemgt-view
+		$this->session->set_flashdata('reload_course', $c_id);
+		redirect('kursverwaltung/show_coursemgt');
+	}
+	
+	/**
 	 * MAIN-FUNCTION FOR COURSE-MGT
 	 * Depending on the course_ids that are stored for the user, this function
 	 * calls a single/multi-tab-view with course-details or a 'no-courses-assigned' view.
@@ -72,9 +83,13 @@ class Kursverwaltung extends FHD_Controller {
     public function show_coursemgt(){
 		// get flash-data - necessaray to reload correct tab (class="active")
 		$reload_course = $this->session->flashdata('reload_course');
-		print_r($reload_course);
+//		$reload_course_post = $this->input->post('course_id');
+//		print_r($reload_course);
+		
 		if($reload_course){
 			$this->data->add('active_course', $reload_course);
+//		} else if($reload_course_post) {
+//			$this->data->add('active_course', $reload_course_post);
 		} else {
 			$this->data->add('active_course', 0);
 		}
@@ -1127,8 +1142,6 @@ class Kursverwaltung extends FHD_Controller {
 		
 		$cb_name = $cb_data[0];
 		
-//		print_r($cb_data);
-
 		if(strstr($cb_name, 'presence')){
 			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'anwesenheit', $cb_data[3]);
 		} else if(strstr($cb_name, 'testat')){
@@ -1139,12 +1152,33 @@ class Kursverwaltung extends FHD_Controller {
 			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'ende');
 		}
 		
-		
+	}
+	
+
+	/**
+	 * Helper function to get the notes stored for a single lab-participant.
+	 */
+	public function ajax_get_former_participant_notes(){
+		$participant_id = $this->input->post('participant_id');
+		echo $this->kursverwaltung_model->get_participant_notes($participant_id);
 	}
 	
 	
+	/**
+	 * Getting user-notes from view.
+	 * Array passed:
+	 * - array[0]: user_id
+	 * - array[1]: user_notes
+	 * 
+	 * 
+	 */
 	public function ajax_save_lab_notes(){
+		$user_notes = $this->input->post('participant_notes');
 		
+		$this->kursverwaltung_model->update_group_notes($user_notes[0], $user_notes[1]);
+		
+		// only return something - method-detects 
+		echo 'done';
 	}
 	
 

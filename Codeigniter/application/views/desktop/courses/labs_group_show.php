@@ -82,8 +82,8 @@
 							// ## preparing some data
 							// notes area - to be generated for each element therefore inside loop
 							$notes_attr = array(
-								'name' => 'user-notes'.$one_participant->BenutzerID,
-								'id' => 'user-notes'.$one_participant->BenutzerID,
+								'name' => 'user-notes-'.$one_participant->BenutzerID,
+								'id' => 'user-notes-'.$one_participant->BenutzerID,
 								'class' => 'user-notes',
 								'rows' => 1,
 								'value' => $one_participant->notizen
@@ -160,6 +160,7 @@
 
 							// print  notes
 							echo form_textarea($notes_attr);
+							echo '<div data-id="'.$one_participant->BenutzerID.'" class="saving-notes" id="saving-notes-'.$one_participant->BenutzerID.'"></div>';
 							echo '</td><td>';
 
 							// prepare disable checkbox
@@ -181,12 +182,13 @@
 						echo '</table>';
 						echo '</div>';
 						$index_groups++;
+					
+						echo '<div id="update-group-dates-modal-'.$sp_course_id.'"></div>';
 					}
 				}
 			?>
 		</div> <!-- end of tabcontainer -->
 		
-		<div class="hidden update-group-dates-modal"></div>
 		
 <?php endblock(); ?>
 <?php startblock('postCodeContent'); # additional markup before content ?>
@@ -230,7 +232,110 @@
 				// TODO show modal ??
 			}
 		});
+		
+		return true;
 	});
+	
+	<!--<script>-->
+	// getting ids for each save-notes-div
+	var saveNotes = $('.saving-notes');
+	$.each(saveNotes, function(indexAll, buttonSpace){
+		var buttonDiv = '#'+$(this).attr('id');
+		var participantId = $(this).data('id');
+		var pNotes = new Array();
+		
+		// showing save/cancel-buttons when textarea is focussed
+		$('#user-notes-'+participantId).focus(function(){
+			var areaId = $(this).attr('id');
+			$(buttonDiv).html(getSaveNotesButtons(participantId));
+			//console.log(buttonDiv);
+		}).blur(function(){
+			// get current input
+			var currentText = $('#user-notes-'+participantId).val();
+			
+			$.ajax({
+				type: "POST",
+				url: "<?php echo site_url();?>kursverwaltung/ajax_get_former_participant_notes/",
+				dataType: 'html',
+				data : {participant_id : participantId},
+				success: function (data){
+					console.log(currentText);
+					// when textarea blurred, check if content changed
+					if(data != currentText){
+						// if changed do nothing
+						//console.log('diff: '+data);
+					} else {
+						// else hide button if field is left and nothing changed
+//						console.log('hide '+data);
+						//$(buttonDiv).html(data);
+					}
+				}
+			});
+			
+		});
+		
+//		console.log(currentText);
+		
+		// handle lab-note-save-button
+		$('td').on('click', '#save-notes-button-'+participantId, function(){
+			var id = $(this).attr('id');
+			var newNotes = $('#user-notes-'+participantId).val();
+			var pNotes = new Array(
+				participantId,
+				newNotes
+			);
+			
+			console.log(id);
+			// disable button
+			$('#'+id).attr('disabled', true);
+			$.ajax({
+				type: "POST",
+				url: "<?php echo site_url();?>kursverwaltung/ajax_save_lab_notes/",
+				dataType: 'html',
+				data : {participant_notes : pNotes},
+				success: function (data){
+					// hide button
+					$(buttonDiv).html('');
+				}
+			});
+		});
+		
+		// handle lab-note-cancel-button
+		$('td').on('click', '#cancel-notes-button-'+participantId, function(){
+			var id = $(this).attr('id');
+			$.ajax({
+				type: "POST",
+				url: "<?php echo site_url();?>kursverwaltung/ajax_get_former_participant_notes/",
+				dataType: 'html',
+				data : {participant_id : participantId},
+				success: function (data){
+					// reload stored value
+					$('#user-notes-'+participantId).val(data)
+					console.log('#user-notes-'+participantId);
+					
+					// hide button
+					$(buttonDiv).html('');
+				}
+			});
+		});
+		
+		
+		
+		
+	});
+	
+	/**
+	 * Helper method to build two buttons (save/cancel) for notes-input-field
+	 */
+	function getSaveNotesButtons(pId){
+		var noteButtons = 
+			$('<div class="span save-notes-container" id=""></div>')
+			.html('<input type="submit" class="btn btn-success save-notes-button" id="save-notes-button-'+pId+'" data-pid="'+pId+'" value="Speichern">')
+			.append('<input type="submit" class="pull-right btn btn-warning cancel-save-notes-button" id="cancel-notes-button-'+pId+'" data-pid="'+pId+'" value="Abbrechen">');
+
+		return noteButtons;
+	};
+	
 	
 	
 <?php endblock(); ?>
