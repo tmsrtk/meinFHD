@@ -403,8 +403,8 @@ class Stundenplan_Model extends CI_Model {
 
 			// Konstantin Voth
 			// if KursHoeren was deactivated in the "Studienplan" and course is a Vorlesung, do not show
-			if ($course["KursHoeren"] == 0 
-				&& $course['VeranstaltungsformID'] == 1)
+			if ($course["KursHoeren"] == 0 )
+				// && $course['VeranstaltungsformID'] == 1) // do not show any kind of events of this course // Dahms choise
 			{
 				$courses[$key]["Anzeigen"] = 0;
 			}
