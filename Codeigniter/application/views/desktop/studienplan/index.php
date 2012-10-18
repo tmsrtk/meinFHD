@@ -70,7 +70,7 @@
 							<?php foreach($semester as $modul): ?>
 								<?php #if($i != 0) : # Anerkennungssemester ?> 
 									<th <?php ($i==$userdata['act_semester']) ? print 'style="background-color: #dee4c5"' : print 'style="background-color: #eee"'; ?> >
-										<h3 style="font-weight: normal;"><?php ($i==0)?print 'Anerkennungssemester':print 'Semester '.$i ?></h3>
+										<h4 style="font-weight: normal;"><?php ($i==0)?print 'Anerkennungs Semester':print 'Semester '.$i ?></h4>
 										<p style="font-size: 10px; color: #bbb;"><?php ($i==0)?'':print $sem_typ.' '.$sem_jahr ?></p>
 									</th>
 									<?php 
