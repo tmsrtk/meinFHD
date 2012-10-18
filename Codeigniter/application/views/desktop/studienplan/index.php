@@ -59,7 +59,7 @@
 	<div class="row-fluid">
 		<div id="studienplan" class="span12">
 			<?php echo form_open('', $data_formopen); ?>
-				<table class="table table-bordered table-condensed">
+				<table class="table table-bordered">
 					<thead>
 						<!-- Head -->
 						<tr>
