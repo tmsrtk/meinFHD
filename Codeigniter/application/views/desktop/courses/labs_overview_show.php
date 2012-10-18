@@ -15,7 +15,7 @@
 		
 <!--		<div>
 			<pre>
-				<?php // print_r($sp_course_details); ?>
+				<?php print_r($sp_course_details); ?>
 			</pre>
 		</div>-->
 		
@@ -25,9 +25,10 @@
 
 		<div>
 			<?php
-				// helper var to save the course before
+				// helper vars to save the course before and the lab-type
 				// used to start new well and print headline
 				$course_before = -1;
+				$lab_before = -1;
 				
 				// run through all details and print them + button
 				foreach($sp_course_details as $key => $details){
@@ -37,25 +38,73 @@
 						foreach($details as $d){
 							// print headline if the course changes
 							if($course_before === -1){
-								echo '<div class="well-small"><h4>'.$d->Kursname.'</h4>';
+								echo '<h3>'.$d->Kursname.' - '.$d->VeranstaltungsformName.'</h3>';
+								echo '<table class="table table-hover">
+									<thead>
+										<tr>
+											<th>Bezeichnung</th>
+											<th>Tag</th>
+											<th>Beginn</th>
+											<th>Ende</th>
+											<th>Bearbeiten</th>
+										</tr>
+									</thead>
+									<tbody>';
 							} else if($course_before != substr($key, 0, 3)){
-								echo '</div><div class="well-small"><h4>'.$d->Kursname.'</h4>';
+								echo '</tbody></table><h3>'.$d->Kursname.' - '.$d->VeranstaltungsformName.'</h3>';
+								echo '<table class="table table-hover">
+									<thead>
+										<tr>
+											<th>Bezeichnung</th>
+											<th>Tag</th>
+											<th>Beginn</th>
+											<th>Ende</th>
+											<th>Bearbeiten</th>
+										</tr>
+									</thead>
+									<tbody>';
+							} else if($course_before == substr($key, 0, 3) && $lab_before != substr($key, 4, 1)){
+								echo '</tbody></table><h3>'.$d->Kursname.' - '.$d->VeranstaltungsformName.'</h3>';
+								echo '<table class="table table-hover">
+									<thead>
+										<tr>
+											<th>Bezeichnung</th>
+											<th>Tag</th>
+											<th>Beginn</th>
+											<th>Ende</th>
+											<th>Bearbeiten</th>
+										</tr>
+									</thead>
+									<tbody>';
 							}
 							// print lab-groups + buttons
-							echo form_open('kursverwaltung/show_labmgt');
-//							echo 'Gruppe '.$group;
-//							echo $d->TagName;
-//							echo $d->Beginn;
-							echo form_hidden('sp_course_id', $d->SPKursID);
-							echo form_hidden('course_id', substr($key, 0, 3));
-							echo form_submit(array('class' => 'span btn btn-info', 'name' => 'show_group'), 'Gruppe '.$group);
-							echo form_close();
+							
+							echo '<tr>';
+							// print course-data in table
+							echo '<td>Gruppe '.$group.'</td>';
+							echo '<td>'.$d->TagName.'</td>';
+							echo '<td>'.$d->Beginn.'</td>';
+							echo '<td>'.$d->Ende.'</td>';
+							
+							// print last table-cell with button
+							echo '<td>';
+								echo form_open('kursverwaltung/show_labmgt');
+								echo form_hidden('sp_course_id', $d->SPKursID);
+								echo form_hidden('course_id', substr($key, 0, 3));
+								echo form_submit(array('class' => 'span btn btn-info', 'name' => 'show_group'), 'Bearbeiten');
+								echo form_close();
+							echo '</td>';
+							echo '</tr>';
+							
 							$group++;
-							// save the course before
+							
+							// save the course before and the lab-type
 							$course_before = substr($key, 0, 3);
+							$lab_before = substr($key, 4, 1);
 						}
 					}
 				}
+				echo '</tbody></table>';
 			
 			?>
 		</div>

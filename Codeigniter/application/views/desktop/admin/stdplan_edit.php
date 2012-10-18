@@ -125,7 +125,8 @@
 
 		// function of dialog
 		$('#confirmation-dialog').modal({
-			keyboard: false
+			keyboard: false,
+			backdrop: 'static'
 		// !! important part: on 'show' set data-id= courseId (the one to delete)
 		}).on('show', function(){
 			$('#conf-dialog-confirm').data('id', spCourseId);
@@ -150,7 +151,8 @@
 
 		// function of dialog
 		$('#confirmation-dialog').modal({
-			keyboard: false
+			keyboard: false,
+			backdrop: 'static'
 		// !! important part: on 'show' set data-id= 0 (sign to create new course)
 		}).on('show', function(){
 			$('#conf-dialog-confirm').data('id', spId);

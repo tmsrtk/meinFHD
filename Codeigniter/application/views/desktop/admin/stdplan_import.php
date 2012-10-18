@@ -87,7 +87,8 @@
 		
 		// function of dialog - just disable keyboard-control
 		$('#info-dialog').modal({
-			keyboard: false
+			keyboard: false,
+			backdrop: 'static'
 		}).on('show', function(){
 			// nothing to do
 		}).modal('show');

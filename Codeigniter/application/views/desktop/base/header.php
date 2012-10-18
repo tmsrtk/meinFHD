@@ -20,6 +20,7 @@
 <?php start_block_marker('headerCss'); ?>
 		<link rel="stylesheet" type="text/css" href="<?php print base_url(); ?>resources/css/meinfhd.css">
 		<link rel="stylesheet" type="text/css" href="<?php print base_url(); ?>resources/css/meinfhd-responsive.css">
+		<link rel="stylesheet" type="text/css" href="<?php print base_url(); ?>resources/css/datepicker.css">
 <?php end_block_marker(); ?>
 		
 <?php start_block_marker('headerJS'); # additional js files ?>

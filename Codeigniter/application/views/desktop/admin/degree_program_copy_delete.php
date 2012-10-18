@@ -99,13 +99,14 @@
 	    // modal for each button
 	    // function of dialog
 	    $('#cdc-dialog').modal({
-		keyboard: false
+			keyboard: false,
+			backdrop: 'static'
 	    }).on('show', function(){
-		$('#confirm-copy-delete-confirmation-dialog').attr('data-id', buttonId);
-		console.log(buttonId);
+			$('#confirm-copy-delete-confirmation-dialog').attr('data-id', buttonId);
+			console.log(buttonId);
 		
 	    }).on('hide', function(){
-		console.log('hidden');
+			console.log('hidden');
 		
 	    }).modal('show');
 	    

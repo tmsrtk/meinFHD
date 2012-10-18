@@ -998,7 +998,7 @@ class Kursverwaltung extends FHD_Controller {
 	}
 	
 	/**
-	 * Prepared data and pass into view
+	 * Prepare data and pass into view
 	 * !! little more work to do.
 	 */
 	public function show_labmgt_group(){
@@ -1011,7 +1011,7 @@ class Kursverwaltung extends FHD_Controller {
 		// if there is NO data passed
 		if(!$load_sp_course_id){
 			$load_sp_course_id = -1;
-			$load_sp_course_id = -1;
+			$load_course_id = -1;
 		}
 		
 		// ## TODO 
@@ -1043,14 +1043,22 @@ class Kursverwaltung extends FHD_Controller {
 		}
 		
 		// preparing group-table-head data
-		$number_of_events = 15;
-		$thead_data['number_of_events'] = $number_of_events;
 		$thead_data['event_dates'] = $this->get_dates_for_all_labs($sp_course_details);
 		
 		// running through array to pass SPKursID to fetch dates for
+		// and the number of groups to be shown
 		foreach($sp_course_details as $details){
 			foreach($details as $d){
 				if($d){
+					
+					// zwischentestat1 - index 20!
+					// zwischentestat2 - index 21!
+					// number of groups to be shown stored with dates - index 22!
+					$thead_data['zwtestat1'][$d->SPKursID] = $thead_data['event_dates'][$d->SPKursID][20];
+					$thead_data['zwtestat2'][$d->SPKursID] = $thead_data['event_dates'][$d->SPKursID][21];
+					$thead_data['number_of_events'][$d->SPKursID] = $thead_data['event_dates'][$d->SPKursID][22];
+					
+					// save ids for partial
 					$thead_data['sp_course_id'] = $d->SPKursID;
 					// storing 
 					$lab_theads[$d->SPKursID] = $this->load->view('courses/partials/labs_thead', $thead_data, TRUE);

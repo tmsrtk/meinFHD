@@ -11,7 +11,7 @@
 	// TODO
 	// to change number of shown labs >> there must be an additional field in db to store this value
 	// at first static in this view
-	$number_of_events = 15;
+//	$number_of_events = ;
 	
 ?>
 
@@ -45,7 +45,7 @@
 		
 <!--			<pre>
 				<?
-//					print_r($event_dates);
+					print_r($event_dates);
 //					print_r($sp_course_details);
 //					print_r($sp_course_participants_details);
 //					foreach($theads as $head){
@@ -63,17 +63,20 @@
 					$index_groups = 1;
 					foreach($group_details as $sp_course_id => $participants){
 						echo '<div class="tab-pane" id="tab-panel-'.$sp_course_id.'"> ';
-
-						// button for adding dates - must be generated with unique id!
-						// therefore here within code
-						$header_button_data = array(
-							'name' => 'change-dates-button',
-							'id' => 'change-dates-button'.$sp_course_id,
-							'class' => 'btn btn-info',
-							'value' => 'true',
-							'content' => 'Termine der Gruppe '.$index_groups.' anpassen'
-						);
-						echo form_button($header_button_data);
+						echo '<div class="change-group-dates" id="change-group-dates-'.$sp_course_id.'">';
+							// button for adding dates - must be generated with unique id!
+							// therefore here within code
+							$header_button_data = array(
+								'name' => 'change-dates-button',
+								'id' => 'change-dates-button'.$sp_course_id,
+								'class' => 'btn btn-info',
+								'data-courseid' => $sp_course_id,
+								'data-active' => 0,
+								'value' => 'true',
+								'content' => 'Termine bearbeiten'
+							);
+							echo form_button($header_button_data);
+						echo '</div>';
 
 						echo '<table class="table lab-tab">';
 						echo $theads[$sp_course_id];
@@ -101,7 +104,7 @@
 							echo '</td><td>';
 
 							// print two lines of checkboxes (1. presence, 2. testat)
-							for($i = 0; $i < $number_of_events; $i++){
+							for($i = 0; $i < $number_of_events[$sp_course_id]; $i++){
 								// prepare cb-data
 								$cb_data_presence = array(
 									'name' => 'presence-uid-'.$i.'-'.$one_participant->BenutzerID,
@@ -141,6 +144,36 @@
 									$cb_data_testat['checked'] = FALSE;
 									echo form_checkbox($cb_data_testat);
 								}
+								echo '</td><td>';
+							}
+							
+							// depending on data print checkboxes for pre-final-testat1
+							$cb_data_pre_testat1 = array(
+								'name' => 'pretestat1-uid-'.$i.'-'.$one_participant->BenutzerID,
+								'id' => 'pretestat1-uid-'.$i.'-'.$one_participant->BenutzerID,
+								'data-uid' => $one_participant->BenutzerID,
+								'data-eid' => 0,
+								'class' => 'lab-cb',
+								'value' => 'accept',
+								'checked' => ($one_participant->zwischentestat1 ? TRUE:FALSE)
+							);
+							if($zwtestat1[$sp_course_id] != 0){
+								echo form_checkbox($cb_data_pre_testat1);
+								echo '</td><td>';
+							}
+							
+							// depending on data print checkboxes for pre-final-testat2
+							$cb_data_pre_testat2 = array(
+								'name' => 'pretestat2-uid-'.$i.'-'.$one_participant->BenutzerID,
+								'id' => 'pretestat2-uid-'.$i.'-'.$one_participant->BenutzerID,
+								'data-uid' => $one_participant->BenutzerID,
+								'data-eid' => 0,
+								'class' => 'lab-cb',
+								'value' => 'accept',
+								'checked' => ($one_participant->zwischentestat1 ? TRUE:FALSE)
+							);
+							if($zwtestat2[$sp_course_id] != 0){
+								echo form_checkbox($cb_data_pre_testat2);
 								echo '</td><td>';
 							}
 
@@ -183,7 +216,7 @@
 						echo '</div>';
 						$index_groups++;
 					
-						echo '<div id="update-group-dates-modal-'.$sp_course_id.'"></div>';
+						echo '<div id="update-group-details-modal-'.$sp_course_id.'"></div>';
 					}
 				}
 			?>
@@ -236,7 +269,6 @@
 		return true;
 	});
 	
-	<!--<script>-->
 	// getting ids for each save-notes-div
 	var saveNotes = $('.saving-notes');
 	$.each(saveNotes, function(indexAll, buttonSpace){
@@ -267,7 +299,7 @@
 					} else {
 						// else hide button if field is left and nothing changed
 //						console.log('hide '+data);
-						//$(buttonDiv).html(data);
+						$(buttonDiv).html('');
 					}
 				}
 			});
@@ -319,9 +351,6 @@
 			});
 		});
 		
-		
-		
-		
 	});
 	
 	/**
@@ -329,13 +358,79 @@
 	 */
 	function getSaveNotesButtons(pId){
 		var noteButtons = 
-			$('<div class="span save-notes-container" id=""></div>')
+			$('<div class="span save-notes-container"></div>')
 			.html('<input type="submit" class="btn btn-success save-notes-button" id="save-notes-button-'+pId+'" data-pid="'+pId+'" value="Speichern">')
 			.append('<input type="submit" class="pull-right btn btn-warning cancel-save-notes-button" id="cancel-notes-button-'+pId+'" data-pid="'+pId+'" value="Abbrechen">');
 
 		return noteButtons;
 	};
 	
+	
+	<!--<script>-->
+	
+//	$('.event-date').each(function () {
+//		var config = { format: "dd/mm/yyyy", weekStart: 0, autoclose: true  };
+//		if ($(this).data("startDate") != undefined) {
+//			config.startDate = $(this).data("startDate");
+//		}
+//		$(this).datepicker(config);
+//	});
+
+	var btnId = $('#change-dates-button2460');
+	$('.change-group-dates').on('click', btnId, function(){
+		console.log('test');
+	});
+
+	
+	
+
+	
+//	var test = $('.')
+//	$('th').on('datepicker',  event-date().click(function(){
+//		var id = '#'+$(this).attr('id');
+//	});
+	
+	
+	
+	/*
+	function createChangeGroupDetailsModal(title, spCourseId) {
+		var myDialog = 
+			$('<div class="modal hide" id="change-details-modal"></div>')
+			.html('<div class="modal-header"><button class="close" type="button" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
+			.append('<div class="modal-body" id="modal-body">\n\
+			<form action="<?php echo base_url('kursverwaltung/save_group_details');?>" method="post" accept-charset="utf-8">
+				<input type="hidden" name="sp-course-id" value="'+spCourseId+'">
+				<p>Wählen Sie die Anzahl der Termine die in der Übersicht für diese Gruppe angezeigt werden soll und ändern Sie die Termine wie gewünscht.</p>
+				
+				<input type="submit" class="btn btn-success save-notes-button" id="save-notes-button-" value="Speichern">
+				</form>\n\
+			</div>')
+			.append('<div class="modal-footer"><a href="#" class="btn" id="add-tutor-dialog-cancel" data-dismiss="modal">Abbrechen</a>\n\
+			</div>');
+
+		return myDialog;
+    };
+	
+	function getChangeGroupDetailsModal(spCourseId){
+		var changeDetailsModal = 
+			$('<div class="change-group-details-container></div>')
+			.html('<form action="<?php echo base_url('kursverwaltung/save_group_details');?>" method="post" accept-charset="utf-8">')
+			.append('<input type="hidden" name="sp-course-id" value="'+spCourseId+'">')
+			.append('<p>Wählen Sie die Anzahl der Termine die in der Übersicht für diese Gruppe angezeigt werden soll und ändern Sie die Termine wie gewünscht.</p>')
+			.append('<input type="submit" class="btn btn-success save-notes-button" id="save-notes-button-" value="Speichern">')
+			.append('</form>')
+			;
+			
+		return changeDetailsModal;
+	};
+	*/
+	
+	/**
+	 * Helper function to generate calendar-icon for changing dates
+	 */
+	function getDateIcon(){
+		return '<div class="change-date-icon"><i class="icon-calendar icon-white"></i></div>';
+	};
 	
 	
 <?php endblock(); ?>

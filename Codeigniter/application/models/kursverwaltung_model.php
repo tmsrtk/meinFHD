@@ -46,12 +46,13 @@ class Kursverwaltung_model extends CI_Model {
 		$q = '';
 		
 		$this->db->distinct();
-		$this->db->select('a.SPKursID, b.Kursname, b.kurs_kurz, a.Raum, t.TagName, s.Beginn, a.GruppeID, c.VeranstaltungsformName');
+		$this->db->select('a.SPKursID, b.Kursname, b.kurs_kurz, a.Raum, t.TagName, s.Beginn, ss.Ende, a.GruppeID, c.VeranstaltungsformName');
 		$this->db->from('stundenplankurs as a');
 		$this->db->join('studiengangkurs as b', 'a.KursID = b.KursID');
 		$this->db->join('veranstaltungsform as c', 'a.VeranstaltungsformID = c.VeranstaltungsformID');
 		$this->db->join('tag as t', 't.TagID = a.TagID');
 		$this->db->join('stunde as s', 's.StundeID = a.StartID');
+		$this->db->join('stunde as ss', 'ss.StundeID = a.EndeID');
 		$this->db->where('a.KursID', $course_id);
 		$this->db->where('a.VeranstaltungsformID', $eventype);
 		$q = $this->db->get();

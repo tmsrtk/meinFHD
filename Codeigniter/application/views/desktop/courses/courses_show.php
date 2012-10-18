@@ -435,7 +435,8 @@
 			
 			// function of dialog
 			$('#add-tutor-dialog').modal({
-				keyboard: false
+				keyboard: false,
+				backdrop: 'static'
 			// !! important part: on 'show' set data-id= courseId (the one to delete)
 			}).on('show', function(){
 				$('#add-tutor-dialog-confirm').data('id', courseId);
