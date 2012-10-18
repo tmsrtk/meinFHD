@@ -135,7 +135,8 @@ function _showModal(title, text, withOK, forStudienplan, ctx) {
 	$('#modalcontent').html(mm);
 
 	$('#myModal').modal({
-		keyboard: false
+		keyboard: false,
+		backdrop: 'static'
 	}).on('hide', function () {
 		$("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
 	}).modal('show');
@@ -148,8 +149,7 @@ function _showModal(title, text, withOK, forStudienplan, ctx) {
 			event.preventDefault();
 
 			if ( $(this).attr("data-accept") === 'modal' ) {
-				console.log('test');
-				console.log("accept");
+				// console.log("accept");
 
 				// hide action buttons and show a status message
 				$(event.target).parent().parent().find("div.modal-body").html("Bitte warten, der Befehl wird ausgef&uuml;hrt");
@@ -160,18 +160,16 @@ function _showModal(title, text, withOK, forStudienplan, ctx) {
 				console.log(form_id);
 
 				if (forStudienplan) {
-					console.log("if");
 					ctx._saveSemesterplan().done(function() {
 					location.reload();
 					});
 				}
 				else {
-					console.log("else");
 					$("input[type=submit][data-clicked=true]").parents("form#"+form_id).submit();
 				}
 
 			} else {
-				console.log("cancel");
+				// console.log("cancel");
 			}
 
 		});
