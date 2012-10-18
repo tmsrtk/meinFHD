@@ -69,9 +69,9 @@
 							<?php $sem_jahr = $userdata['studienbeginn_jahr'] ?>
 							<?php foreach($semester as $modul): ?>
 								<?php #if($i != 0) : # Anerkennungssemester ?> 
-									<th <?php if($i==$userdata['act_semester']) echo 'style="background-color: #dee4c5";'; else echo 'style="background-color: #eee";'; ?> >
-										<h3 style="font-weight: normal;">Semester <?php echo $i ?></h3>
-										<p style="font-size: 10px; color: #bbb;"><?php echo $sem_typ ?> <?php echo $sem_jahr ?></p>
+									<th <?php ($i==$userdata['act_semester']) ? print 'style="background-color: #dee4c5"' : print 'style="background-color: #eee"'; ?> >
+										<h3 style="font-weight: normal;"><?php ($i==0)?print 'Anerkennungssemester':print 'Semester '.$i ?></h3>
+										<p style="font-size: 10px; color: #bbb;"><?php ($i==0)?'':print $sem_typ.' '.$sem_jahr ?></p>
 									</th>
 									<?php 
 										(($i+1)%2 == 0) ? $sem_typ = 'SoSe' : $sem_typ = 'WiSe';		// TODO: look for a better algo
@@ -96,7 +96,7 @@
 													<?php if ($data['KursID'] != NULL): ?>
 														<li id="module_<?php echo $data['KursID']; ?>">
 															<div class="semestermodul dropup" data-kursid="<?php echo $data['KursID']; ?>">
-																<i class="arrw icon-align-justify" data-toggle="dropdown" style="height: 10px; width: 3px;"></i>
+																<i class="arrw icon-align-justify" data-toggle="dropdown" style="height: 10px; width: 4px;"></i>
 																<a class="b_hoeren" href="">T</a>
 																<a class="b_pruefen" href="">P</a>
 																<ul class="dropdown-menu">
