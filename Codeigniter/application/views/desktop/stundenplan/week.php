@@ -188,7 +188,8 @@
 												
 												<?php 
 												$url = '';
-												if ( in_array(Roles::DOZENT, $this->user_model->get_all_roles()))
+												if ( in_array(Roles::DOZENT, $this->user_model->get_all_roles()) ||
+														in_array(Roles::TUTOR, $this->user_model->get_all_roles()))
 												{
 													$url = 'kursverwaltung/call_coursemgt_from_view/'.$event['KursID']; // show_coursemgt
 													log_message('error', $url);
@@ -200,7 +201,7 @@
 												?>
 												<a href="<?php print base_url($url) ?>" class="std-abs std-event <?php print $class; ?>" style="<?php print $css; ?>">
 													<div class="std-event-container">
-														<h5><?php print $event['kurs_kurz'] ?> <?php print $event['VeranstaltungsformName'] ?><span><?php print $event['Raum'] ?></span></h5>
+														<h5><?php print $event['kurs_kurz'] ?> <?php print $event['VeranstaltungsformName'] ?><span> <?php ( ! empty($event['Raum'])) ? print '('.$event['Raum'].')' : '' ?></span></h5>
 														<p><?php print $event['VeranstaltungsformAlternative']; ?></p>
 													</div>
 												</a>
