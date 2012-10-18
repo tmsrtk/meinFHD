@@ -403,13 +403,19 @@
 			initSendButton : function() {
 				var self = this;
 
+				console.log();
+
 				this.config.sendButton.click(function() {
-					self._saveSemesterplan().done(function() {
-						location.reload();
-					});
+
+					$(this).attr("data-clicked", "true");
+					_showModal('Änderungen speichern', "<?php echo Messages::SAVE_STUDIENPLAN ?>", true, true, self);
+
+					// self._saveSemesterplan().done(function() {
+					// 	location.reload();
+					// });
 					return false;
 				});
-			},
+			}, 
 
 			initResetButton : function() {
 				var self = this;

@@ -110,9 +110,9 @@ $(function(){
 function _createModalDialog(title, text, withOK) {
 	myModalDialog =
 		$('<div class="modal hide" id="myModal"></div>')
-		.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
+		.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">x</button><h3>'+title+'</h3></div>')
 		.append('<div class="modal-body"><p>'+text+'</p></div>')
-		.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Schließen</a>');
+		.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Schlie&szlig;en</a>');
 		if (withOK) myModalDialog.find('.modal-footer').append('<a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
 		// <a href="" class="btn btn-primary" data-accept="modal">OK</a></div>
 	return myModalDialog;
@@ -125,11 +125,12 @@ function _createModalDialog(title, text, withOK) {
  * @author Konstantin Voth
  * @param   {String} title  Title of the dialog.
  * @param   {String} text   Message in the modal.
- * @param   {String} withOK Should there be an OK button?
+ * @param   {bool} withOK Should there be an OK button?
+ * @param   {bool} is this modal especially for the Studienplan?
  *
  * @private
  */
-function _showModal(title, text, withOK) {
+function _showModal(title, text, withOK, forStudienplan, ctx) {
 	mm = _createModalDialog(title, text, withOK);
 	$('#modalcontent').html(mm);
 
@@ -147,16 +148,27 @@ function _showModal(title, text, withOK) {
 			event.preventDefault();
 
 			if ( $(this).attr("data-accept") === 'modal' ) {
+				console.log('test');
 				console.log("accept");
 
-				$(event.target).parent().parent().find("div.modal-body").html("Bitte warten, der Befehl wird ausgeführt");
+				// hide action buttons and show a status message
+				$(event.target).parent().parent().find("div.modal-body").html("Bitte warten, der Befehl wird ausgef&uuml;hrt");
 				$(event.target).parent().parent().find("div.modal-footer").hide();
 
 				// get the form name dynamically, to be able to use this in every form
 				form_id = $("input[type=submit][data-clicked=true]").parents("form").attr("id");
-				// console.log(form_id);
+				console.log(form_id);
 
-				$("input[type=submit][data-clicked=true]").parents("form#"+form_id).submit();
+				if (forStudienplan) {
+					console.log("if");
+					ctx._saveSemesterplan().done(function() {
+					location.reload();
+					});
+				}
+				else {
+					console.log("else");
+					$("input[type=submit][data-clicked=true]").parents("form#"+form_id).submit();
+				}
 
 			} else {
 				console.log("cancel");
