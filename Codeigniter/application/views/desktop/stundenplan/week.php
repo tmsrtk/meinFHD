@@ -200,7 +200,7 @@
 												?>
 												<a href="<?php print base_url($url) ?>" class="std-abs std-event <?php print $class; ?>" style="<?php print $css; ?>">
 													<div class="std-event-container">
-														<h5><?php print $event['kurs_kurz']; ?> <?php print $event['VeranstaltungsformName']; ?></h5>
+														<h5><?php print $event['kurs_kurz'] ?> <?php print $event['VeranstaltungsformName'] ?><span><?php print $event['Raum'] ?></span></h5>
 														<p><?php print $event['VeranstaltungsformAlternative']; ?></p>
 													</div>
 												</a>
