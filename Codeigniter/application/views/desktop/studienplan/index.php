@@ -6,6 +6,12 @@
 
 <?php
 	$data_formopen = array('id' => 'studienplan-form');
+
+	$fs_attrs = array(
+		'id'	=>	'sendButton',
+		'name'	=>	'sendButton',
+		'class' =>	'btn btn-success pull-right'
+		);
 ?>
 
 <div class="well well-small admin">
@@ -108,6 +114,7 @@
 																</ul>
 	
 																<span class="modulfach"><?php echo $data['Kurzname'] ?></span>
+																<span class="modulfach-lang"><?php echo $data['Kursname'] ?></span>
 																<input class="modulnote input-mini" name="modulnote[]" type="text" value="<?php echo $data['Notenpunkte'] ?>">
 															</div>
 														</li>
@@ -137,12 +144,9 @@
 						</tr>
 					</tbody>
 				</table>
-			<!-- Test für speichern der Modulreihenfolge -->
-			<?php $fs_attrs = array(
-				'id'	=>	'sendButton',
-				'name'	=>	'sendButton',
-				'class' =>	'btn btn-success pull-right'
-				); ?>
+
+				<hr />
+
 			<?php echo form_submit($fs_attrs, 'Änderungen speichern'); ?>
 			<?php echo form_close(); ?>
 		</div>
