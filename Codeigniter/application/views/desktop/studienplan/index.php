@@ -114,7 +114,7 @@
 																</ul>
 	
 																<span class="modulfach"><?php echo $data['Kurzname'] ?></span>
-																<span class="modulfach-lang"><?php echo $data['Kursname'] ?></span>
+																<!-- <span class="modulfach-lang"><?php echo $data['Kursname'] ?></span> -->
 																<input class="modulnote input-mini" name="modulnote[]" type="text" value="<?php echo $data['Notenpunkte'] ?>">
 															</div>
 														</li>
@@ -305,7 +305,11 @@
 					$semester = $(semester);
 
 					// check if its the zero semester to give some special style
-					if ($semester.attr('id') == 0) $semester.parents('tbody').find('tr:first-child td:first-child').addClass('zero-sem-bg'); //console.log($semester.parents('tbody').find('tr:first-child td:first-child'))
+					if ($semester.attr('id') == 0) {
+						$semester.parents('tbody').find('tr:first-child td:first-child').addClass('zero-sem-bg');
+						$semester.parents('table').find('tr:first-child th:first-child').addClass('zero-sem-bg');
+						$semester.parents('tbody').find('tr:last-child td:first-child').addClass('zero-sem-bg');
+					}	
 
 					// modules per semester
 					semestermodule = $semester.find('.semestermodul');
@@ -398,7 +402,7 @@
 						self._removeModuleColorClass($module);
 
 						// create and show modal
-						self._showModal('Falscher Wert!', 'Tragen Sie bitte in das Feld einen Wert zwischen 0 - 100 ein.');
+						_showModal('Falscher Wert!', 'Tragen Sie bitte in das Feld einen Wert zwischen 0 - 100 ein.', false);
 						self._progressChanged();
 					} else {
 						hoeren.show();
@@ -559,7 +563,7 @@
 							}
 						} else {
 							// no way to turn it on again
-							self._showModal('Keine VL!', 'Für dieses Modul wird keine Vorlesung in diesem Semester angeboten!');
+							_showModal('Keine VL!', 'Für dieses Modul wird keine Vorlesung in diesem Semester angeboten!');
 						}
 
 						// if ( actSemester == semester  ) {
@@ -611,7 +615,7 @@
 					kursId = self._getModuleKursId($module);
 
 					// create modal with appropriate module infos
-					self._showModal(
+					_showModal(
 							self.getTitleForModule(kursId).done(function(result) {
 								self.setModuleTitle(result);
 						}), 
@@ -644,7 +648,7 @@
 				info.click(function() {
 					title = "<?php echo $userdata['studiengang_data']['StudiengangName'] ?>";
 					text = '<p>Regelsemester: '+"<?php echo  $userdata['studiengang_data']['Regelsemester'] ?>"+'</p>...';
-					self._showModal(
+					_showModal(
 						title,
 						text
 						);
@@ -688,7 +692,7 @@
 						});
 						// if there were any modules, no decreasing possible
 						if ( modulesInLastSemester === true ) {
-							self._showModal(
+							_showModal(
 							'Letztes Semester nicht leer', 
 							'Im letzten Semester befinden sich noch Module, bitte entfernen Sie diese!');
 						} else {
@@ -703,7 +707,7 @@
 							});
 						}
 					} else {
-						self._showModal('Nicht möglich', 'Die Regelstudienzeit für diesen Studiengang beträgt '+regelSemester+' Semester. Keine weitere Verkürzung möglich.')
+						_showModal('Nicht möglich', 'Die Regelstudienzeit für diesen Studiengang beträgt '+regelSemester+' Semester. Keine weitere Verkürzung möglich.')
 					}
 
 					
@@ -747,7 +751,7 @@
 						});
 						// if there were any modules, no decreasing possible
 						if ( modulesInApproveSem === true ) {
-							self._showModal(
+							_showModal(
 							'Anerkennungs - Semester nicht leer!', 
 							'Im Anerkennungs - Semester befinden sich noch Module, bitte verschieben Sie diese!');
 						} else {
@@ -781,7 +785,7 @@
 				reset.click(function() {
 
 					// modal, yes or no
-					self._showModal('Studienplan resetten', 'Alle Kurse werden zurückgesetzt und Sie werden aus allen Gruppen ausgetragen! Sicher?', true);
+					_showModal('Studienplan resetten', 'Alle Kurse werden zurückgesetzt und Sie werden aus allen Gruppen ausgetragen! Sicher?', true);
 
 					// if there are any click listener, remove them
 					$('#modalcontent').off('click');
@@ -868,7 +872,7 @@
 
 					// average mark stuff
 					markSum += self._getModuleMark($(el))
-					if (self._getModuleMark($(el)) != 0 ) { counter2 += 100 };
+					if (self._getModuleMark($(el)) != 'NULL' ) { counter2 += 100 };
 					// console.log(markSum)
 
 					// sws/cp stuff
@@ -923,29 +927,6 @@
 
 			},
 
-			// modals ---------------------------------------
-			createModalDialog : function(title, text, withOK) {
-				myModalDialog = 
-					$('<div class="modal hide" id="myModal"></div>')
-					.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
-					.append('<div class="modal-body"><p>'+text+'</p></div>')
-					.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Schließen</a>');
-					if (withOK) myModalDialog.find('.modal-footer').append('<a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
-					// <a href="" class="btn btn-primary" data-accept="modal">OK</a></div>
-				return myModalDialog;
-			},
-
-			_showModal : function(title, text, withOK) {
-				mm = this.createModalDialog(title, text, withOK);
-				this.config.modalWrapper.html(mm);
-
-				$('#myModal').modal({
-					keyboard: false
-				}).on('hide', function () {
-					// console.log("hidden");
-				}).modal('show');
-			},
-
 			getTitleForModule : function(moduleId) {
 				ajaxData = 'moduleid='+moduleId;
 
@@ -978,7 +959,7 @@
 			// modules ---------------------------------------
 
 			_validateUserInput : function(mark) {
-				if ( mark <= 100 && mark >= 0 ) { 
+				if ( mark <= 100 && mark >= 0 ) {
 				return true;
 			}
 				else return false;
@@ -1047,7 +1028,8 @@
 			},
 			_getModuleMark : function(module) {
 				mark = module.find('.modulnote').val();
-				return (isNaN(parseInt(mark, 10))?0:parseInt(mark, 10));
+				// return (isNaN(parseInt(mark, 10))?0:parseInt(mark, 10));
+				return mark;
 			},
 			_setModuleMark : function(module, mark) {
 				module.find('.modulnote').val(mark);

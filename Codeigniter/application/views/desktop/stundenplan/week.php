@@ -2,42 +2,8 @@
 
 <?php startblock('title');?><?php get_extended_block();?> - Stundenplan - Woche<?php endblock(); ?>
 <?php startblock('content'); # content for this view ?>
-<style>
-	.std-rel { position: relative; }
-	.std-abs { position: absolute; }
-	
-	.std-col {
-		width: 18%;
-/* 		margin-right: 20px; */
-	}
-	
-	.std-col-legend {
-		width: 10%;
-	}
-	
-	.std-event {
-		overflow: hidden;
-		/*border: 1px #FAFAFA solid;*/
-		color: #fff;
-	}
-	
-	.std-event-container {
-		padding: 4px;
-		word-break: break-word;
-	}
-
-	#stundenplan .table-condensed td.std-time-cell {
-		padding: 0;
-		background-image: url('../resources/img/std-time-stripes-50.png');
-	}
-	
-</style>
-
-
 
 <?php $event_height = 50; ?>
-
-
 
 <?php # FB::log($stundenplan); ?>
 
@@ -215,19 +181,6 @@
 					</table>
 				</div>
 			</div>
-			
-
-			<?php
-			// implementation-detail
-			// 
-			// if there are : 
-			// role-specific buttons or submit-forms can be build directly inside this loop
-			// otherwise (passed via controller) they got to be stuffed with 
-			// the right role-id to provide role-specific function
-			?>
-
-
-
 		</div>
 		<?php endforeach; ?>
 	</div>
