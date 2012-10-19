@@ -260,6 +260,8 @@ class Studienplan_Model extends CI_Model
                             studiengangkurs.Semester AS regularSemester, 
                             studiengangkurs.Kursname,
                             studiengangkurs.kurs_kurz,
+                            studiengangkurs.Creditpoints,
+                            studiengangkurs.SWS_Vorlesung + studiengangkurs.SWS_Uebung + studiengangkurs.SWS_Praktikum + studiengangkurs.SWS_Projekt + studiengangkurs.SWS_Seminar + studiengangkurs.SWS_Seminarunterricht AS KursSWSSumme,
                             semesterkurs.Semester AS graduateSemester,
                             semesterkurs.KursHoeren, 
                             semesterkurs.KursSchreiben, 
@@ -317,7 +319,9 @@ class Studienplan_Model extends CI_Model
                     'graduateSemester'  => $sq->graduateSemester,
                     'Teilnehmen'        => $sq->KursHoeren,
                     'Pruefen'           => $sq->KursSchreiben,
-                    'Notenpunkte'       => ($sq->Notenpunkte == 101) ? null : $sq->Notenpunkte
+                    'Notenpunkte'       => ($sq->Notenpunkte == 101) ? null : $sq->Notenpunkte,
+                    'Creditpoints'      => $sq->Creditpoints,
+                    'KursSWSSumme'      => $sq->KursSWSSumme
                 );
             }
             // else set regularSemester as key
@@ -331,7 +335,9 @@ class Studienplan_Model extends CI_Model
                     'graduateSemester'  => $sq->graduateSemester,
                     'Teilnehmen'        => $sq->KursHoeren,
                     'Pruefen'           => $sq->KursSchreiben,
-                    'Notenpunkte'       => ($sq->Notenpunkte == 101) ? null : $sq->Notenpunkte
+                    'Notenpunkte'       => ($sq->Notenpunkte == 101) ? null : $sq->Notenpunkte,
+                    'Creditpoints'      => $sq->Creditpoints,
+                    'KursSWSSumme'      => $sq->KursSWSSumme
                 );
             }
         }
@@ -720,17 +726,30 @@ class Studienplan_Model extends CI_Model
             $credits = $wholeCp->Creditpoints;
         }
 
+        $counter = 0;
         // if markpoints are not default (101) than calculate the sum 
         // of markpoints*creditpoints
         foreach($modules as $mod)
         {
             if($mod['Notenpunkte'] != 101)
             {
-                $sum += $mod['Notenpunkte'] * $mod['Creditpoints'];
+                // $sum += $mod['Notenpunkte'] * $mod['Creditpoints'];
+                $sum += $mod['Notenpunkte'];
+                $counter += 100;
+                // log_message('error', $mod['Notenpunkte'] . '*' . $mod['Creditpoints'] . '=' . $sum);
             }
         }
-
-        return $sum/$credits;
+        log_message('error', 'credits ' . $credits);
+        // return $sum/$credits;
+        if ($counter != 0)
+        {
+            return ($sum/$counter*100);
+        }
+        else
+        {
+            return 0;
+        }
+        // return $sum/$counter*100;
     }
     
     

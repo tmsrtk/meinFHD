@@ -28,12 +28,12 @@
 		<div class="span4">
 			<p>Studium abgeschlossen zu </p>
 			<div class="progress progress-success">
-				<div class="bar" style="width: <?php echo $percentage ?>%;"><?php echo $percentage ?>%</div>
+				<div id="study-percent" class="bar" style="width: 0%">0%</div>
 			</div>
 		</div>
 		<div class="span2">
 			<p>Durchschnittsnote</p>
-			<span class="badge"><?php echo round($averageMark) ?></span>
+			<span id="average-mark" class="badge">0</span>
 		</div>
 		<div class="span2">
 			<div id="studienplan-einstellungen" class="btn-group pull-right">
@@ -55,6 +55,8 @@
 		</div>
 	</div>
 	<hr>
+
+	<?php FB::log($studienplan) ?>
 
 	<div class="row-fluid">
 		<div id="studienplan" class="span12">
@@ -95,7 +97,7 @@
 												<?php foreach($modul as $data): ?>
 													<?php if ($data['KursID'] != NULL): ?>
 														<li id="module_<?php echo $data['KursID']; ?>">
-															<div class="semestermodul dropup" data-kursid="<?php echo $data['KursID']; ?>">
+															<div class="semestermodul dropup" data-kursid="<?php echo $data['KursID']; ?>" data-cp="<?php echo $data['Creditpoints'] ?>" data-sws="<?php echo $data['KursSWSSumme'] ?>">
 																<i class="arrw icon-align-justify" data-toggle="dropdown" style="height: 10px; width: 4px;"></i>
 																<a class="b_hoeren" href="">T</a>
 																<a class="b_pruefen" href="">P</a>
@@ -125,8 +127,8 @@
 								<?php foreach($semester as $modul): ?>
 									<?php #if($i != 0) : # Anerkennungssemester ?>
 										<td <?php if($i==$userdata['act_semester']) echo 'style="background-color: #dee4c5";' ?> >
-											<p>SWS: <span class="badge badge-success pull-right"><?php if( ! empty($swsCp[$i]['SWS_Summe'])) echo $swsCp[$i]['SWS_Summe'] ?></span></p>
-											<p>CP: <span class="badge badge-info pull-right"><?php if( ! empty($swsCp[$i]['CP_Summe'])) echo $swsCp[$i]['CP_Summe']?></span></p>
+											<p>SWS: <span class="badge badge-success pull-right sws-badge"></span></p>
+											<p>CP: <span class="badge badge-info pull-right cp-badge"></span></p>
 										</td>
 									<?php #endif; ?>
 									<?php $i++ ?>
@@ -284,6 +286,7 @@
 								// }
 							// }
 						});
+						self._progressChanged();
 					}
 				});
 			},
@@ -336,6 +339,7 @@
 						});
 					});
 				});
+				this._progressChanged();
 			},
 
 			initModulNotenInputs : function() {
@@ -375,6 +379,9 @@
 						hoeren.hide();
 						pruefen.hide();
 
+						// animate progress bar
+						self._progressChanged();
+
 					} else if ( mark && self._validateUserInput(mark) == false ) {
 						$this.val('');
 
@@ -384,16 +391,20 @@
 						self._removeModuleColorClass($module);
 
 						// create and show modal
-						self._showModal('Falscher Wert!', 'Tragen Sie bitte in das Feld einen Wert zwischen 100 - 0 ein.');
+						self._showModal('Falscher Wert!', 'Tragen Sie bitte in das Feld einen Wert zwischen 0 - 100 ein.');
+						self._progressChanged();
 					} else {
 						hoeren.show();
 						pruefen.show();
 
 						self._removeModuleColorClass($module);
+						self._progressChanged();
 					}
 
 					// get color for the mark
 					self._addModuleMarkColor($module);
+
+
 				});
 
 			},
@@ -802,6 +813,87 @@
 
 			// helper methods --------------------------------------------------------------------------
 
+			_progressChanged : function () {
+				var self = this
+
+    				//////////////////
+				// PROGRESS BAR //
+    				//////////////////
+
+				// calculate new % value
+					// query all modules
+					// count them
+					// count modules in studienplan which have inputs and >= 50
+					// calculate
+
+				allModules = $('.semestermodul')
+					modulesSum = allModules.length
+					counter = 0
+
+					markSum = 0
+					counter2 = 0
+
+				allModules.each(function (index, el) {
+					// percent of study stuff
+					if (self._getModuleMark($(el)) >= 50) 
+						counter++
+
+					// average mark stuff
+					markSum += self._getModuleMark($(el))
+					if (self._getModuleMark($(el)) != 0 ) { counter2 += 100 };
+					// console.log(markSum)
+
+					// sws/cp stuff
+					
+				})
+
+				percent = counter/modulesSum*100
+
+				// console.log(percent)
+
+				// add new % value to progress bar
+				self.config.progressBar.animate({width: percent+'%'}, 300)
+				self.config.progressBar.text(percent+'%')
+
+   				//////////////////
+				// AVERAGE MARK //
+    				//////////////////
+
+    				averageMarkT = markSum/counter2*100
+    				self.config.averageMark.fadeOut(300).text(Math.round(averageMarkT)).fadeIn(300)
+
+    				//////////////////
+				//   SWS / CP   //
+    				//////////////////
+
+    				var swsArray = []
+    				var cpArray = []
+    				this.config.semesterplanspalten.each(function (i, e) {
+    					var swsSum = 0
+    					var cpSum = 0
+    					// run through each e
+    					$(e).find('.semestermodul').each(function (i, e) {
+    						// count sws of every module
+    						swsSum += $(e).data('sws')
+    						cpSum += $(e).data('cp')
+    						// console.log(e)
+    						
+    					})
+					swsArray.push(swsSum)
+					cpArray.push(cpSum)
+    				})
+
+				// add to swsBadges
+				// console.log(this.config.swsBadges)
+				this.config.swsBadges.each(function (i, e) {
+					$(e).fadeOut(300).text(swsArray[i]).fadeIn(300)
+				})
+				this.config.cpBadges.each(function (i, e) {
+					$(e).fadeOut(300).text(cpArray[i]).fadeIn(300)
+				})
+
+			},
+
 			// modals ---------------------------------------
 			createModalDialog : function(title, text, withOK) {
 				myModalDialog = 
@@ -926,7 +1018,7 @@
 			},
 			_getModuleMark : function(module) {
 				mark = module.find('.modulnote').val();
-				return mark;
+				return (isNaN(parseInt(mark, 10))?0:parseInt(mark, 10));
 			},
 			_setModuleMark : function(module, mark) {
 				module.find('.modulnote').val(mark);
@@ -1069,17 +1161,21 @@
 
 		
 		Studienplan.init({
-			semesterplanspalten: $(".semesterplanspalte"),
-			connectWithColumns: '.semesterplanspalte',
-			sendButton : $('#sendButton'),
-			resetButton : $('#resetStudienPlan'),
-			pruefenButtons : $('a.b_pruefen'),
-			hoerenButtons : $('a.b_hoeren'),
-			modalContent : $('#myModal'), //existiert an dieser stelle noch nicht!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! deswegen funzt oben nicht
-			modalWrapper : $('#modalcontent'),
-			infoButtonsWrapper : $('ul.dropdown-menu'),
-			modulNotenInputs : $('.semestermodul input.modulnote'),
-			semesterplanEditCtxMenu : $('#studienplan-einstellungen')
+			semesterplanspalten: $('.semesterplanspalte')
+			, connectWithColumns: '.semesterplanspalte'
+			, sendButton : $('#sendButton')
+			, resetButton : $('#resetStudienPlan')
+			, pruefenButtons : $('a.b_pruefen')
+			, hoerenButtons : $('a.b_hoeren')
+			, modalContent : $('#myModal') //existiert an dieser stelle noch nicht!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! deswegen funzt oben nicht
+			, modalWrapper : $('#modalcontent')
+			, infoButtonsWrapper : $('ul.dropdown-menu')
+			, modulNotenInputs : $('.semestermodul input.modulnote')
+			, semesterplanEditCtxMenu : $('#studienplan-einstellungen')
+			, progressBar : $('#study-percent')
+			, averageMark : $('#average-mark')
+			, swsBadges : $('span.sws-badge')
+			, cpBadges : $('span.cp-badge')
 
 		});
 

@@ -209,8 +209,6 @@ class Studienplan extends FHD_Controller
     }
     
     
-    
-    
     /**
      * Accept a mark
      */
