@@ -72,7 +72,7 @@
 							<?php foreach($semester as $modul): ?>
 								<?php #if($i != 0) : # Anerkennungssemester ?> 
 									<th <?php ($i==$userdata['act_semester']) ? print 'style="background-color: #dee4c5"' : print 'style="background-color: #eee"'; ?> >
-										<h4 style="font-weight: normal;"><?php ($i==0)?print 'Anerkennungs Semester':print 'Semester '.$i ?></h4>
+										<h4><?php ($i==0)?print 'Anerkennungs Semester':print 'Semester '.$i ?></h4>
 										<p style="font-size: 10px; color: #bbb;"><?php ($i==0)?'':print $sem_typ.' '.$sem_jahr ?></p>
 									</th>
 									<?php 
@@ -299,6 +299,9 @@
 					// console.log($(semester));
 
 					$semester = $(semester);
+
+					// check if its the zero semester to give some special style
+					if ($semester.attr('id') == 0) $semester.parents('tbody').find('tr:first-child td:first-child').addClass('zero-sem-bg'); //console.log($semester.parents('tbody').find('tr:first-child td:first-child'))
 
 					// modules per semester
 					semestermodule = $semester.find('.semestermodul');
@@ -727,14 +730,35 @@
 				approveSem.click(function() {
 
 					if ($(this).data("hasapprovesem") == 1) {
-						return $.ajax({
-						  url: "<?php echo site_url();?>studienplan/delete_approve_sem"
-						}).promise().done(function() {
-							self._saveSemesterplan().done(function() {
-								// reload page
-								location.reload();
-							});
+
+						apprSem = self.config.semesterplanspalten.first().find('.semestermodul');
+						var modulesInApproveSem = false;
+						apprSem.each(function(index, module) {
+							// if there are modules, no way to delete the last sem 
+							// -> show modal with a hint to clear the last semester from modules
+							if (module) {
+								modulesInApproveSem = true;
+								return;
+							}
 						});
+						// if there were any modules, no decreasing possible
+						if ( modulesInApproveSem === true ) {
+							self._showModal(
+							'Anerkennungs - Semester nicht leer!', 
+							'Im Anerkennungs - Semester befinden sich noch Module, bitte verschieben Sie diese!');
+						} else {
+
+
+							return $.ajax({
+							  url: "<?php echo site_url();?>studienplan/delete_approve_sem"
+							}).promise().done(function() {
+								self._saveSemesterplan().done(function() {
+									// reload page
+									location.reload();
+								});
+							});
+						}
+						
 					} else {
 						return $.ajax({
 						  url: "<?php echo site_url();?>studienplan/create_approve_sem"
@@ -848,6 +872,7 @@
 				})
 
 				percent = counter/modulesSum*100
+				percent = Math.round(percent)
 
 				// console.log(percent)
 
@@ -860,7 +885,7 @@
     				//////////////////
 
     				averageMarkT = markSum/counter2*100
-    				self.config.averageMark.fadeOut(300).text(Math.round(averageMarkT)).fadeIn(300)
+    				self.config.averageMark.fadeOut(600).text(Math.round(averageMarkT)).fadeIn(600)
 
     				//////////////////
 				//   SWS / CP   //
@@ -886,10 +911,10 @@
 				// add to swsBadges
 				// console.log(this.config.swsBadges)
 				this.config.swsBadges.each(function (i, e) {
-					$(e).fadeOut(300).text(swsArray[i]).fadeIn(300)
+					$(e).fadeOut(600).text(swsArray[i]).fadeIn(600)
 				})
 				this.config.cpBadges.each(function (i, e) {
-					$(e).fadeOut(300).text(cpArray[i]).fadeIn(300)
+					$(e).fadeOut(600).text(cpArray[i]).fadeIn(600)
 				})
 
 			},
