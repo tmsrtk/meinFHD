@@ -3,6 +3,7 @@
 <?php startblock('title');?><?php get_extended_block();?> - Benutzer bearbeiten<?php endblock(); ?>
 
 <?php startblock('content'); # additional markup before content ?>
+
 <?php
 	// needet vars
 	$data_formopen = array('class' => 'form-search', 'id' => 'edit_user');

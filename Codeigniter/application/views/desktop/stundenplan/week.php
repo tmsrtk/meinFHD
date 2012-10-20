@@ -154,11 +154,11 @@
 												
 												<?php 
 												$url = '';
-												if ( in_array(Roles::DOZENT, $this->user_model->get_all_roles()) ||
-														in_array(Roles::TUTOR, $this->user_model->get_all_roles()))
+												if ( in_array(Roles::DOZENT, $this->user_model->get_all_roles()) && Roles::DOZENT == $r_id ||		// has to be extended for needed roles...
+														in_array(Roles::TUTOR, $this->user_model->get_all_roles()) && Roles::TUTOR == $r_id )
 												{
 													$url = 'kursverwaltung/call_coursemgt_from_view/'.$event['KursID']; // show_coursemgt
-													log_message('error', $url);
+													// log_message('error', $url);
 												}
 												else
 												{

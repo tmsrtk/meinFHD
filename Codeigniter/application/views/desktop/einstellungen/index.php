@@ -11,9 +11,19 @@ $userroles = $this->user_model->get_all_roles();
 
 	<!-- Header -->
 	<div class="row-fluid">
-		<h1>Persönliche Einstellungen</h1>
-		<hr />
+		<div class="span12">
+			<div class="span8">
+				<h1>Persönliche Einstellungen</h1>
+			</div>
+			<div class="span4 pull-right">
+				<p style="text-align: right; font-weight: bold; font-size: 18px;"><?php if ( in_array(Roles::DOZENT, $userroles)) print $formdata['Titel'].' ' ?><?php print $formdata['Vorname'].' '.$formdata['Nachname'] ?></p>
+				<?php if ( in_array(Roles::STUDENT, $userroles)) : ?>
+				<p style="text-align: right"><?php print $userdata['act_semester'].'tes Semetser'?></p>
+				<?php endif ?>
+			</div>
+		</div>
 	</div>
+	<div class="row-fluid"><hr /></div>
 
 
 	<!-- Content -->
