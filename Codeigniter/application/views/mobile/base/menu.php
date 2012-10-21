@@ -108,7 +108,10 @@
 										<?php endif ?>
 									</ul> <!-- /.nav .level-2 -->
 								</li>
-								<?php endif ?>
+                                <?php endif ?>
+                                <?php if( $this->authentication->has_permissions('hat_logbuch') ) :?>
+                                <li><a href="<?php print base_url('logbuch/index'); ?>">Logbuch</a></li>
+                                <?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_faq') ) : ?>
 								<li><a href="<?php print base_url('faq/index'); ?>">FAQ</a></li>
 								<?php endif ?>

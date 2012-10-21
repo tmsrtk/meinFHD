@@ -22,6 +22,7 @@ class Kursverwaltung extends FHD_Controller {
     function __construct(){
 		parent::__construct();
 		$this->load->model('kursverwaltung_model');
+        $this->load->model('logbuch_model'); // edit by CK load the logbuch model
 
 		// get all roles the user has
 		$this->roleIds = $this->user_model->get_all_roles();
@@ -82,6 +83,9 @@ class Kursverwaltung extends FHD_Controller {
 				$staff_view_data['course_id'] = $id;
 				$staff_view_data['course_description'] = $course_names_ids[$id]->Beschreibung;
 
+                // edit by CK: get all course topics for the current course and pass them to the view
+                $staff_view_data['course_topics'] = implode("\n", $this->logbuch_model->get_all_base_topics($id));
+
 				// get staff-overview view
 				// get active staff
 				$name = $this->kursverwaltung_model->get_profname_for_course($id);
@@ -122,9 +126,14 @@ class Kursverwaltung extends FHD_Controller {
 				// getting description depending on role
 				$description_field[$id] = $this->load->view('courses/partials/courses_description', $staff_view_data, TRUE);
 
+                // edit by CK: load de coursse_topic-view to show the course topics depending on roles
+                $topic_field[$id] = $this->load->view('courses/partials/courses_topics', $staff_view_data, TRUE);
+
 				$this->data->add('staff', $staff);
 				$this->data->add('course_details', $course_data);
 				$this->data->add('description', $description_field);
+                // edit by CK: add topic data
+                $this->data->add('topics', $topic_field);
 				$this->data->add('offset', 0);
 			}
 
@@ -308,10 +317,15 @@ class Kursverwaltung extends FHD_Controller {
 		$sp_course_id = 0; // init to detect changes
 		$sp_course_id_temp = 0;
 		$save_course_details_to_db = array();
+
 		$save_group_details_to_db = array();
 		$desc_split = array();
 		$course_id = '';
 		$description = '';
+
+        // edit by CK
+        // filter -> save course topics and remove them from the input array
+        $input_data = $this->_save_course_topics($input_data);
 
 		// first filter
 		// - remove empty fields from email-checkboxes
@@ -322,9 +336,10 @@ class Kursverwaltung extends FHD_Controller {
 				// description
 				if(!strstr($key, 'description')){
 					$input_data_filtered[$key] = $value;
-				} else {
+				}else {
 					$desc_split = explode('_', $key);
 					$course_id = $desc_split[0];
+                    print_r($desc_split);
 					$description = $value;
 				}
 			}
@@ -336,10 +351,12 @@ class Kursverwaltung extends FHD_Controller {
 			$split_key = explode('_', $key);
 			// save spkursid
 			$sp_course_id = $split_key[0];
+
 			// if sp_course_id changed >> buidl arrays to save in db
 			if($sp_course_id !== $sp_course_id_temp){
 				// if old spkursid is not initial value 0 - there are data to save
 				if($sp_course_id_temp !== 0){
+
 					// save that data each time course_id changes
 					$this->kursverwaltung_model->save_course_details(
 						$sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
@@ -361,6 +378,7 @@ class Kursverwaltung extends FHD_Controller {
 				case 'TeilnehmerMax' : $save_group_details_to_db['TeilnehmerMax'] = $value; break;
 				case 'Raum' : $save_course_details_to_db[$split_key[1]] = $value; break;
 				default : $save_course_details_to_db[$split_key[1]] = $value+1; break;
+
 			}
 		}
 
@@ -368,7 +386,7 @@ class Kursverwaltung extends FHD_Controller {
 		// >> because last data won't be detected by change of course_id (there is no new course-id)
 		$this->kursverwaltung_model->save_course_details(
 			$sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
-		
+
 		$this->kursverwaltung_model->save_course_description($course_id, $description);
 		
 //		echo '<pre>';
@@ -411,6 +429,7 @@ class Kursverwaltung extends FHD_Controller {
     }
 
     /**
+     * Passes data to db to save it.
      * Passes data to db to save it.
      * @param String $table indicates table to which staff should be saved
      */
@@ -534,7 +553,50 @@ class Kursverwaltung extends FHD_Controller {
 		}
 		
 	}
-	
+
+    /**
+     * Removes course topics from input array, returns the array and saves the topics in the database.
+     * @author Christian Kundruss (CK), <christian.kundruss@fh-duesseldorf.de>
+     * @access private
+     * @param $input_data the whole form input
+     * @return array the input array without the course topics
+     */
+    private function _save_course_topics($input_data){
+
+        // init
+        $course_id = 0;
+        $topics = '';
+
+        // extract course id and topics from form input
+        foreach ($input_data as $key => $value) { // run through the array
+            if(strstr($key, 'topics')) { // search for the topic key
+                // split the key to extract the course_id
+                $splitted_key = explode('_', $key);
+                $course_id = $splitted_key[0];
+
+                // extract the topics
+                $topics = $value;
+
+                // remove them from the array
+                unset($input_data[$key]);
+                break;
+            }
+        }
+
+        // save topics for the appropriate course
+
+        // first of all delete all existing elements for the course_id, if there are some...
+        $this->logbuch_model->delete_all_base_topics($course_id);
+        // if the string is not empty insert the topics, otherwise there are no base topics for the students (anylonger)
+        if ($topics != '') {
+           // construct the array (1 line is 1 entry) -> every line is one topic
+            $topic_array = explode("\n", $topics);
+           // insert the topics
+            $this->logbuch_model->save_all_base_topics($course_id, $topic_array);
+        }
+        // return the modified input array
+        return $input_data;
+    }
 
 
     /**

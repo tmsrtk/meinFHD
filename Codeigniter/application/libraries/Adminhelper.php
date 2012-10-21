@@ -192,6 +192,49 @@ class Adminhelper {
 		return (date("n") >= 3 && date("n") <= 8) ? "SS" : "WS";		
 	}
 
+    /**
+     * Returns the count of weeks during the semester for the given semestertype.
+     * SS => 15 weeks, WS => 16 Weeks
+     * @access public
+     * @author Christian Kundruß (CK) <christian.kundruss@fh-duesseldorf.de>
+     * @param $semestertype The type of the semester (SS or WS)
+     * @return INT The number of weeks during the semester
+     */
+    public function get_semesterweeks($semestertype){
+        $weeks_to_return = 0;
+
+        switch($semestertype){
+            case 'SS': $weeks_to_return = 15;
+                       break;
+            case 'WS': $weeks_to_return = 16;
+                       break;
+        }
+
+        return $weeks_to_return;
+    }
+
+    /**
+     * Calculates the number of calendar weeks between the 2 given dates.
+     * @access public
+     * @author Christian Kundruß (CK) <christian.kundruss@fh-duesseldorf.de>
+     * @param $start_date The begin date
+     * @param $end_date The end date
+     * @return integer Number of calendar weeks betweend start and end date.
+     */
+    public function get_calendar_weeks($start_date, $end_date){
+        $cw = array();
+
+        if(!($start_date >= $end_date)) {
+            $duration = ceil(($end_date-$start_date)/3600/24/7);
+            for($i = 0; $i < $duration; ++$i) {
+                $week = mktime(0, 0, 0, date('m', $start_date), date('d', $start_date)+($i*7), date('Y', $start_date));
+                $cw[$i]['week'] = date('W', $week);
+                $cw[$i]['year'] = date('Y', $week);
+            }
+        }
+
+        return $cw; // the number of calendar weeks
+    }
 }
 
 
