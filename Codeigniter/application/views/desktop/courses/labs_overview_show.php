@@ -15,7 +15,7 @@
 		
 <!--		<div>
 			<pre>
-				<?php print_r($sp_course_details); ?>
+				<?php // print_r($sp_course_details); ?>
 			</pre>
 		</div>-->
 		
@@ -91,7 +91,7 @@
 								echo form_open('kursverwaltung/show_labmgt');
 								echo form_hidden('sp_course_id', $d->SPKursID);
 								echo form_hidden('course_id', substr($key, 0, 3));
-								echo form_submit(array('class' => 'span btn btn-info', 'name' => 'show_group'), 'Bearbeiten');
+								echo form_submit(array('class' => 'span btn btn-info', 'name' => 'show_group'.$d->SPKursID), 'Bearbeiten');
 								echo form_close();
 							echo '</td>';
 							echo '</tr>';

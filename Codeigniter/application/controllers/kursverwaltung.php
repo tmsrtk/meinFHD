@@ -243,11 +243,11 @@ class Kursverwaltung extends FHD_Controller {
 
 					// switch labels depending on status
 					if($application_status == 1){
-						$act_app_data['status_label'] = 'Anmeldung aktiviert';
+						$act_app_data['status_label'] = 'Anmeldung ist aktiviert';
 						$act_app_data['status_css'] = 'enabled';
 						$act_app_data['button_label'] = 'Anmeldung deaktivieren';
 					} else {
-						$act_app_data['status_label'] = 'Anmeldung deaktiviert';
+						$act_app_data['status_label'] = 'Anmeldung ist deaktiviert';
 						$act_app_data['status_css'] = 'disabled';
 						$act_app_data['button_label'] = 'Anmeldung aktivieren';
 					}
@@ -952,12 +952,12 @@ class Kursverwaltung extends FHD_Controller {
 //		echo '<div>';
 		 
 		// DEBUG
-		echo $this->input->POST('sp_course_id');
+//		echo 'test'.$this->input->post();
 		
 		// if data is passed >> save to variable
-		if($this->input->POST('sp_course_id')){
-			$sp_course_id_to_show = $this->input->POST('sp_course_id');
-			$course_id_to_show = $this->input->POST('course_id');
+		if($this->input->post('sp_course_id')){
+			$sp_course_id_to_show = $this->input->post('sp_course_id');
+			$course_id_to_show = $this->input->post('course_id');
 		}
 		
 		// if course_ids is NO array and NOT initialized
@@ -967,7 +967,7 @@ class Kursverwaltung extends FHD_Controller {
 			$this->show_labmgt_overview();
 		} else {
 			// go directly to group-view
-			$this->show_labmgt_group();
+//			$this->show_labmgt_group();
 			
 			// pass new id via flashdata
 			$this->session->set_flashdata('sp_course_id', $sp_course_id_to_show);
@@ -1006,7 +1006,8 @@ class Kursverwaltung extends FHD_Controller {
 		$load_sp_course_id = $this->session->flashdata('sp_course_id');
 		$load_course_id = $this->session->flashdata('course_id');
 		
-//		echo $load_course_id;
+		echo $load_course_id;
+		echo $load_sp_course_id;
 		
 		// if there is NO data passed
 		if(!$load_sp_course_id){
@@ -1079,14 +1080,13 @@ class Kursverwaltung extends FHD_Controller {
 	/**
 	 * Helper method taking array with all eventtypes (AND groups) for a single course
 	 * Peparing data for view
-	 * >> 
+	 *  
 	 * @param array $sp_course_details containing all course-labs-details sorted by eventtypes
 	 * @return array $group_participants containing all participants sorted by groups
 	 */
 	private function get_details_for_all_labs($sp_course_details){
 		// variable to be returned
 		$lab_participants_plus_notes = array();
-		
 		
 		// running through all course-event-combinations and get participants
 		// 1. check if there are courses with details to fetch
@@ -1108,21 +1108,20 @@ class Kursverwaltung extends FHD_Controller {
 	/**
 	 * Helper method taking array with all eventtypes (AND groups) for a single course
 	 * Peparing data for view
-	 * >> 
+	 * 
 	 * @param array $sp_course_details containing all course-labs-details sorted by eventtypes
-	 * @return array $group_participants containing all dates if stored before
+	 * @return array $event_dates containing all dates if stored before
 	 */
 	private function get_dates_for_all_labs($sp_course_details){
 		// variable to be returned
 		$event_dates = array();
-		
 		
 		// running through all course-event-combinations and get participants
 		// 1. check if there are courses with details to fetch
 		foreach($sp_course_details as $key => $groups){
 			// if there are courses for this course-event-combination
 			if($groups){
-				// 2. get participants for each course and save to array
+				// 2. get dates for each course and save to array
 				foreach($groups as $index => $sp_course_object){
 					$event_dates[$sp_course_object->SPKursID] = $this->kursverwaltung_model->get_lab_dates($sp_course_object->GruppeID);
 				}
@@ -1142,7 +1141,6 @@ class Kursverwaltung extends FHD_Controller {
 	 * array[3] event_id starts with 0 runs to number set by user for this lab
 	 * Depending on the checkbox that has been clicked db is updated
 	 * 
-	 * @echo boolean 
 	 */
 	public function ajax_save_lab_checkboxes(){
 		$cb_data= ''; // init
@@ -1150,6 +1148,7 @@ class Kursverwaltung extends FHD_Controller {
 		
 		$cb_name = $cb_data[0];
 		
+		// calling method and pass table-collumn to save data in
 		if(strstr($cb_name, 'presence')){
 			$this->kursverwaltung_model->update_group_cbs($cb_data[1], $cb_data[2], 'anwesenheit', $cb_data[3]);
 		} else if(strstr($cb_name, 'testat')){
@@ -1173,19 +1172,16 @@ class Kursverwaltung extends FHD_Controller {
 	
 	
 	/**
-	 * Getting user-notes from view.
+	 * Getting user-notes from view and save to db.
 	 * Array passed:
 	 * - array[0]: user_id
 	 * - array[1]: user_notes
 	 * 
-	 * 
 	 */
 	public function ajax_save_lab_notes(){
 		$user_notes = $this->input->post('participant_notes');
-		
 		$this->kursverwaltung_model->update_group_notes($user_notes[0], $user_notes[1]);
-		
-		// only return something - method-detects 
+		// only return something - method-detects change
 		echo 'done';
 	}
 	

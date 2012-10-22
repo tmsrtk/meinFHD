@@ -39,16 +39,20 @@
 			?>
 			</ul>
 
-
-
-
 			<div class="tab-content">
 			<?php 
-				// print div for each course
+				// print one tab-pane for each course
+				// therefore run through $course_names_ids
+				// array with $key = $course_id and
+				// value as object containing ->kurs_kurz and ->Beschreibung
 				foreach($course_names_ids as $c_id => $value) :
 					echo '<div class="tab-pane" id="tab-panel-'.$c_id.'"> ';
 
-					// checkbox data - has to be generate each time because of course_id!
+					// prepare data for checkboxes, buttons, labels, ...
+					// has to be generate each time because of uniqueness of ids!
+					// >> appending course_id
+					
+					// checkbox data - 
 					$cb_data = array(
 						'name' => '',
 						'class' => 'email-checkbox',
@@ -79,7 +83,7 @@
 				<div class="span1"></div>
 				<div class="span9"><h3>Emailversand:</h3></div>
 				<div class="span2"></div>
-				<!-- print email-line -->
+				<!-- print email-row -->
 <!--				<div id="staff-send-email" class="well well-small clearfix">-->
 				<div id="staff-send-email" class="clearfix">
 					<?php echo form_open(''); ?>
@@ -106,9 +110,9 @@
 				print $staff[$c_id];
 				echo '</div>';
 				echo '<hr>';
-//				echo '<hr>';
 				
 				// if there are groups to activate application for
+				// then print one row containing the activation-button
 				if(isset($activate_application[$c_id])){
 					// print activate-application-row
 					echo '<div class="">';
@@ -116,25 +120,33 @@
 					echo '</div>';
 					echo '<hr>';
 				}
-				
-				// place for general information
-				echo form_open('kursverwaltung/save_course_details_all_at_once'); 
 
+				// open form
+				echo form_open('kursverwaltung/save_course_details_all_at_once'); 
 
 //				echo '<div class="well well-small">';
 				echo '<div class="">';
+				
 				// $course_details contains mapped details on course_ids
+				// run through $course_details for each $course_id
+				// $course_details contains arrays with details for each course_id
+				// $key = $course_id
+				// value = simple array containing all dom elements to print
+				// -- lectures ('vorlesungen') and tuts are stored directly
+				// -- labs (pr, übung, sem) within nested array >> if else below
+				// (nested array is generated when adding theads to rows
 				foreach ($course_details[$c_id] as $c_details) {
-					// necessary because pr, übung, sem come withing nested array
+					// check if element is array
 					if(!is_array($c_details)){
+						// if not:print
 						print($c_details);
 					} else {
+						// otherwise runt through nested array
 						foreach($c_details as $v){
 							print($v);
 						}
 					}
 					echo '<hr>';
-//					echo '<hr>';
 				}
 
 			?>
@@ -166,7 +178,6 @@
 	
 <?php startblock('customFooterJQueryCode');?>
 
-
 	// getting tab-status and id of active-tab from controller
 	var activeTabId = <?php echo $active_course; ?>;
 
@@ -182,16 +193,22 @@
     // create variable that contains all course_ids in that view
     var courseIdsInView = <?php echo json_encode($course_ids_jq); ?>;
     
-    // run through all ids and assign functions
-	// > email-functionality
-    // - un/check all boxes if overall cb changes
-    // - uncheck overall cb if ONE or more of the single cb is NOT checked
-    // - check overall cb if all single cb are checked
-    // - click on email-button
-	// > panels
-	// > activate-application-buttons
+	/**
+     * run through all ids and assign functions
+	 * > email-functionality
+     * - un/check all boxes if overall cb changes
+     * - uncheck overall cb if ONE or more of the single cb is NOT checked
+     * - check overall cb if all single cb are checked
+     * - click on email-button
+	 * > panels
+	 * > activate-application-buttons
+	 */
     $.each(courseIdsInView, function(indexAll, courseId){
 
+		/**
+		 * EMAIL-CHECKBOXES
+		 */
+		
 		// save checkboxes for that course to array
 		var checkboxesOnSite = $('.email-checkbox-'+courseId);
 		var overallCbId = '#email-checkbox-all-id-'+courseId;
@@ -207,7 +224,8 @@
 			numberCbs++;
 		});
 
-		// change of overall cb - uncheck >> uncheck all | check >> check all
+		// change of overall cb:
+		// - uncheck >> uncheck all | check >> check all
 		$(overallCbId).change(function(){
 			var cbAll = $(this);
 			// run through all elements and set un/checked
@@ -236,7 +254,8 @@
 			});
 		});
 
-		// change of any of the single checkboxes - uncheck one >> uncheck overall | check all >> check overall
+		// change of any of the single checkboxes:
+		// - uncheck one >> uncheck overall | check all >> check overall
 		$.each(checkboxesOnSite, function(index, value){
 			// init counter to detect if there are un/checked checkboxes
 			var self = $(this);
@@ -324,7 +343,11 @@
 			);
 		});
 
-		// ################ handle PANELS
+
+		/**
+		 * STAFF-PANLES
+		 */
+
 		// ids of sliders
 		var buttonId = ['#labings-slider-'+courseId, '#tuts-slider-'+courseId];
 		var panelId = ['#labings-panel-'+courseId, '#tuts-panel-'+courseId]; 
@@ -339,18 +362,6 @@
 				// 
 				});
 			});
-
-			/*// converting plus into minus-buttons and back again
-			$(value).toggle(
-				function() { 
-					$(this).text('-');
-				},
-
-				function() { 
-					$(this).text('Bearbeiten');
-				}
-
-			);*/
 		});
 		
 		// ids/texts of name-spans and cells
@@ -456,7 +467,6 @@
 				$('#matrnr-input').attr('value'),
 				courseId
 			);
-				
 			
 			$('.modal-body').html('Student wird gesucht.');
 			$.ajax({
@@ -494,52 +504,81 @@
 			
 			return true;
 		});
-		
-		
-		// ################ handle activate-application buttons and status-texts
+
+		/**
+		 * APPLICATION BUTTON
+		 * color, status, text
+		 */
+
 		var switchActivationButtons = $('.activation-buttons-'+courseId);
 		// run through all buttons on site
 		$.each(switchActivationButtons, function(index, value) {
 			var buttonId = '#'+$(value).attr('id');
+			var spCourseId = $(this).data('id');
+			var buttonStatus = $(this).data('status');
+			
+			switchButtonColorStatus(buttonId, buttonStatus, courseId, 0, false);
+			
 			// click behaviour
 			$(buttonId).click(function(){
 				var buttonText = '';
+				var rClass = '';
+				var aClass = '';
 				var buttonStatus = $(this).data('status');
-				var spCourseId = $(this).data('id');
 				var courseIdStatus = [spCourseId, buttonStatus];
 
-				// alter text and status depending on former status
-				if(buttonStatus == 'disabled'){
-					$('#activation-status-'+courseId+' p').text('Anmeldung aktivert');
-					buttonText = 'Anmeldung deaktivieren';
-					buttonStatus = 'enabled';
-				} else {
-					$('#activation-status-'+courseId+' p').text('Anmeldung deaktivert');
-					buttonText = 'Anmeldung aktivieren';
-					buttonStatus = 'disabled';
-				}
-
-				// de/acitvate sp_course
-				$.ajax({
-					type: "POST",
-					url: "<?php echo site_url();?>kursverwaltung/ajax_toggle_activation_of_spcourse/",
-					dataType: 'html',
-					data : {course_id_status : courseIdStatus},
-					success: function (data){
-						$(buttonId).data('status', buttonStatus);
-						$(buttonId).text(buttonText);
-<!--						$('#testing').text(data);-->
-						
-					}
-				});
+				switchButtonColorStatus(buttonId, buttonStatus, courseId, courseIdStatus, true);
 			});
 		});
 
 
     }); // end tab-views - all elements has to be prepared for all ids
 	
+	/**
+	 * Function that handles activate group-application buttons.
+	 * Color, data-status (html), text
+	 */
+	function switchButtonColorStatus(buttonId, buttonStatus, courseId, courseIdStatus, ajax){
+		// alter text and status depending on former status
+		if(buttonStatus == 'disabled'){
+			$('#activation-status-'+courseId+' p').text('Anmeldung ist aktiviert');
+			buttonText = 'Anmeldung deaktivieren';
+			buttonStatus = 'enabled';
+			rClass = 'btn-warning';
+			aClass = 'btn-success';
+		} else {
+			$('#activation-status-'+courseId+' p').text('Anmeldung ist deaktivert');
+			buttonText = 'Anmeldung aktivieren';
+			buttonStatus = 'disabled';
+			rClass = 'btn-success';
+			aClass = 'btn-warning';
+		}
 
-	// ################ create modal to find students via
+		if(ajax){
+			// de/acitvate sp_course
+			$.ajax({
+				type: "POST",
+				url: "<?php echo site_url();?>kursverwaltung/ajax_toggle_activation_of_spcourse/",
+				dataType: 'html',
+				data : {course_id_status : courseIdStatus},
+				success: function (echo){
+				console.log(buttonStatus);
+					$(buttonId).data('status', buttonStatus);
+					$(buttonId).text(buttonText);
+					$(buttonId).addClass(rClass);
+					$(buttonId).removeClass(aClass);
+				}
+			});
+		} else {
+			$(buttonId).addClass(aClass);
+			$(buttonId).removeClass(rClass);
+		}
+	};
+
+	/**
+	 * Function to create modals that lets a user search for an student
+	 * to add him as a tutor (in general) and for the course
+	 */
 	function createSearchModal(title, text, courseId) {
 		var myDialog = 
 			$('<div class="modal hide" id="add-tutor-dialog"></div>')
@@ -553,12 +592,6 @@
 		return myDialog;
     };
     
-//    
-//    // handle button to add tuts to benutzer_mm_rolle
-//    $('#tutor-button').click(function(){
-//	
-//    });
-//    
 <?php endblock(); ?>
 
 <?php end_extend(); ?>

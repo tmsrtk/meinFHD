@@ -45,7 +45,7 @@
 		
 <!--			<pre>
 				<?
-					print_r($event_dates);
+//					print_r($event_dates);
 //					print_r($sp_course_details);
 //					print_r($sp_course_participants_details);
 //					foreach($theads as $head){
@@ -58,14 +58,39 @@
 				
 		<div class="tab-content">
 			<?
-				foreach($sp_course_participants_details as $group_details){
+				// run through all sp-course-details
+				// $key ($course_type_id) build of course_id-eventtype e.g. [302-4]
+				// $value arrays containing all participants
+				foreach($sp_course_participants_details as $course_type_id => $group_details){
+					
 					// index for counting groups
+					// only used to append a number to the tab-text
 					$index_groups = 1;
+					
+					// run through all groups
+					// $key contains sp_course_id e.g. [2464]
+					// $value simple array containing all participants of that group
 					foreach($group_details as $sp_course_id => $participants){
+						
+						// print tab-pane - one for each group
 						echo '<div class="tab-pane" id="tab-panel-'.$sp_course_id.'"> ';
+						
+						// print coure-details - use key from outer loop
+						// day, starttime, endtime, group
+						// therefore run through sp_course_details for that group
+						// if $value[SPKursID] == $sp_course_id: print details
+						foreach($sp_course_details[$course_type_id] as $value){
+							if($value->SPKursID == $sp_course_id){
+								echo '<div class="well well-small">';
+								echo '<h4>'.$value->Kursname.'</h4>';
+								echo $value->TagName.', '.$value->Beginn.' - '.$value->Ende.' Uhr, ' .$value->Raum;
+								echo '</div>';
+							}
+						}
+						
+						// button for adding dates - must be generated with unique id!
+						// therefore here within code
 						echo '<div class="change-group-dates" id="change-group-dates-'.$sp_course_id.'">';
-							// button for adding dates - must be generated with unique id!
-							// therefore here within code
 							$header_button_data = array(
 								'name' => 'change-dates-button',
 								'id' => 'change-dates-button'.$sp_course_id,
@@ -222,7 +247,6 @@
 			?>
 		</div> <!-- end of tabcontainer -->
 		
-		
 <?php endblock(); ?>
 <?php startblock('postCodeContent'); # additional markup before content ?>
 	</div>
@@ -233,16 +257,16 @@
 <!--<script>-->
 
 	// getting tab-status and id of active-tab from controller
-	var activeTabId = <?php echo $active_group; ?>;
-
+	var activeTabId = <?php echo (($active_group != -1) ? $active_group : 0); ?>;
+	
 	// initialize active tab
-	//if(activeTabId == 0){
+	if(activeTabId == 0){
 		$('.tab-content div:first-child').addClass("active");
 		$('#lab-details-navi li:first-child').addClass("active");
-	/*} else {
+	} else {
 		$('#tab-panel-'+activeTabId).addClass("active");
 		$('#lab-tab-'+activeTabId).addClass("active");
-	}*/
+	}
 	
 	
 	// saving EVERY change in checkbox-checked-status
