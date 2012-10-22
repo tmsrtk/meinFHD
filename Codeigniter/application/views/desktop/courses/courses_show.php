@@ -178,6 +178,8 @@
 	
 <?php startblock('customFooterJQueryCode');?>
 
+<!--<script>-->
+
 	// getting tab-status and id of active-tab from controller
 	var activeTabId = <?php echo $active_course; ?>;
 
@@ -517,8 +519,6 @@
 			var spCourseId = $(this).data('id');
 			var buttonStatus = $(this).data('status');
 			
-			switchButtonColorStatus(buttonId, buttonStatus, courseId, 0, false);
-			
 			// click behaviour
 			$(buttonId).click(function(){
 				var buttonText = '';
@@ -554,25 +554,19 @@
 			aClass = 'btn-warning';
 		}
 
-		if(ajax){
-			// de/acitvate sp_course
-			$.ajax({
-				type: "POST",
-				url: "<?php echo site_url();?>kursverwaltung/ajax_toggle_activation_of_spcourse/",
-				dataType: 'html',
-				data : {course_id_status : courseIdStatus},
-				success: function (echo){
-				console.log(buttonStatus);
-					$(buttonId).data('status', buttonStatus);
-					$(buttonId).text(buttonText);
-					$(buttonId).addClass(rClass);
-					$(buttonId).removeClass(aClass);
-				}
-			});
-		} else {
-			$(buttonId).addClass(aClass);
-			$(buttonId).removeClass(rClass);
-		}
+		// de/acitvate sp_course
+		$.ajax({
+			type: "POST",
+			url: "<?php echo site_url();?>kursverwaltung/ajax_toggle_activation_of_spcourse/",
+			dataType: 'html',
+			data : {course_id_status : courseIdStatus},
+			success: function (echo){
+				$(buttonId).data('status', buttonStatus);
+				$(buttonId).text(buttonText);
+				$(buttonId).addClass(rClass);
+				$(buttonId).removeClass(aClass);
+			}
+		});
 	};
 
 	/**

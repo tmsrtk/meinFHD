@@ -378,6 +378,28 @@ class Kursverwaltung_model extends CI_Model {
 	
 	
 	/**
+     * Helper to get course_id for given sp_course_id
+     * @param int $spkurs_id
+     * @return object
+     */
+    public function get_course_id_for_spkursid($spkurs_id){
+		$this->db->select('KursID');
+		$this->db->from('stundenplankurs');
+		$this->db->where('SPKursID', $spkurs_id);
+		$q = $this->db->get();
+
+		$data = ''; // init
+
+		if($q->num_rows() > 0){
+			foreach ($q->result() as $row){
+				$data = $row;
+			}
+		}
+		return $data;
+    }
+	
+	
+	/**
 	 * Saves the description typed into textfield on my courses view.
 	 * @param type $cid
 	 * @param type $desc

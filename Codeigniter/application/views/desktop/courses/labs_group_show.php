@@ -12,6 +12,12 @@
 	// to change number of shown labs >> there must be an additional field in db to store this value
 	// at first static in this view
 //	$number_of_events = ;
+
+	// storing group-ids to array - needed in jq-part to run through all tabs
+	$sp_course_ids = array();
+	foreach($event_dates as $spc_id => $array_with_group_headers){
+		$sp_course_ids_for_jq['spk_id'.$spc_id] = $spc_id;
+	}
 	
 ?>
 
@@ -46,11 +52,11 @@
 <!--			<pre>
 				<?
 //					print_r($event_dates);
-//					print_r($sp_course_details);
-//					print_r($sp_course_participants_details);
-//					foreach($theads as $head){
-//						print_r($head);
-//					}
+	//					print_r($sp_course_details);
+	//					print_r($sp_course_participants_details);
+//						foreach($theads as $head){
+//							print_r($head);
+//						}
 						
 				?>
 			</pre>-->
@@ -93,10 +99,10 @@
 						echo '<div class="change-group-dates" id="change-group-dates-'.$sp_course_id.'">';
 							$header_button_data = array(
 								'name' => 'change-dates-button',
-								'id' => 'change-dates-button'.$sp_course_id,
-								'class' => 'btn btn-info',
+								'id' => 'change-dates-button-'.$sp_course_id,
+								'class' => 'btn btn-info change-dates-button',
 								'data-courseid' => $sp_course_id,
-								'data-active' => 0,
+								'data-editing' => 'inactive',
 								'value' => 'true',
 								'content' => 'Termine bearbeiten'
 							);
@@ -391,6 +397,94 @@
 	
 	
 	<!--<script>-->
+
+	// create variable that contains all sp_course_ids in that view
+	// to run through the tabs
+    var spCourseIdsInView = <?php echo json_encode($sp_course_ids_for_jq); ?>;
+	
+
+	// handle all group-details-buttons in view
+	// each tab (i.e. sp_course_id) has it's own button
+	$.each(spCourseIdsInView, function(indexAll, spCourseId){
+		// get ids
+		var changeDetailsButtonId = $('#change-dates-button-'+spCourseId);
+		
+		$(changeDetailsButtonId).click(function(){
+			
+			// getting edit-status of button and act depending on it
+			var editStatus = $(this).data('editing');
+
+			
+			if(editStatus == 'inactive'){
+				console.log('if'+editStatus);
+				// if inactive then activate date-picker and change button color, text, status
+				// date-picker
+				$('.event-date-'+spCourseId).datepicker().
+					on('changeDate', function(ev){
+						console.log(ev.date);
+					});
+				$('.event-date-'+spCourseId).append(getDateIcon());
+				$('.event-additional-'+spCourseId).append(getWrenchIcon());
+				
+				// button
+				switchButtonColorStatus(changeDetailsButtonId, editStatus, spCourseId);
+			} else {
+				// else reload page
+				console.log('else'+editStatus);
+				
+				// when editing is disabled:
+				// click on the button triggers a reload of the page
+//				$.ajax({
+//					type: "POST",
+//					url: "<?php echo site_url();?>kursverwaltung/ajax_reload_lab_mgt_overview/",
+//					dataType: 'html',
+//					data : {reload_lab_spcourse_id : spCourseId},
+//					success: function (data){
+//						window.location.reload();
+//					}
+//				});
+//				return false;
+			}
+			
+//			console.log('test');
+		});
+		
+		
+	});
+	
+	/**
+	 * Function that dis/enables table-header-editing.
+	 * Color, data-editing (html), text
+	 */
+	function switchButtonColorStatus(buttonId, editStatus, spCourseId){
+		// alter text and status depending on former status
+//		if(editStatus == 'inactive'){
+			// not even necessary because page reloads 
+//			$('#activation-status-'+courseId+' p').text('Anmeldung ist aktiviert');
+//			buttonText = 'Bearbeiten deaktivieren und neu laden';
+//			editStatus = 'active';
+//			rClass = 'btn-warning';
+//			aClass = 'btn-success';
+			
+			$('#change-group-dates-'+spCourseId).html(getSubmitReloadButton(spCourseId));
+			
+//		} else {
+//			$('#activation-status-'+courseId+' p').text('Anmeldung ist deaktivert');
+//			buttonText = 'Anmeldung aktivieren';
+//			editStatus = 'disabled';
+//			rClass = 'btn-success';
+//			aClass = 'btn-warning';
+//		}
+		
+		// change data
+//		$(buttonId).data('editing', editStatus);
+//		$(buttonId).text('Bearbeiten deaktivieren und neu laden');
+//		$(buttonId).addClass('btn-warning');
+//		$(buttonId).removeClass('btn-info');
+
+	};
+	
+		
 	
 //	$('.event-date').each(function () {
 //		var config = { format: "dd/mm/yyyy", weekStart: 0, autoclose: true  };
@@ -400,10 +494,11 @@
 //		$(this).datepicker(config);
 //	});
 
-	var btnId = $('#change-dates-button2460');
-	$('.change-group-dates').on('click', btnId, function(){
-		console.log('test');
-	});
+//	var btnId = $('#change-dates-button-2460');
+//	$('.change-group-dates').on('click', btnId, function(){
+//		var id = $(this).attr('id');
+//		console.log('test: my id >> '+id);
+//	});
 
 	
 	
@@ -453,7 +548,26 @@
 	 * Helper function to generate calendar-icon for changing dates
 	 */
 	function getDateIcon(){
-		return '<div class="change-date-icon"><i class="icon-calendar icon-white"></i></div>';
+		return '<div class="change-date-icon label label-info" stlye="text-align:center"><i class="icon-calendar icon-white"></i></div>';
+	};
+	
+	
+	/**
+	 * Helper function to generate wrench-icon for changing 'free' events
+	 */
+	function getWrenchIcon(){
+		return '<div class="change-free-icon label label-info" stlye="text-align:center"><i class="icon-wrench icon-white"></i></div>';
+	};
+	
+	
+	/**
+	 * Helper function to return form with submit-button
+	 * Used to trigger submit-action (+passing id) and redirect to show_labmgt_group
+	 */
+	function getSubmitReloadButton(spCourseId, courseId){
+		var v = '';
+		v = '<form accept-charset="utf-8" method="post" action="<?php echo base_url(); ?>kursverwaltung/reload_lab_mgt_group/"><input type="hidden" value="'+spCourseId+'" name="sp_course_id"><input id="submit-reload-'+spCourseId+'" type="submit" class="btn btn-warning" value="Bearbeiten beenden und neu laden" name="'+spCourseId+'-reload"></form>';
+		return v;
 	};
 	
 	

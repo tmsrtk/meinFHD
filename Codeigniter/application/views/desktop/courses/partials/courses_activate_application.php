@@ -23,7 +23,7 @@
 //			if($is_lab && !$is_tut){
 				$switch_button_label = $button_label;
 				$anchor_attrs = array(
-					'class' => 'pull-right btn btn-success activation-buttons-'.$course_id,
+					'class' => 'pull-right '.$btn_class.' activation-buttons-'.$course_id,
 					'id' => 'activation-button-'.$course_id,
 					'data-id' => $course_id,
 					'data-status' => $status_css

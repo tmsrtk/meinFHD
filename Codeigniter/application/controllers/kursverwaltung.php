@@ -245,10 +245,12 @@ class Kursverwaltung extends FHD_Controller {
 					if($application_status == 1){
 						$act_app_data['status_label'] = 'Anmeldung ist aktiviert';
 						$act_app_data['status_css'] = 'enabled';
+						$act_app_data['btn_class'] = 'btn btn-warning';
 						$act_app_data['button_label'] = 'Anmeldung deaktivieren';
 					} else {
 						$act_app_data['status_label'] = 'Anmeldung ist deaktiviert';
 						$act_app_data['status_css'] = 'disabled';
+						$act_app_data['btn_class'] = 'btn btn-success';
 						$act_app_data['button_label'] = 'Anmeldung aktivieren';
 					}
 
@@ -774,13 +776,14 @@ class Kursverwaltung extends FHD_Controller {
 	}
 	
 	
+	/**
+	 * Updates application-status for a whole course (all labs belonging to that course).
+	 * Echo just obligatory >> success changes button-appearance
+	 */
 	public function ajax_toggle_activation_of_spcourse(){
-		// TODO
 		$data = '';
 		$data = $this->input->post('course_id_status');
 		// sp_course_id = $data[0]; status (enabled/disabled) = $data[1]
-		
-		echo print_r($data);
 		
 		// update benutzerkurs
 		if($data[1] == 'enabled'){
@@ -791,6 +794,7 @@ class Kursverwaltung extends FHD_Controller {
 			$this->kursverwaltung_model->update_benutzerkurs_activation($data[0], TRUE);
 		}
 		
+		echo '1';
 	}
 	
 	
@@ -1006,8 +1010,8 @@ class Kursverwaltung extends FHD_Controller {
 		$load_sp_course_id = $this->session->flashdata('sp_course_id');
 		$load_course_id = $this->session->flashdata('course_id');
 		
-		echo $load_course_id;
-		echo $load_sp_course_id;
+//		echo $load_course_id;
+//		echo $load_sp_course_id;
 		
 		// if there is NO data passed
 		if(!$load_sp_course_id){
@@ -1183,6 +1187,24 @@ class Kursverwaltung extends FHD_Controller {
 		$this->kursverwaltung_model->update_group_notes($user_notes[0], $user_notes[1]);
 		// only return something - method-detects change
 		echo 'done';
+	}
+	
+	
+	/**
+	 * Helper function to reload the view with the correct tab activated.
+	 * Course-id fetched from db, because more complicated to get inside view at that point.
+	 * 
+	 */
+	public function reload_lab_mgt_group(){
+		// TODO pass new id via flashdata
+		$sp_course_id_to_show = $this->input->post('sp_course_id');
+		$course_id_to_show = $this->kursverwaltung_model->get_course_id_for_spkursid($sp_course_id_to_show);
+
+		$this->session->set_flashdata('sp_course_id', $sp_course_id_to_show);
+		$this->session->set_flashdata('course_id', $course_id_to_show->KursID);
+		
+		// goto view
+		redirect('kursverwaltung/show_labmgt_group');
 	}
 	
 
