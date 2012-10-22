@@ -12,6 +12,11 @@
 		<script src="<?php print base_url(); ?>resources/js/meinfhd.js" type="text/javascript"></script>
 		<script src="<?php print base_url(); ?>resources/bootstrap/js/bootstrap-alert.js" type="text/javascript"></script>
 		<script src="<?php print base_url(); ?>resources/bootstrap/js/bootstrap-dropdown.js" type="text/javascript"></script>
+		<script type="text/javascript" src="<?php print base_url(); ?>resources/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="<?php print base_url(); ?>resources/js/meinfhd.polyfills.js"></script>
+		<script type="text/javascript" src="<?php print base_url(); ?>resources/js/meinfhd.labels.js"></script>
+		<script type="text/javascript" src="<?php print base_url(); ?>resources/js/meinfhd.radiobuttons.js"></script>
+		<script type="text/javascript" src="<?php print base_url(); ?>resources/js/meinfhd.checkboxes.js"></script>
 		
 		
 		

@@ -23,16 +23,16 @@ class Studienplan extends FHD_Controller
         // userdata
         // $session_userid = $this->authentication->user_id();
 
-        // $loginname = $this->admin_model->get_loginname($session_userid);
-        // $user_permissions = $this->admin_model->get_all_userpermissions($session_userid);
-        // $roles = $this->admin_model->get_all_roles();
+        //$loginname = $this->admin_model->get_loginname($session_userid);
+        //$user_permissions = $this->admin_model->get_all_userpermissions($session_userid);
+        //$roles = $this->admin_model->get_all_roles();
         
-        // $userdata = array(
-        //         'userid' => $session_userid,
-        //         'loginname' => $loginname['LoginName'],
-        //         'userpermissions' => $user_permissions,
-        //         'roles' => $roles
-        //     );
+        //$userdata = array(
+        //        'userid' => $session_userid,
+        //        'loginname' => $loginname['LoginName'],
+        //        'userpermissions' => $user_permissions,
+        //        'roles' => $roles
+        //    );
 
         // $this->data->add('userdata', $userdata);
 
@@ -40,10 +40,11 @@ class Studienplan extends FHD_Controller
         // call the security_helper and check if the user is authenticated an allowed to call the controller
         $this->authentication->check_for_authenticaton();
         // --- END EDIT --
+        //$this->data->add('userdata', $userdata);
     }
 
 
-    
+
 
     /**
      * Index-Method, which loads the Studienplan
@@ -109,7 +110,7 @@ class Studienplan extends FHD_Controller
         
         $this->message->set(sprintf('Der Studienplan wurde erfolgreich erstellt.'));
     }
-    
+   
     
     
     
@@ -125,7 +126,7 @@ class Studienplan extends FHD_Controller
     }
     
     
-
+    
     /**
      * Remove a coloumn in semesterplan
      */
@@ -136,7 +137,7 @@ class Studienplan extends FHD_Controller
 
         // header('Location: /meinFHD/Codeigniter/studienplan/');
     }
-
+    
     
     
     
@@ -208,6 +209,9 @@ class Studienplan extends FHD_Controller
         $this->message->set(sprintf('Der Studienplan wurde erfolgreich zurükgesetzt.'));
     }
     
+    
+    
+    
     /**
      * Deletes and recreates the whole studyplan and dependencies
      */
@@ -218,6 +222,8 @@ class Studienplan extends FHD_Controller
         
         $this->message->set(sprintf('Der Studienplan wurde erfolgreich rekonstruiert.'));
     }
+    
+    
     
     
     /**
@@ -336,7 +342,7 @@ class Studienplan extends FHD_Controller
     {
         // locale variables
         $module_id = 0;
-        $mark = 0;
+        $markpoints = 0;
         
         // get post data
         $post= $this->input->post();
@@ -348,12 +354,12 @@ class Studienplan extends FHD_Controller
             {
                 $tempArray = explode('_', $key);
                 $module_id = $tempArray[1];
-                $mark = $value;
+                $markpoints = $value;
             }
         }
         
         $this->load->model('Studienplan_Model');
-        $this->Studienplan_Model->saveMark($module_id, $mark);
+        $this->Studienplan_Model->saveMark($module_id, $markpoints);
     }
     
     

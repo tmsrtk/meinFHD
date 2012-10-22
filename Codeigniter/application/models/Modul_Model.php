@@ -163,6 +163,7 @@ class Modul_Model extends CI_Model {
 			$courseinfo['Modulinfo']['DozentVorname'] = $courselist[0]['DozentVorname'];
 			$courseinfo['Modulinfo']['DozentNachname'] = $courselist[0]['DozentNachname'];
 			$courseinfo['Modulinfo']['DozentTitel'] = $courselist[0]['DozentTitel'];
+			$courseinfo['Modulinfo']['DozentID'] = $courselist[0]['DozentID'];
 
 			foreach ($courselist as $key => $course) {
 				array_push($courseinfo['Kurse'][$course['VeranstaltungsformName']], $course);
@@ -190,7 +191,7 @@ class Modul_Model extends CI_Model {
 			sg.Kursname, sg.kurs_kurz,
 			v.VeranstaltungsformName,sp.VeranstaltungsformAlternative, sp.VeranstaltungsformID, sp.KursID, sp.SPKursID, sp.Raum,
 			sp.DozentID, sp.StartID, sp.EndeID, (sp.EndeID-sp.StartID)+1 AS 'Dauer', sp.GruppeID,
-			d.Vorname AS 'DozentVorname', d.Nachname AS 'DozentNachname', d.Email AS 'DozentEmail', d.Titel AS 'DozentTitel',
+			d.Vorname AS 'DozentVorname', d.Nachname AS 'DozentNachname', d.Email AS 'DozentEmail', d.Titel AS 'DozentTitel', d.BenutzerID AS 'DozentID',
 			t.TagName,t.TagID,
 			s_beginn.Beginn, s_ende.Ende,
 			g.TeilnehmerMax, g.Anmeldung_zulassen,

@@ -122,7 +122,7 @@ local.properties
 # Netbeans files
 ######################################################################################################
 nbproject/private/
-nbproject/*
+nbproject/
 build/
 nbbuild/
 dist/
@@ -138,3 +138,7 @@ CI_phpStorm.php
 # espresso files
 ######################################################################################################
 *.esproj
+
+# File created by saving the Semesterplan:
+######################################################################################################
+Codeigniter/upload/

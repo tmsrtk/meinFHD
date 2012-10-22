@@ -30,7 +30,13 @@ class App extends FHD_Controller {
 	 */
 	public function index()
 	{
-		$this->load->view('app/index', $this->data->load());
+		// user is logged in -> set message and redirect to frontpage
+		if ($this->agent->is_mobile()) {
+			redirect('dashboard/mobile');
+		}
+		else {
+			redirect('dashboard/index');
+		}
 	}
 	
 	/**
@@ -107,9 +113,9 @@ class App extends FHD_Controller {
         }
         // --- Modifaction End ---
         else { // otherwise perform a regular logut
-            $this->message->set(sprintf('Ausgeloggt! (ID: %s)', $this->authentication->user_id()));
+            //$this->message->set(sprintf('Ausgeloggt! (ID: %s)', $this->authentication->user_id()));
             $this->authentication->logout();
-            redirect('app/login');
+            redirect('login');
         }
 	}
 }

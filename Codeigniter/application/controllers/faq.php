@@ -1,4 +1,7 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
 
 /**
  * meinFHD WebApp
@@ -6,15 +9,13 @@
  * @version 0.0.1
  * @copyright Fachhochschule Duesseldorf, 2012
  * @link http://www.fh-duesseldorf.de
- * @author Peter Jaraczewski (PJ), <peter.jaraczewski@fh-duesseldorf.de>
+ * @author Fabian Martinovic (FM), <fabian.martinovic@fh-duesseldorf.de>
  */
 
 /**
- * Class Faq
- *
- * Description...
+ * Hilfe-Controller
  */
-class Faq extends FHD_Controller {
+class FAQ extends FHD_Controller {
 	
 	// default constructor to prepare all needed stuff
 	function __construct(){
@@ -38,5 +39,5 @@ class Faq extends FHD_Controller {
 	}
 }
 
-/* End of file faq.php */
-/* Location: ./Application/Controllers/faq.php */
+/* End of file App.php */
+/* Location: ./application/controllers/faq.php */

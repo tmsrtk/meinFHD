@@ -2,193 +2,148 @@
 <?php startblock('title');?><?php get_extended_block();?> - Modul<?php endblock(); ?>
 <?php startblock('content'); # content for this view ?>
 
-
-	<!- ------------------------------------------------ -->
-	<!-- MODULÜBERSICHT -------------------------------- -->
-	<!- ------------------------------------------------ -->
+<?php
 	
-	<!-- CONTENT -->
-	<div class="container container-fluid">
-		<div class="row">
-			<div class="span8">
-				<div class="well well-small clearfix">
+	$course_to_enroll = array();
+	
+	foreach ($courseinfo['Kurse'] as $key => $courselist) {
+		if ( ! empty($courselist)) {
+			if ($courselist[0]['VeranstaltungsformAlternative'] != '') {
+				$course_to_enroll[$key] = $courselist;
+			}
+		}
+	}
+	
+?>
 			
-					<h6>Modulübersicht</h6>
-			
-					<!--Titel-->
-	    			<h1><?php echo $courseinfo['Modulinfo']['kurs_kurz']; ?></h1>
-	    			<h4><?php echo $courseinfo['Modulinfo']['DozentTitel'] . " " . $courseinfo['Modulinfo']['DozentVorname'] . " " . $courseinfo['Modulinfo']['DozentNachname'];                                                ?></h4>
-					<hr />
-					<!--Optionen-->
-		    		<div class="alert alert-info clearfix">
-   		    			<a href="#" class="btn btn-large pull-left">
-   		    				<i class="icon-pencil"></i>
-   		    				 Notizen
-   		    			</a>
-		    			<a href="dozent" class="btn btn-large btn-primary pull-right">
-		    				<i class="icon-arrow-right icon-white"></i>
-		    				 Dozent
+
+<!-- MODULÜBERSICHT -->
+
+<div class="row-fluid">
+	<div class="span6 well">
+	
+		<h6>Modulübersicht</h6>
+		<h1><?php echo $courseinfo['Modulinfo']['kurs_kurz']; ?></h1>
+		
+		<!-- Dozent -->
+	    <table class="table table-condensed" width="100%">
+			<thead>
+				<tr>
+					<th>Dozent</th>
+					<th width="40px">Details</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><?php echo $courseinfo['Modulinfo']['DozentTitel'] . " " . $courseinfo['Modulinfo']['DozentVorname'] . " " . $courseinfo['Modulinfo']['DozentNachname'];?></td>
+					<td>
+						<a href=<?php echo base_url('dozent/'. $courseinfo['Modulinfo']['DozentID'] ); ?> class="btn btn-primary pull-right">
+		    				<i class="icon-arrow-right icon-white"></i>		    				 
 		    			</a>
-		    		</div>
-		    						    		    	   
-		    		<!--Bar-Widget-->
-		    		<h4>Anwesenheit dieses Semester</h4>
-		    		<div class="progress progress-striped">
-  						<div class="bar" style="width: 45%;"></div>
-					</div>									  
-				</div>
-				
-			</div><!-- /.span8-->
-			
-			<!--DESKTOP AND TABLET ONLY-->
-			<div class="span4">
-			
-				<div class="well well-small hidden-phone">
-					<h2>Widgets <small>Dekstop & Tablet only</small></h2>
-					<hr class="hidden-phone" />
-					<h4>widget content</h4>
-					<div class="progress progress-striped active">
-					  <div class="bar" style="width: 40%;"></div>
-					</div>
-					<hr />
-					<h4>widget content</h4>
-					<div class="progress progress-striped progress-warning active">
-					  <div class="bar" style="width: 40%;"></div>
-					</div>
-				</div>
-			
-			</div><!-- /.span4 -->						
-			
-		</div><!--first row ends here-->
+					</td>
+				</tr>
+			</tbody>
+		</table>
 		
-		<div class="row">
-
-
-			<?php //--------------------Loop for kurse --------------------?>			
-			<?php foreach ($courseinfo['Kurse'] as $key => $courselist) : ?>
-
-
-			
-				<div class="span4">
-
-
-					<?php //--------------------If there is any course of that kind --------------------?>
-					<?php if (!empty($courselist))  { ?>
-				
-
-					<div class="well well-small">
-						<h2><?php echo $key; ?>&nbsp;<small></small></h2>
-						<h3><?php echo $courselist[0]['Raum']; ?>
-
-					<?php //--------------------If there are alternatives --------------------?>
-					<?php if (!$courselist[0]['VeranstaltungsformAlternative'] == '')  { ?>
-						</h3>
-						<table class="table centered"> 
-							<thead>
+		<!-- Termine -->
+		<table class="table table-condensed" width="100%">
+			<thead>
+				<tr>
+					<th width="70px">Termin</th>
+					<th>Zeit</th>					
+					<th width="40px">Raum</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- Without enroll -->
+				<?php foreach ($courseinfo['Kurse'] as $key => $courselist) : ?>
+					<?php if ( ! empty($courselist)) : ?>
+						<?php if ($courselist[0]['VeranstaltungsformAlternative'] == '') : ?>													
+							<?php foreach ($courselist as $veranstaltung) : ?>
+							
 								<tr>
-									<td width="25%">Gruppe</td>
-									<td>Termin</td>
+									<td><?php echo $key; ?></td>
+									<td><?php echo substr($veranstaltung['TagName'],0,2). '. ' . $veranstaltung['Beginn'] . ' - ' . $veranstaltung['Ende']; ?></td>	
+									<td><?php echo $courselist[0]['Raum']; ?></td>
 								</tr>
-							</thead>
-							<tbody>
-
-
-									<?php //--------------------If user already is enrolled --------------------?>
-									<?php if ($courselist[0]['aktiv'] == 1)  { ?>
-
-										<!-vom User belegter Termin--->
-										<tr class="alert alert-success">
-											<td><?php echo $courselist[0]['VeranstaltungsformAlternative'] ?></td>
-											<td><?php echo substr($veranstaltung['TagName'],0,2); ?>/ <?php echo $courselist[0]['Beginn'] ?> - <?php echo $courselist[0]['Ende'] ?></td>
-											<td>
-												<a href="<?php echo base_url('modul/withdraw_from_course/'. $courselist[0]['KursID'].'/'. $courselist[0]['SPKursID'].'/'.  $courselist[0]['GruppeID'] ); ?>" class="btn btn-large btn-danger pull-right">
-													<i class="icon-remove icon-white"></i>
-												</a>
-											</td>
-										</tr><!--belegeter Termin Ende-->
-
-									<?php //--------------------EndIf user already is enrolled -------------------- ?>
-									<?php } ?>
-
-
-									<?php //--------------------If user not already enrolled --------------------?>
-									<?php if ($courselist[0]['aktiv'] == 0)  { ?>
-
-										<?php //--------------------Loop for all alternatives --------------------?>	
-										<?php foreach ($courselist as $veranstaltung) : ?>
-
-											<tr>
-												<td><?php echo $veranstaltung['VeranstaltungsformAlternative'] ?></td>
-												<td><?php echo substr($veranstaltung['TagName'],0,2); ?>/ <?php echo $veranstaltung['Beginn']; ?> - <?php echo $veranstaltung['Ende']; ?></td>
-												<td>
-													<a href="<?php echo base_url('modul/enroll_to_course/'. $veranstaltung['KursID'].'/'. $veranstaltung['SPKursID'].'/'.  $veranstaltung['GruppeID'] ); ?>" class="btn btn-large pull-right">
-														<i class="icon-ok"></i>
-													</a>									
-												</td>
-											</tr>
-
-										<?php //--------------------End Loop for all alternatives --------------------?>			
-										<?php endforeach; ?>
-
-									<?php //--------------------EndIf user already is enrolled -------------------- ?>
-									<?php } ?>
-
-
-								</tbody>
-								</table>
-
-								<?php //--------------------EndIf there are alternatives , Begin Else there are none -------------------- ?>
-								<?php } else { ?>
-
-
-
-
-									<?php //--------------------Loop for Veranstaltung without alternatives--------------------?>			
-									<?php foreach ($courselist as $veranstaltung) : ?>
-	
-											/ <?php echo $veranstaltung['Beginn']; ?> - <?php echo $veranstaltung['Ende']; ?> / <?php  echo $veranstaltung['TagName']; ?>s</h3>
 								
-									<?php //--------------------End Loop for Veranstaltung without alternatives--------------------?>			
-									<?php endforeach; ?>
-
-								<?php //--------------------EndElse there are no alternatives -------------------- ?>
-								<?php } ?>
-
-
-
-							<hr class="hidden-phone" />
-
-							</div>
-							<?php //--------------------EndIF there is any course of that kind  -------------------- ?>
-							<?php } ?>
-
-
-
-				</div><!-- /.span4-->
-
-
-
-			<?php //--------------------End Loop for Veranstaltung --------------------?>			
-			<?php endforeach; ?>
-
-		</div><!-- /.row-->
+							<?php endforeach; ?>							
+						<?php endif; ?>
+					<?php endif; ?>
+				<?php endforeach; ?>
+				
+			</tbody>
+		</table>		    	   		    										  
 		
-		<div class="row">
-			
-			<!--optionbox at the end of page-->
-			<div class="span12">
-				<div class="alert alert-info clearfix">
-					<a href="<?php echo base_url('stundenplan'); ?>" class="btn btn-large btn-primary" href="#">
-						<i class="icon-arrow-left icon-white"></i>
-						 Stundenplan
-					</a>
-				</div>
-			</div><!-- /.span12-->
-			
-		</div><!-- /.row-->
+	</div>
 		
-   	</div><!-- /.fluid container-->
-   	
-	<!-- CONTENT ENDE-->
+<!-- With enroll -->
+<?php if ( ! empty($course_to_enroll)) : ?>
+	<div class="span6 well">
+		<?php foreach ($course_to_enroll as $key => $courselist) : ?>
+			
+			<h3><?php echo $key; ?> <small><?php echo $courselist[0]['Raum']; ?></small></h3>
+			<table class="table table-condensed"> 
+				<thead>
+					<tr>
+						<th width="70px">Gruppe</th>
+						<th>Zeit</th>
+						<th>teilnehmen</th>
+					</tr>
+				</thead>
+				<tbody>
+	
+					<?php if ($courselist[0]['aktiv'] == 1) : ?>
+						<!-vom User belegter Termin--->
+						<tr class="alert alert-success">
+							<td><?php echo $courselist[0]['VeranstaltungsformAlternative'] ?></td>
+							<td><?php echo substr($veranstaltung['TagName'],0,2); ?>. <?php echo $courselist[0]['Beginn'] ?> - <?php echo $courselist[0]['Ende'] ?> </td>
+							<td>
+
+							<?php if ($courselist[0]['Anmeldung_zulassen'] == 1): ?>
+								<a href="<?php echo base_url('modul/withdraw_from_course/'. $courselist[0]['KursID'].'/'. $courselist[0]['SPKursID'].'/'.  $courselist[0]['GruppeID'] ); ?>" class="btn btn-primary pull-right">
+									<i class="icon-remove icon-white"></i>
+								</a>
+							<?php endif ?>
+
+							</td>
+						</tr><!--belegeter Termin Ende-->
+					<?php endif; ?>
+	
+					<?php if ($courselist[0]['aktiv'] == 0)  : ?>
+						<?php foreach ($courselist as $veranstaltung) : ?>
+							<tr>
+								<td><?php echo $veranstaltung['VeranstaltungsformAlternative'] ?></td>
+								<td><?php echo substr($veranstaltung['TagName'],0,2); ?>. <?php echo $veranstaltung['Beginn']; ?> - <?php echo $veranstaltung['Ende']; ?></td>
+								<td>
+
+								<?php if ($courselist[0]['Anmeldung_zulassen'] == 1): ?>
+									<a href="<?php echo base_url('modul/enroll_to_course/'. $veranstaltung['KursID'].'/'. $veranstaltung['SPKursID'].'/'.  $veranstaltung['GruppeID'] ); ?>" class="btn pull-right">
+										<i class="icon-ok"></i>
+									</a>		
+								<?php endif ?>	
+
+								</td>
+							</tr>
+						<?php endforeach; ?>
+					<?php endif; ?>
+						
+				</tbody>
+			</table>
+			
+		<?php endforeach; ?>
+	</div>
+<?php endif; ?>	
+
+<div class="row-fluid">
+	<div class="span12">
+		<div class="fhd-box">
+			<a href="<?php print base_url('dashboard/mobile'); ?>" class="btn btn-large btn-primary">Übersicht</a>
+			<a href="<?php print base_url('stundenplan'); ?>" class="btn btn-large pull-right">Stundenplan</a>
+		</div>
+	</div>
+</div>
+	
+<!-- CONTENT ENDE-->
 <?php endblock(); ?>
 <?php end_extend(); ?>

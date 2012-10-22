@@ -1,4 +1,7 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
 
 /**
  * meinFHD WebApp
@@ -6,13 +9,11 @@
  * @version 0.0.1
  * @copyright Fachhochschule Duesseldorf, 2012
  * @link http://www.fh-duesseldorf.de
- * @author Peter Jaraczewski (PJ), <peter.jaraczewski@fh-duesseldorf.de>
+ * @author Fabian Martinovic (FM), <fabian.martinovic@fh-duesseldorf.de>
  */
 
 /**
- * Class Hilfe
- *
- * Description...
+ * Hilfe-Controller
  */
 class Hilfe extends FHD_Controller {
 	
@@ -38,5 +39,5 @@ class Hilfe extends FHD_Controller {
 	}
 }
 
-/* End of file hilfe.php */
-/* Location: ./Application/Controllers/hilfe.php */
+/* End of file App.php */
+/* Location: ./application/controllers/hilfe.php */

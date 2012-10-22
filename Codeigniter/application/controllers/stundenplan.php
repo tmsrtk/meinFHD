@@ -32,7 +32,6 @@ class Stundenplan extends FHD_Controller {
         // --- END EDIT --
 	}
 	
-	
     /**
      * Controller for day view
      *
@@ -44,7 +43,6 @@ class Stundenplan extends FHD_Controller {
      */
 	public function index()
 	{
-		//$this->krumo->dump($this->data->load());
 		$stundenplan = $this->Stundenplan_Model->get_stundenplan($this->authentication->user_id());
 		
 		$this->data->add('stundenplan', $stundenplan[0]); 
@@ -52,7 +50,6 @@ class Stundenplan extends FHD_Controller {
 		$this->data->add('zeiten', $stundenplan[2]);
 		$this->data->add('aktivekurse', $stundenplan[3]);
 		
-		//$this->krumo->dump($this->data);
 		$this->load->view('stundenplan/index', $this->data->load());
 	}
 	
@@ -71,13 +68,9 @@ class Stundenplan extends FHD_Controller {
 		// Save the days in a seperate variable
 		$days = $plan[0];
 
-		// FB::log($plan);
-		// return;
-		
 		// Load helper classes
 		include(APPPATH . 'libraries/events/Event.php');
 		include(APPPATH . 'libraries/events/EventSort.php');
-		
 
 		foreach ($days as $dayname => $day)
 		{
@@ -87,55 +80,33 @@ class Stundenplan extends FHD_Controller {
 			foreach ($day as $row)
 			{
 				foreach ($row as $event) {
-					// To calculate the correct display data, we need
-					// the start, duration and color.
-					$start = (int) $event['StartID'];
-					$duration = (int) $event['Dauer'];
-					$color = $event['Farbe'];
+					// Only show and calculate events that should be displayed
+					if ((bool) $event['Anzeigen']) {
+						// To calculate the correct display data, we need
+						// the start, duration and color.
+						$start = (int) $event['StartID'];
+						$duration = (int) $event['Dauer'];
+						$color = $event['Farbe'];
+	
+						// Create an object for the current event.
+						$events[] = new Event($start, $duration, $color, $event);
+					}
 					
-					// Create an object for the current event.
-					$events[] = new Event($start, $duration, $color, $event);
 				}
 			}
+			
 			// Create a sortable list of events
 			$sort = new EventSort($events);
 			// Optimize the display data for the events
 			$days[$dayname] = $sort->optimize();
 		}
-		
+
 		$this->data->add('stundenplan', $days); 
 		$this->data->add('tage', $plan[1]);
 		$this->data->add('zeiten', $plan[2]);
 		$this->data->add('aktivekurse', $plan[3]);
 
 		$this->load->view('stundenplan/week', $this->data->load());
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	public function timetable_show(){
-	    // TODO pass roles-specific data to view
-	    $this->load->view('stundenplan/tabview_desktop', $this->data->load());
-	}
-
-
-
-
-
-
-
-
-
-	public function register_in_course()
-	{
-		$data = $this->input->post();
-		
-		
 	}
 
 }

@@ -55,7 +55,6 @@ $autoload['packages'] = array();
 $autoload['libraries'] = array('krumo', 'user_agent', 'detection', 'database', 'session', 'data', 'message', 'authentication', 'form_validation', 'adminhelper', 'firephp/lib/FirePHPCore/fb', 'less','samlauthentication');
 
 
-
 /*
 | -------------------------------------------------------------------
 |  Auto-load Helper Files
@@ -65,7 +64,7 @@ $autoload['libraries'] = array('krumo', 'user_agent', 'detection', 'database', '
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array('url', 'form', 'html', 'template_inheritance');
+$autoload['helper'] = array('url', 'form', 'html','template_inheritance', 'file');
 
 
 /*

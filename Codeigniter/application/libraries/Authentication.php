@@ -316,9 +316,11 @@ class Authentication {
      * @access public
      * @return string the provided name of the user
      */
-    public function get_name() {
+    public function get_name()
+    {
        return $this->name;
     }
+    
 	/**
 	 * The firewall detects access controled routes and determines,
 	 * if the current user has access to it.
@@ -330,16 +332,25 @@ class Authentication {
 	{
 		// Load firewall config
 		$this->CI->config->load('firewall');
-
+		
 		// Load the login route
-		$login_page = $this->CI->config->item('login_page', 'firewall');
-
+		$login_page = $real_login_page = $this->CI->config->item('login_page', 'firewall');
+		
+		if (isset($this->CI->router->routes[$login_page]))
+		{
+			$real_login_page = $this->CI->router->routes[$login_page];
+		}
+		
 		// Load the current route
 		$current_route = $this->CI->uri->ruri_string();
 
 		// If we're on the login page, always allow access
-		if ($current_route == "/{$login_page}")
+		if ($current_route == "/{$real_login_page}")
 		{
+			if ($this->is_logged_in())
+			{
+				redirect($this->CI->router->routes['default_controller'], 403);
+			}
 			return TRUE;
 		}
 		
@@ -365,7 +376,7 @@ class Authentication {
 					else
 					{
 						$this->CI->message->set('403 - Forbidden', 'error');
-						redirect('app', 403);
+						redirect($this->CI->router->routes['default_controller'], 403);
 					}
 				}	
 			}
