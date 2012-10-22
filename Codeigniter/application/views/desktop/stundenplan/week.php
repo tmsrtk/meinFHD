@@ -75,7 +75,7 @@
 			}
 
 			echo '<li id="tt-tab-'.$r_id.'">';
-			echo '<a href="#'.$r_id.'-tt" data-toggle="tab">'.$role_name.'</a>';
+			echo '<a href="#tt-'.$r_id.'" data-toggle="tab">'.$role_name.'</a>';
 			echo '</li>';
 		}
 	?>
@@ -86,7 +86,7 @@
 		<?php 
 		// print div for each timetable
 		foreach($stundenplaene as $r_id => $content) : ?>
-		<div class="tab-pane fade in active" id="<?php echo "{$r_id}" ?>-tt">
+		<div class="tab-pane fade in " id="tt-<?php echo "{$r_id}" ?>">
 
 			<?php // print role-specific timetable ?>
 			

@@ -919,10 +919,10 @@
 				// add to swsBadges
 				// console.log(this.config.swsBadges)
 				this.config.swsBadges.each(function (i, e) {
-					$(e).fadeOut(600).text(swsArray[i]).fadeIn(600)
+					$(e)/*.fadeOut(600)*/.text(swsArray[i])/*.fadeIn(600)*/
 				})
 				this.config.cpBadges.each(function (i, e) {
-					$(e).fadeOut(600).text(cpArray[i]).fadeIn(600)
+					$(e)/*.fadeOut(600)*/.text(cpArray[i])/*.fadeIn(600)*/
 				})
 
 			},
