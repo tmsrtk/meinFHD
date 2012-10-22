@@ -20,7 +20,7 @@
 				{meinfhd: "<?php print base_url(); ?>resources/js/meinfhd.js"},
                 {meinfhd: "<?php print base_url(); ?>resources/js/meinfhd.mobile.js"},
 				{meinfhd: "<?php print base_url(); ?>resources/js/hammer.js"},
-				{meinfhd: "<?php print base_url(); ?>resources/js/jquery.specialevent.hammer.js"},
+				{meinfhd: "<?php print base_url(); ?>resources/js/jquery.specialevent.hammer.js"}
 			);
 		</script>
 		<script type="text/javascript">
