@@ -333,6 +333,24 @@
 					}
 				}
 			});
+			$.ajax({
+				type: "POST",
+				url: "<?php echo site_url();?>kursverwaltung/ajax_get_former_participant_notes/",
+				dataType: 'html',
+				data : {participant_id : participantId},
+				success: function (data){
+					console.log(currentText);
+					// when textarea blurred, check if content changed
+					if(data != currentText){
+						// if changed do nothing
+						//console.log('diff: '+data);
+					} else {
+						// else hide button if field is left and nothing changed
+//						console.log('hide '+data);
+						$(buttonDiv).html('');
+					}
+				}
+			});
 			
 		});
 		
@@ -421,7 +439,31 @@
 				// date-picker
 				$('.event-date-'+spCourseId).datepicker().
 					on('changeDate', function(ev){
-						console.log(ev.date);
+						// getting element-id and some other data
+						var textId = $(this).attr('id');
+						var eventId = $(this).data('eventid');
+						var saveData = new Array(
+							spCourseId,
+							eventId,
+							ev.date
+						);
+						
+						//console.log(ev.date);
+						var d = ev.date.getDate();
+						var m = ev.date.getMonth()+1;
+						$('#'+textId).html(d+'.'+m+'.'+ getDateIcon());
+						
+						// saving new date to db
+						$.ajax({
+							type: "POST",
+							url: "<?php echo site_url();?>kursverwaltung/ajax_save_new_date_for_event/",
+							dataType: 'html',
+							data : {save_event_data : saveData},
+							success: function (data){
+								// nothing to do - date has been saved
+							}
+						});
+						
 					});
 				$('.event-date-'+spCourseId).append(getDateIcon());
 				$('.event-additional-'+spCourseId).append(getWrenchIcon());
@@ -429,24 +471,10 @@
 				// button
 				switchButtonColorStatus(changeDetailsButtonId, editStatus, spCourseId);
 			} else {
-				// else reload page
-				console.log('else'+editStatus);
-				
-				// when editing is disabled:
-				// click on the button triggers a reload of the page
-//				$.ajax({
-//					type: "POST",
-//					url: "<?php echo site_url();?>kursverwaltung/ajax_reload_lab_mgt_overview/",
-//					dataType: 'html',
-//					data : {reload_lab_spcourse_id : spCourseId},
-//					success: function (data){
-//						window.location.reload();
-//					}
-//				});
-//				return false;
+				// else nothing to do
+				// reload triggered 
 			}
 			
-//			console.log('test');
 		});
 		
 		

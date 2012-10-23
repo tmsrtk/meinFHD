@@ -1207,6 +1207,23 @@ class Kursverwaltung extends FHD_Controller {
 		redirect('kursverwaltung/show_labmgt_group');
 	}
 	
+	
+	/**
+	 * Saving new date for one event.
+	 * Data passed via POST contains array
+	 * array[0] - sp_course_id
+	 * array[1] - event_id !! +1 because of array-index
+	 * array[2] - new date
+	 * 
+	 */
+	public function ajax_save_new_date_for_event(){
+		$save_data = $this->input->post('save_event_data');
+		
+		echo $save_data[2];
+		
+		$this->kursverwaltung_model->update_eventdate($save_data[0], $save_data[1]+1, $save_data[2]);
+	}
+	
 
 	/* 
 	 * 

@@ -17,7 +17,7 @@
 					$show_date = date('d.m.', strtotime($event_dates[$sp_course_id][$i]));
 				} 
 				
-				echo '<th><div class="thead-labmgt event-date-'.$sp_course_id.'" data-date="'.$picker_date.'" data-date-format="dd-mm-yyyy data-eventid='.$i.' data-spcourseid='.$sp_course_id.'">';
+				echo '<th><div class="thead-labmgt event-date-'.$sp_course_id.'" id=event-'.$sp_course_id.'-'.$i.' data-date="'.$picker_date.'" data-date-format="dd-mm-yyyy" data-eventid='.$i.'">';
 				
 				// print header for each tab depending on stored data in db
 				if($event_dates[$sp_course_id][$i]){

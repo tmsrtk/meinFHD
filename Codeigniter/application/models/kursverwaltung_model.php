@@ -1037,6 +1037,37 @@ class Kursverwaltung_model extends CI_Model {
 		
 		return $user_notes;
 	}
+	
+	
+	/**
+	 * Update date for the passe event.
+	 * 
+	 * @param int $sp_course_id sp_course_id to save new event-date for
+	 * @param int $event_id event that should be updated
+	 * @param date $date the new date
+	 */
+	public function update_eventdate($sp_course_id, $event_id, $date){
+		$group_id = '';
+		$collumn = '';
+
+		// get group_id for sp_course_id
+		$group_id = $this->get_group_id_for_spkursid($sp_course_id);
+		
+		// prepare collumn-name
+		if(($event_id - 9) <= 0){
+			$collumn = 'termin0'.$event_id;
+		} else {
+			$collumn = 'termin'.$event_id;
+		}
+		
+		$save = array(
+			$collumn => $date
+		);
+		
+		// save to gruppenteilnehmer_aufzeichnungen for that user
+		$this->db->where('GruppeID', $group_id->GruppeID);
+		$this->db->update('gruppentermin', $save);
+	}
 
 	/* 
 	 * 
