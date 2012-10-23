@@ -621,7 +621,6 @@ class Kursverwaltung extends FHD_Controller {
 		 * Data is stored correctly though.
 		 */
 		$this->kursverwaltung_model->save_course_details($sp_course_id_temp, $save_course_details_to_db, $save_group_details_to_db);
-		
 		$this->kursverwaltung_model->save_course_description($course_id, $description);
 		
 		// log activities once - data has been changed

@@ -267,7 +267,6 @@ class Admin_model extends CI_Model {
         // remove global uid from blacklist, if the id is on it
         $this->db->where('FHD_IdP_UID', $q['FHD_IdP_UID']);
         $this->db->delete('shibbolethblacklist');
-        
 		$this->delete_invitation($invitation_id);
 	}
 
