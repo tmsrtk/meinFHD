@@ -27,7 +27,7 @@
 	$data_email = array(
 		'class' => 'span3',
 		'name' => 'email',
-		'placeholder' => 'E-Mail',
+		'placeholder' => 'E-Mail*',
 		'value' => set_value('email')
 	);
 	$data_matrikelnummer = array(
@@ -205,7 +205,7 @@ if( ! empty( $b ) ) $radio_val2 = TRUE;
 			<?php foreach ($user_invitations as $key => $value) : ?>
 			<tr>
 				<td>
-					<?php echo form_open('admin/create_user_from_invitation/', $data_formopen2); ?>
+					<?php echo form_open('admin/create_user_from_invitation_requests/', $data_formopen2); ?>
 					<?php echo form_hidden('request_id', $value['AnfrageID']); ?>
 
 					<div class="span2"><?php echo ($value['FHD_IdP_UID']) ? 'Ja' : 'Nein'; ?></div>
@@ -231,6 +231,10 @@ if( ! empty( $b ) ) $radio_val2 = TRUE;
 
 <?php startblock('customFooterJQueryCode');?>
 
+	/**
+	 * Object which handles the UI functions.
+	 * @type {Object}
+	 */
 	var AdditionalInfo = {
 		init : function(config) {
 			this.config = config;
@@ -288,127 +292,12 @@ if( ! empty( $b ) ) $radio_val2 = TRUE;
 		dozentenInfo : "Geben Sie bitte hier Ihren vollen Namen an, da dieser für die Kommunikation mit den Studierenden gebraucht wird. Die Emailadresse wird für die Kommunikation mit meinFHD und den Studierenden verwendet. "
 	};
 
+	// initialise the object
 	AdditionalInfo.init({
 		additionalInfoContent : $("div#additional-info"),
 		roleInput : $("input[name='role']"),
 		erstsemestler : $("input[name='erstsemestler']")
 	});
-
-	// ####################
-
-	// onchange for radiobuttons 
-	// $("input[name='role']").change(function() {
-	// 	toggle_studentdata($(this));
-	// });
-
-	// onchange for erstsemestler
-	// $("input[name='erstsemestler']").change(function() {
-	// 	toggle_erstsemestlerdata($(this));
-	// });
-
-
-	/* toggles additional student data when user selected 'student' from the dropdown */
-	// function toggle_studentdata(c) {
-	// 	var additional_student_data = $("div#studentendaten");
-
-	// 	// c jQuery object of toggle button
-	// 	if (c.val() === '5') {
-	// 		// show additional student da
-	// 		additional_student_data.slideDown('slow');
-	// 		AdditionalInfo.changeToStudent();
-	// 	}
-	// 	else {
-	// 		additional_student_data.slideUp('slow');
-	// 		AdditionalInfo.changeToDozent();
-	// 	}
-	// }
-
-	/* toggles additional semester data when user checked 'Erstsemester' */
-	// function toggle_erstsemestlerdata(c) {
-	// 	var erstsemestler_data = $("div#erstsemestler");
-
-	// 	if (c.attr('checked')) {
-	// 		erstsemestler_data.slideUp('slow');
-	// 	}
-	// 	else {
-	// 		erstsemestler_data.slideDown('slow');
-	// 	}
-	// }
-
-	// prompt dialogs
-	/**
-	 * 
-	 */
-	// function createDialog(title, text) {
-	// 	var $mydialog = $('<div id="dialog-confirm" title="'+title+'"></div>')
-	// 				.html('<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>'+text+'</p>')
-	// 				.dialog({
-	// 					autoOpen: false,
-	// 					resizable: false,
-	// 					height: 200,
-	// 					modal: true,
-	// 					buttons: {
-	// 						OK: function() {
-	// 							$("input[type=submit][clicked=true]").parents("form#accept_invitation").submit();
-	// 							$("#content_invitations input#save").removeAttr("clicked");
-	// 							$( this ).dialog( "close" );
-	// 						},
-	// 						Abbrechen: function() {
-	// 							$("#content_invitations input#save").removeAttr("clicked");
-	// 							$( this ).dialog( "close" );
-	// 						}
-	// 					}
-	// 				});
-	// 	return $mydialog;
-	// }
-
-
-
-
-
-	function createModalDialog(title, text, withOK) {
-		myModalDialog = 
-			$('<div class="modal hide" id="myModal"></div>')
-			.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
-			.append('<div class="modal-body"><p>'+text+'</p></div>')
-			.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Schließen</a>');
-			if (withOK) myModalDialog.find('.modal-footer').append('<a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
-			// <a href="" class="btn btn-primary" data-accept="modal">OK</a></div>
-		return myModalDialog;
-	}
-
-	function _showModal(title, text, withOK) {
-		mm = createModalDialog(title, text, withOK);
-		$('#modalcontent').html(mm);
-
-		$('#myModal').modal({
-			keyboard: false
-		}).on('hide', function () {
-			$("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
-		}).modal('show');
-
-		if (withOK) {
-			// if there are any click listener, remove them
-			$('#modalcontent').off('click');
-			// add new
-			$("#modalcontent").on( 'click', 'button, a', function(event) {
-				event.preventDefault();
-
-				if ( $(this).attr("data-accept") === 'modal' ) {
-					console.log("accept");
-
-					$(event.target).parent().parent().find("div.modal-body").html("Bitte warten, der Befehl wird ausgeführt");
-					$(event.target).parent().parent().find("div.modal-footer").hide();
-
-					$("input[type=submit][data-clicked=true]").parents("form#accept_invitation").submit();
-
-				} else {
-					console.log("cancel");
-				}
-
-			});
-		}
-	}
 
 
 	$("#content_invitations").on("click", "input#save", function() {
@@ -423,7 +312,7 @@ if( ! empty( $b ) ) $radio_val2 = TRUE;
 		if (user_function === '0') {
 			$(this).attr("data-clicked", "true");
 			// createDialog('User erstellen', 'Sollen der User wirklich erstellt werden?').dialog("open");
-			_showModal('User erstellen', 'Sollen der User wirklich erstellt werden?', true);
+			_showModal('User erstellen', 'Soll der User wirklich erstellt werden?', true);
 		} else if (user_function === '1') {
 			$(this).attr("data-clicked", "true");
 			// createDialog('Einladung löschen', 'Soll die Einladung wirklch gelöscht werden?').dialog("open");

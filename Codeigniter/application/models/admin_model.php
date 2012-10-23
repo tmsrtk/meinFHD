@@ -122,9 +122,12 @@ class Admin_model extends CI_Model {
 
 
 
-	/*
-	*
-	*/
+	/**
+	 * Queries all open invitations.
+	 * @return mixed an Array with open invitation infos
+	 *
+	 * @category user_invite.php
+	 */
 	public function request_all_invitations()
 	{
 		$this->db->select('*')
@@ -136,28 +139,32 @@ class Admin_model extends CI_Model {
 		return $q->result_array();
 	}
 
-
-	/*
-	*
-	*/
+	/**
+	 * Saves a user in DB with given values. Convertes the generated password into an md5 
+	 * hash before writing into the DB.
+	 * @param  mixed $form_data Inupt values.
+	 * @param  string $password  Generated password.
+	 *
+	 * @category user_add.php
+	 */
 	public function save_new_user($form_data, $password)
 	{
 		// prepare data for insert
 		$data = array(
 				'LoginName' 				=> $form_data['loginname'],
 				'Email' 					=> $form_data['email'],
-				'Vorname'					=> $form_data['forename'],
-				'Nachname' 					=> $form_data['lastname'],
+				'Vorname'				=> $form_data['forename'],
+				'Nachname' 				=> $form_data['lastname'],
 				'Matrikelnummer' 			=> $form_data['matrikelnummer'],
 				'StudienbeginnJahr' 		=> $form_data['startjahr'],
 				'StudienbeginnSemestertyp' 	=> $form_data['semesteranfang'],
 				'StudiengangID' 			=> $form_data['studiengang'],
-				'Passwort' 					=> md5($password)
+				'Passwort' 				=> md5($password)
 			);
 
 		$this->db->insert('benutzer', $data);
 
-		// query directly the user_id of the created user
+		// query directly the user_id of the just created user
 		$last_id = mysql_insert_id();
 
 		// insert into benutzer_mm_rolle
@@ -168,6 +175,12 @@ class Admin_model extends CI_Model {
 		$this->db->insert('benutzer_mm_rolle', $data);
 	}
 
+	/**
+	 * Puts a new user request with the user information into the DB.
+	 * @param  mixed $form_data Input values.
+	 *
+	 * @category user_invite.php
+	 */
 	public function put_new_user_to_invitation_requests($form_data)
 	{
 		// prepare data for insert
@@ -175,7 +188,7 @@ class Admin_model extends CI_Model {
 				'Vorname'					=> $form_data['forename'],
 				'Nachname' 					=> $form_data['lastname'],
 				'Startjahr'			 		=> $form_data['startjahr'],
-				'Matrikelnummer' 			=> $form_data['matrikelnummer'],
+				'Matrikelnummer' 				=> $form_data['matrikelnummer'],
 				'Emailadresse' 				=> $form_data['email'],
 				'Semester'				 	=> $form_data['semesteranfang'],
 				'Studiengang' 				=> $form_data['studiengang'],
@@ -186,6 +199,7 @@ class Admin_model extends CI_Model {
 	}
 
 	/**
+<<<<<<< HEAD
 	 * <p>
      * Saves an new user from an invitation with the given id.
      * Edits by Christian Kundruss: Adding the global uid from the invitation data set
@@ -195,10 +209,16 @@ class Admin_model extends CI_Model {
      * @param integer $invitation_id ID of the saved invitation data set
      * @return void
      * @todo missing email functions
+=======
+	 * Saves an accepted user into the 'benutzer' DB and sends an email to the accepted
+	 * user with his login and password.
+	 * @param  int $invitation_id Invitation ID of the user request.
+	 *
+	 * @category user_invite.php
+>>>>>>> 02f1c438d9951b146d2587b3e624113793813498
 	 */
 	public function save_new_user_from_invitation($invitation_id)
 	{
-
 		// query data from invitation_id
 		$this->db->select('*')
 				 ->from('anfrage')
@@ -214,8 +234,8 @@ class Admin_model extends CI_Model {
 				'Vorname'					=> $q['Vorname'],
 				'Nachname' 					=> $q['Nachname'],
 				'StudienbeginnJahr'	 		=> $q['Startjahr'],
-				'Matrikelnummer' 			=> $q['Matrikelnummer'],
-				'Email' 					=> $q['Emailadresse'],
+				'Matrikelnummer' 				=> $q['Matrikelnummer'],
+				'Email' 						=> $q['Emailadresse'],
 				'StudienbeginnJahr'		 	=> $q['Semester'],
 				'StudiengangID' 			=> $q['Studiengang'],
 				'Passwort'					=> md5($password),
@@ -234,31 +254,40 @@ class Admin_model extends CI_Model {
 			);
 		$this->db->insert('benutzer_mm_rolle', $data);
 
-		// TODO: send email to user
-		// $message
-		// $password
-
+		// send email to just accepted user
+		// $this->mailhelper->send_meinfhd_mail(											///////////////////////////////////
+		// 	$form_data['email'],
+		// 	"Ihre Benutzeranfrage wurde akzeptiert.",
+		// 	"Ihr Anmeldename ist Ihre Emailadresse und das Passwort lautet: {$password}"
+		// 	);
 
 		// delete requested invitation
-		$this->_delete_invitation($invitation_id);
 
         // -- EDIT by CK --
         // remove global uid from blacklist, if the id is on it
         $this->db->where('FHD_IdP_UID', $q['FHD_IdP_UID']);
         $this->db->delete('shibbolethblacklist');
+        
+		$this->delete_invitation($invitation_id);
 	}
 
 	/**
+	 * Deletes an user request by an invitation id.
+	 * @param  int $invitation_id The invitation id, which should be deleted.
 	 *
+	 * @category user_invite.php
 	 */
-	public function _delete_invitation($invitation_id)
+	public function delete_invitation($invitation_id)
 	{
 		$this->db->where('AnfrageID', $invitation_id);
 		$this->db->delete('anfrage'); 
 	}
 	
 	/**
+	 * Returns all possible roles.
+	 * @return mixed Array of all possible roles. Structure -> [0=>admin, ...]
 	 *
+	 * @category user_add.php|user_edit.php|user_edit_roles.php
 	 */
 	public function get_all_roles()
 	{
@@ -273,18 +302,19 @@ class Admin_model extends CI_Model {
 		$my_result = array();
 		foreach ($q->result_array() as $row)
 		{
-			// push into result array and uppercase first letter
-			// array_push($my_result, ucfirst($row['bezeichnung']));
-
 			// prepare for controller and simultanously for <select><option> tags $key, $value
 			$my_result[$row['RolleID']] = $row['bezeichnung'];
 		}
 
-		// var_dump($my_result);
-
 		return $my_result;
 	}
 
+	/**
+	 * Deletes the roles values of the given user by his id.
+	 * @param  int $user_id User id of the user.
+	 *
+	 * @category user_edit_roles.php
+	 */
 	public function clear_userroles($user_id)
 	{
 		if ( ! empty($user_id) )
@@ -293,6 +323,13 @@ class Admin_model extends CI_Model {
 		}
 	}
 
+	/**
+	 * Saves the new role for an user.
+	 * @param  int $user_id User id.
+	 * @param  int $role    Which role should the user get.
+	 *
+	 * @category user_edit_roles.php
+	 */
 	public function save_userrole($user_id, $role)
 	{
 		if ( ! empty($user_id) && ! empty($role) )
@@ -309,12 +346,15 @@ class Admin_model extends CI_Model {
 	}
 
 	/**
-	 *
+	 * Returns all possible Studiengänge.
+	 * @return mixed Array of all possible Studiengänge. Structure -> [0=>Medieninformatik, ...]
+	 * 
+	 * @category user_invite.php|user_add.php
 	 */
 	public function get_all_studiengaenge()
 	{
 		// query raw data
-		$this->db->select('StudiengangID, StudiengangName')
+		$this->db->select('StudiengangID, StudiengangName, Pruefungsordnung')
 				 ->from('studiengang');
 		$q = $this->db->get();
 
@@ -324,14 +364,31 @@ class Admin_model extends CI_Model {
 		foreach ($q->result_array() as $row)
 		{
 			// array_push($my_result, $row['StudiengangName']/*.' '.$row['Pruefungsordnung']*/);
-			$my_result[$row['StudiengangID']] = $row['StudiengangName'];
+			$my_result[$row['StudiengangID']] = $row['StudiengangName'] . ' [' . $row['Pruefungsordnung'] . ']';
 		}
 
 		return $my_result;
 	}
 
-	// get all user
-	function get_all_user_raw()
+
+	/**
+	 * Returns all user.
+	 * @return mixed Array of all users.
+	 *
+	 * @category user_delete.php
+	 */
+	public function get_all_user()
+	{
+		return $this->_get_all_user_raw()->result_array();
+	}
+
+	/**
+	 * Returns an CI Object of all users.
+	 * @return mixed All users.
+	 * 
+	 * @category user_delete.php
+	 */
+	private function _get_all_user_raw()
 	{
 		$this->db->select('*')
 					->from('benutzer')
@@ -342,24 +399,29 @@ class Admin_model extends CI_Model {
 		return $this->db->get();
 	}
 
-	// get all users as array
-	public function get_all_user()
-	{
-		return $this->get_all_user_raw()->result_array();
-	}
+	// /**
+	//  * Returns one user by his loginname.
+	//  * @param  string $loginname Desired user loginname.
+	//  * @return mixed             Array of one user.
+	//  */
+	// public function get_user_by_loginname($loginname)
+	// {
+	// 	// if (is_string($loginname))
+	// 	// {
+	// 		$this->db->select('*')
+	// 				 ->from('benutzer')
+	// 				 ->where('LoginName', $loginname);
+	// 		return $this->db->get()->row_array();
+	// 	// }
+	// }
 
-	// get specific user
-	public function get_user_by_loginname($loginname)
-	{
-		// if (is_string($loginname))
-		// {
-			$this->db->select('*')
-					 ->from('benutzer')
-					 ->where('LoginName', $loginname);
-			return $this->db->get()->row_array();
-		// }
-	}
-
+	/**
+	 * Returns one user by his user id.
+	 * @param  int $user_id User´s id.
+	 * @return mixed          Array of one user.
+	 *
+	 * @category user_edit.php
+	 */
 	public function get_user_by_id($user_id)
 	{
 		// if (is_string($user_specification))
@@ -372,12 +434,21 @@ class Admin_model extends CI_Model {
 		// }
 	}
 
+	/**
+	 * Returns user matched by the role and the typed letters.
+	 * @param  string $role_id      Of which role?
+	 * @param  string $searchstring Letters from searchbox.
+	 * @return mixed               Array of matched users.
+	 *
+	 * @category user_edit.php
+	 */
 	public function get_user_per_role_searchletter($role_id='', $searchstring='')
 	{
 		$this->db->distinct()
 				 ->select('benutzer.*')
 				 ->from('benutzer')
-				 ->join('benutzer_mm_rolle', 'benutzer_mm_rolle.BenutzerID = benutzer.BenutzerID');
+				 ->join('benutzer_mm_rolle', 'benutzer_mm_rolle.BenutzerID = benutzer.BenutzerID')
+				 ;
 		// if role_id was set
 		if( ! empty($role_id))
 		{
@@ -386,7 +457,9 @@ class Admin_model extends CI_Model {
 		// if searchstring was set
 		if( ! empty($searchstring))
 		{
-			$this->db->like('Email', $searchstring);
+			$this->db->where("benutzer.Email LIKE '%{$searchstring}%' OR benutzer.Vorname LIKE '%{$searchstring}%' OR benutzer.Nachname LIKE '%{$searchstring}%' OR benutzer.LoginName LIKE '%{$searchstring}%'");
+			// $this->db->like('benutzer.Email', $searchstring);
+			// $this->db->or_like('benutzer.Vorname', $searchstring); // did´t work
 		}
 
 		return $this->db->get()->result_array();
@@ -394,13 +467,28 @@ class Admin_model extends CI_Model {
 
 
 
-	// save user changes
+	/**
+	 * Updates the user with given data.
+	 * @param  int $user_id Which user should be updated?
+	 * @param  mixed $data    Asso Array with desired update values.
+	 *
+	 * @category user_edit.php|
+	 */
 	public function update_user($user_id, $data)
 	{
+		if (!empty($data['Passwort'])) $data['Passwort'] = md5($data['Passwort']);
+
 		$this->db->where('BenutzerID', $user_id);
 		$this->db->update('benutzer', $data);
 	}
 
+	/**
+	 * Reconstruct the Semesterplan of an user.
+	 * @param  int $user_id User ID of the user to geht his SemesterplanID.
+	 * @return [type]          [description]
+	 *
+	 * @category user_edit.php
+	 */
 	public function reconstruct_semesterplan($user_id)
 	{
 		// get the needed data to execute this job
@@ -513,6 +601,13 @@ class Admin_model extends CI_Model {
 		}
 	}
 
+	/**
+	 * Helper method to geht the studycourse id of the given user.
+	 * @param  int $user_id User ID, to get his studycourse id.
+	 * @return int          Studycourse ID of the user.
+	 *
+	 * @category user_edit.php
+	 */
 	private function _query_studycourseid_of_user($user_id)
 	{
 	    $id = 0;
@@ -534,7 +629,10 @@ class Admin_model extends CI_Model {
 	    return $id;
 	}
 
-	// get all permissions
+	/**
+	 * Returns all permissions.
+	 * @return mixed Array of all permissions.
+	 */
 	public function get_all_permissions()
 	{
 		$this->db->select('*')
@@ -543,7 +641,11 @@ class Admin_model extends CI_Model {
 		return $this->db->get()->result_array();
 	}
 
-	// get all userpermissions
+	/**
+	 * Returns all permissions of an user.
+	 * @param  int $user_id User id to get his permissions.
+	 * @return mixed          array of all user permissions.
+	 */
 	public function get_all_userpermissions($user_id)
 	{
 		$this->db->select('RolleID')
@@ -575,7 +677,11 @@ class Admin_model extends CI_Model {
 		return $result_clean;
 	}
 
-	/** */
+	/**
+	 * Returns all roles of an user.
+	 * @param  int $user_id User ID.
+	 * @return mixed          Array of all roles of this user.
+	 */
 	public function get_all_userroles($user_id)
 	{
 		$this->db->select('RolleID')
@@ -586,11 +692,14 @@ class Admin_model extends CI_Model {
 		return $q->result_array();
 	}
 
-	/** */
+	/**
+	 * Returns all users an their roles.
+	 * @return mixed Array of all users and their roles.
+	 */
 	public function get_all_user_with_roles()
 	{
 		$result = array();
-		$all_user = $this->get_all_user_raw()->result_array();
+		$all_user = $this->_get_all_user_raw()->result_array();
 
 		foreach ($all_user as $key => $value) {
 
@@ -598,13 +707,15 @@ class Admin_model extends CI_Model {
 			$value['roles'] = $this->get_all_userroles($value['BenutzerID']);
 			// add to result array
 			$result[] = $value;
-
 		}
-
 		return $result;
 	}
 
-	// checks array for duplicates and deletes these. creates a 1dim array
+	/**
+	 * Checks an array for duplicate entries and deletes them. Creates an 1dim array.
+	 * @param  mixed $permissions_to_clean Array of permissions.
+	 * @return mixed                       Clean, 1dim array of the permissions.
+	 */
 	function clean_permissions_array($permissions_to_clean)
 	{
 		// var_dump($permissions_to_clean);
@@ -623,9 +734,11 @@ class Admin_model extends CI_Model {
 		return $permissions_cleaned;
 	}
 
-	/*
-	* get the loginname by users id
-	*/
+	/**
+	 * Return one loginname of the given user_id.
+	 * @param  int $user_id User ID.
+	 * @return mixed          Array of one loginname.
+	 */
 	public function get_loginname($user_id)
 	{
 		$this->db->select('LoginName')
@@ -634,52 +747,76 @@ class Admin_model extends CI_Model {
 		return $this->db->get()->row_array();
 	}
 
-	/*
-	* deletes user by his id
-	*/	
+	/**
+	 * Deletes an user by his user_id.
+	 * @param  int $user_id User ID.
+	 *
+	 * @category user_delete.php
+	 */
 	public function model_delete_user($user_id)
 	{
 		$this->_delete_all_user_dependencies($user_id);
 	}
 
+	/**
+	 * Helper method. Queries a semesterplan ID of a user.
+	 * @param  integer $user_id User ID to get his semesterplan id.
+	 * @return int           SemesterplanID
+	 */
 	private function _query_semesterplanid_of_user($user_id=0)
 	{
 		$this->db->select('SemesterplanID')
 				 ->from('semesterplan')
 				 ->where('BenutzerID', $user_id);
-		$q = $this->db->get()->row_array();
-		return $q['SemesterplanID'];
+		$q = $this->db->get();
+		$qa = $q->row_array();
+
+		if ($q->num_rows() > 0) return $qa['SemesterplanID'];
+
+		// return $q['SemesterplanID'];
 	}
 
+	/**
+	 * Deletes all dependencies of a user in the DB.
+	 * Deletes entries from:
+	 * 1. semesterkurs 		(SemesterplanID)
+	 * 2. semesterplan 		(SemesterplanID & BenutzerID)
+	 * 3. benutzerkurs 		(BenutzerID)
+	 * 4. gruppenteilnehmer	(BenutzerID)
+	 * 5. benutzer_mm_rolle 	(BenutzerID)
+	 * 6. benutzer 			(BenutzerID)
+	 * 
+	 * @param  integer $user_id User ID.
+	 */
 	private function _delete_all_user_dependencies($user_id=0)
 	{
 		// get the needed data to execute this job
-		// 1. SemesterplanID, 2. StudycourseID
-
-		// 1.
+		// -SemesterplanID, - StudycourseID (StudiengangID)
 		$semesterplan_id = $this->_query_semesterplanid_of_user($user_id);
-		// 2.
 		$studycourse_id = $this->_query_studycourseid_of_user($user_id);
 
 		// --
 
-		// delete all entries in semesterkurs
+		// 1.
 		$this->db->where('SemesterplanID', $semesterplan_id);
 		$this->db->delete('semesterkurs');
 		
-		// delete all entries in semesterplan
+		// 2.
 		$this->db->where('SemesterplanID', $semesterplan_id);
 		$this->db->where('BenutzerID', $user_id);
 		$this->db->delete('semesterplan');
 		
-		// deletes all entries in benutzerkurs
+		// 3.
 		$this->db->where('BenutzerID', $user_id);
 		$this->db->delete('benutzerkurs');
 
-		// delete all entries in rolle_mm_benutzer
+		// 4.
+		$this->db->delete('gruppenteilnehmer', array('BenutzerID' => $user_id));
+		
+		// 5.
 		$this->db->delete('benutzer_mm_rolle', array('BenutzerID' => $user_id));
 
-		// delete all entries in benutzer
+		// 6.
 		$this->db->delete('benutzer', array('BenutzerID' => $user_id));
 	}
 
@@ -763,7 +900,7 @@ class Admin_model extends CI_Model {
 	/**
 	 * Returns PO, name, abbreviation of all degree programs
 	 * >> used with filter-view
-	 * @return unknown
+	 * @return array degree program records
 	 */
 	function get_all_degree_programs(){
 	    $data = array();
@@ -782,7 +919,7 @@ class Admin_model extends CI_Model {
 	
 	/**
 	 * Returns all records belonging to a single degree program (specified by id)
-	 * @param unknown_type $dp_id
+	 * @param int $dp_id
 	 * @return unknown
 	 */
 	function get_degree_program_courses($dp_id){
@@ -795,7 +932,7 @@ class Admin_model extends CI_Model {
 	    $this->db->order_by('Semester', 'asc');
 	    $q = $this->db->get_where('studiengangkurs', array('StudiengangID' => $dp_id));
 
-	    // first line of stdgng-list-view should give the opportunity to create an own course
+	    // first line of degree-program-list-view should give the opportunity to create an own course
 	    // therefore first index of data-array must be filled with a 'default' Kurs
 	    // KursID 0 won't be in studiengangkurs-table and cann be used as flag for course-creating
 //	    $data[] = null;
@@ -877,14 +1014,14 @@ class Admin_model extends CI_Model {
 	
 	/**
 	 * Returns all ids belonging to a specified Studiengang
-	 * @param unknown_type $stdgng_id
-	 * @return unknown
+	 * @param int $degree_program_id
+	 * @return array all course ids of a degree program
 	 */
-	function get_degree_program_course_ids($stdgng_id){
+	function get_degree_program_course_ids($degree_program_id){
 	    $data = array();
 	    
 	    $this->db->select('KursID');
-	    $q = $this->db->get_where('studiengangkurs', array('StudiengangID' => $stdgng_id));
+	    $q = $this->db->get_where('studiengangkurs', array('StudiengangID' => $degree_program_id));
 
 	    if($q->num_rows() > 0){
 			foreach ($q->result() as $row){
@@ -895,14 +1032,14 @@ class Admin_model extends CI_Model {
 	}
 	
 	/**
-	 * Returns all details from a passed Stdgng
-	 * @param unknown_type $stdgng_id
+	 * Returns all details for a passed degree program id
+	 * @param unknown_type $degree_program_id
 	 * @return unknown
 	 */
-	function get_degree_program_details_asrow($stdgng_id){
+	function get_degree_program_details_asrow($degree_program_id){
 	    $q = '';
 	    
-	    $q = $this->db->get_where('studiengang', array('StudiengangID' => $stdgng_id));
+	    $q = $this->db->get_where('studiengang', array('StudiengangID' => $degree_program_id));
 
 	    if($q->num_rows() == 1){
 // 			foreach ($q->result() as $row){
@@ -915,10 +1052,10 @@ class Admin_model extends CI_Model {
 	/**
 	 * Updates a single studiengangkurs-record by given id
 	 * @param unknown_type $data
-	 * @param unknown_type $stdgng_id
+	 * @param unknown_type $course_id
 	 */
-	function update_degree_program_courses($data, $kurs_id){
-	    $this->db->where('KursID', $kurs_id);
+	function update_degree_program_courses($data, $course_id){
+	    $this->db->where('KursID', $course_id);
 	    $this->db->update('studiengangkurs', $data);
 	}
 	
@@ -1010,9 +1147,22 @@ class Admin_model extends CI_Model {
 	/**
 	 * Creates new Studiengang in db
 	 * @param array $data
+	 * @return new created degree_program_id
 	 */
-	function create_new_stdgng($data){
+	function create_new_degree_program($data){
 	    $this->db->insert('studiengang', $data);
+		
+		// get new created dp_id
+		$this->db->select_max('StudiengangID');
+		$q = $this->db->get('studiengang');
+		
+	    if($q->num_rows() == 1){
+			foreach ($q->result_array() as $row){
+				return $row['StudiengangID'];
+			}
+	    }
+				
+		return 0;
 	}
 	
 	/**
@@ -1035,7 +1185,7 @@ class Admin_model extends CI_Model {
 	    $this->db->where('StudiengangID', $id);
 	    $this->db->delete('studiengang');
 
-	    // delete all courses with this stdgng_id from studiengangkurs
+	    // delete all courses with this degree_program_id from studiengangkurs
 	    $this->db->where('StudiengangID', $id);
 	    $this->db->delete('studiengangkurs');
 	    
@@ -1045,14 +1195,14 @@ class Admin_model extends CI_Model {
 	 * Deletes a single course from studiengangkurs-table
 	 * @param int $course_id
 	 */
-	function delete_stdgng_single_course($course_id){
+	function delete_degree_program_single_course($course_id){
 	    $this->db->delete('pruefungssammlung', array('KursID' => $course_id));
 	    $this->db->delete('studiengangkurs', array('KursID' => $course_id));
 	}
 	
 	
 	/**
-	 * Copies stdgng - creates other name
+	 * Copies degree program - alters name and short name (adds [KOPIE]
 	 * @param int $dp_id
 	 */
 	function copy_degree_program($dp_id){
@@ -1068,6 +1218,7 @@ class Admin_model extends CI_Model {
 	    
 	    // alter name of degree program and delete old id!!
 	    $data['StudiengangName'] .= ' - [KOPIE]';
+	    $data['StudiengangAbkuerzung'] .= ' - [KOPIE]';
 	    unset($data['StudiengangID']);
 	    
 	    // inserting new degree program into db 'studiengang'
@@ -1113,6 +1264,9 @@ class Admin_model extends CI_Model {
 
 			} // endforeach courses
 	    }
+		
+		// return new id for reload edit-view
+		return $max_dp_id;
 	}// end
 	
 	/**
@@ -1428,13 +1582,17 @@ class Admin_model extends CI_Model {
 		// fetch new highest group_id
 		
 		// what about gruppenteilnehmer?!?!!?!
+		// shouldn't be critical >> as soon as course is in benutzerkurs there's one new group for each student
+		// gruppenteilnehmer is populated whiles students register in timetable
+		// 
 		
 		// insert new record in stundenplankurs
 		$this->db->insert('stundenplankurs', $data);
 		
 		// fetch new highest spcourse_id
 		
-		// update all users in benutzerkurs who
+		// update all users in benutzerkurs who got this course-id in semesterplan where semester = semester?
+		
 		
 	}
 	

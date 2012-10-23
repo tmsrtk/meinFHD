@@ -4,7 +4,7 @@
 
 <?php startblock('content'); # additional markup before content ?>
 <div class="row-fluid">
-	<h2>Benutzerrechte anzeigen</h2>
+	<h2>Benutzer importieren</h2>
 </div>
 <hr>
 <h3><?php echo $userdata['loginname']; ?></h3>

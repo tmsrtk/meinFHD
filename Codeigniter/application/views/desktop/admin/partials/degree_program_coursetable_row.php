@@ -1,9 +1,9 @@
-<!--  single row in stdgng-list-table  -->
+<!--  single row in degree-program-list-table  -->
 <tr style="clear:both">
     <!-- id - just for orientation -->
     <?php	    
 		$id_attrs = array(
-			'id' => 'stdgng-table-id',
+			'id' => 'degree-program-table-id',
 		);
     ?>
     <td><?php print form_label($KursID, $id_attrs); ?> </td>
@@ -230,8 +230,8 @@
     <!-- Aktion - Button -->
     <?php 
 		$buttonData = array(
-			'name' => $KursID.'_'.$stdgng_id,
-			'class' => 'btn btn-danger span delete-stdgng-btn',
+			'name' => $KursID.'_'.$dp_id,
+			'class' => 'btn btn-danger span delete-degree-program-btn',
 			'data-id' => $KursID,
 			'value' => true,
 			'content' => 'Löschen'

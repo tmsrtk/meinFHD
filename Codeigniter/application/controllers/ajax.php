@@ -26,6 +26,7 @@ class Ajax extends CI_Controller {
         // call the security_helper and check if the user is authenticated an allowed to call the controller
         $this->authentication->check_for_authenticaton();
         // --- END EDIT --
+		$this->load->model('Modul_Model');
 	}
 
 	public function index()
@@ -50,21 +51,66 @@ class Ajax extends CI_Controller {
 		// $this->load->view('includes/template', $data);
 	}
 
+	/**
+	 * Save new values for a Semester.
+	 */
 	public function schreibe_reihenfolge_in_db()
 	{
-		// frage übergebene Daten ab (veränderte Reihenfolge der Module)
-		// serialisiert
-		$neue_reihenfolge = $this->input->get('module');
+		// form data
+		$modules = $this->input->get('module');
 		$hoeren = $this->input->get('hoeren');
 		$pruefen = $this->input->get('pruefen');
 		$mark = $this->input->get('mark');
 		$semesternr = $this->input->get('semester');
 
-		// FB::log($semesternr);
-		// FB::log($hoeren);
 
-		// speichere die neue Reihenfolge in die Datenbank
-		$this->ajax_model->set_reihenfolge($neue_reihenfolge, $semesternr, $hoeren, $pruefen, $mark);
+		// 3. setze alle veranstaltungen außer VL - "aktiv = 0"
+		// $this->load->model('Module_Model');
+
+		// gib alle veranstaltungen außer VL aus dem übergebenen module
+		// melde für die übriggebliebenen veranstaltungen üall aus
+
+		foreach ($modules as $key => $kurs_id)
+		{
+			log_message('error', "Key: {$key} | Value: {$kurs_id}");
+
+			$withdrawable_events = $this->ajax_model->get_withdrawable_events($kurs_id);
+
+			foreach ($withdrawable_events as $key => $value)
+			{
+				// log_message('error', 
+				// 		"{$value['SemesterID']} | {$semesternr}");
+
+				if ($value['SemesterID'] !== $semesternr)
+				{
+					log_message('error', 
+						"war im {$value['SemesterID']}, jetzt im {$semesternr}");
+
+					$this->Modul_Model->withdraw_from_course(
+											$this->user_model->get_userid(),
+											$kurs_id,
+											$value['SPKursID'],
+											$value['GruppeID']
+											);
+				}
+			}
+		}
+
+
+		// 1. update semesterkurs
+		$this->ajax_model->set_reihenfolge($modules, $semesternr, $hoeren, $pruefen, $mark);
+		// 2. update benutzerkurs
+		$this->ajax_model->set_reihenfolge_benutzerkurs($modules, $semesternr);
+		
+
+		
+
+
+		// 4. melde den user aus allen gruppen ab
+
+
+
+
 	}
 
 

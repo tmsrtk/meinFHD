@@ -1,9 +1,9 @@
-<!--  first row in stdgng-list-table  -->
+<!--  first row in degree-program-list-table  -->
 <tr>
     <!-- id - just for orientation -->
     <?php	    
 		$id_attrs = array(
-			'id' => 'stdgng-new-course-head',
+			'id' => 'degree-program-new-course-head',
 		);
     ?>
     <td><?php print form_label('+', $id_attrs); ?> </td>
@@ -115,7 +115,7 @@
     ?>
     <td>
 	<?php 
-	    print form_dropdown('Semester', $semester_dropdown, 0, $dropdown_attributes);
+	    print form_dropdown('NEW_Semester', $semester_dropdown, 0, $dropdown_attributes);
 	?>
     </td>
 
@@ -196,7 +196,7 @@
     <!-- add-course-button -->
 	<?php 
 		$buttonData = array(
-			'name' => $stdgng_id,
+			'name' => $dp_id,
 			'class' => 'btn btn-warning span',
 			'id' => 'degree-program-course-create',
 			'value' => true,

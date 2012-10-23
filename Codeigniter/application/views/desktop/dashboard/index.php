@@ -37,6 +37,40 @@
             </div><!-- /.span4-->
         <?php endif; ?>
             <div class="span4">
+            </div>
+
+<?php /*
+
+				<div class="span4 flipBox" style="position: relative;">
+					<div class="well widget frontSide">
+						<div class="widgetHeader">
+							<i class="icon icon-question-sign pull-right" title="Ein Blick in Dein Credits" rel="tooltip"></i>
+							<h5><i class="icon icon-tasks"></i>Dein Credits</h5>
+						</div>
+						<div class="widgetContent">
+							<div id="leistungsContainer" style="width: 278px; height: 70px;"></div>
+						</div>
+						<div class="widgetFooter">
+							<a href="#" class="flipLink"><i class="icon icon-info-sign pull-right"></i></a>
+						</div>
+					</div> <!-- ende frontSide -->
+					<div class="well widget backSide">
+						<i class="icon icon-question-sign pull-right" title="Willst Du es wissen wile lange noch in diesen Semester hast?" rel="tooltip"></i>
+						<h5><i class="icon icon-tasks"></i>CREDIT EDIT</h5>
+						<div class="widget-edit">
+							Edit Credit Anzeige
+							<form >
+								<label>Edit Credits Box </label>
+								<input type="checkbox" id="semesterende" onclick="toggle_credits($(this))" checked="true"> Anzeigen
+								
+							</form>
+							<a href="#" class="flipLink btn btn-success pull-right">
+								<i class="icon-white icon-ok pull-left"></i>
+							</a>
+						</div>
+					</div>
+				</div><!-- /.span4-->
+				<div class="span4">
 				<div class="well widget  default">
 					<i class="icon icon-question-sign pull-right"></i>
 					<h5><i class="icon icon-tasks"></i>N&auml;chste Veranstaltung</h5>
@@ -174,6 +208,12 @@
 					</div>
 				</div><!-- /.span4-->
 				<!-- CONTENT ENDE-->
+
+
+ */
+ ?>
+
+
 <?php endblock(); ?>
 		
 <?php startblock('headJSfiles'); ?>

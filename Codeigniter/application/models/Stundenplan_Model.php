@@ -14,7 +14,7 @@
  */
 class Stundenplan_Model extends CI_Model {
 
-	private $user;//Debug
+	// private $user;//Debug
 
 	
 	public function __construct()
@@ -30,58 +30,12 @@ class Stundenplan_Model extends CI_Model {
 	 * @param integer // ID of a User
 	 * @return row_array // Information about User
 	 */	
-	private function define_user($id)
-	{
+	// private function define_user($id)
+	// {
 	
-		$query = $this->db->query("Select * From benutzer Where BenutzerID Like '".$id."' LIMIT 1");
-		$this->user = $query->row_array();
-	}
-	
-	/**
-	 * get_Semester_Typ()													
-	 *																		
-	 * wirtten by Jochen Sauer, copyed function								
-	 *																		
-	 * @return Actual Typ of Semester (Winter or Summer)						
-	 */
-	private function get_Semester_Typ() 
-	{		
-		// Errechne aktuellen Semestertyp
-		return (date("n") >= 3 && date("n") <= 8) ? "SS" : "WS";		
-	}
-	 
-	/**
-	 *	printSemesterInteger()												
-	 *							
-	 *  wirtten by Jochen Sauer, copyed function	
-	 *											
-	 *	Gibt anhand der übergebenen persönlichen Daten das aktuelle 		
-	 *	Semester des Studenten zurück.										
-	 *																		
-	 *	@param	$semestertyp	 (WS or SS)	
-	 *											
-	 *	@param	$studienbeginn	Four-digit-number, year the study started	
-	 *																		
-	 *	@return	$semester 		Actual Semester as String.				
-	 */
-	private function get_Semester( $semestertyp, $studienbeginn ) 
-	{
-		
-		// definiere Rückgabewert
-		$semester = "";
-		
-		// ermittel semestertyp
-		$errechneter_semestertyp = $this->get_Semester_Typ();
-		
-		// stimmt aktueller Semestertyp mit Studienbeginn-Semestertyp überein?
-		$gleicher_semestertyp = ($errechneter_semestertyp == $semestertyp) ? true : false;
-		
-		// Errechne aktuelles Semester
-		$semester = (($gleicher_semestertyp) ? 1 : 0) + 2 * ((($gleicher_semestertyp && date("n") < 3) ? date("Y")-1 : date("Y")) - $studienbeginn);
-		
-		// Gebe String zurück
-		return $semester;
-	}	
+	// 	$query = $this->db->query("Select * From benutzer Where BenutzerID Like '".$id."' LIMIT 1");
+	// 	$this->user = $query->row_array();
+	// }
 
 	/**
 	 * Function create_times_array
@@ -216,9 +170,10 @@ class Stundenplan_Model extends CI_Model {
 	 * @param Integer // ID of User
 	 * @return row-array // List of all courses in this semster linked to the USER-ID
 	 */	
-	private function get_courses($id) 
+	private function get_courses_student() 
 	{
-		
+		$id = $this->user_model->get_userid();
+
 		//benutzerkurs: Enthält die aktiven Module
 		//studiengangkurs: Die Namen im Klartext (Nur deswegen in Query)
 		//stundenplankurs: Genauere Informationen zu Kursen(Startzeit, Typ)
@@ -232,15 +187,19 @@ class Stundenplan_Model extends CI_Model {
 		$query = $this->db->query("
 		SELECT 
 			sg.Kursname, sg.kurs_kurz,
-			v.VeranstaltungsformName, v.VeranstaltungsformID, sp.VeranstaltungsformAlternative,
-			sp.DozentID, sp.StartID, sp.EndeID, (sp.EndeID-sp.StartID)+1 AS 'Dauer', sp.GruppeID, sp.Farbe,
+			v.VeranstaltungsformName, v.VeranstaltungsformID, 
+			sp.VeranstaltungsformAlternative, sp.DozentID, sp.StartID, sp.EndeID, (sp.EndeID-sp.StartID)+1 AS 'Dauer', sp.GruppeID, sp.Farbe, sp.Raum,
 			d.Vorname AS 'DozentVorname', d.Nachname AS 'DozentNachname', d.Email AS 'DozentEmail',
 			t.TagName,t.TagID,
 			s_beginn.Beginn, s_ende.Ende,
 			b.Aktiv,
 			b.KursID,b.SPKursID,
 			g.TeilnehmerMax, g.Anmeldung_zulassen,
-			(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.GruppeID = sp.GruppeID) AS 'Anzahl Teilnehmer'
+			(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.GruppeID = sp.GruppeID) AS 'Anzahl Teilnehmer',
+
+			sempla.SemesterplanID,
+
+			sk.KursHoeren
 		FROM 
 			benutzerkurs b,
 			studiengangkurs sg,
@@ -249,7 +208,11 @@ class Stundenplan_Model extends CI_Model {
 			tag t,
 			stunde s_beginn, stunde s_ende,
 			benutzer d,
-			gruppe g
+			gruppe g,
+
+			semesterplan sempla,
+
+			semesterkurs sk
 		WHERE 
 			b.kursID = sg.kursID AND
 			sp.kursID = b.KursID AND
@@ -260,13 +223,135 @@ class Stundenplan_Model extends CI_Model {
 			t.TagID = sp.TagID AND
 			sp.DozentID = d.BenutzerID AND
 			b.BenutzerID = ".$id." AND 
-			b.SemesterID = ".$this->get_Semester($this->user['StudienbeginnSemestertyp'] , $this->user['StudienbeginnJahr'])." AND
+			b.SemesterID = ".$this->adminhelper->get_act_semester($this->user_model->get_studienbeginn_semestertyp() , $this->user_model->get_studienbeginn_jahr() )." AND
 			sp.GruppeID = g.GruppeID AND
-			sp.IsWPF = 0
+			sp.IsWPF = 0 AND
+
+			sempla.BenutzerID = ".$id." AND
+
+			sk.SemesterplanID = sempla.SemesterplanID AND
+			sk.KursID = b.KursID AND
+			sk.Semester = ".$this->adminhelper->get_act_semester($this->user_model->get_studienbeginn_semestertyp() , $this->user_model->get_studienbeginn_jahr() )."
 		ORDER BY 
 			sp.tagID, sp.StartID
 		");
 		
+		$result = $query->result_array();
+
+		return $result;
+	}
+
+	private function __get_courses_dozent()
+	{
+		$id = $this->user_model->get_userid();
+		$semestertyp = $this->adminhelper->getSemesterTyp();
+
+		$this->db
+					->select('
+						sgk.Kursname, sgk.kurs_kurz, sgk.KursID, 
+						spk.SPKursID, spk.VeranstaltungsformAlternative, spk.DozentID, spk.StartID, spk.EndeID, (spk.EndeID-spk.StartID)+1 AS Dauer, spk.GruppeID, spk.Farbe,
+						vf.VeranstaltungsformName, vf.VeranstaltungsformID,
+						ben.Vorname AS DozentVorname, ben.Nachname AS DozentNachname, ben.Email as DozentEmail,
+						tag.TagName, tag.TagID,
+						s_beginn.Beginn, s_ende.Ende,
+						gruppe.TeilnehmerMax, gruppe.Anmeldung_zulassen,
+						(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.GruppeID = spk.GruppeID) AS "Anzahl Teilnehmer"
+						')
+					->from('
+						studiengangkurs sgk, 
+						stundenplankurs spk,
+						veranstaltungsform vf,
+						benutzer ben,
+						tag tag,
+						stunde s_beginn, stunde s_ende,
+						gruppe gruppe
+						')
+					->where('sgk.KursID = spk.KursID 
+						AND vf.VeranstaltungsformID = spk.VeranstaltungsformID
+						AND ben.BenutzerID = spk.DozentID
+						AND ben.BenutzerID = '.$id.'
+						AND tag.TagID = spk.TagID
+						AND s_beginn.StundeID = spk.StartID
+						AND s_ende.StundeID = spk.EndeID
+						AND gruppe.GruppeID = spk.GruppeID
+						AND spk.IsWPF = 0
+						')
+					;
+
+		$where_in = array();
+
+		if ($semestertyp == 'WS')
+		{
+			$where_in = array('1', '3', '5', '7', '9', '11', '13', '15', '17', '19');
+		}
+		else
+		{
+			$where_in = array('2', '4', '6', '8', '10', '12', '14', '16', '18', '20');
+		}
+
+		$this->db->where_in('sgk.Semester', $where_in);
+
+		$query = $this->db->get();
+		$result = $query->result_array();
+
+		return $result;
+	}
+
+	private function __get_courses_tutor()
+	{
+		$id = $this->user_model->get_userid();
+		$semestertyp = $this->adminhelper->getSemesterTyp();
+
+		$this->db
+					->select('
+						sgk.Kursname, sgk.kurs_kurz, sgk.KursID, 
+						spk.SPKursID, spk.VeranstaltungsformAlternative, spk.DozentID, spk.StartID, spk.EndeID, (spk.EndeID-spk.StartID)+1 AS Dauer, spk.GruppeID, spk.Farbe,
+						vf.VeranstaltungsformName, vf.VeranstaltungsformID,
+						ben.Vorname AS TutorVorname, ben.Nachname AS TutorNachname, ben.Email as TutorEmail,
+						tag.TagName, tag.TagID,
+						s_beginn.Beginn, s_ende.Ende,
+						gruppe.TeilnehmerMax, gruppe.Anmeldung_zulassen,
+						(SELECT COUNT(*) FROM gruppenteilnehmer gt WHERE gt.GruppeID = spk.GruppeID) AS "Anzahl Teilnehmer"
+						')
+					->from('
+						studiengangkurs sgk, 
+						stundenplankurs spk,
+						veranstaltungsform vf,
+						benutzer ben,
+						tag tag,
+						stunde s_beginn, stunde s_ende,
+						gruppe gruppe,
+						kurstutor kt
+						')
+					->where('sgk.KursID = spk.KursID 
+						AND vf.VeranstaltungsformID = spk.VeranstaltungsformID
+						AND ben.BenutzerID = kt.BenutzerID
+						AND kt.BenutzerID = '.$id.'
+						AND spk.KursID = kt.KursID
+						AND tag.TagID = spk.TagID
+						AND s_beginn.StundeID = spk.StartID
+						AND s_ende.StundeID = spk.EndeID
+						AND gruppe.GruppeID = spk.GruppeID
+						AND spk.VeranstaltungsformID = 4
+						AND spk.IsWPF = 0
+						')
+					;
+
+		$where_in = array();
+
+		if ($semestertyp == 'WS')
+		{
+			$where_in = array('1', '3', '5', '7', '9', '11', '13', '15', '17', '19');
+		}
+		else
+		{
+			$where_in = array('2', '4', '6', '8', '10', '12', '14', '16', '18', '20');
+		}
+
+		$this->db->where_in('sgk.Semester', $where_in);
+
+		$query = $this->db->get();
+
 		$result = $query->result_array();
 
 		return $result;
@@ -294,6 +379,16 @@ class Stundenplan_Model extends CI_Model {
 		return $courses;
 	}
 
+	private function set_active_dozent($courses)
+	{
+
+		foreach ($courses as $index =>$course) {
+			$courses[$index]['Aktiv'] = "1";
+		}
+
+		return $courses;
+	}
+
 
 	/**
 	 * Important Function for display in week-view.
@@ -303,12 +398,19 @@ class Stundenplan_Model extends CI_Model {
 	 */
 	private function add_displayflag($courses)
 	{
-
 		//Run throug array
 		foreach ($courses as $key => $course) {
 
+			// Konstantin Voth
+			// if KursHoeren was deactivated in the "Studienplan" and course is a Vorlesung, do not show
+			if ($course["KursHoeren"] == 0 )
+				// && $course['VeranstaltungsformID'] == 1) // do not show any kind of events of this course // Dahms choise
+			{
+				$courses[$key]["Anzeigen"] = 0;
+			}
+
 			//when there is no alterntive
-			if ($course["VeranstaltungsformAlternative"] == "") 
+			elseif ($course["VeranstaltungsformAlternative"] == "") 
 			{
 				$courses[$key]["Anzeigen"] = 1;
 			}  
@@ -353,6 +455,19 @@ class Stundenplan_Model extends CI_Model {
 		return $courses;
 	}
 
+
+	private function __add_displayflag_dozent($courses)
+	{
+		//Run throug array
+		foreach ($courses as $key => $course) {
+
+			$courses[$key]["Anzeigen"] = 1;
+
+		}//End outer foreach 
+
+		return $courses;
+	}
+
 	/**
 	 * Sort courses into timetable-array-structure
 	 *
@@ -390,20 +505,127 @@ class Stundenplan_Model extends CI_Model {
 	 * @param integer // The ID of a User
 	 * @return array // Various arrays
 	 */	
-	public function get_stundenplan($id)
+	public function get_stundenplan()
 	{
 		//Set global variable in this class for informtion concering the User.
-		$this->define_user($id);
+		// $this->define_user($id);
 		
 
 		//Query all courses from Database
-		$courses = $this->get_courses($id);
+		$courses = $this->get_courses_student();
 
 		//Control active-flag of courses, change if necsassary(see function-doc)
 		$courses = $this->set_active($courses);
 
 		//Add display flag(see function-doc)
 		$courses = $this->add_displayflag($courses);
+
+
+		//Create empty structure of timetable
+		$timetable = $this->create_timetable_array();
+
+		//Sort courses into timetable-array-structure
+		$stundenplan = $this->courses_into_timetable($courses, $timetable);
+
+
+		//Assemble return-array
+		$return = array();
+
+		//[0] : The actual timetable
+		array_push($return, $stundenplan);
+
+		//[1] : The days, indexed by Numbers, their actual date
+		$days = $this->create_days_array();
+		array_push($return, $days);
+
+		//[2] : The times, indexed by Numbers (Not requiered actually)
+		$times = $this->create_times_array();
+		array_push($return, $times);
+
+		//[3] : The courses in a list, indexed by Numbers, ordered by day and hour
+		array_push($return, $courses);
+
+		
+		
+		return $return;
+	}
+
+
+	/**
+	 * Returns students Stundenplan
+	 *
+	 * @return mixed multi-dim array with student's stundenplan.
+	 */
+	public function get_stundenplan_student()
+	{
+		return $this->get_stundenplan();
+	}
+
+	/**
+	 * Returns dozents Stundenplan.
+	 *
+	 * @return mixed multi-dim array with dozent's stundenplan.
+	 */
+	public function get_stundenplan_dozent()
+	{
+		//Query all courses from Database
+		$courses = $this->__get_courses_dozent();
+
+		// FB::log($courses); return;
+
+		//Control active-flag of courses, change if necsassary(see function-doc)
+		// $courses = $this->set_active_dozent($courses);
+
+		// //Add display flag(see function-doc)
+		$courses = $this->__add_displayflag_dozent($courses);
+
+
+		//Create empty structure of timetable
+		$timetable = $this->create_timetable_array();
+
+		//Sort courses into timetable-array-structure
+		$stundenplan = $this->courses_into_timetable($courses, $timetable);
+
+
+		//Assemble return-array
+		$return = array();
+
+		//[0] : The actual timetable
+		array_push($return, $stundenplan);
+
+		//[1] : The days, indexed by Numbers, their actual date
+		$days = $this->create_days_array();
+		array_push($return, $days);
+
+		//[2] : The times, indexed by Numbers (Not requiered actually)
+		$times = $this->create_times_array();
+		array_push($return, $times);
+
+		//[3] : The courses in a list, indexed by Numbers, ordered by day and hour
+		array_push($return, $courses);
+
+		
+		
+		return $return;
+	}
+
+	/**
+	 * Returns a tutor's Stundenplan.
+	 *
+	 * @return mixed multi-dim array with a student's stundenplan.
+	 */
+	public function get_stundenplan_tutor()
+	{
+		//Query all courses from Database
+		$courses = $this->__get_courses_tutor();
+
+		// FB::log($courses); return;
+
+		//Control active-flag of courses, change if necsassary(see function-doc)
+		// $courses = $this->set_active_dozent($courses);
+
+		// //Add display flag(see function-doc)
+		$courses = $this->__add_displayflag_dozent($courses);
 
 
 		//Create empty structure of timetable

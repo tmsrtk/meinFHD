@@ -247,7 +247,143 @@ class Studienplan_Model extends CI_Model
         return $data;
     }
 
+    /**
+     * Queries the whole studyplan of logged user. Desktop version.
+     * @return mixed Studyplan in m-dim Arrays.
+     */
+    public function desktop_queryStudyplan()
+    {
+        $data = array();
+        
+        // query DB
+        $this->db->select('studiengangkurs.KursID,
+                            studiengangkurs.Semester AS regularSemester, 
+                            studiengangkurs.Kursname,
+                            studiengangkurs.kurs_kurz,
+                            studiengangkurs.Creditpoints,
+                            studiengangkurs.SWS_Vorlesung + studiengangkurs.SWS_Uebung + studiengangkurs.SWS_Praktikum + studiengangkurs.SWS_Projekt + studiengangkurs.SWS_Seminar + studiengangkurs.SWS_Seminarunterricht AS KursSWSSumme,
+                            semesterkurs.Semester AS graduateSemester,
+                            semesterkurs.KursHoeren, 
+                            semesterkurs.KursSchreiben, 
+                            semesterkurs.Notenpunkte,
+                            semesterplan.Semesteranzahl');
+        $this->db->from('studiengangkurs');
+        $this->db->join('semesterkurs', 'semesterkurs.KursID = studiengangkurs.KursID');
+        $this->db->join('semesterplan', 'semesterplan.SemesterplanId = semesterkurs.SemesterplanID');
+        $this->db->where('semesterkurs.SemesterplanID', $this->studyplanID);
+        $this->db->order_by('regularSemester', 'ASC');
+        $studyplan = $this->db->get();
 
+        $has_approve_sem = $this->query_approve_sem();
+        // only if a zero semester is activated
+        if (!$has_approve_sem['HatAnerkennungsSemester'] == 0)
+        {
+            log_message('error', 'studienplan_model: zero semester erstellt');
+            // initial zero semester
+            $data['plan'][0][] = array(
+                'regularSemester'   => null,
+                'KursID'            => null,
+                'Kursname'          => null,
+                'Kurzname'          => null,
+                'graduateSemester'  => null,
+                'Teilnehmen'        => null,
+                'Pruefen'           => null,
+                'Notenpunkte'       => null
+            );
+        }
+
+
+        // group the resultset by semester in array
+        foreach($studyplan->result() as $sq)
+        {
+            // if graduateSemester doesn't equals regularSemester, set 
+            // graduateSemester as key
+            if($sq->graduateSemester != $sq->regularSemester)
+            {
+                $data['plan'][$sq->regularSemester][] = array(
+                    'regularSemester'   => $sq->regularSemester,
+                    'KursID'            => null,
+                    'Kursname'          => null,
+                    'Kurzname'          => null,
+                    'graduateSemester'  => null,
+                    'Teilnehmen'        => null,
+                    'Pruefen'           => null,
+                    'Notenpunkte'       => null
+                );
+                
+                $data['plan'][$sq->graduateSemester][] = array(
+                    'regularSemester'   => $sq->regularSemester,
+                    'KursID'            => $sq->KursID,
+                    'Kursname'          => $sq->Kursname,
+                    'Kurzname'          => $sq->kurs_kurz,
+                    'graduateSemester'  => $sq->graduateSemester,
+                    'Teilnehmen'        => $sq->KursHoeren,
+                    'Pruefen'           => $sq->KursSchreiben,
+                    'Notenpunkte'       => ($sq->Notenpunkte == 101) ? null : $sq->Notenpunkte,
+                    'Creditpoints'      => $sq->Creditpoints,
+                    'KursSWSSumme'      => $sq->KursSWSSumme
+                );
+            }
+            // else set regularSemester as key
+            else
+            {
+                $data['plan'][$sq->regularSemester][] = array(
+                    'regularSemester'   => $sq->regularSemester,
+                    'KursID'            => $sq->KursID,
+                    'Kursname'          => $sq->Kursname,
+                    'Kurzname'          => $sq->kurs_kurz,
+                    'graduateSemester'  => $sq->graduateSemester,
+                    'Teilnehmen'        => $sq->KursHoeren,
+                    'Pruefen'           => $sq->KursSchreiben,
+                    'Notenpunkte'       => ($sq->Notenpunkte == 101) ? null : $sq->Notenpunkte,
+                    'Creditpoints'      => $sq->Creditpoints,
+                    'KursSWSSumme'      => $sq->KursSWSSumme
+                );
+            }
+        }
+        
+        if($sq->Semesteranzahl > $sq->regularSemester)
+        {
+            $diff = $sq->Semesteranzahl - $sq->regularSemester;
+            
+            for($i=0; $i<=$diff; $i++)
+            {
+                $data['plan'][$sq->regularSemester + $i][] = array(
+                    'regularSemester'   => null,
+                    'KursID'            => null,
+                    'Kursname'          => null,
+                    'Kurzname'          => null,
+                    'graduateSemester'  => null,
+                    'Teilnehmen'        => null,
+                    'Pruefen'           => null,
+                    'Notenpunkte'       => null
+                );
+            }
+        }
+
+        // sort the studyplan by semester
+        ksort($data['plan']);
+    
+        return $data;
+    }
+
+    public function add_approve_sem($semesterplan_id=0)
+    {
+        $this->db->update('semesterplan', array('HatAnerkennungsSemester'=>'1'), "SemesterplanID = {$semesterplan_id}");
+    }
+
+    public function remove_approve_sem($semesterplan_id=0)
+    {
+        $this->db->update('semesterplan', array('HatAnerkennungsSemester'=>'0'), "SemesterplanID = {$semesterplan_id}");
+    }
+
+    public function query_approve_sem()
+    {
+        $this->db->select('HatAnerkennungsSemester')
+                 ->from('semesterplan')
+                 ->where('SemesterplanID', $this->studyplanID);
+        return $this->db->get()->row_array();
+    }
     
     /**
      * Creates a new Studyplan if it not already exists
@@ -590,17 +726,30 @@ class Studienplan_Model extends CI_Model
             $credits = $wholeCp->Creditpoints;
         }
 
+        $counter = 0;
         // if markpoints are not default (101) than calculate the sum 
         // of markpoints*creditpoints
         foreach($modules as $mod)
         {
             if($mod['Notenpunkte'] != 101)
             {
-                $sum += $mod['Notenpunkte'] * $mod['Creditpoints'];
+                // $sum += $mod['Notenpunkte'] * $mod['Creditpoints'];
+                $sum += $mod['Notenpunkte'];
+                $counter += 100;
+                // log_message('error', $mod['Notenpunkte'] . '*' . $mod['Creditpoints'] . '=' . $sum);
             }
         }
-
-        return $sum/$credits;
+        log_message('error', 'credits ' . $credits);
+        // return $sum/$credits;
+        if ($counter != 0)
+        {
+            return ($sum/$counter*100);
+        }
+        else
+        {
+            return 0;
+        }
+        // return $sum/$counter*100;
     }
     
     

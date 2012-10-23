@@ -3,6 +3,23 @@
 <?php startblock('content'); # content for this view ?>
 <!-- CONTENT -->
 <div class="container container-fluid">
+
+	<?php 
+	// if there is no semesterplan and its a student, show create possibility
+	if ( ! isset($userdata['semesterplan_id']) &&
+		in_array(5, $userdata['roles']) ) : ?>
+
+		<div class="well well-small admin">
+
+		<?php echo form_open('/studienplan/studienplanErstellen/') ?>
+		<p>Du hast noch keinen Studienplan. Vergewissere Dich, dass du die korrekten Daten eingetragen hast und klicke auf "Studienplan erstellen" um den Stundenplan anzeigen zu können.</p>
+		<?php echo form_submit('create_sp', 'Studienplan erstellen'); ?>
+		<?php echo form_close() ?>
+
+	</div>
+	
+	<?php else : ?>
+
 	<div id="carousel" class="carousel slide">
 		<!-- Carousel items -->
 		<?php echo validation_errors(); ?>
@@ -126,6 +143,7 @@
 		</div><!-- /.span12-->
 	</div><!-- /.row-fluid -->
 	
+	<?php endif; ?>
 	
 </div>
 <?php endblock(); ?>

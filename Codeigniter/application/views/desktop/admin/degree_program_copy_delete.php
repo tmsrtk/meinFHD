@@ -3,17 +3,17 @@
 <?php
 // general form setup
     $title = $button_text = 'Studiengang löschen';
-    $modal_text = 'Soll der Studiengang wirklich gelöscht werden?';
+    $modal_text = 'Soll der folgende Studiengang wirklich gelöscht werden?';
     $modal_text_progress = 'Studiengang wird gelöscht.';
     $controller_function = 'admin/delete_degree_program';
     
     
     // switch view delete or copy - same view
     if(!$delete){
-	$title = 'Studiengang kopieren';
-	$controller_function = 'admin/copy_degree_program';
-	$modal_text = 'Soll der Studiengang wirklich kopiert werden?';
-	$modal_text_progress = 'Studiengang wird kopiert.';
+		$title = 'Studiengang kopieren';
+		$controller_function = 'admin/copy_degree_program';
+		$modal_text = 'Soll der folgende Studiengang wirklich kopiert werden?';
+		$modal_text_progress = 'Studiengang wird kopiert.';
     }
     
     $form_attrs = 'id="submit-copy-delete"';
@@ -52,9 +52,10 @@
 				<div class="span3">
 				    <?php 
 					echo form_open($controller_function, $form_attrs);
-				        $btn_attributes = array(
+					$btn_attributes = array(
 					    'class' => 'btn btn-danger submit-copy-delete-button',
 					    'id' => 'submit-'.$dp->StudiengangID,
+					    'data-name' => $dp->StudiengangName,
 					    'name' => 'copy_delete_degree_program_id'
 					);
 					echo form_submit($btn_attributes, $title);
@@ -92,36 +93,41 @@
 	var modalTextProgress = '<?php echo $modal_text_progress; ?>';
 
 	$('td').on('click', '.submit-copy-delete-button', function(){
-	    var dialog = createModal(title, modalText);
+		var dpName = $(this).data('name');
+	    var dialog = createModal(title, modalText, dpName);
 	    $('#copy-delete-confirmation').html(dialog);
 	    
 	    var buttonId = $(this).attr('id');
 	    // modal for each button
 	    // function of dialog
 	    $('#cdc-dialog').modal({
-		keyboard: false
+			keyboard: false,
+			backdrop: 'static'
 	    }).on('show', function(){
-		$('#confirm-copy-delete-confirmation-dialog').attr('data-id', buttonId);
-		console.log(buttonId);
+			$('#confirm-copy-delete-confirmation-dialog').attr('data-id', buttonId);
+			console.log(buttonId);
 		
 	    }).on('hide', function(){
-		console.log('hidden');
+			console.log('hidden');
 		
 	    }).modal('show');
 	    
 	    return false;
 	});
 	
-	function createModal(title, text){
+	// creates modal
+	function createModal(title, text, dpName){
 	    var confirmationModal = $('<div class="modal hide" id="cdc-dialog"></div>')
 		.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
-		.append('<div class="modal-body"><p>'+text+'</p></div>')
+		.append('<div class="modal-body"><p>'+text+'</p><p><b>'+dpName+'</b></p></div>')
 		.append('<div class="modal-footer"><a href="#" class="btn" id="dismiss-copy-delete-confirmation-dialog" data-dismiss="modal">Abbrechen</a>\n\
 		    <a href="#" class="btn btn-primary" id="confirm-copy-delete-confirmation-dialog">OK</a></div>');
 	    
 	    return confirmationModal;
 	}
 	
+	
+	// when clicking on ok
 	$('#copy-delete-confirmation').on('click', '#confirm-copy-delete-confirmation-dialog', function(){
 	    var submitId = $(this).attr('data-id');
 	    

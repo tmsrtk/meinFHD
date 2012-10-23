@@ -14,7 +14,7 @@
 #textarea
 $degree_program_details_textarea_data = array(
 	'name' => 'Beschreibung',
-	'id' => 'input-stdgng-beschreibung',
+	'id' => 'input-degree-program-description',
 	'class' => 'input-xxxlarge',
 	'value' => '',
 	'rows' => 7,
@@ -32,8 +32,8 @@ $btn_attributes = 'class = "btn-warning input-xxxlarge"';
 	    <?php echo validation_errors(); ?>
 	    <div class="row-fluid">
 	    <?php echo form_open('admin/validate_new_created_degree_program'); ?>
-		    <div id="stdgng-details">
-			    <div id="stdgng-details-1" class="span6">
+		    <div id="degree-program-details">
+			    <div id="degree-program-details-1" class="span6">
 				    <?php 
 					    foreach ($all_degree_programs[0] as $key => $value){
 						    if( $key == 'StudiengangName' || 
@@ -66,9 +66,9 @@ $btn_attributes = 'class = "btn-warning input-xxxlarge"';
 				    ?>
 
 			    </div>
-			    <div id="stdgng-details-2" class="span6">
+			    <div id="degree-program-details-2" class="span6">
 				    <?php echo form_textarea($degree_program_details_textarea_data); ?>
-				    <?php echo form_submit('save_stdgng_detail_changes', 'Neuen Studiengang speichern', $btn_attributes); ?>
+				    <?php echo form_submit('save_degree_program_detail_changes', 'Neuen Studiengang speichern', $btn_attributes); ?>
 			    </div>
 		    </div>
 	    <?php echo form_close(); ?>

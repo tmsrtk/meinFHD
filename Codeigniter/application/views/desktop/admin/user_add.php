@@ -14,13 +14,13 @@
 	$data_loginname = array(
 			'class' => 'input-xxxlarge',
 			'name' => 'loginname',
-			'placeholder' => 'Login Name',
+			'placeholder' => 'Loginname*',
 			'value' => set_value('loginname')
 		);
 	$data_email = array(
 			'class' => 'input-xxxlarge',
 			'name' => 'email',
-			'placeholder' => 'E-Mail',
+			'placeholder' => 'E-Mail*',
 			'value' => set_value('email')
 		);
 	$data_forename = array(
@@ -94,7 +94,7 @@
 						<hr>
 						<?php echo form_submit($submit_data, 'Neuen Benutzer anlegen'); ?>
 					<?php echo form_close(); ?>
-					<?php //FB::log($studiengaenge); ?>
+					
 <?php endblock(); ?>
 
 <?php startblock('postCodeContent'); # additional markup before content ?>

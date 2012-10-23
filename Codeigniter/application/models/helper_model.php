@@ -1,8 +1,14 @@
 <?php
 
 /**
- * Provides data that is needed in several views
- * i.e. dropdown data for times, days, are there any more??
+ * Provides data that is needed in several views/controllers
+ * i.e. dropdown data for times, days, ... , excel-colors?
+ * 
+ * are there any more??
+ * 
+ * Also methods that are needed at several places
+ * >> logging
+ * 
  * @author frank gottwald
  * 
  */
@@ -14,16 +20,20 @@ class Helper_model extends CI_Model {
     }
     
     /**
-     * Returns array holding data for form_dropdown(...)
-	 * Called from Timetable-Mgt. $ Course-Mgt.
+     * Returns array holding data for codeigniter's form_dropdown(...)-method
+	 * Called from Timetable-Mgt. & Course-Mgt.
+	 * 
      * @param String $type - so far 'starttimes', 'endtimes' or 'days'
      * @return array holding all OPTIONS for drowpdown - can be used directly in 
      * >> form_dropdown('name', $OPTIONS, $val, $attrs);
-     * @return string
+     * @return array all options in simple array 
      */
     public function get_dropdown_options($type){
-		$data = '';
+		$data = array();
 		$name = '';
+		
+		// depending on dropdown-type fetching right data
+		// table-name is passed as second-parameter
 		switch ($type) {
 			case 'starttimes' : 
 			$name = 'Beginn';
@@ -38,27 +48,30 @@ class Helper_model extends CI_Model {
 			$data = $this->get_dropdown_data($name, 'tag');
 			break;
 		}
+		
 		// run through data and build options-array
 		for($i = 0; $i < count($data); $i++){
-//			if($i != 0){
 			$options[$i] = $data[$i]->$name;
-//			} else {
-//			$options[$i] = '';
-//			}
 		}
 		return $options;
     }
-    
-    /**
-     * 
-     * Returns all start and end times for dropdown - depending on 
-     * @return type
-     */
+
+	/**
+	 * Helper-method to get dropdown-data from db
+	 * Returns all dropdown-options needed
+	 * 
+	 * Depending on table the correct data is fetched from db
+	 * 
+	 * @param string $type attribute of the table that should be fetched
+	 * @param string $table the table in db
+	 * @return array holding options
+	 */
     private function get_dropdown_data($type, $table){
+		$data = array(); // init
+		$q = ''; // init
+		
 		$this->db->select($type);
 		$q = $this->db->get($table);
-
-//		$data[] = null;
 
 		if($q->num_rows() > 0){
 			foreach ($q->result() as $row){
@@ -200,6 +213,26 @@ class Helper_model extends CI_Model {
 		
 		// Gebe Farbwert zur�ck
 		return $ret; 
+	}
+	
+
+	/**
+	 * Creates array with activity-data of a user to save to db
+	 * Passed data
+	 * @param int $logging_typ_id look at logtyp-table to get the correct logtype
+	 * @param int $zielkurs SPKursID or null if not bound to a course
+	 */
+	public function log_activities ($logging_typ_id, $user_id, $tutor = NULL){
+		
+		// build array with data to be stored
+		$log_data = array(
+			'LogtypID' => $logging_typ_id,
+			'BenutzerID' => $user_id,
+			'TutorID' => $tutor
+		);
+		
+		// save data
+		$this->db->insert('logging_kursverwaltung', $log_data);
 	}
 }
 

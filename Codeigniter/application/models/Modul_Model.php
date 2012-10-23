@@ -52,7 +52,7 @@ class Modul_Model extends CI_Model {
 		$this->db->where('KursID', $modul_id);
 		$this->db->where('SpKursID', $course_id);
 		
-		$this->db->update('benutzerkurs', $data); 
+		$this->db->update('benutzerkurs', $data);
 
 		/* echo "Benutzer".$user_id."KursID".$modul_id."SPKursID".$course_id; */
 	}

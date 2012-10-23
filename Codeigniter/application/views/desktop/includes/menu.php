@@ -38,7 +38,7 @@
 						<li><a href="<?php echo site_url(); ?>kursverwaltung/show_coursemgt">Meine Kurse</a></li>
 						<?php // endif ?>
 						<?php // if (in_array(102, $userdata['userpermissions'])) : ?>
-						<li><a href="#">Praktikumsverwaltung</a></li>
+						<li><a href="<?php echo site_url(); ?>kursverwaltung/show_coursemgt">Praktikumsverwaltung</a></li>
 						<?php // endif ?>
 					</ul>
 				</li>

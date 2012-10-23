@@ -12,8 +12,11 @@
 								<?php if ( $this->authentication->has_permissions('hat_dashboard') ) : ?>
 								<li><a href="<?php print base_url('dashboard/index'); ?>">Dashboard</a></li>
 								<?php endif ?>
+								<?php if ( $this->authentication->has_permissions('hat_persoenlichedaten_verwaltung') ) : ?>
+								<li><a href="<?php print base_url('einstellungen/index'); ?>">Persönliche Daten</a></li>
+								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_stundenplan') ) : ?>
-								<li><a href="<?php print base_url('stundenplan/index'); ?>">Stundenplan</a></li>
+								<li><a href="<?php print base_url('stundenplan/woche'); ?>">Stundenplan</a></li>
 								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_semesterplan') ) : ?>
 								<li><a href="<?php print base_url('studienplan/index'); ?>">Studienplan</a></li>
@@ -34,14 +37,14 @@
 										<?php if ( $this->authentication->has_permissions('hat_benutzer_anlegen') ) : ?>
 										<li><a href="<?php print base_url('admin/create_user_mask'); ?>">Benutzer anlegen</a></li>
 										<?php endif ?>
-										<?php if ( $this->authentication->has_permissions('hat_benutzer_importieren') ) : ?>
-										<li><a href="<?php print base_url('admin/show_permissions'); ?>">Benutzer importieren</a></li>
-										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_benutzer_bearbeiten') ) : ?>
 										<li><a href="<?php print base_url('admin/edit_user_mask'); ?>">Benutzer bearbeiten</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_benutzer_loeschen') ) : ?>
 										<li><a href="<?php print base_url('admin/delete_user_mask'); ?>">Benutzer löschen</a></li>
+										<?php endif ?>
+										<?php if ( $this->authentication->has_permissions('hat_benutzer_importieren') ) : ?>
+										<li><a href="<?php print base_url('admin/import_user_mask'); ?>">Benutzer importieren</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_rechte_verwalten') ) : ?>
 										<li><a href="<?php print base_url('admin/show_role_permissions'); ?>">Rechte verwalten</a></li>
@@ -123,7 +126,7 @@
 										<li><a href="<?php print base_url('kursverwaltung/show_coursemgt'); ?>">Meine Kurse</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_kurse') ) : ?>
-										<li><a href="<?php print base_url('#'); ?>">Praktikumsverwaltung</a></li>
+										<li><a href="<?php print base_url('kursverwaltung/show_labmgt'); ?>">Praktikumsverwaltung</a></li>
 										<?php endif ?>
 									</ul> <!-- /.nav .level-2 -->
 								</li>

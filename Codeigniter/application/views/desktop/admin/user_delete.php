@@ -16,6 +16,13 @@
 ?>
 
 <div class="row-fluid">
+	<?php echo form_open('', $data_formopen); ?>
+	<div class="span4"><h2>Benutzer löschen</h2></div>
+	<?php echo form_close(); ?>
+</div>
+<hr>
+
+<div class="row-fluid">
 	<table id="user_overview" class="table table-striped">
 		<thead>
 			<tr>
@@ -59,44 +66,11 @@
 	// prompt dialogs
 	$("td#content_userrow").on("click", "input#delete_user_btn", function() {
 		$(this).attr("data-clicked", "true");
-
-		var mm = createModalDialog('User löschen', 'Soll der User wirklich gelöscht werden?');
-		$("#modalcontent").html(mm);
-
-		$('#myModal').modal({
-			keyboard: false
-		}).on('hide', function () {
-			$("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
-		}).modal('show');
-		
-		return false;
-	});
-
-	function createModalDialog(title, text) {
-		var $myModalDialog = $('<div class="modal hide" id="myModal"></div>')
-					.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
-					.append('<div class="modal-body"><p>'+text+'</p></div>')
-					.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Abbrechen</a><a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
-		return $myModalDialog;
-	}
-
-	/** */
-	$("#modalcontent").on( 'click', 'button, a', function(event) {
-		if ( $(this).attr("data-accept") === 'modal' ) {
-			console.log("accept");
-
-			$(event.target).parent().parent().find("div.modal-body").html("Bitte warten, der Befehl wird ausgeführt");
-			$(event.target).parent().parent().find("div.modal-footer").hide();
-
-			$("input[type=submit][data-clicked=true]").parents("form#delete_user_row").submit();
-			// $("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
-		} else {
-			console.log("cancel");
-			// $("input[type=submit][data-clicked=true]").removeAttr("data-clicked");
-		}
+		_showModal('User löschen', 'Soll der User wirklich gelöscht werden?', true);
 
 		return false;
 	});
+
 
 	/* helper functions */
 	function hide_all_submit_buttons() {

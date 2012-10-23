@@ -14,12 +14,14 @@ class User_model extends CI_Model {
 	
 	// course_ids (mapped with roles)
 	private $user_course_ids = array();
+
 	// studienplan
 	private $studiengang_id = 0;
 	private $semesterplan_id = 0;
 	private $act_semester = 0;
 	private $studienbeginn_jahr = 0;
 	private $studienbeginn_typ = '';
+
 	private $studiengang_data = array();
 
 	/**
@@ -43,7 +45,7 @@ class User_model extends CI_Model {
 			$this->user_id = $uid;
 
 			$this->lastname = $this->_query_user_singlecolumndata('Vorname');
-			$this->lastname = $this->_query_user_singlecolumndata('Nachname');
+			$this->forename = $this->_query_user_singlecolumndata('Nachname');
 			$this->loginname = $this->_query_user_singlecolumndata('LoginName');
 			$this->email = $this->_query_user_singlecolumndata('Email');
 
@@ -54,9 +56,13 @@ class User_model extends CI_Model {
 			$this->studienbeginn_typ = $this->_query_user_singlecolumndata('StudienbeginnSemestertyp');
 
 			$this->semesterplan_id = $this->_query_semesterplanid();
-			// get actual Semester every time when the user connects
-			$this->act_semester = $this->adminhelper->getSemester($this->studienbeginn_typ, $this->studienbeginn_jahr);
-			// $this->act_semester = $this->_query_user_singlecolumndata('Semester');
+			// get actual Semester every time when the user connects and save it in the db
+			// $this->act_semester = $this->adminhelper->getSemester($this->studienbeginn_typ, $this->studienbeginn_jahr);
+			$this->act_semester = $this->adminhelper->get_act_semester($this->studienbeginn_typ, $this->studienbeginn_jahr);
+			// TODO: need to check if its a student/tutor?
+			$this->update_usersemester($this->user_id, $this->act_semester);
+
+			// log_message('error', $this->act_semester);
 
 			$this->studiengang_id = $this->_query_studiengang_id();
 			$this->studiengang_data = $this->_query_studiengang_data();
@@ -83,6 +89,11 @@ class User_model extends CI_Model {
 		// write userdata in global $data
         $this->data->add('userdata', $userdata);
 
+	}
+
+	public function update_usersemester($user_id, $sem_count=0)
+	{
+		$this->db->update('benutzer', array("Semester" => $sem_count), "BenutzerID = {$user_id}");
 	}
 
 	/** */
@@ -226,9 +237,11 @@ class User_model extends CI_Model {
 	}
 
 	
+
+	
 	/**
 	 * Returns all ids for this user mapped to containing roles.
-	 * @return array(int => inht) all ids mapped to roles
+	 * @return array(int => int) all ids mapped to roles
 	 */
 	private function get_course_ids_with_roles(){
 	    $ids = array();
@@ -246,7 +259,7 @@ class User_model extends CI_Model {
 	    }
 	    // labings
 	    if(in_array(3, $this->user_roles)){
-		$course_ids_labing = $this->_get_user_course_ids_from_labing_tut('laboringenieur');
+		$course_ids_labing = $this->_get_user_course_ids_from_labing_tut('kursbetreuer');
 			if($course_ids_labing){
 				foreach ($course_ids_labing as $cid) {
 					$ids[$cid] = 3;
@@ -255,7 +268,7 @@ class User_model extends CI_Model {
 	    }
 	    // tuts
 	    if(in_array(4, $this->user_roles)){
-		$course_ids_tut = $this->_get_user_course_ids_from_labing_tut('tutor');
+		$course_ids_tut = $this->_get_user_course_ids_from_labing_tut('kurstutor');
 			if($course_ids_tut){
 				foreach ($course_ids_tut as $cid) {
 					$ids[$cid] = 4;
@@ -271,6 +284,8 @@ class User_model extends CI_Model {
 	 * @return array
 	 */
 	private function _get_user_course_ids_from_spkurs(){
+	    $data = ''; // init
+
 	    $this->db->distinct();
 	    $this->db->select('KursID');
 	    $this->db->from('stundenplankurs');
@@ -283,7 +298,10 @@ class User_model extends CI_Model {
 			$data[] = $row;
 	    }
 
-	    $data = $this->clean_nested_array($data);
+	    if ($data) {
+			$data = $this->clean_nested_array($data);
+	    }
+
 	    
 	    return $data;
 	}
@@ -332,11 +350,19 @@ class User_model extends CI_Model {
 
 	// getter and setter
 
+	/**
+	 * Returns all roles one user is assigned to
+	 * @return array simple array containing all roles
+	 */
 	public function get_all_roles()
 	{
 		return $this->user_roles;
 	}
 
+	/**
+	 * Returns all course_id-role-combinations for one user
+	 * @return array associative array [course-id] => [role]
+	 */
 	public function get_all_permissions()
 	{
 		return $this->user_permissions_all;
@@ -352,6 +378,10 @@ class User_model extends CI_Model {
 
 	}
 
+	/**
+	 * Returns the user-id
+	 * @return int the user-id
+	 */
 	public function get_userid()
 	{
 		if ( ! empty($this->user_id) )
@@ -375,14 +405,40 @@ class User_model extends CI_Model {
 			return $this->act_semester;
 		}
 	}
+
+	public function get_studienbeginn_semestertyp()
+	{
+		if ( ! empty($this->studienbeginn_typ) )
+		{
+			return $this->studienbeginn_typ;
+		}
+	}
+
+	public function get_studienbeginn_jahr()
+	{
+		if ( ! empty($this->studienbeginn_jahr) )
+		{
+			return $this->studienbeginn_jahr;
+		}
+	}
+
+
+
+
+
+
+
+
+
 	
 	/**
 	 * Returns course-ids for a single user mapped to roles
-	 * @return array
+	 * @return array [course_id] => [role_id]
 	 */
 	public function get_user_course_ids(){
 	    return $this->user_course_ids;
 	}
+
 
 	
 	

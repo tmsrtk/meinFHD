@@ -6,9 +6,26 @@
 
 <?php
 	$data_formopen = array('id' => 'studienplan-form');
+
+	$fs_attrs = array(
+		'id'	=>	'sendButton',
+		'name'	=>	'sendButton',
+		'class' =>	'btn btn-success pull-right'
+		);
 ?>
 
 <div class="well well-small admin">
+
+	<?php 
+	// if there is no semesterplan, show create possibility
+	if ( ! isset($userdata['semesterplan_id'])) : ?>
+
+	<?php echo form_open('/studienplan/studienplanErstellen/') ?>
+	<p>Du hast noch keinen Studienplan. Vergewissere Dich, dass du die korrekten Daten eingetragen hast und klicke auf "Studienplan erstellen".</p>
+	<?php echo form_submit('create_sp', 'Studienplan erstellen'); ?>
+	<?php echo form_close() ?>
+	
+	<?php else : ?>
 
 	<div class="row-fluid">
 		<div class="span4">
@@ -17,12 +34,12 @@
 		<div class="span4">
 			<p>Studium abgeschlossen zu </p>
 			<div class="progress progress-success">
-				<div class="bar" style="width: <?php echo $percentage ?>%;"><?php echo $percentage ?>%</div>
+				<div id="study-percent" class="bar" style="width: 0%">0%</div>
 			</div>
 		</div>
 		<div class="span2">
 			<p>Durchschnittsnote</p>
-			<span class="badge"><?php echo round($averageMark) ?></span>
+			<span id="average-mark" class="badge">0</span>
 		</div>
 		<div class="span2">
 			<div id="studienplan-einstellungen" class="btn-group pull-right">
@@ -31,58 +48,64 @@
 					<span class="caret"></span>
 				</a>
 				<ul class="dropdown-menu">
-					<li class="sp-info"><a href="#">Info</a></li>
+					<li class="sp-info"><a href="#"><i class="icon-info-sign"></i> Info</a></li>
 					<li class="divider"></li>
-					<li class="sp-addsem"><a href="#">Weiteres Semester anlegen</a></li>
-					<li class="sp-remsem"><a href="#">Letztes Semester löschen</a></li>
+					<li class="sp-addsem"><a href="#"><i class="icon-plus"></i> Weiteres Semester anlegen</a></li>
+					<li class="sp-remsem"><a href="#"><i class="icon-minus"></i> Letztes Semester löschen</a></li>
 					<li class="divider"></li>
-					<li class="sp-reset"><a href="#">Studienplan resetten</a></li>
+					<li class="sp-approvesem" data-hasapprovesem="<?php echo $has_approve_sem['HatAnerkennungsSemester'] ?>"><a href="#"><i class="<?php (empty($has_approve_sem['HatAnerkennungsSemester'])) ? print "icon-plus" : print "icon-minus"; ?>"></i> <?php (empty($has_approve_sem['HatAnerkennungsSemester'])) ? print "Anerkennungssemester anlegen" : print "Anerkennungssemester löschen"; ?></a></li>
+					<li class="divider"></li>
+					<li class="sp-reset"><a href="#"><i class="icon-retweet"></i> Studienplan zurücksetzen</a></li>
 				</ul>
 			</div>
 		</div>
 	</div>
 	<hr>
 
+	<?php FB::log($studienplan) ?>
+
 	<div class="row-fluid">
 		<div id="studienplan" class="span12">
 			<?php echo form_open('', $data_formopen); ?>
-				<table class="table table-bordered table-condensed">
+				<table class="table table-bordered">
 					<thead>
+						<!-- Head -->
 						<tr>
 						<?php foreach($studienplan as $semester): ?>
-							<?php $i = 0; // semester nr ?>
+							<?php $i = $laufvar; // semester nr ?>
 							<?php $sem_typ = $userdata['studienbeginn_semestertyp'] ?>
 							<?php $sem_jahr = $userdata['studienbeginn_jahr'] ?>
 							<?php foreach($semester as $modul): ?>
-								<?php if($i != 0) : # Anerkennungssemester ?> 
-									<th <?php if($i==$userdata['act_semester']) echo 'style="background-color: #dee4c5";'; else echo 'style="background-color: #eee";'; ?> >
-										<h3 style="font-weight: normal;">Semester <?php echo $i ?></h3>
-										<p style="font-size: 10px; color: #bbb;"><?php echo $sem_typ ?> <?php echo $sem_jahr ?></p>
+								<?php #if($i != 0) : # Anerkennungssemester ?> 
+									<th <?php ($i==$userdata['act_semester']) ? print 'style="background-color: #dee4c5"' : print 'style="background-color: #eee"'; ?> >
+										<h4><?php ($i==0)?print 'Anerkennungs Semester':print 'Semester '.$i ?></h4>
+										<p style="font-size: 10px; color: #bbb;"><?php ($i==0)?'':print $sem_typ.' '.$sem_jahr ?></p>
 									</th>
 									<?php 
 										(($i+1)%2 == 0) ? $sem_typ = 'SoSe' : $sem_typ = 'WiSe';		// TODO: look for a better algo
 										(($i+1)%2 == 0) ? $sem_jahr++ : $sem_jahr;
 									?>
-								<?php endif; ?>
+								<?php #endif; ?>
 								<?php $i++ ?>
 							<?php endforeach // $semester ?>
 						<?php endforeach // $studienplan ?>
 						</tr>
 					</thead>
 					<tbody>
+						<!-- Module -->	
 						<tr>
 							<?php foreach($studienplan as $semester): ?>
-								<?php $i = 0; // semester nr ?>
+								<?php $i = $laufvar; // semester nr ?>
 								<?php foreach($semester as $modul): ?>
-									<?php if($i != 0) : # Anerkennungssemester ?>
+									<?php #if($i != 0) : # Anerkennungssemester ?>
 										<td <?php if($i==$userdata['act_semester']) echo 'style="background-color: #dee4c5";' ?> >
 											<ul id="<?php echo $i ?>" class="unstyled semesterplanspalte">
 												<?php foreach($modul as $data): ?>
 													<?php if ($data['KursID'] != NULL): ?>
 														<li id="module_<?php echo $data['KursID']; ?>">
-															<div class="semestermodul dropup" data-kursid="<?php echo $data['KursID']; ?>">
-																<i class="arrw icon-align-justify" data-toggle="dropdown" style="height: 10px; width: 3px;"></i>
-																<a class="b_hoeren" href="">H</a>
+															<div class="semestermodul dropup" data-kursid="<?php echo $data['KursID']; ?>" data-cp="<?php echo $data['Creditpoints'] ?>" data-sws="<?php echo $data['KursSWSSumme'] ?>">
+																<i class="arrw icon-align-justify" data-toggle="dropdown" style="height: 10px; width: 4px;"></i>
+																<a class="b_hoeren" href="">T</a>
 																<a class="b_pruefen" href="">P</a>
 																<ul class="dropdown-menu">
 																      <li class="kursinfo"><a href="#">Info</a></li>
@@ -91,6 +114,7 @@
 																</ul>
 	
 																<span class="modulfach"><?php echo $data['Kurzname'] ?></span>
+																<!-- <span class="modulfach-lang"><?php echo $data['Kursname'] ?></span> -->
 																<input class="modulnote input-mini" name="modulnote[]" type="text" value="<?php echo $data['Notenpunkte'] ?>">
 															</div>
 														</li>
@@ -98,43 +122,38 @@
 												<?php endforeach; // $modul ?>
 											</ul>
 										</td>
-									<?php endif; ?>
+									<?php #endif; ?>
 									<?php $i++ ?>
 								<?php endforeach; // $semester ?>
 							<?php endforeach; // $studienplan ?>
 						</tr>
+						<!-- SWS/CP -->
 						<tr>
 							<?php foreach($studienplan as $semester): ?>
-								<?php $i = 0; // semester nr ?>
+								<?php $i = $laufvar; // semester nr ?>
 								<?php foreach($semester as $modul): ?>
-									<?php if($i != 0) : # Anerkennungssemester ?>
+									<?php #if($i != 0) : # Anerkennungssemester ?>
 										<td <?php if($i==$userdata['act_semester']) echo 'style="background-color: #dee4c5";' ?> >
-											<p>SWS: <span class="badge badge-success pull-right"><?php if( ! empty($swsCp[$i]['SWS_Summe'])) echo $swsCp[$i]['SWS_Summe'] ?></span></p>
-											<p>CP: <span class="badge badge-info pull-right"><?php if( ! empty($swsCp[$i]['CP_Summe'])) echo $swsCp[$i]['CP_Summe']?></span></p>
+											<p>SWS: <span class="badge badge-success pull-right sws-badge"></span></p>
+											<p>CP: <span class="badge badge-info pull-right cp-badge"></span></p>
 										</td>
-									<?php endif; ?>
+									<?php #endif; ?>
 									<?php $i++ ?>
 								<?php endforeach; // $semester ?>
 							<?php endforeach; // $studienplan ?>
 						</tr>
 					</tbody>
 				</table>
-			<!-- Test für speichern der Modulreihenfolge -->
-			<?php $fs_attrs = array(
-				'id'	=>	'sendButton',
-				'name'	=>	'sendButton',
-				'class' =>	'btn btn-success pull-right'
-				); ?>
+
+				<hr />
+
 			<?php echo form_submit($fs_attrs, 'Änderungen speichern'); ?>
 			<?php echo form_close(); ?>
 		</div>
 	</div>
+	<?php endif ; ?>
 
 </div>
-
-<!-- <button name="resetStudienPlan" id="sB" class="btn btn-warning" >Reset</button> -->
-
-<!-- <button name="resetStudienPlan" id="resetStudienPlan" class="btn btn-warning" >Reset</button> -->
 
 <div id="modalcontent"></div>
 
@@ -181,6 +200,8 @@
 	// initialize the Studienplan var
 	var Studienplan = {
 			init: function( config ) {
+				var self = this;
+
 				this.config = config;
 				// this.config.changedModulesHistory = [];
 
@@ -269,6 +290,7 @@
 								// }
 							// }
 						});
+						self._progressChanged();
 					}
 				});
 			},
@@ -281,6 +303,13 @@
 					// console.log($(semester));
 
 					$semester = $(semester);
+
+					// check if its the zero semester to give some special style
+					if ($semester.attr('id') == 0) {
+						$semester.parents('tbody').find('tr:first-child td:first-child').addClass('zero-sem-bg');
+						$semester.parents('table').find('tr:first-child th:first-child').addClass('zero-sem-bg');
+						$semester.parents('tbody').find('tr:last-child td:first-child').addClass('zero-sem-bg');
+					}	
 
 					// modules per semester
 					semestermodule = $semester.find('.semestermodul');
@@ -321,6 +350,7 @@
 						});
 					});
 				});
+				this._progressChanged();
 			},
 
 			initModulNotenInputs : function() {
@@ -360,6 +390,9 @@
 						hoeren.hide();
 						pruefen.hide();
 
+						// animate progress bar
+						self._progressChanged();
+
 					} else if ( mark && self._validateUserInput(mark) == false ) {
 						$this.val('');
 
@@ -369,16 +402,20 @@
 						self._removeModuleColorClass($module);
 
 						// create and show modal
-						self._showModal('Falscher Wert!', 'Tragen Sie bitte in das Feld einen Wert zwischen 1 - 5 ein.');
+						_showModal('Falscher Wert!', 'Tragen Sie bitte in das Feld einen Wert zwischen 0 - 100 ein.', false);
+						self._progressChanged();
 					} else {
 						hoeren.show();
 						pruefen.show();
 
 						self._removeModuleColorClass($module);
+						self._progressChanged();
 					}
 
 					// get color for the mark
 					self._addModuleMarkColor($module);
+
+
 				});
 
 			},
@@ -388,13 +425,19 @@
 			initSendButton : function() {
 				var self = this;
 
+				console.log();
+
 				this.config.sendButton.click(function() {
-					self._saveSemesterplan().done(function() {
-						location.reload();
-					});
+
+					$(this).attr("data-clicked", "true");
+					_showModal('Änderungen speichern', "<?php echo Messages::SAVE_STUDIENPLAN ?>", true, true, self);
+
+					// self._saveSemesterplan().done(function() {
+					// 	location.reload();
+					// });
 					return false;
 				});
-			},
+			}, 
 
 			initResetButton : function() {
 				var self = this;
@@ -520,7 +563,7 @@
 							}
 						} else {
 							// no way to turn it on again
-							self._showModal('Keine VL!', 'Für dieses Modul wird keine Vorlesung in diesem Semester angeboten!');
+							_showModal('Keine VL!', 'Für dieses Modul wird keine Vorlesung in diesem Semester angeboten!');
 						}
 
 						// if ( actSemester == semester  ) {
@@ -572,7 +615,7 @@
 					kursId = self._getModuleKursId($module);
 
 					// create modal with appropriate module infos
-					self._showModal(
+					_showModal(
 							self.getTitleForModule(kursId).done(function(result) {
 								self.setModuleTitle(result);
 						}), 
@@ -599,12 +642,13 @@
 				info = this.config.semesterplanEditCtxMenu.find('li.sp-info');
 				addSem = this.config.semesterplanEditCtxMenu.find('li.sp-addsem');
 				remSem = this.config.semesterplanEditCtxMenu.find('li.sp-remsem');
+				approveSem = this.config.semesterplanEditCtxMenu.find('li.sp-approvesem');
 				reset = this.config.semesterplanEditCtxMenu.find('li.sp-reset');
 
 				info.click(function() {
 					title = "<?php echo $userdata['studiengang_data']['StudiengangName'] ?>";
 					text = '<p>Regelsemester: '+"<?php echo  $userdata['studiengang_data']['Regelsemester'] ?>"+'</p>...';
-					self._showModal(
+					_showModal(
 						title,
 						text
 						);
@@ -648,7 +692,7 @@
 						});
 						// if there were any modules, no decreasing possible
 						if ( modulesInLastSemester === true ) {
-							self._showModal(
+							_showModal(
 							'Letztes Semester nicht leer', 
 							'Im letzten Semester befinden sich noch Module, bitte entfernen Sie diese!');
 						} else {
@@ -663,7 +707,7 @@
 							});
 						}
 					} else {
-						self._showModal('Nicht möglich', 'Die Regelstudienzeit für diesen Studiengang beträgt '+regelSemester+' Semester. Keine weitere Verkürzung möglich.')
+						_showModal('Nicht möglich', 'Die Regelstudienzeit für diesen Studiengang beträgt '+regelSemester+' Semester. Keine weitere Verkürzung möglich.')
 					}
 
 					
@@ -690,11 +734,58 @@
 
 				});
 
+				// add the approve sem
+				approveSem.click(function() {
+
+					if ($(this).data("hasapprovesem") == 1) {
+
+						apprSem = self.config.semesterplanspalten.first().find('.semestermodul');
+						var modulesInApproveSem = false;
+						apprSem.each(function(index, module) {
+							// if there are modules, no way to delete the last sem 
+							// -> show modal with a hint to clear the last semester from modules
+							if (module) {
+								modulesInApproveSem = true;
+								return;
+							}
+						});
+						// if there were any modules, no decreasing possible
+						if ( modulesInApproveSem === true ) {
+							_showModal(
+							'Anerkennungs - Semester nicht leer!', 
+							'Im Anerkennungs - Semester befinden sich noch Module, bitte verschieben Sie diese!');
+						} else {
+
+
+							return $.ajax({
+							  url: "<?php echo site_url();?>studienplan/delete_approve_sem"
+							}).promise().done(function() {
+								self._saveSemesterplan().done(function() {
+									// reload page
+									location.reload();
+								});
+							});
+						}
+						
+					} else {
+						return $.ajax({
+						  url: "<?php echo site_url();?>studienplan/create_approve_sem"
+						}).promise().done(function() {
+							self._saveSemesterplan().done(function() {
+								// reload page
+								location.reload();
+							});
+						});
+					}
+
+					
+				});
+
 				// reset the studienplan
 				reset.click(function() {
 
 					// modal, yes or no
-					self._showModal('Studienplan resetten', 'Alle Kurse werden zurückgesetzt und Sie werden aus allen Gruppen ausgetragen! Sicher?', true);
+					_showModal('Studienplan resetten', 'Alle Kurse werden zurückgesetzt und Sie werden aus allen Gruppen ausgetragen! Sicher?', true);
 
 					// if there are any click listener, remove them
 					$('#modalcontent').off('click');
@@ -754,27 +845,86 @@
 
 			// helper methods --------------------------------------------------------------------------
 
-			// modals ---------------------------------------
-			createModalDialog : function(title, text, withOK) {
-				myModalDialog = 
-					$('<div class="modal hide" id="myModal"></div>')
-					.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
-					.append('<div class="modal-body"><p>'+text+'</p></div>')
-					.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Schließen</a>');
-					if (withOK) myModalDialog.find('.modal-footer').append('<a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
-					// <a href="" class="btn btn-primary" data-accept="modal">OK</a></div>
-				return myModalDialog;
-			},
+			_progressChanged : function () {
+				var self = this
 
-			_showModal : function(title, text, withOK) {
-				mm = this.createModalDialog(title, text, withOK);
-				this.config.modalWrapper.html(mm);
+    				//////////////////
+				// PROGRESS BAR //
+    				//////////////////
 
-				$('#myModal').modal({
-					keyboard: false
-				}).on('hide', function () {
-					// console.log("hidden");
-				}).modal('show');
+				// calculate new % value
+					// query all modules
+					// count them
+					// count modules in studienplan which have inputs and >= 50
+					// calculate
+
+				allModules = $('.semestermodul')
+					modulesSum = allModules.length
+					counter = 0
+
+					markSum = 0
+					counter2 = 0
+
+				allModules.each(function (index, el) {
+					// percent of study stuff
+					if (self._getModuleMark($(el)) >= 50) 
+						counter++
+
+					// average mark stuff
+					markSum += self._getModuleMark($(el))
+					if (self._getModuleMark($(el)) != 'NULL' ) { counter2 += 100 };
+					// console.log(markSum)
+
+					// sws/cp stuff
+					
+				})
+
+				percent = counter/modulesSum*100
+				percent = Math.round(percent)
+
+				// console.log(percent)
+
+				// add new % value to progress bar
+				self.config.progressBar.animate({width: percent+'%'}, 300)
+				self.config.progressBar.text(percent+'%')
+
+   				//////////////////
+				// AVERAGE MARK //
+    				//////////////////
+
+    				averageMarkT = markSum/counter2*100
+    				self.config.averageMark.fadeOut(600).text(Math.round(averageMarkT)).fadeIn(600)
+
+    				//////////////////
+				//   SWS / CP   //
+    				//////////////////
+
+    				var swsArray = []
+    				var cpArray = []
+    				this.config.semesterplanspalten.each(function (i, e) {
+    					var swsSum = 0
+    					var cpSum = 0
+    					// run through each e
+    					$(e).find('.semestermodul').each(function (i, e) {
+    						// count sws of every module
+    						swsSum += $(e).data('sws')
+    						cpSum += $(e).data('cp')
+    						// console.log(e)
+    						
+    					})
+					swsArray.push(swsSum)
+					cpArray.push(cpSum)
+    				})
+
+				// add to swsBadges
+				// console.log(this.config.swsBadges)
+				this.config.swsBadges.each(function (i, e) {
+					$(e)/*.fadeOut(600)*/.text(swsArray[i])/*.fadeIn(600)*/
+				})
+				this.config.cpBadges.each(function (i, e) {
+					$(e)/*.fadeOut(600)*/.text(cpArray[i])/*.fadeIn(600)*/
+				})
+
 			},
 
 			getTitleForModule : function(moduleId) {
@@ -809,14 +959,21 @@
 			// modules ---------------------------------------
 
 			_validateUserInput : function(mark) {
-				if ( mark == '1' || mark == '1-' || mark == '2+'
-					|| mark == '2' || mark == '2-' || mark == '3+'
-					|| mark == '3' || mark == '3-' || mark == '4+'
-					|| mark == '4' || mark == '4-' || mark == '5' ) { 
+				if ( mark <= 100 && mark >= 0 ) {
 				return true;
 			}
 				else return false;
 			},
+
+			// _validateUserInput : function(mark) {
+			// 	if ( mark == '1' || mark == '1-' || mark == '2+'
+			// 		|| mark == '2' || mark == '2-' || mark == '3+'
+			// 		|| mark == '3' || mark == '3-' || mark == '4+'
+			// 		|| mark == '4' || mark == '4-' || mark == '5' ) { 
+			// 	return true;
+			// }
+			// 	else return false;
+			// },
 
 			_checkSemesterEquality : function(actSem, regSem) {
 				regEven = false;
@@ -871,6 +1028,7 @@
 			},
 			_getModuleMark : function(module) {
 				mark = module.find('.modulnote').val();
+				// return (isNaN(parseInt(mark, 10))?0:parseInt(mark, 10));
 				return mark;
 			},
 			_setModuleMark : function(module, mark) {
@@ -901,20 +1059,36 @@
 			},
 
 			_getModuleMarkColorClass : function( mark ) {
-				if ( mark == '1' || mark == '1-' ) {
+				if ( mark <= 100 && mark >= 90 ) {
 					return 'sm_green';
-				} else if ( mark == '2+' || mark == '2' || mark == '2-' ) {
+				} else if ( mark < 90 && mark >= 75) {
 					return 'sm_yellow-green';
-				} else if ( mark == '3+' || mark == '3' || mark == '3-' ) {
+				} else if ( mark < 75 && mark >= 60) {
 					return 'sm_yellow'
-				} else if ( mark == '4+' || mark == '4' || mark == '4-' ) {
+				} else if ( mark < 60 && mark >= 50 ) {
 					return 'sm_orange';
-				} else if ( mark == '5') {
+				} else if ( mark && mark < 50) {
 					return 'sm_red';
 				} else {
 					return '';
 				}
 			},
+
+			// _getModuleMarkColorClass : function( mark ) {
+			// 	if ( mark == '1' || mark == '1-' ) {
+			// 		return 'sm_green';
+			// 	} else if ( mark == '2+' || mark == '2' || mark == '2-' ) {
+			// 		return 'sm_yellow-green';
+			// 	} else if ( mark == '3+' || mark == '3' || mark == '3-' ) {
+			// 		return 'sm_yellow'
+			// 	} else if ( mark == '4+' || mark == '4' || mark == '4-' ) {
+			// 		return 'sm_orange';
+			// 	} else if ( mark == '5') {
+			// 		return 'sm_red';
+			// 	} else {
+			// 		return '';
+			// 	}
+			// },
 			_removeModuleColorClass : function(module) {
 				// possible classes
 				colors = ['sm_green', 'sm_yellow-green', 'sm_yellow', 'sm_orange', 'sm_red'];
@@ -930,7 +1104,13 @@
 				var self = this;
 				// semester run var
 				var i = 1;
+
 				var count = this.config.semesterplanspalten.length;
+				// if there is a zero semester, count -1 !
+				if (this.config.semesterplanspalten.first().attr("id") == 0) {
+					i = 0;
+				}
+
 				var successfulDbWritings = 1;
 
 				// trigger manually, cause of _resetModule()
@@ -984,6 +1164,7 @@
 
 					i++;
 				});
+
 				return dfd.promise();
 			}
 		};
@@ -991,17 +1172,21 @@
 
 		
 		Studienplan.init({
-			semesterplanspalten: $(".semesterplanspalte"),
-			connectWithColumns: '.semesterplanspalte',
-			sendButton : $('#sendButton'),
-			resetButton : $('#resetStudienPlan'),
-			pruefenButtons : $('a.b_pruefen'),
-			hoerenButtons : $('a.b_hoeren'),
-			modalContent : $('#myModal'), //existiert an dieser stelle noch nicht!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! deswegen funzt oben nicht
-			modalWrapper : $('#modalcontent'),
-			infoButtonsWrapper : $('ul.dropdown-menu'),
-			modulNotenInputs : $('.semestermodul input.modulnote'),
-			semesterplanEditCtxMenu : $('#studienplan-einstellungen')
+			semesterplanspalten: $('.semesterplanspalte')
+			, connectWithColumns: '.semesterplanspalte'
+			, sendButton : $('#sendButton')
+			, resetButton : $('#resetStudienPlan')
+			, pruefenButtons : $('a.b_pruefen')
+			, hoerenButtons : $('a.b_hoeren')
+			, modalContent : $('#myModal') //existiert an dieser stelle noch nicht!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! deswegen funzt oben nicht
+			, modalWrapper : $('#modalcontent')
+			, infoButtonsWrapper : $('ul.dropdown-menu')
+			, modulNotenInputs : $('.semestermodul input.modulnote')
+			, semesterplanEditCtxMenu : $('#studienplan-einstellungen')
+			, progressBar : $('#study-percent')
+			, averageMark : $('#average-mark')
+			, swsBadges : $('span.sws-badge')
+			, cpBadges : $('span.cp-badge')
 
 		});
 

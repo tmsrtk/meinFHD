@@ -39,14 +39,12 @@ class Dozent extends FHD_Controller {
      */
 	public function index()
 	{
-
-
+		
 	}
 
 
 	public function show($dozent_id)
-	{	
-
+	{
 		$dozentinfo = $this->Dozent_Model->get_dozentinfo($dozent_id);
 
 		$this->data->add('dozentinfo', $dozentinfo);
