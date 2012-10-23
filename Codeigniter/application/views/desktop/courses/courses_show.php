@@ -157,7 +157,7 @@
                         echo '<hr>'; # modification by CK to
                         echo $topics[$c_id]; # modification by CK to show topics
                         echo '<hr>';
-						echo form_submit($submit_data_save_all);
+						//echo form_submit($submit_data_save_all);
 						if($show_save_button[$c_id]){
 							echo form_submit($submit_data_save_all);
 						}
