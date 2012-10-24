@@ -1069,6 +1069,26 @@ class Kursverwaltung_model extends CI_Model {
 		$this->db->where('GruppeID', $group_id->GruppeID);
 		$this->db->update('gruppentermin', $save);
 	}
+	
+	
+	public function update_xtra_event($sp_course_id, $text1, $text2, $number_of_events){
+		$group_id = '';
+		$collumn = '';
+
+		// get group_id for sp_course_id
+		$group_id = $this->get_group_id_for_spkursid($sp_course_id);
+		
+		$save = array(
+			'zeigezwischentestat1' => $text1,
+			'zeigezwischentestat2' => $text2,
+			'anzahltermine' => $number_of_events
+		);
+		
+		// save to gruppenteilnehmer_aufzeichnungen for that user
+		$this->db->where('GruppeID', $group_id->GruppeID);
+		$this->db->update('gruppentermin', $save);
+		
+	}
 
 	/* 
 	 * 

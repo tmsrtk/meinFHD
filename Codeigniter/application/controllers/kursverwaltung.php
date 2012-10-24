@@ -1267,12 +1267,18 @@ class Kursverwaltung extends FHD_Controller {
 	 * Course-id fetched from db, because more complicated to get inside view at that point.
 	 * 
 	 */
-	public function reload_lab_mgt_group(){
-		// TODO pass new id via flashdata
-		$sp_course_id_to_show = $this->input->post('sp_course_id');
-		$course_id_to_show = $this->kursverwaltung_model->get_course_id_for_spkursid($sp_course_id_to_show);
+	public function save_and_reload_lab_mgt_group(){
+		$sp_course_id = $this->input->post('sp_course_id');
+		$text_xtra_1 = $this->input->post('xtra_event_1');
+		$text_xtra_2 = $this->input->post('xtra_event_2');
+		$number_of_events = $this->input->post('number_of_events');
+		
+		// save passed data
+		$this->kursverwaltung_model->update_xtra_event($sp_course_id, $text_xtra_1, $text_xtra_2, $number_of_events);
+			
+		$course_id_to_show = $this->kursverwaltung_model->get_course_id_for_spkursid($sp_course_id);
 
-		$this->session->set_flashdata('sp_course_id', $sp_course_id_to_show);
+		$this->session->set_flashdata('sp_course_id', $sp_course_id);
 		$this->session->set_flashdata('course_id', $course_id_to_show->KursID);
 		
 		// goto view
@@ -1285,16 +1291,45 @@ class Kursverwaltung extends FHD_Controller {
 	 * Data passed via POST contains array
 	 * array[0] - sp_course_id
 	 * array[1] - event_id !! +1 because of array-index
-	 * array[2] - new date
+	 * array[2] - day
+	 * array[3] - month
+	 * array[4] - year
 	 * 
 	 */
 	public function ajax_save_new_date_for_event(){
 		$save_data = $this->input->post('save_event_data');
 		
-		echo $save_data[2];
+		// building date to be stored in db
+		$store_date = '';
+		$store_date = $save_data[4].'-'.$save_data[3].'-'.$save_data[2];
 		
-		$this->kursverwaltung_model->update_eventdate($save_data[0], $save_data[1]+1, $save_data[2]);
+		$this->kursverwaltung_model->update_eventdate($save_data[0], $save_data[1]+1, $store_date);
 	}
+	
+	
+//	/**
+//	 * Saving new text for an extra-event.
+//	 * Data passed via POST contains array
+//	 * array[0] - sp_course_id
+//	 * array[1] - text - new text to store
+//	 * array[2] - event - 1 or 2
+//	 * 
+//	 */
+//	public function ajax_save_xtra_event(){
+//		$sp_course_id = '';
+//		$text = '';
+//		
+//		$data = $this->input->post('new_data');
+//		$sp_course_id = $data[0];
+//		$text = $data[1];
+//		$event = $data[2];
+//		
+//		// save to db
+//		$this->kursverwaltung_model->update_xtra_event($sp_course_id, $text, $event);
+//		
+//		// reload page - otherwise there are cache-problems with input-fields
+//		$this->reload_lab_mgt_group($sp_course_id);
+//	}
 	
 
 	/* 
