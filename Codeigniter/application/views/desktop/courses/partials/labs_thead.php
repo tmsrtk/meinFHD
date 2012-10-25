@@ -18,7 +18,7 @@
 					$show_date = date('d.m.', strtotime($event_dates[$sp_course_id][$i]));
 				} 
 				
-				echo '<th><div class="thead-labmgt event-date-'.$sp_course_id.'" id=event-'.$sp_course_id.'-'.$i.' data-date="'.$picker_date.'" data-date-format="dd-mm-yyyy" data-eventid='.$i.'">';
+				echo '<th><div class="thead-labmgt event-date-'.$sp_course_id.'" id=event-'.$sp_course_id.'-'.$i.' data-date="'.$picker_date.'" data-date-format="dd-mm-yyyy" data-eventid="'.$i.'" data-enabled="0">';
 				
 				// print header for each tab depending on stored data in db
 				if($event_dates[$sp_course_id][$i]){
@@ -30,15 +30,24 @@
 				echo '</div></th>';
 			}
 			// if there is a string stored in db >> print thead for that collumn
+			// addtional data containing:
+			// - number of events - only added at first collumn
+			// - current-text
+			// - event-id
+			// - status (default: disabled)
 			if(strlen($event_dates[$sp_course_id][20]) > 0){
-				echo '<th><div class="event-additional-'.$sp_course_id.'" id="event-additional-1-'.$sp_course_id.'" data-numberofevents="'.$number_of_events.'" data-text="'.$event_dates[$sp_course_id][20].'">'.$event_dates[$sp_course_id][20].'</div>';
+				echo '<th><div class="event-additional-'.$sp_course_id.'" id="event-additional-1-'.$sp_course_id.'" data-numberofevents="'.$number_of_events.'" data-enabled="0" data-eventid="x1" data-text="'.$event_dates[$sp_course_id][20].'">'.$event_dates[$sp_course_id][20].'</div>';
 			}
 			if(strlen($event_dates[$sp_course_id][21]) > 0){
-				echo '<th><div class="event-additional-'.$sp_course_id.'" id="event-additional-2-'.$sp_course_id.'" data-text="'.$event_dates[$sp_course_id][21].'">'.$event_dates[$sp_course_id][21].'</div></th>';
+				echo '<th><div class="event-additional-'.$sp_course_id.'" id="event-additional-2-'.$sp_course_id.'" data-enabled="0" data-eventid="x2" data-text="'.$event_dates[$sp_course_id][21].'">'.$event_dates[$sp_course_id][21].'</div></th>';
 			}
 		?>
-		<th>Finales Testat</th>
+		<th>
+			<div class="event-final-<?php echo $sp_course_id?>" data-eventid="final" data-enabled="0">Finales Testat</div>
+		</th>
 		<th>Notizen</th>
-		<th>Teilnehmer deaktivieren</th>
+		<th>
+			<div class="participant-disable-<?php echo $sp_course_id?>" data-eventid="disable" data-enabled="0">Teilnehmer deaktivieren</div>
+		</th>
 	</tr>
 </thead>

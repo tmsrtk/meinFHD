@@ -1214,7 +1214,7 @@ class Kursverwaltung extends FHD_Controller {
 	 * array[0] element_name
 	 * array[1] cb_status
 	 * array[2] user_id
-	 * array[3] event_id starts with 0 runs to number set by user for this lab
+	 * array[3] event_id starts with 0 runs to number set by user for this lab - xtra-events = x1, x2
 	 * Depending on the checkbox that has been clicked db is updated
 	 * 
 	 */

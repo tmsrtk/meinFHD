@@ -1081,7 +1081,7 @@ class Kursverwaltung_model extends CI_Model {
 		$save = array(
 			'zeigezwischentestat1' => $text1,
 			'zeigezwischentestat2' => $text2,
-			'anzahltermine' => $number_of_events
+			'anzahltermine' => $number_of_events > 20 ? 20 : $number_of_events
 		);
 		
 		// save to gruppenteilnehmer_aufzeichnungen for that user

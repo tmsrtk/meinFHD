@@ -90,6 +90,8 @@
 								echo '<div class="well well-small">';
 								echo '<h4>'.$value->Kursname.'</h4>';
 								echo $value->TagName.', '.$value->Beginn.' - '.$value->Ende.' Uhr, ' .$value->Raum;
+								echo '<br /><br />';
+								echo 'Spaltenüberschriften anklicken, um Anwesenheit/Testat abzuhaken.';
 								echo '</div>';
 							}
 						}
@@ -142,7 +144,7 @@
 									'id' => 'presence-uid-'.$i.'-'.$one_participant->BenutzerID,
 									'data-uid' => $one_participant->BenutzerID,
 									'data-eid' => $i,
-									'class' => 'lab-cb',
+									'class' => 'lab-cb lab-cb-'.$sp_course_id.'-'.$i,
 									'value' => 'accept',
 									'checked' => 'TRUE'
 								);
@@ -151,7 +153,7 @@
 									'id' => 'testat-uid-'.$i.'-'.$one_participant->BenutzerID,
 									'data-uid' => $one_participant->BenutzerID,
 									'data-eid' => $i,
-									'class' => 'lab-cb',
+									'class' => 'lab-cb lab-cb-'.$sp_course_id.'-'.$i,
 									'value' => 'accept',
 									'checked' => 'TRUE'
 								);
@@ -183,8 +185,8 @@
 								'name' => 'pretestat1-uid-'.$i.'-'.$one_participant->BenutzerID,
 								'id' => 'pretestat1-uid-'.$i.'-'.$one_participant->BenutzerID,
 								'data-uid' => $one_participant->BenutzerID,
-								'data-eid' => 0,
-								'class' => 'lab-cb',
+								'data-eid' => 'x1',
+								'class' => 'lab-cb lab-cb-'.$sp_course_id.'-x1',
 								'value' => 'accept',
 								'checked' => ($one_participant->zwischentestat1 ? TRUE:FALSE)
 							);
@@ -198,8 +200,8 @@
 								'name' => 'pretestat2-uid-'.$i.'-'.$one_participant->BenutzerID,
 								'id' => 'pretestat2-uid-'.$i.'-'.$one_participant->BenutzerID,
 								'data-uid' => $one_participant->BenutzerID,
-								'data-eid' => 0,
-								'class' => 'lab-cb',
+								'data-eid' => 'x2',
+								'class' => 'lab-cb lab-cb-'.$sp_course_id.'-x2',
 								'value' => 'accept',
 								'checked' => ($one_participant->zwischentestat1 ? TRUE:FALSE)
 							);
@@ -213,8 +215,8 @@
 								'name' => 'final-uid-'.$i.'-'.$one_participant->BenutzerID,
 								'id' => 'final-uid-'.$i.'-'.$one_participant->BenutzerID,
 								'data-uid' => $one_participant->BenutzerID,
-								'data-eid' => 0,
-								'class' => 'lab-cb',
+								'data-eid' => 'final',
+								'class' => 'lab-cb  lab-cb-'.$sp_course_id.'-final',
 								'value' => 'accept',
 								'checked' => ($one_participant->gesamttestat ? TRUE:FALSE)
 							);
@@ -232,8 +234,8 @@
 								'name' => 'disable-uid-'.$i.'-'.$one_participant->BenutzerID,
 								'id' => 'disable-uid-'.$i.'-'.$one_participant->BenutzerID,
 								'data-uid' => $one_participant->BenutzerID,
-								'data-eid' => 0,
-								'class' => 'lab-cb',
+								'data-eid' => 'disable',
+								'class' => 'lab-cb lab-cb-'.$sp_course_id.'-disable',
 								'value' => 'accept',
 								'checked' => ($one_participant->ende ? TRUE:FALSE)
 							);
@@ -272,6 +274,71 @@
 	} else {
 		$('#tab-panel-'+activeTabId).addClass("active");
 		$('#lab-tab-'+activeTabId).addClass("active");
+	}
+	
+	// create variable that contains all sp_course_ids in that view
+	// to run through the tabs
+    var spCourseIdsInView = <?php echo json_encode($sp_course_ids_for_jq); ?>;
+	
+	// get all input-elements
+	//var inputs = $('input')
+	
+	
+	// disable checkboxes - default-status
+	$('.lab-cb').attr('disabled', true);
+	
+	// behaviour of checkboxes, when table-head is clicked
+	$.each(spCourseIdsInView, function(index, spCourseId){
+		// standard-events 1-20
+		$('.event-date-'+spCourseId).click(function(){
+			enableCbForEvent($(this));
+		});
+		
+		// extra-events
+		$('.event-additional-'+spCourseId).click(function(index, val){
+			enableCbForEvent($(this));
+		});
+		
+		// final testat
+		$('.event-final-'+spCourseId).click(function(index, val){
+			enableCbForEvent($(this));
+		});
+		
+		// disable participants
+		$('.participant-disable-'+spCourseId).click(function(index, val){
+			enableCbForEvent($(this));
+		});
+	});
+	
+	
+	/**
+	 * Helper to enable 
+	 */
+	function enableCbForEvent(self){
+		// if checkboxes are enabled
+		// >> get id of current element and run over all inputfields and check for eid
+		// >> enable and set class
+		if(self.data('enabled') == 0){
+			var id = self.data('eventid');
+			$.each($('input'), function(index, val){
+				if($(val).data('eid') == id){
+					console.log($(val).data('eid'));
+					$(val).removeAttr('disabled');
+				}
+			});
+			self.data('enabled', 1);
+			self.addClass('text-success');
+		// otherwise same but disable and remove class
+		} else {
+			var id = self.data('eventid');
+			$.each($('input'), function(index, val){
+				if($(val).data('eid') == id){
+					$(val).attr('disabled', true);
+				}
+			});
+			self.data('enabled', 0);
+			self.removeClass('text-success');
+		}
 	}
 	
 	
@@ -416,9 +483,6 @@
 	
 
 	<!--<script>-->
-	// create variable that contains all sp_course_ids in that view
-	// to run through the tabs
-    var spCourseIdsInView = <?php echo json_encode($sp_course_ids_for_jq); ?>;
 	
 	// handle all group-details-buttons in view
 	// each tab (i.e. sp_course_id) has it's own button
