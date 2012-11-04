@@ -661,7 +661,7 @@
 					}).promise().done(function() {
 						self._saveSemesterplan().done(function() {
 							// reload page
-							location.reload();
+							self._reload();
 						});
 					});
 				});
@@ -674,7 +674,7 @@
 					// if so, no deleting possible
 
 					regelSemester = "<?php echo $userdata['studiengang_data']['Regelsemester'] ?>";
-					// console.log(regelSemester);
+					console.log(regelSemester);
 					// return;
 
 					if ( regelSemester != self.config.semesterplanspalten.length ) {
@@ -702,7 +702,7 @@
 							}).promise().done(function() {
 								self._saveSemesterplan().done(function() {
 									// reload page
-									location.reload();
+									self._reload();
 								});
 							});
 						}
@@ -762,7 +762,7 @@
 							}).promise().done(function() {
 								self._saveSemesterplan().done(function() {
 									// reload page
-									location.reload();
+									self._reload();
 								});
 							});
 						}
@@ -773,7 +773,7 @@
 						}).promise().done(function() {
 							self._saveSemesterplan().done(function() {
 								// reload page
-								location.reload();
+								self._reload();
 							});
 						});
 					}
@@ -844,6 +844,10 @@
 			
 
 			// helper methods --------------------------------------------------------------------------
+
+			_reload : function () {
+				document.location.reload();
+			},
 
 			_progressChanged : function () {
 				var self = this
@@ -1164,6 +1168,8 @@
 
 					i++;
 				});
+
+				// alert('drinne');
 
 				return dfd.promise();
 			}
