@@ -3,28 +3,59 @@
 /**
  * meinFHD WebApp
  * 
- * @version 0.0.1
+ * @version 0.0.2
  * @copyright Fachhochschule Duesseldorf, 2012
  * @link http://www.fh-duesseldorf.de
- * @author Manuel Moritz (MM), <manuel.moritz@fh-duesseldorf.de>
+ * @author Manuel Moritz (MM), <manuel.moritz@fh-duesseldorf.de>, Christian Kundruß (CK), <christian.kundruss@fh-duesseldorf.de>
  */
 
 /**
  * Authentication Library
  *
- * Description...
+ * Library includes all necessary authentication functions. It implements the main authentication process including the firewall
+ * to grant user specific access to the protected content.
+ * @author Manuel Moritz (MM) <manuel.moritz@fh-duesseldorf.de>
+ * @author Christian Kundruß (CK) <christian.kundruss@fh-duesseldorf.de>
  */
 class Authentication {
-	
+
+    /**
+     * Holds the uid of the currently authenticated user.
+     * @var int
+     */
 	private $uid = 0;
+    /**
+     * Holds the fully qualified name for the authenticated user (given name & surname).
+     * @var string
+     */
 	private $name = 'Guest';
+    /**
+     * Holds the email of the currently authenticated user.
+     * @var string
+     */
 	private $email = '';
+    /**
+     * Holds the role for the currently authenticated user (used for access protection).
+     * @var array
+     */
 	private $roles = array('guest');
+    /**
+     * Holds the uid of the logged in admin, if he wants to authenticated himself as another user.
+     * Needed to be able to jump back to the admin session.
+     * @var int
+     */
 	private $admin_uid = 0;
+
+    /**
+     * Holds the ci instance.
+     * @var CI_Controller
+     */
 	private $CI;
 	
 	/**
-	 * Initialize the data
+	 * Default constructor. Initializes the data.
+     * @access public
+     * @return void
 	 */
 	public function __construct()
 	{
@@ -32,13 +63,16 @@ class Authentication {
 		// Store the user ID even if it does not exist
 		$uid = $this->CI->session->userdata('uid');
 
-		// If we have an ID which is not NULL, FALSE or 0,
-		// a valid user ID is stored in the session which
-		// means that there's a user logged in.
+		/*
+		 * If we have an ID which is not NULL, FALSE or 0,
+		 * a valid user ID is stored in the session which
+		 * means that there's a user logged in.
+		 */
 		if ($uid)
 		{
 			// Set the user ID.
 			$this->uid = $uid;
+            // load roles of the authenticated user
 			$this->_load_roles();
 		}
 		// Invoke the firewall to see if the current user has access
@@ -54,9 +88,9 @@ class Authentication {
 	 * initialize a session where we store the users's ID (uid)
 	 *
 	 * @access public
-	 * @param string name
-	 * @param string pass
-	 * @return bool
+	 * @param string name Username of the user, that wants to sign on
+	 * @param string pass Password that corresponds to the user id
+	 * @return bool TRUE if the user has been logged in successfully, otherwise FALSE will be returned.
 	 */
 	public function login($name, $pass)
 	{
@@ -70,7 +104,8 @@ class Authentication {
 		{
 			// The uid ist stored as BenutzerID
 			$this->uid = $query->row()->BenutzerID;
-			//$this->_load();
+			// load roles of the authenticated user
+            $this->_load_roles();
 			// Keep the user logged in by initializing the session
 			$this->CI->session->set_userdata('uid', $this->uid);
 
@@ -78,17 +113,18 @@ class Authentication {
 			return TRUE;
 		}
 
+        // there is no matching user (e.g. incorrect data ...)
 		return FALSE;
 	}
 
     /**
-     * Login function for administrators to login as another user.
-     * The regular login function can not used, because we need to save the information of the logged in administrator
-     * to perform a redirect back into the administrator session, if an logut is performed.
+     * Login function for administrators to sign on as another user.
+     * The regular login function can not be used, because we need to save the information of the logged in administrator
+     * to perform a redirect back into the administrator session, if an logout is performed.
      *
      * @access public
      * @param array user_data provides the whole user-information (user_id, loginname, lastname, forename, email, user_function)
-     * @return bool returns a bool wether the login was successful or not
+     * @return bool returns a bool whether the login was successful or not
      * @author Christian Kundruss
      */
     public function login_as_user($userdata) {
@@ -96,7 +132,7 @@ class Authentication {
         // first of all save the user data of the actual user for moving back to the admin session when the user logout is performed
         $this->admin_uid = $this->CI->session->userdata('uid');// save the information of the admin (actual authenticated user) in the authentication object
 
-        // security check if the choosen user is valid, that there is only one user with the equal username (usually there is only one user....)
+        // security check if the chosen user is valid, that there is only one user with the equal username (usually there is only one user....)
         $query = $this->CI->db->query('SELECT BenutzerID, Vorname, Nachname
                                        FROM benutzer
                                        where BenutzerID = ?',$userdata['user_id']);
@@ -117,7 +153,7 @@ class Authentication {
             return TRUE;
         }
 
-        // authentication wasn`t successful. the user_id exists at least two times
+        // authentication wasn`t successful. The user_id exists at least two times
         return FALSE;
     }
 	
@@ -154,20 +190,21 @@ class Authentication {
             $this->CI->session->set_userdata('uid', $this->uid);
             $this->CI->session->set_userdata('SSO-Login', 'TRUE');
 
-            return TRUE; // session is established
+            return TRUE; // session has been established
         }
 
-        return FALSE; // session is not established
+        return FALSE; // session has not been established
     }
 
 	/**
-	 * Loads all roles for the current user.
+	 * Loads all roles for the current user and saves them in the instance variable roles.
 	 * 
 	 * There's always the role "user" for authenticated users
 	 * and always the role "guest" for... guests :)
 	 *
 	 * @access private
 	 * @return void
+     * @todo alle rollen prüfen, ob die gelieferten Werte in irgendeiner Art und Weise brauchbar sind.
 	 */
 	private function _load_roles()
 	{
@@ -216,8 +253,8 @@ class Authentication {
 	}
 	
 	/**
+     * The function will ask the database, if the user has the permissions.
 	 * For detailed permission checks a string can be passed along.
-	 * The function will ask the database if the user has the permissions.
 	 *
 	 * @access public
 	 * @param string
@@ -263,6 +300,7 @@ class Authentication {
 	 *
 	 * @access public
 	 * @return void
+     * @todo Prüfen, ob das Löschen der UID ausreichend ist, oder ob nochmehr getan werden muss
 	 */
 	public function logout()
 	{
@@ -271,7 +309,6 @@ class Authentication {
         $this->CI->session->unset_userdata('admin_uid');
         $this->CI->session->unset_userdata('login_from_admin'); // regular logout -> the login is not provided by an admin
 
-        //$this->CI->session->sess_destroy();
         $this->uid = 0;
         $this->name = 'Guest';
         $this->email = '';
@@ -279,20 +316,21 @@ class Authentication {
 	}
 
     /**
-     * Switch back the user back to his administrator session.
-     * Is used if an admin authenticates him as an user and then performs an logout
+     * Function siwtches the user back to his administrator session.
+     * Is used if an admin authenticates authenticates himself as another user and then performs an logout.
      *
      * @author Christian Kundruss
+     * @access public
      * @return void
      */
-    public function switchBackToAdmin() {
+    public function switch_back_to_admin() {
         // change the current user-id to the user-id of the admin
         $this->uid = $this->CI->session->userdata('admin_uid');
         $this->name = ' ';
 
         // set the session information back to the administrator information
         $this->CI->session->set_userdata('uid', $this->uid);
-        $this->CI->session->set_userdata('login_from_admin', 'FALSE'); // login does not come anylonger from an administrator
+        $this->CI->session->set_userdata('login_from_admin', 'FALSE'); // login does not come any longer from an administrator
         $this->CI->session->unset_userdata('admin_uid');
     }
 
@@ -300,7 +338,7 @@ class Authentication {
 	 * Returns the user id.
 	 *
 	 * @access public
-	 * @return int
+	 * @return mixed Returns the uid of the authenticated user, ore FALSE if there is no authenticated user.
 	 */
 	public function user_id()
 	{
@@ -322,7 +360,7 @@ class Authentication {
     }
     
 	/**
-	 * The firewall detects access controled routes and determines,
+	 * The firewall detects access controlled routes and determines,
 	 * if the current user has access to it.
 	 *
 	 * @access private
@@ -355,18 +393,18 @@ class Authentication {
 		}
 		
 		// We are not on the login page, so we need to check the access.
-		// Load access controled routes
-		$controled_routes = $this->CI->config->item('access_control', 'firewall');
+		// Load access controlled routes
+		$controlled_routes = $this->CI->config->item('access_control', 'firewall');
 
-		foreach ($controled_routes as $controled_route)
+		foreach ($controlled_routes as $controlled_route)
 		{
-			$pattern = '/' . str_replace('/', '\/', $controled_route['pattern']) . '/';
+			$pattern = '/' . str_replace('/', '\/', $controlled_route['pattern']) . '/';
 			
 			if (preg_match($pattern, $current_route) == 1)
 			{
 				// The current route matches the condition
 				// Now let's look, if we have access to that role
-				if ( ! $this->_user_can_access($controled_route['roles'], $this->roles))
+				if ( ! $this->_user_can_access($controlled_route['roles'], $this->roles))
 				{
 					// 403 if access denied, redirect to login page if not logged in
 					if ($this->uid == 0)
@@ -411,27 +449,12 @@ class Authentication {
      * @access public
      * @return TRUE if logged in from admin-account, FALSE otherwise
      */
-    public function isLoggedInFromAdmin() {
+    public function is_logged_in_from_admin() {
         if($this->CI->session->userdata('login_from_admin') == 'TRUE'){
             return TRUE;
         }
 
         return FALSE;
-    }
-
-    /**
-     * Functions checks for authentication. If no authentication exists it redirects the user to the login page.
-     * Function is usually used to protect views, that should not be accessed from guest users.
-     * @author Christian Kundruss
-     * @access public
-     *
-     */
-    public function check_for_authenticaton () {
-
-        // check if the user is logged in, if he is not logged in he can`t access the requested site
-        if(!$this->CI->authentication->is_logged_in()) { // the user is not logged in -> redirect him to the login page
-            redirect('app/login');
-        }
     }
 }
 /* End of file Authentication.php */
