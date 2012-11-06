@@ -23,14 +23,9 @@ class Attendance extends FHD_Controller {
      * Base constructor, used for initialization.
      * @access public
      * @return void
-     * @todo embed authentification check, if it is implemented
      */
     public function __construct() {
         parent::__construct();
-
-        // security check / protection to prevent access for unauthorized users
-        // check if user is authenticated, otherwise he will be redirected to the login page
-        // $this->authentication->check_for_authentication(); TODO remove comment when sso login is merged
 
         // load the logbuch model
         $this->load->model('logbuch_model');

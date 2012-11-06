@@ -51,7 +51,7 @@ class App extends FHD_Controller {
         // --- Modification for automatic authentication if an global session exists Begin ---
         // a global session exists and the user has got an linked account -> log him in
         //if ($this->samlauthentication->is_authenticated() && has_linked_account()) {
-        if ($this->samlauthentication->is_authenticated() & $this->samlauthentication->has_linked_account()) {
+        if ($this->samlauthentication->is_authenticated() && $this->samlauthentication->has_linked_account()) {
             redirect('sso/establish_local_session');
         }
         // --- Modification End ---
@@ -95,8 +95,8 @@ class App extends FHD_Controller {
 	public function logout()
 	{
         // --- Modification for returning to admin session, if the admin is logged in as another user Begin ---
-        if ($this->authentication->isLoggedInFromAdmin() == 'TRUE') { // the user is logged in from an admin, change the user data and switch back to admin session
-            $this->authentication->switchBackToAdmin();
+        if ($this->authentication->is_logged_in_from_admin() == 'TRUE') { // the user is logged in from an admin, change the user data and switch back to admin session
+            $this->authentication->switch_back_to_admin();
             // show a message that the return into the admin session was successful
             $this->message->set('Du befindest dich wieder in der Administrator-Session.');
             // redirect to the 'benutzerverwaltung/benutzer bearbeiten'; outgoing point
@@ -111,7 +111,7 @@ class App extends FHD_Controller {
             // redirect user to dashboard
             redirect('dashboard/index');
         }
-        // --- Modifaction End ---
+        // --- Modification End ---
         else { // otherwise perform a regular logut
             //$this->message->set(sprintf('Ausgeloggt! (ID: %s)', $this->authentication->user_id()));
             $this->authentication->logout();

@@ -23,11 +23,6 @@ class Dashboard extends FHD_Controller {
     public function __construct(){
         parent::__construct();
 
-        // --- EDIT BY Christian Kundruss (CK) for sso authentication ---
-        // call the security_helper and check if the user is authenticated an allowed to call the controller
-        $this->authentication->check_for_authenticaton();
-        // --- END EDIT --
-
         // include the attendance class and instantiate it
         include( APPPATH . 'controllers/attendance.php');
         $this->attendance_widget = new Attendance();

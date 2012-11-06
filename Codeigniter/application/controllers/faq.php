@@ -21,10 +21,6 @@ class FAQ extends FHD_Controller {
 	function __construct(){
 		parent::__construct();
 
-        // --- EDIT BY Christian Kundruss (CK) for sso authentication ---
-        // call the security_helper and check if the user is authenticated an allowed to call the controller
-        $this->authentication->check_for_authenticaton();
-        // --- END EDIT --
 	}
 	
 	/**

@@ -29,10 +29,6 @@ class Admin extends FHD_Controller {
 //	    // get all stdgnge for the views
 //	    $data['all_degree_programs'] = $this->admin_model->get_all_degree_programs();
 
-        // --- EDIT BY Christian Kundruss (CK) for sso authentication ---
-        // call the security_helper and check if the user is authenticated an allowed to call the controller
-        $this->authentication->check_for_authenticaton();
-        // --- END EDIT --
 	}
 	
 	
@@ -637,19 +633,13 @@ class Admin extends FHD_Controller {
 	}
 
 	/**
-<<<<<<< HEAD
 	 * <p>deletes an user by his id. The id is submitted via POST.
      * Modifications by Christian Kundruss: If the local account is linked to an global
      * user id, the global uid will be add to the 'shibboleth blacklist'.
      * </p>
      * @access public
      * @return void
-     *
-=======
-	 * Deletes an user by his id.
-	 *
 	 * @category user_delete.php
->>>>>>> 02f1c438d9951b146d2587b3e624113793813498
 	 */
 	public function delete_user()
 	{

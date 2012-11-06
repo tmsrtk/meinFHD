@@ -28,9 +28,6 @@ class Logbuch_Analysis_Widget extends FHD_Controller {
         // load the logbuch model
         $this->load->model('logbuch_model');
 
-        // security check / protection to prevent access for unauthorized users
-        // check if user is authenticated, otherwise he will be redirected to the login page
-        // $this->authentication->check_for_authentication(); TODO remove comment when sso login is merged
     }
 
     /**
