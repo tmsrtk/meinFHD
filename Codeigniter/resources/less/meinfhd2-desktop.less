@@ -15,6 +15,7 @@ body {
 
 }
 
+// STUDIENPLAN  --------------------------------------
 
 #studienplan {
 
@@ -198,7 +199,7 @@ body {
 	.border-radius(4px);
 }
 
-// ---------------------------------------------------------
+
 
 form#studienplan-form {
 	
@@ -215,6 +216,15 @@ form#studienplan-form {
 	}
 }
 
+.zero-sem-bg {
+	// background: red;
+	background: url(../img/zero-sem-bg.png) repeat;
+}
+
+
+
+// STUNDENPLAN -----------------------------------------------------
+
 
 div#stundenplan {
 	
@@ -228,57 +238,64 @@ div#stundenplan {
 			}
 		}
 	}
-}
 
+	a.std-abs {
+		border-right: 1px solid rgb(218, 218, 218)
+	}
 
-.zero-sem-bg {
-	// background: red;
-	background: url(../img/zero-sem-bg.png) repeat;
-}
+	.table-condensed td.std-time-cell {
+		padding: 0;
+		background-image: url('../img/std-time-stripes-50.png');
 
+		.std-rel { position: relative; }
+		.std-abs { position: absolute; }
 
+		.std-col {
+			width: 18%;
+		/* 		margin-right: 20px; */
+		}
 
-.std-rel { position: relative; }
-.std-abs { position: absolute; }
+		.std-col-legend {
+			width: 10%;
+		}
 
-.std-col {
-	width: 18%;
-/* 		margin-right: 20px; */
-}
+		.std-event {
+			// overflow: hidden;
+			// border: 1px #FAFAFA solid;
+			// color: #fff;
 
-.std-col-legend {
-	width: 10%;
-}
+			overflow: hidden;
+			color: #fff;
+			display: block;
+			
+			&:hover {
+				text-decoration: none;
+			}
+		}
 
-.std-event {
-	// overflow: hidden;
-	// border: 1px #FAFAFA solid;
-	// color: #fff;
+		.std-event-container {
+			padding: 4px;
+			padding-left: 8px;
+			word-break: break-word;
 
-	overflow: hidden;
-	color: #fff;
-	display: block;
-	
-	&:hover {
-		text-decoration: none;
+			h4 {
+				font-size: 14px;
+				display: inline-block;
+				border-bottom: 1px solid white;
+				margin-bottom: 6px;
+			}
+			h5 {
+				font-size: 14px;
+				font-weight: normal;
+			}
+			h6 {
+				color: white;
+				font-weight: normal;
+				font-style: italic;
+			}
+		}
 	}
 }
-
-.std-event-container {
-	padding: 4px;
-	word-break: break-word;
-
-	
-}
-
-#stundenplan .table-condensed td.std-time-cell {
-	padding: 0;
-	background-image: url('../img/std-time-stripes-50.png');
-}
-
-
-
-
 
 
 
