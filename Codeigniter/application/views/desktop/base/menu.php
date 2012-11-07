@@ -32,7 +32,7 @@
 									</a>
 									<ul class="dropdown-menu level-2">
 										<?php if ( $this->authentication->has_permissions('hat_einladungsaufforderung') ) : ?>
-										<li><a href="<?php print base_url('admin/request_user_invitation_mask'); ?>">Einladungsaufforderung</a></li>
+										<li><a href="<?php print base_url('admin/request_user_invitation_mask'); ?>">Einladungsanforderungen</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_benutzer_anlegen') ) : ?>
 										<li><a href="<?php print base_url('admin/create_user_mask'); ?>">Benutzer anlegen</a></li>
@@ -43,9 +43,9 @@
 										<?php if ( $this->authentication->has_permissions('hat_benutzer_loeschen') ) : ?>
 										<li><a href="<?php print base_url('admin/delete_user_mask'); ?>">Benutzer löschen</a></li>
 										<?php endif ?>
-										<?php if ( $this->authentication->has_permissions('hat_benutzer_importieren') ) : ?>
+										<?php /* if ( $this->authentication->has_permissions('hat_benutzer_importieren') ) : ?>
 										<li><a href="<?php print base_url('admin/import_user_mask'); ?>">Benutzer importieren</a></li>
-										<?php endif ?>
+										<?php endif */?>
 										<?php if ( $this->authentication->has_permissions('hat_rechte_verwalten') ) : ?>
 										<li><a href="<?php print base_url('admin/show_role_permissions'); ?>">Rechte verwalten</a></li>
 										<?php endif ?>
