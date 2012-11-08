@@ -897,11 +897,11 @@ class Admin_model extends CI_Model {
 
 	
 	/**
-	 * Returns PO, name, abbreviation of all degree programs
+	 * Returns PO, name, abbreviation (unique combination) of all degree programs
 	 * >> used with filter-view
 	 * @return array degree program records
 	 */
-	function get_all_degree_programs(){
+	public function get_all_degree_programs(){
 	    $data = array();
 
 	    $this->db->order_by('StudiengangID', 'desc');
@@ -918,10 +918,10 @@ class Admin_model extends CI_Model {
 	
 	/**
 	 * Returns all records belonging to a single degree program (specified by id)
-	 * @param int $dp_id
-	 * @return unknown
+	 * @param int $dp_id id of degree program to return
+	 * @return array data for single degree program
 	 */
-	function get_degree_program_courses($dp_id){
+	public function get_degree_program_courses($dp_id){
 	    $data = array();
 	    $course_exams = '';
 
@@ -971,7 +971,7 @@ class Admin_model extends CI_Model {
 	
 	/**
 	 * Returns the exam-types
-	 * @return Array (with Objects)
+	 * @return array (with Objects)
 	 */
 	private function get_exam_types(){
 	    $data = array();
@@ -988,7 +988,7 @@ class Admin_model extends CI_Model {
 	}
 	
 	/**
-	 * Returns (0) one or more exam-types for a passed course_id
+	 * Returns one or more exam-types for a passed course_id
 	 * @param int $course_id
 	 */
 	private function get_exams_for_course($course_id){
@@ -997,15 +997,10 @@ class Admin_model extends CI_Model {
 	    $q = $this->db->get_where('pruefungssammlung', array('KursID' => $course_id));
 	    
 	    if($q->num_rows() > 0){
-//		foreach ($q->result() as $row){
-//			    $data[] = $row;
-//		    }
-//		    return $data;
-//		}
 			foreach ($q->result_array() as $row){
 				$data[] = $row['PruefungstypID'];
 			}
-		return $data;
+			return $data;
 	    }
 	}
 	
@@ -1016,7 +1011,7 @@ class Admin_model extends CI_Model {
 	 * @param int $degree_program_id
 	 * @return array all course ids of a degree program
 	 */
-	function get_degree_program_course_ids($degree_program_id){
+	public function get_degree_program_course_ids($degree_program_id){
 	    $data = array();
 	    
 	    $this->db->select('KursID');
@@ -1026,7 +1021,7 @@ class Admin_model extends CI_Model {
 			foreach ($q->result() as $row){
 				$data[] = $row;
 			}
-		return $data;
+			return $data;
 	    }
 	}
 	
@@ -1035,16 +1030,13 @@ class Admin_model extends CI_Model {
 	 * @param unknown_type $degree_program_id
 	 * @return unknown
 	 */
-	function get_degree_program_details_asrow($degree_program_id){
+	public function get_degree_program_details_asrow($degree_program_id){
 	    $q = '';
 	    
 	    $q = $this->db->get_where('studiengang', array('StudiengangID' => $degree_program_id));
 
 	    if($q->num_rows() == 1){
-// 			foreach ($q->result() as $row){
-// 				$data[] = $row;
-// 			}
-		return $q->row();
+			return $q->row();
 	    }
 	}
 	
@@ -1118,7 +1110,7 @@ class Admin_model extends CI_Model {
 	 * @param unknown_type $data
 	 * @param unknown_type $stdgng_id
 	 */
-	function update_degree_program_description_data($data, $stdgng_id){
+	public function update_degree_program_description_data($data, $stdgng_id){
 	    $this->db->where('StudiengangID', $stdgng_id);
 	    $this->db->update('studiengang', $data);
 	}
@@ -1129,7 +1121,7 @@ class Admin_model extends CI_Model {
 	 * @param int $course_id
 	 * @param array $cb_data
 	 */
-	function save_exam_types_for_course($cb_data, $course_id = ''){
+	public function save_exam_types_for_course($cb_data, $course_id = ''){
 	    // !! deletes all exam-types for that course first
 	    // >> perhaps not desired behaviour!!
 	    if($course_id){
@@ -1145,10 +1137,11 @@ class Admin_model extends CI_Model {
 	
 	/**
 	 * Creates new Studiengang in db
-	 * @param array $data
-	 * @return new created degree_program_id
+	 * 
+	 * @param array $data data to be stored
+	 * @return int new created degree_program_id
 	 */
-	function create_new_degree_program($data){
+	public function create_new_degree_program($data){
 	    $this->db->insert('studiengang', $data);
 		
 		// get new created dp_id
@@ -1166,9 +1159,9 @@ class Admin_model extends CI_Model {
 	
 	/**
 	 * Deletes a Studiengang from db
-	 * @param int $id
+	 * @param int $id id of degree-program to be deleted
 	 */
-	function delete_degree_program($id){
+	public function delete_degree_program($id){
 	    // delete all exam-types stored in 'pruefungssammlung'
 	    $course_ids = array();
 	    $course_ids = $this->get_degree_program_course_ids($id);
@@ -1192,9 +1185,9 @@ class Admin_model extends CI_Model {
 	
 	/**
 	 * Deletes a single course from studiengangkurs-table
-	 * @param int $course_id
+	 * @param int $course_id course-id of course to be deleted
 	 */
-	function delete_degree_program_single_course($course_id){
+	public function delete_degree_program_single_course($course_id){
 	    $this->db->delete('pruefungssammlung', array('KursID' => $course_id));
 	    $this->db->delete('studiengangkurs', array('KursID' => $course_id));
 	}
@@ -1202,9 +1195,10 @@ class Admin_model extends CI_Model {
 	
 	/**
 	 * Copies degree program - alters name and short name (adds [KOPIE]
+	 * NOTICE: db-field only takes 30 letters - sometimes too less for addition
 	 * @param int $dp_id
 	 */
-	function copy_degree_program($dp_id){
+	public function copy_degree_program($dp_id){
 	    // fetching data for degree program to copy
 	    $q = $this->db->get_where('studiengang', array('StudiengangID' => $dp_id));
 
@@ -1270,7 +1264,7 @@ class Admin_model extends CI_Model {
 	
 	/**
 	 * Helper to get highest degree-program-id
-	 * @return int
+	 * @return int highest dp-id
 	 */
 	private function get_highest_degree_program_id(){
 	    $data = array();
@@ -1304,7 +1298,11 @@ class Admin_model extends CI_Model {
 	 */
 
 	
-	function get_stdplan_filterdata(){
+	/**
+	 * Returns all entries to be shown in stdplan-filter
+	 * @return array entries to show in filter
+	 */
+	public function get_stdplan_filterdata(){
 	    $q = '';
 	    $data = array();
 	    
@@ -1321,7 +1319,7 @@ class Admin_model extends CI_Model {
 			foreach ($q->result() as $row){
 				$data[] = $row;
 			}
-		return $data;
+			return $data;
 	    }
 	}
 	
@@ -1331,7 +1329,7 @@ class Admin_model extends CI_Model {
 	 * needed, to provide deletion list-view with id-data
 	 * @return type
 	 */
-	function get_stdplan_filterdata_plus_id(){
+	public function get_stdplan_filterdata_plus_id(){
 	    $data = array();
 	    
 	    $this->db->distinct();
@@ -1347,12 +1345,12 @@ class Admin_model extends CI_Model {
 			foreach ($q->result() as $row){
 				$data[] = $row;
 			}
-		return $data;
+			return $data;
 	    }
 	}
 	
 
-	//// KEEP !! Stundenplanfilter
+	//// PLAIN SQL !! Stundenplanfilter
 	//select distinct b.`StudiengangAbkuerzung`, b.`Pruefungsordnung`, a.`Semester`
 	//from studiengangkurs as a
 	//inner join studiengang as b
@@ -1363,10 +1361,10 @@ class Admin_model extends CI_Model {
 	
 	/**
 	 * Returns data for stdplan view
-	 * @param type $ids
-	 * @return type
+	 * @param array $ids unique combination of abbreviation, semester and po of a stdplan
+	 * @return array all courses + details for that stdplan
 	 */
-	function get_stdplan_data($ids){
+	public function get_stdplan_data($ids){
 	    $data = array();
 	    
 	    $this->db->distinct();
@@ -1388,40 +1386,41 @@ class Admin_model extends CI_Model {
 			foreach ($q->result() as $row){
 				$data[] = $row;
 			}
-		return $data;
+			return $data;
 	    }
 	    
 	}
 	
-	/**
-	 * Returns all SPKursIDs with matching Abkürzung, Semester, PO
-	 * @param type $ids
-	 * @return type
-	 */
-	function get_all_stdplan_spkurs_ids($ids){
-	    $data = array();
-	    
-	    $this->db->distinct();
-	    $this->db->select('a.SPKursID');
-	    $this->db->from('stundenplankurs as a');
-	    $this->db->join('studiengangkurs as b', 'a.KursID = b.KursID');
-	    $this->db->join('studiengang as c', 'b.StudiengangID = c.StudiengangID');
-	    $this->db->where('c.StudiengangAbkuerzung', $ids[0]);
-	    $this->db->where('b.Semester', $ids[1]);
-	    $this->db->where('c.Pruefungsordnung', $ids[2]);
-	    
-	    $q = $this->db->get();
-	    	    
-	    if($q->num_rows() > 0){
-			foreach ($q->result() as $row){
-				$data[] = $row;
-			}
-		return $data;
-	    }
-	    
-	}
+//	/**
+//	// TODO: METHOD SEEMS TO BE DUPLICATED - delete if everything works fine
+//	 * Returns all SPKursIDs with matching Abkürzung, Semester, PO
+//	 * @param array $ids unique combination of abbreviation, semester and po of a stdplan
+//	 * @return array all sp_course_ids contained in a stdplan
+//	 */
+//	public function get_all_stdplan_spkurs_ids($ids){
+//	    $data = array();
+//	    
+//	    $this->db->distinct();
+//	    $this->db->select('a.SPKursID');
+//	    $this->db->from('stundenplankurs as a');
+//	    $this->db->join('studiengangkurs as b', 'a.KursID = b.KursID');
+//	    $this->db->join('studiengang as c', 'b.StudiengangID = c.StudiengangID');
+//	    $this->db->where('c.StudiengangAbkuerzung', $ids[0]);
+//	    $this->db->where('b.Semester', $ids[1]);
+//	    $this->db->where('c.Pruefungsordnung', $ids[2]);
+//	    
+//	    $q = $this->db->get();
+//	    	    
+//	    if($q->num_rows() > 0){
+//			foreach ($q->result() as $row){
+//				$data[] = $row;
+//			}
+//			return $data;
+//	    }
+//	    
+//	}
 
-	// KEEP!! Inhalte der Tabelle
+	// PLAIN SQL !! Inhalte der Tabelle
 	// 
 	//select distinct
 	//    c.`Pruefungsordnung`, c.`StudiengangAbkuerzung`, b.`Semester`,
@@ -1437,11 +1436,11 @@ class Admin_model extends CI_Model {
 
 	
 	/**
-	 * Returns StundenplankursIDs
-	 * @param array $ids holding unique combination of Abk, Sem, PO
-	 * @return type
+	 * Returns all SPKursIDs with matching Abkürzung, Semester, PO
+	 * @param array $ids unique combination of Abk, Sem, PO
+	 * @return array all sp_course_ids contained in a stdplan
 	 */
-	function get_stdplan_sp_course_ids($ids){
+	public function get_stdplan_sp_course_ids($ids){
 	    $data = array();
 	    
 	    $this->db->distinct();
@@ -1460,17 +1459,17 @@ class Admin_model extends CI_Model {
 			foreach ($q->result() as $row){
 				$data[] = $row;
 			}
-		return $data;
+			return $data;
 	    }
 	}
 	
 	
 	/**
 	 * Returns KursIDs in a single Stundenplan
-	 * @param array $ids holding unique combination of Abk, Sem, PO
-	 * @return type
+	 * @param array $ids unique combination of Abk, Sem, PO
+	 * @return array all course_ids in stdplan
 	 */
-	function get_stdplan_course_ids($ids){
+	public function get_stdplan_course_ids($ids){
 	    $data = array();
 	    
 	    $this->db->distinct();
@@ -1489,26 +1488,25 @@ class Admin_model extends CI_Model {
 			foreach ($q->result() as $row){
 				$data[] = $row;
 			}
-		return $data;
+			return $data;
 	    }
 	}
 	
 
 	/**
 	 * Returns all enventtypes
+	 * @return array all eventtypes
 	 */
-	function get_eventtypes(){
+	public function get_eventtypes(){
 	    $data = array();
 	    
 	    $q = $this->db->get('veranstaltungsform');
-	    
-//	    $data[] = null;
 	    
 	    if($q->num_rows() > 0){
 			foreach ($q->result() as $row){
 				$data[] = $row;
 			}
-		return $data;
+			return $data;
 	    }
 	}
 	
@@ -1516,40 +1514,36 @@ class Admin_model extends CI_Model {
 	/**
 	 * Returns all users to whom courses can be assigned
 	 * TODO get ALL users - not only profs (uid = dozentid)
+	 * @return array all profs
 	 */
-	function get_profs_for_stdplan_list(){
+	public function get_profs_for_stdplan_list(){
 	    $data = array();
 	    
 	    $this->db->distinct();
 	    $this->db->select('a.DozentID, b.Nachname, b.Vorname');
 	    $this->db->from('stundenplankurs as a');
 	    $this->db->join('benutzer as b', 'b.BenutzerID = a.DozentID', 'left outer');
-	    
 	    $q = $this->db->get();
-	    
-//	    $data[] = null;
 	    
 	    if($q->num_rows() > 0){
 			foreach ($q->result() as $row){
 				$data[] = $row;
 			}
-		return $data;
+			return $data;
 	    }
 	}
 	
 	
 	/**
 	 * Returns als existing colors in Stdplan
+	 * @return array all colors
 	 */
-	function get_colors_from_stdplan(){
+	public function get_colors_from_stdplan(){
 	    $data = array();
 	    
 	    $this->db->distinct();
 	    $this->db->select('Farbe');
-	    
 	    $q = $this->db->get('stundenplankurs');
-	    
-//	    $data[] = null;
 	    
 	    if($q->num_rows() > 0){
 			foreach ($q->result() as $row){
@@ -1562,17 +1556,17 @@ class Admin_model extends CI_Model {
 	
 	/**
 	 * Updates a single record in Stundenplankurs for a given SPKursID
-	 * @param type $data
-	 * @param type $spkurs_id
+	 * @param array $data data to be stored to db
+	 * @param int $spkurs_id id course which details changed
 	 */
-	function update_stdplan_details($data, $spkurs_id){
+	public function update_stdplan_details($data, $spkurs_id){
 	    $this->db->where('SPKursID', $spkurs_id);
 	    $this->db->update('stundenplankurs', $data);
 	}
 	
 	
 	/**
-	 * 
+	 * TODO !!!!!
 	 * @param array $data
 	 */
 	public function save_new_course_in_stdplan($data){
@@ -1605,7 +1599,7 @@ class Admin_model extends CI_Model {
 	 * - deleting from group
 	 * - deleting from benutzerkurs
 	 * - deleting from stundenplankurs
-	 * @param type $stdplan_ids
+	 * @param array $stdplan_ids unique combination of abbreviation, semester, po
 	 */
 	function delete_stdplan_related_records($stdplan_ids){
 	    // get spkursids to delete
@@ -1638,8 +1632,12 @@ class Admin_model extends CI_Model {
 	}
 	
 	
-	// get group_ids from stundenplankurs (spkurs_id = )
-	function get_group_id_to_delete($spkurs_id){
+	/**
+	 * Returns a group_id
+	 * @param int $spkurs_id sp_course_id to get group id for
+	 * @return int group_id
+	 */
+	private function get_group_id_to_delete($spkurs_id){
 	    $this->db->select('GruppeID');
 	    $this->db->where('SPKursID', $spkurs_id);
 	    $q = $this->db->get('stundenplankurs');
@@ -1651,8 +1649,11 @@ class Admin_model extends CI_Model {
 	    }
 	}
 	
-	
-	function delete_from_group($g_id){
+	/**
+	 * Helper to delete groups from gruppe-table
+	 * @param int $g_id group id
+	 */
+	private function delete_from_group($g_id){
 		// from gruppe !!
 	    $this->db->where('GruppeID', $g_id);
 	    $this->db->delete('gruppe');
@@ -1667,12 +1668,20 @@ class Admin_model extends CI_Model {
 	}
 	
 	
-	function delete_from_benutzerkurs($spk_id){
+	/**
+	 * Helper to delete sp_courses from benutzerkurs-table
+	 * @param int $spk_id sp_course_id
+	 */
+	private function delete_from_benutzerkurs($spk_id){
 	    $this->db->where('SPKursID', $spk_id);
 	    $this->db->delete('benutzerkurs');
 	}
 	
-	function delete_from_stundenplankurs($spk_id){
+	/**
+	 * Helper to delete courses from stundenplankurs-table
+	 * @param int $spk_id sp_course_id
+	 */
+	private function delete_from_stundenplankurs($spk_id){
 	    $this->db->where('SPKursID', $spk_id);
 	    $this->db->delete('stundenplankurs');
 	}
@@ -1684,7 +1693,7 @@ class Admin_model extends CI_Model {
 	 * Deletes a single event from stdplan and all related data
 	 * @param int $spcourse_id event to delete
 	 */
-	function delete_single_event_from_stdplan($spcourse_id){
+	public function delete_single_event_from_stdplan($spcourse_id){
 	    // get groupid
 	    $group_id = '';
 		$group_id = $this->get_group_id_to_delete($spcourse_id);

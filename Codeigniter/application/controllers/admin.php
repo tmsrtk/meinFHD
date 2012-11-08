@@ -812,7 +812,9 @@ class Admin extends FHD_Controller {
 	**************************************************************************/
 	
 	/**
-	 * Show page with empty input-fields 
+	 * Show page with empty input-fields.
+	 * Called from within menue
+	 * 
 	 */
 	function degree_program_add(){
 				
@@ -827,7 +829,8 @@ class Admin extends FHD_Controller {
 	}
 	
 	/**
-	 * Validates if form is filled correctly.
+	 * Validates if degree-program-add-form is filled correctly.
+	 * 
 	 */
 	function validate_new_created_degree_program(){
 		
@@ -854,10 +857,12 @@ class Admin extends FHD_Controller {
 	
 	
 	/**
+	 * Save new degree program to db.
 	 * Insert new entry into db with given values ($_POST)
 	 */
 	function save_new_created_degree_program(){
-	    // TODO check if given name and version are already used - in this case return show errormessage
+	    // TODO?? check if given name and version are already used
+		// perhaps not necessary because admin should know that this isn't possible
 
 	    $insert_fields = array(
 			    'Pruefungsordnung',
@@ -877,11 +882,12 @@ class Admin extends FHD_Controller {
 		    }
 	    }
 
-	    // save - model returns new id >> reload
+	    // save new record - model returns id of new created dp
 		$new_id = 0;
 	    $new_id = $this->admin_model->create_new_degree_program($insert_new_dp);
 
-	    // pass new id via flashdata - load degree programs view with dropdown
+	    // redirect to degree program view with active dropdown (i.e. the new created)
+		// pass new id via flashdata
 		$this->session->set_flashdata('reload', $new_id);
 	    redirect('admin/degree_program_edit');
 	}
@@ -896,7 +902,6 @@ class Admin extends FHD_Controller {
 	 * Helper method called when degree programm should be deleted
 	 * points to degree_program_copy_delete and passes boolean
 	 * called from menue
-	 * @param boolean $delete
 	 */
 	public function degree_program_delete(){
 	    $this->degree_program_copy_delete(TRUE);
@@ -906,7 +911,6 @@ class Admin extends FHD_Controller {
 	 * Helper method called when degree programm should be copied
 	 * points to degree_program_copy_delete and passes boolean
 	 * called from menue
-	 * @param boolean $delete
 	 */
 	public function degree_program_copy(){
 	    $this->degree_program_copy_delete(FALSE);
@@ -915,6 +919,7 @@ class Admin extends FHD_Controller {
 	
 	/**
 	 * Shows list of all degree programs to give the opportunity to delete/copy them.
+	 * @param boolean $delete flag to use the same view for copying and deleting
 	 */
 	private function degree_program_copy_delete($delete){
 	    // get all degree programs for the view
@@ -925,8 +930,8 @@ class Admin extends FHD_Controller {
 	}
 	
 	/**
-	 * Deltes a whole degree program - called when button is clicked
-	 * called from within view after button is clicked
+	 * Deletes a whole degree program
+	 * Called from within view after OK button is clicked
 	 */
 	public function delete_degree_program() {
 	    $delete_id = $this->input->post('degree_program_id');
@@ -962,7 +967,7 @@ class Admin extends FHD_Controller {
 	
 	/**
 	 * Shows view with dropdown for degree programs
-	 * If there is something passed (via flashdata) view loads a specific degree-program
+	 * If there is something passed (via flashdata) the view loads a specific degree-program
 	 * if not: user will see the empty view
 	 */
 	public function degree_program_edit(){
@@ -982,9 +987,9 @@ class Admin extends FHD_Controller {
 	
 	
 	/**
-	 * Returns an div holding the degree-program-table for a passed degree-program-id
+	 * Returns an div with the degree-program-table for a passed degree-program-id
 	 * either passed via GET >> $this->input->get('degree_program_id')
-	 * or if called from within controller (deleting, adding one course) as parameter
+	 * or if called from within this controller (deleting, adding one course) as parameter
 	 */
 	public function ajax_show_courses_of_degree_program($degree_program_id = '0'){
 
@@ -1112,7 +1117,7 @@ class Admin extends FHD_Controller {
 	 */
 	public function validate_degree_program_details_changes(){
 	    
-	    // TODO??? PO-Name-Abk-Kombi muss UNIQUE sein
+	    // TODO??? PO-Name-Abk-Kombi must be UNIQUE
 	    
 	    // get degree_program_id
 	    $dp_id = $this->input->post('degree_program_id');
@@ -1139,7 +1144,9 @@ class Admin extends FHD_Controller {
 	    }
 	}
 	
-	
+	/**
+	 * Validates if changes match validation-criteria
+	 */
 	public function validate_degree_program_course_changes(){
 	    
 	    // get all course-ids belonging to a specified degree program
@@ -1168,7 +1175,7 @@ class Admin extends FHD_Controller {
 	
 	
 	/**
-	 * Saving all Values from $_POST after submit button has been clicked.
+	 * Saving all values after submit button has been clicked.
 	 */
 	public function save_degree_program_course_changes(){
 		// getting id from post
@@ -1213,7 +1220,7 @@ class Admin extends FHD_Controller {
 			$dp_id_values[] = $si->KursID;
 	    }
 
-	    // run through all course-ids that belong to a single Studiengang, build data-array for updating records in db
+	    // run through all course-ids that belong to a single degree-program, build data-array for updating records in db
 	    // AND update data for every id
 	    foreach($dp_id_values as $id){
 			$update_dp_data = array(); // init
@@ -1255,14 +1262,14 @@ class Admin extends FHD_Controller {
 			
 	    }
 
-	    // show degree-program-edti-view again with activated dp_id
+	    // show degree-program-edit-view again with activated dp_id
 		$this->session->set_flashdata('reload', $dp_id);
 	    redirect('admin/degree_program_edit');	
 	}
 	
 	
 	/**
-	 * Save all fields (studiengang) - getting data from $_POST, after button-click
+	 * Save all fields (degree program) - getting data from POST
 	 */
 	public function save_degree_program_details_changes(){
 	    $updateFields = array(
@@ -1287,11 +1294,11 @@ class Admin extends FHD_Controller {
 	    $this->admin_model->update_degree_program_description_data($update_dp_description_data, $dp_id);
 
 	    // show StudiengangDetails-List again
-//	    $this->degree_program_edit();
 	    $this->session->set_flashdata('reload', $dp_id);
 	    redirect('admin/degree_program_edit');
 		
 	}
+	
 //	/**
 //	 * Gets data of new course to create and validates
 //	 * DEPRECATED - use these functions when there is one single line (1! form) for adding new course
@@ -1355,7 +1362,7 @@ class Admin extends FHD_Controller {
 	
 	/**
 	 * Deletes single course from studiengangkurs-table
-	 * called from degree_program_edit view after user confirmed
+	 * Called from degree_program_edit view after user confirmed
 	 * deletion with click on OK in confirmation-dialog
 	 * After altering db, ajax_show_course_of_degree_program
 	 * is called (passed parameter indicates dp to load)
@@ -1430,9 +1437,14 @@ class Admin extends FHD_Controller {
 	 * 
 	 */
 	
+	/**
+	 * Shows stdplan-edit view
+	 * If called from menue: reload is empty >> no active dropdown
+	 * otherwise: id to reload is passed via flashdata
+	 */
 	public function stdplan_edit(){
 	    $reload = $this->session->flashdata('reload');
-		echo $reload;
+		
 		if(!$reload){
 			$reload = 0; // if nothing is passed
 		}
@@ -1447,7 +1459,7 @@ class Admin extends FHD_Controller {
 	
 	
 	/**
-	 * Returns an div holding the stdplan-table for a specified stdplan >> $this->input->get('stdplan_id')
+	 * Returns an div with the stdplan-table for a specified stdplan >> $this->input->get('stdplan_id')
 	 * !! combined id: StudiengangAbkuerzung, Semester, PO
 	 * @param array $reload_ids holding unique abk, sem, po combination - passed when called from within controller >> reload view (dropdown)
 	 */
@@ -1545,7 +1557,10 @@ class Admin extends FHD_Controller {
 	    
 	}
 
-	function validate_stdplan_changes(){
+	/**
+	 * Validating all inputs.
+	 */
+	public function validate_stdplan_changes(){
 	    
 	    // get all course-ids belonging to a specified stdgng
 	    $stdplan_id = array(
@@ -1574,8 +1589,9 @@ class Admin extends FHD_Controller {
 	
 	/**
 	 * Updates data of Stdplan
+	 * @param int $reload id to be reloaded (if passed / 0 >> no active stdplan)
 	 */
-	function save_stdplan_changes($reload = 0){
+	public function save_stdplan_changes($reload = 0){
 		
 	    // build an array, containing all keys that have to be updated in db
 	    $update_fields = array(
@@ -1654,7 +1670,7 @@ class Admin extends FHD_Controller {
 	
 	
 	/**
-	 * Calls view to delete single stdplans
+	 * Calls view to delete single stdplan
 	 */
 	public function stdplan_delete(){
 	    $this->data->add('delete_view_data', $this->admin_model->get_stdplan_filterdata_plus_id());
@@ -1679,7 +1695,6 @@ class Admin extends FHD_Controller {
 	    $this->admin_model->delete_stdplan_related_records($degree_program_ids);
 	    
 	    // reload view
-//	    $this->stdplan_delete();
 	    redirect('admin/stdplan_delete');
 	    
 	}
@@ -1774,15 +1789,15 @@ class Admin extends FHD_Controller {
 	
 	/**
 	 * Shows view with upload and all uploaded files till now
-	 * @param String $error upload error
 	 */
-	function stdplan_import(){
+	public function stdplan_import(){
 	    // inits
 		$uplaod_dir = array();
 		$parsing_result = '';
 		$this->load->helper('directory');
 		
 		// getting parsing_result - if there is any
+		// and put into dialog
 		$parsing_result = $this->session->flashdata('parsing_result');
 		
 		if($parsing_result){
@@ -1809,6 +1824,7 @@ class Admin extends FHD_Controller {
 	    $degree_programs = $this->admin_model->get_all_degree_programs();
 	    $data['stdgng_uploads'] = '';
 	    
+		// init helper var
 	    $last_id = 0;
 	    
 	    if($upload_dir){
@@ -1928,7 +1944,6 @@ class Admin extends FHD_Controller {
 	    // delete file
 	    unlink('./resources/uploads/'.$file_to_delete);
 	    
-//	    $this->stdplan_import();
 	    redirect('admin/stdplan_import');
 	}
 	
@@ -1946,7 +1961,6 @@ class Admin extends FHD_Controller {
 	    // open file
 	    shell_exec('start '.$file);
 	    
-//	    $this->stdplan_import();
 	    redirect('admin/stdplan_import');
 	}
 	

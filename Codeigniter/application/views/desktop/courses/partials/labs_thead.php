@@ -47,7 +47,7 @@
 		</th>
 		<th>Notizen</th>
 		<th>
-			<div class="participant-disable-<?php echo $sp_course_id?>" data-eventid="disable" data-enabled="0">Teilnehmer deaktivieren</div>
+			<div class="participant-disable-<?php echo $sp_course_id?>" data-eventid="disable" data-enabled="0">Ausgeschieden</div>
 		</th>
 	</tr>
 </thead>

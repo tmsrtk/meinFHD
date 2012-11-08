@@ -42,7 +42,7 @@
 				?>
 			</div>
 			
-			<h3>Hochgeladene Dateien:</h3>
+			<h3>Importierte Dateien:</h3>
 
 			<?php
 			if($stdgng_uploads != null){
