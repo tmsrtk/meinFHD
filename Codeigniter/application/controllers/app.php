@@ -3,10 +3,11 @@
 /**
  * meinFHD WebApp
  * 
- * @version 0.0.1
+ * @version 0.0.2
  * @copyright Fachhochschule Duesseldorf, 2012
  * @link http://www.fh-duesseldorf.de
  * @author Manuel Moritz (MM), <manuel.moritz@fh-duesseldorf.de>
+ * @author Christian Kundruß(CK), <christian.kundruss@fh-duesseldorf.de>
  */
 
 /**
@@ -16,7 +17,11 @@
  */
 class App extends FHD_Controller {
 
-	// default constructor to prepare all needed stuff
+	/**
+     * Default constructor to prepare all needed stuff,
+     *
+     * @return void
+     */
 	function __construct(){
 		parent::__construct();
 
@@ -27,6 +32,9 @@ class App extends FHD_Controller {
 	 *
 	 * .../app
 	 * .../app/index
+     *
+     * @access public
+     * @return void
 	 */
 	public function index()
 	{
@@ -45,6 +53,9 @@ class App extends FHD_Controller {
 	 * .../app/login
 	 * .../login
      * Modifications and minor changes by Christian Kundruss (CK), 2012
+     *
+     * @access public
+     * @return void
 	 */
 	public function login()
 	{
@@ -91,6 +102,9 @@ class App extends FHD_Controller {
 	 * .../app/logout
 	 * .../logout
      * Modifications and minor changes by Christian Kundruss
+     *
+     * @access public
+     * @return void
 	 */
 	public function logout()
 	{
@@ -112,12 +126,22 @@ class App extends FHD_Controller {
             redirect('dashboard/index');
         }
         // --- Modification End ---
-        else { // otherwise perform a regular logut
+        else { // otherwise perform a regular logout
             //$this->message->set(sprintf('Ausgeloggt! (ID: %s)', $this->authentication->user_id()));
             $this->authentication->logout();
             redirect('login');
         }
 	}
+
+    /**
+     * Opens up and shows the imprint view.
+     *
+     * @access public
+     * @return void
+     */
+    public function imprint(){
+        $this->load->view('app/imprint', $this->data->load());
+    }
 }
 /* End of file App.php */
 /* Location: ./application/controllers/App.php */

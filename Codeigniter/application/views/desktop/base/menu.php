@@ -6,7 +6,7 @@
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</a>
-						<a class="brand" href="#">meinFHD<span>mobile</span></a>
+						<a class="brand" href="<?php print base_url('dashboard'); ?>">meinFHD<span>mobile</span></a>
 						<div class="nav-collapse">
 							<ul class="nav level-1"> <!-- .nav.level-1 -->
 								<?php if ( $this->authentication->has_permissions('hat_dashboard') ) : ?>
@@ -140,7 +140,8 @@
 								<?php if ( $this->authentication->has_permissions('hat_hilfe') ) : ?>
 								<li><a href="<?php print base_url('hilfe/index'); ?>">Hilfe</a></li>
 								<?php endif ?>
-								<?php if ( $this->authentication->is_logged_in() ) : ?>
+                                <li><a href="<?php print base_url('app/imprint'); ?>">Impressum</a></li>
+                                <?php if ( $this->authentication->is_logged_in() ) : ?>
 								<li><a href="<?php print base_url('app/logout'); ?>">Logout</a></li>
 								<?php endif; ?>
 							</ul> <!-- /.nav.level-1 -->
