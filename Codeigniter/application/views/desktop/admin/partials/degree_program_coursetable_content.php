@@ -14,7 +14,10 @@
 				<th>CP:</th>
 				<th>SWS:</th>
 				<th>Sem.:</th>
-				<th>Prüfungstypen:</th>
+				<th>
+					Prüfungstypen:<br />
+					Kl, mdl.Pr, ProPrä, HA, FG, Kol, BA, MA
+				</th>
 				<th>Beschreibung:</th>
 				<th>Aktion:</th>
 			</tr>
