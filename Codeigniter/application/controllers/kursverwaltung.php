@@ -265,9 +265,11 @@ class Kursverwaltung extends FHD_Controller {
 						$act_app_data['button_label'] = 'Anmeldung aktivieren';
 					}
 
-					// getting data and save for view
-					if(in_array(2, $eventtypes) || in_array(3, $eventtypes) || in_array(4, $eventtypes)){
+					// if user is no tutor >> getting data and save for view
+					if(in_array(2, $eventtypes) || in_array(3, $eventtypes) || in_array(4, $eventtypes) && !$subview_data['is_tut']){
 						$activate_application[$id] = $this->load->view('courses/partials/courses_activate_application', $act_app_data, TRUE);
+					} else {
+						$activate_application[$id] = '';
 					}
 				}
 				

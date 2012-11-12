@@ -65,9 +65,6 @@
 										<?php if ( $this->authentication->has_permissions('hat_studiengang_anlegen') ) : ?>
 										<li><a href="<?php print base_url('admin/degree_program_add'); ?>">Studiengang anlegen</a></li>
 										<?php endif ?>
-										<?php if ( $this->authentication->has_permissions('hat_studiengang_importieren') ) : ?>
-										<li><a href="<?php print base_url('#'); ?>">Studiengang importieren</a></li>
-										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_studiengang_bearbeiten') ) : ?>
 										<li><a href="<?php print base_url('admin/degree_program_edit'); ?>">Studiengang bearbeiten</a></li>
 										<?php endif ?>
