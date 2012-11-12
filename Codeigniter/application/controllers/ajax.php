@@ -10,9 +10,7 @@
  */
 
 /* 
- * Ajax Controller
- * Kümmert sich um die asynchronen requests/responses 
- * vom Client zu Server und zurück
+ * Takes care of ajax requests and responses methods.
  */
 
 class Ajax extends CI_Controller {
@@ -113,7 +111,11 @@ class Ajax extends CI_Controller {
 
 	}
 
-
+	/**
+	 * Get a module from the DB title by its id.
+	 *
+	 * @return String The module title.
+	 */
 	public function get_module_title()
 	{
 		$mid = $this->input->get('moduleid');
@@ -121,6 +123,11 @@ class Ajax extends CI_Controller {
 		echo $res['Kursname'];
 	}
 
+	/**
+	 * Get a module description from the DB by its id.
+	 *
+	 * @return String The module description. 
+	 */
 	public function get_module_text()
 	{
 		$mid = $this->input->get('moduleid');
@@ -140,6 +147,14 @@ class Ajax extends CI_Controller {
 		echo $output;
 	}
 
+	/**
+	 * Generates a row for the bootstrap modal, content text.
+	 *
+	 * @param  string $name [description]
+	 * @param  string $text [description]
+	 *
+	 * @return String       HTML markup for the row.
+	 */
 	private function _generate_row_for_modaltext($name = '', $text = 'kein Eintrag')
 	{
 		return '<p><strong>'.$name.': '.'</strong>'.$text.'</p>';
@@ -151,17 +166,25 @@ class Ajax extends CI_Controller {
 		FB::log($data);
 	}
 
-
+	/**
+	 * Checks the "pruefen" status of a module.
+	 */
 	public function check_status_pruefen()
 	{
 		$kurs_id = $this->input->get('kursid');
 		$this->ajax_model->query_status_pruefung($kurs_id);
 	}
+	/**
+	 * Activates the "pruefen" status of a module.
+	 */
 	public function activate_status_pruefung()
 	{
 		$kurs_id = $this->input->get('kursid');
 		$this->ajax_model->write_activate_status_pruefung($kurs_id);
 	}
+	/**
+	 * Deactivates the "pruefen" status of a module.
+	 */
 	public function deactivate_status_pruefung()
 	{
 		$kurs_id = $this->input->get('kursid');
@@ -169,17 +192,25 @@ class Ajax extends CI_Controller {
 	}
 
 
-
+	/**
+	 * Checks the "hoeren" status of a module.
+	 */
 	public function check_status_hoeren()
 	{
 		$kurs_id = $this->input->get('kursid');
 		$this->ajax_model->query_status_hoeren($kurs_id);
 	}
+	/**
+	 * Activates the "pruefen" status of a module.
+	 */
 	public function activate_status_hoeren()
 	{
 		$kurs_id = $this->input->get('kursid');
 		$this->ajax_model->write_activate_status_hoeren($kurs_id);
 	}
+	/**
+	 * Deactivates the "pruefen" status of a module.
+	 */
 	public function deactivate_status_hoeren()
 	{
 		$kurs_id = $this->input->get('kursid');
@@ -189,7 +220,9 @@ class Ajax extends CI_Controller {
 
 
 
-
+	/**
+	 * Checks the "hoeren" status of a module vl.
+	 */
 	public function check_status_hoeren_vl()
 	{
 		$kurs_id = $this->input->get('kursid');

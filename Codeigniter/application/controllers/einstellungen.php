@@ -118,9 +118,7 @@ class einstellungen extends FHD_Controller{
 	}
 
 	/**
-	 * Desktop
-	 *
-	 * @return [type] [description]
+	 * Validation method for the Einstellungen.
 	 */
 	public function validate()
 	{
@@ -230,7 +228,10 @@ class einstellungen extends FHD_Controller{
 	}
 
 	/**
-	 * "Persönliche Einstellungen" for desktop version.
+	 * 
+	 * "Persönliche Einstellungen" Overview for desktop version.
+	 * 
+	 * @category einstellungen/index.php
 	 * @author Konstantin Voth
 	 */
 	public function desktop_index()
