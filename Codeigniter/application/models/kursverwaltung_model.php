@@ -824,7 +824,7 @@ class Kursverwaltung_model extends CI_Model {
 	 * @param array $student_data [0] => matrno; [1] => courseId
 	 * @return int
 	 */
-	public function assign_tut_role_to_student($student_data){
+	public function assign_tut_role_to_student($student_data, $assign_id){
 		$q = ''; // init
 
 		// find user_id for that matrno
@@ -847,6 +847,9 @@ class Kursverwaltung_model extends CI_Model {
 						
 			// assign tut-role to that user_id - rolle 4=tutor
 			$this->db->insert('benutzer_mm_rolle', array('BenutzerID' => $user_id, 'RolleID' => '4'));
+			
+			// log assign-activity
+			$this->helper_model->log_activities(6, $assign_id, $user_id);
 
 			// add course to kurstutor-table
 			$this->db->insert('kurstutor', array('BenutzerID' => $user_id, 'KursID' => $student_data[1]));

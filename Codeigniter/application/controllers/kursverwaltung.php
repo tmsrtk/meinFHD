@@ -690,28 +690,6 @@ class Kursverwaltung extends FHD_Controller {
 		if(count($staff) === 1){
 	//	    echo 'if'; // DEBUG
 			// get course_id i.e. first element key
-			// TODO redirect!!!!!!!!!!!!!!!
-			// Following error appeared when saving staff (removed one person from labings)
-			// then without reloading added new tutor via dialog
-			/*
-			 * <h4>A PHP Error was encountered</h4>
-
-				<p>Severity: Warning</p>
-				<p>Message:  reset() expects parameter 1 to be array, boolean given</p>
-				<p>Filename: controllers/kursverwaltung.php</p>
-				<p>Line Number: 551</p>
-
-				</div><div style="border:1px solid #990000;padding-left:20px;margin:0 0 10px 0;">
-
-				<h4>A PHP Error was encountered</h4>
-
-				<p>Severity: Warning</p>
-				<p>Message:  key() expects parameter 1 to be array, boolean given</p>
-				<p>Filename: controllers/kursverwaltung.php</p>
-				<p>Line Number: 552</p>
-
-				</div>
-			 */
 			reset($staff); // setting pointer to first element - necessary?!?!
 			$course_id = key($staff);
 			// delete staff for that course_id
@@ -918,7 +896,7 @@ class Kursverwaltung extends FHD_Controller {
 		$student_data = $this->input->post('student_data');
 		
 		// assign tut-role to student and for passed course_id
-		if($this->kursverwaltung_model->assign_tut_role_to_student($student_data)){
+		if($this->kursverwaltung_model->assign_tut_role_to_student($student_data, $this->user_model->get_userid())){
 			echo 'Der Student ist nun Tutor des Kurses und kann Tutorien verwalten.';
 		} else {
 			echo 'Fehler bei der Verarbeitung. Kontaktieren Sie einen Administrator.';
