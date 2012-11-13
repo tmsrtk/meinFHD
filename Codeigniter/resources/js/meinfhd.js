@@ -161,7 +161,7 @@ function _showModal(title, text, withOK, forStudienplan, ctx) {
 
 				if (forStudienplan) {
 					ctx._saveSemesterplan().done(function() {
-					location.reload();
+						document.location.reload();
 					});
 				}
 				else {

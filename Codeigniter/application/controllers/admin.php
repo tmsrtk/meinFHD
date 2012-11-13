@@ -35,13 +35,22 @@ class Admin extends FHD_Controller {
         // --- END EDIT --
 	}
 	
-	
+	/**
+	 * Admin Interface - Starter Method
+	 * Beginning method for the admin interface.
+	 *
+	 */
 	public function index()
 	{
 		$this->create_user_mask();
 	}
 	
-	
+	/**
+	* Edit Permissions - Overview
+	* Shows all permissions and roles and lets an admin to edit these.
+	*
+	* @category permissions_edit.php
+	*/
 	public function show_role_permissions(){
 			
 		// Alle RoleIDs durchlaufen und in einem verschachtelten Array speichern
@@ -122,7 +131,12 @@ class Admin extends FHD_Controller {
 		$this->load->view('admin/permissions_edit', $this->data->load());
 	}
 	
-	
+	/**
+	* Edit Permissions - Overview
+	* Saves all permission edits.
+	*
+	* @category permissions_edit.php
+	*/
 	function savePermissions(){
 
 // 		echo '<pre>';

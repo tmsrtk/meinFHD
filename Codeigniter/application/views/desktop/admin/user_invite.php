@@ -172,7 +172,7 @@ if( ! empty( $b ) ) $radio_val2 = TRUE;
 
 
 <div class="row-fluid">
-	<h2>Übersicht aller Einladungsaufforderungen</h2>
+	<h2>Übersicht aller Einladungsanforderungen</h2>
 </div>
 <hr>
 <?php

@@ -100,7 +100,7 @@
 
 							// print the role checkbox
 							echo form_checkbox('cb_userroles[]', $i, $tmp);
-							echo $all_roles[$i];
+							echo ' ' . $all_roles[$i];
 							echo br();
 						}
 					?>

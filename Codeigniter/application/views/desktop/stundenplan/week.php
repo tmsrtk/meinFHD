@@ -167,8 +167,9 @@
 												?>
 												<a href="<?php print base_url($url) ?>" class="std-abs std-event <?php print $class; ?>" style="<?php print $css; ?>">
 													<div class="std-event-container">
-														<h5><?php print $event['kurs_kurz'] ?> <?php print $event['VeranstaltungsformName'] ?><span> <?php ( ! empty($event['Raum'])) ? print '('.$event['Raum'].')' : '' ?></span></h5>
-														<p><?php print $event['VeranstaltungsformAlternative']; ?></p>
+														<h4><?php print $event['kurs_kurz'] ?> </h4>
+														<h5><?php print $event['VeranstaltungsformName'] ?> <span> <?php print $event['VeranstaltungsformAlternative']; ?> </span></h5>
+														<h6><?php ( ! empty($event['Raum'])) ? print '('.$event['Raum'].')' : '' ?></h6>
 													</div>
 												</a>
 											<?php endforeach; ?>
