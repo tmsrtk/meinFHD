@@ -1173,7 +1173,7 @@
 					    //called when complete
 					  },
 					  success: function(data, textStatus, xhr) {
-					    console.log("count: "+count+" | i: "+successfulDbWritings);
+					    // console.log("count: "+count+" | i: "+successfulDbWritings);
 					    if (count === successfulDbWritings) dfd.resolve();
 					    successfulDbWritings++;
 					  },
