@@ -1779,8 +1779,8 @@ class Admin extends FHD_Controller {
 			}
 		}
 		
-		echo print_r($save_to_db, $stdplan_ids);
-//		$this->admin_model->save_new_course_in_stdplan($save_to_db, $stdplan_ids);
+//		echo print_r($save_to_db, $stdplan_ids);
+		$this->admin_model->save_new_course_in_stdplan($save_to_db, $stdplan_ids);
 		
 		// return updated view
 		echo $this->ajax_show_events_of_stdplan($stdplan_ids);
@@ -1928,8 +1928,6 @@ class Admin extends FHD_Controller {
 			// upload data
 			$upload_data = $this->upload->data();
 		
-			$this->data->add('upload_data', $upload_data);
-
 			// start parsing stdplan - pass data to parsing-model 
 			$delete_file = $this->admin_model_parsing->parse_stdplan($upload_data);
 			

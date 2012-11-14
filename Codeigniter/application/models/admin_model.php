@@ -1584,7 +1584,7 @@ class Admin_model extends CI_Model {
 		$max_group_id = $this->helper_model->get_max_group_id_from_gruppe();
 		
 		// add last data
-		$data['GruppeID'] = $max_group_id;
+		$data['GruppeID'] = $max_group_id->GruppeID;
 		$data['EditorID'] = $this->user_model->get_userid();
 		
 		// thoughts about gruppenteilnehmer-table:
@@ -1595,11 +1595,12 @@ class Admin_model extends CI_Model {
 		$this->db->insert('stundenplankurs', $data);
 		
 		// fetch new highest spcourse_id
-		$max_sp_course_id = '';
-		$max_sp_course_id = $this->helper_model->get_max_spkurs_id();
+		$max_sp_course_id_tmp = '';
+		$max_sp_course_id_tmp = $this->helper_model->get_max_spkurs_id();
+		$max_sp_course_id = $max_sp_course_id_tmp->SPKursID;
 		
 		// update all users in benutzerkurs who got this course-id in semesterplan where semester = semester?
-		$this->helper_model->update_benutzerkurs($data['VeranstaltungsformID'], $data['KursID'], $max_sp_course_id, $degree_program_ids);
+		$this->helper_model->update_benutzerkurs($this->user_model->get_userid(), $data['VeranstaltungsformID'], $data['KursID'], $max_sp_course_id, $degree_program_ids);
 		
 	}
 	

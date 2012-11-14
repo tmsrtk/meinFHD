@@ -305,7 +305,7 @@ class Helper_model extends CI_Model {
 		// if stdgng_id = -1 >> get it through course_id
 		if(is_array($stdgng_id)){
 			$stdgng_id_tmp = ''; // init
-			$stdgng_id_tmp = $this->get_stdgng_id($stdgng_id[0], $stdgng_id[2]);
+			$stdgng_id_tmp = $this->get_stdgng_id($stdgng_id[2], $stdgng_id[0]);
 			$stdgng_id = $stdgng_id_tmp->StudiengangID;
 		}
 		

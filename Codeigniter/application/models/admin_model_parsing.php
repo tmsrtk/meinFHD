@@ -51,7 +51,7 @@ class Admin_model_parsing extends CI_Model {
 		$xml_parser = xml_parser_create();
 
 		// Setze Optionen:
-		xml_parser_set_option( $xml_parser, XML_OPTION_TARGET_ENCODING, "ISO-8859-1" ); 	// Encoding-Typ ISO-8859-1
+		xml_parser_set_option( $xml_parser, XML_OPTION_TARGET_ENCODING, "UTF-8" ); 	// Encoding-Typ ISO-8859-1
 		xml_parser_set_option( $xml_parser, XML_OPTION_CASE_FOLDING, 0 ); 					// kein Case-Folding
 		xml_parser_set_option( $xml_parser, XML_OPTION_SKIP_WHITE, 1 ); 					// �berspringe whitespaces an Anfang und Ende
 
@@ -285,6 +285,7 @@ class Admin_model_parsing extends CI_Model {
 
 						// get dozent_id
 						$dozent_tmp = array();
+						echo $course[3];
 						$dozent_tmp = $this->get_dozentid_for_name($course[3]);
 						// only if there is a known dozent
 						if($dozent_tmp){
@@ -320,7 +321,6 @@ class Admin_model_parsing extends CI_Model {
 						// get stdgng_id
 						$stdgng_tmp = array();
 						$stdgng_id = '';
-//						$stdgng_tmp = $this->get_stdgng_id($this->stdg_pov, $this->stdg_short);
 						$stdgng_tmp = $this->helper_model->get_stdgng_id($this->stdg_pov, $this->stdg_short);
 						if(isset($stdgng_tmp)){
 							$stdgng_id = $stdgng_tmp->StudiengangID;
@@ -381,18 +381,17 @@ class Admin_model_parsing extends CI_Model {
 			/*>>*/		$this->update_semester_of_course($course_id, $this->stdg_semester);
 
 						// create a new group in gruppe and then
-//			/*>>*/	    $this->create_new_group();
 			/*>>*/	    $this->helper_model->create_new_group();
 
 						// use this id (get highest group_id from gruppe)
 						$group_tmp = array();
 						$group_id = '';
-//						$group_tmp = $this->get_max_group_id_from_gruppe();
 						$group_tmp = $this->helper_model->get_max_group_id_from_gruppe();
 						if($group_tmp){
 							$group_id = $group_tmp->GruppeID;
 						}
 
+						// DEBUG
 //						echo '<div class="well">';
 //						echo '<p>********************nächster Datensatz********************</p>';
 //						echo 'KursID:';
@@ -435,7 +434,7 @@ class Admin_model_parsing extends CI_Model {
 //						print_r(99);
 //						echo '</div>';
 
-//						// TODO - CHECK!! save data
+						// save data
 			/*>>*/		$this->write_stdplan_data(
 							$course_id,
 							$event_type_id,
@@ -454,7 +453,6 @@ class Admin_model_parsing extends CI_Model {
 
 						// get max spkurs_id
 						$spcourse_tmp = array();
-//						$spcourse_tmp = $this->get_max_spkurs_id();
 						$spcourse_tmp = $this->helper_model->get_max_spkurs_id();
 						if($spcourse_tmp){
 							$spcourse_id = $spcourse_tmp->SPKursID;
@@ -463,50 +461,7 @@ class Admin_model_parsing extends CI_Model {
 						// update benutzerkurs-table for each student
 			/*>>*/		$this->helper_model->update_benutzerkurs($this->editor_id, $event_type_id, $course_id, $spcourse_id, $stdgng_id);
 						
-//						// ########## update USERS >> benutzerkurs
-//						// get all students who 
-//						$students = array();
-//						$students = $this->get_student_ids($stdgng_id);
-//
-//
-//						// run through students and generate benutzerkurse
-//						foreach ($students as $s){
-//							$isActive = false; // init
-//							// mark courses as active if they are 'vorlesung' = 1 or 'tutorium' = 6
-//							if($event_type_id == 1 || $event_type_id == 6){
-//								$isActive = true;
-//							} else {
-//								// all other courses are inactive
-//								$isActive = false;
-//							}
-//							// get semester that should be added to benutzerkurs
-//							$semester_tmp = array();
-//							$semester_tmp = $this->get_user_course_semester($s->BenutzerID, $course_id);
-//							$semester = '';
-//							if(isset($semester_tmp)){
-//								$semester = $semester_tmp->Semester;
-//							}
-//
-//	//						echo $this->pre($semester);
-//
-//							// proceed only if there is a course_name
-//							// otherwise this part of array is empty (i.e. no courses at this time)
-//							if($semester){
-////								$this->save_data_to_benutzerkurs(
-////									$s->BenutzerID,
-////									$course_id,
-////									$spcourse_id,
-////									$semester,
-////									(($isActive) ? 1 : 0),
-////									'stdplan_parsing',
-////									$this->editorID
-////								);
-//							}
-//						}
-
-
 					} //endif duplicate entry
-
 
 				} // end foreach hours
 			}// end foreach days
