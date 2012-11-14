@@ -24,8 +24,10 @@ class Admin_model_parsing extends CI_Model {
     // Index f�r Stunden im array
     private $stunde_index = 1;
     // Index f�r Veranstaltungen im array
-    private$run = 0;
+    private $run = 0;
     //======================== Variablen-Deklaration ENDE
+	
+	private $editor_id = 0;
     
     private $admin_model;
     
@@ -37,6 +39,9 @@ class Admin_model_parsing extends CI_Model {
 	 */
     function parse_stdplan($file_data){
 	
+		// save editorID
+		$this->editor_id = $this->user_model->get_userid();
+		
 		// array zum pr�fen ob ein Eintrag bereits darin enthalten ist.
 		$array_check[0][0] = ""; 
 		$array_check[0][1] = ""; 
@@ -315,8 +320,9 @@ class Admin_model_parsing extends CI_Model {
 						// get stdgng_id
 						$stdgng_tmp = array();
 						$stdgng_id = '';
-						$stdgng_tmp = $this->get_stdgng_id($this->stdg_pov, $this->stdg_short);
-						if($stdgng_tmp){
+//						$stdgng_tmp = $this->get_stdgng_id($this->stdg_pov, $this->stdg_short);
+						$stdgng_tmp = $this->helper_model->get_stdgng_id($this->stdg_pov, $this->stdg_short);
+						if(isset($stdgng_tmp)){
 							$stdgng_id = $stdgng_tmp->StudiengangID;
 						}
 
@@ -372,15 +378,17 @@ class Admin_model_parsing extends CI_Model {
 
 
 						// update semester of that course
-//			/*>>*/		$this->update_semester_of_course($course_id, $this->stdg_semester);
+			/*>>*/		$this->update_semester_of_course($course_id, $this->stdg_semester);
 
 						// create a new group in gruppe and then
 //			/*>>*/	    $this->create_new_group();
+			/*>>*/	    $this->helper_model->create_new_group();
 
 						// use this id (get highest group_id from gruppe)
 						$group_tmp = array();
 						$group_id = '';
-						$group_tmp = $this->get_max_group_id_from_gruppe();
+//						$group_tmp = $this->get_max_group_id_from_gruppe();
+						$group_tmp = $this->helper_model->get_max_group_id_from_gruppe();
 						if($group_tmp){
 							$group_id = $group_tmp->GruppeID;
 						}
@@ -428,70 +436,73 @@ class Admin_model_parsing extends CI_Model {
 //						echo '</div>';
 
 //						// TODO - CHECK!! save data
-//						$this->write_stdplan_data(
-//							$course_id,
-//							$event_type_id,
-//							substr($course[1], 2),
-//							($isWPF ? $wpfname : ''),
-//							$course[2],
-//							$dozent_id,
-//							$course[5] + 1,
-//							$course[5] + $course_duration,
-//							$course[4] + 1,
-//							($isWPF ? '1' : '0'),
-//							$course[6],
-//							$group_id,
-//							99
-//						);
+			/*>>*/		$this->write_stdplan_data(
+							$course_id,
+							$event_type_id,
+							substr($course[1], 2),
+							($isWPF ? $wpfname : ''),
+							$course[2],
+							$dozent_id,
+							$course[5] + 1,
+							$course[5] + $course_duration,
+							$course[4] + 1,
+							($isWPF ? '1' : '0'),
+							$group_id,
+							$course[6],
+							$this->editor_id
+						);
 
 						// get max spkurs_id
 						$spcourse_tmp = array();
-						$spcourse_tmp = $this->get_max_spkurs_id();
+//						$spcourse_tmp = $this->get_max_spkurs_id();
+						$spcourse_tmp = $this->helper_model->get_max_spkurs_id();
 						if($spcourse_tmp){
 							$spcourse_id = $spcourse_tmp->SPKursID;
 						}
 
-
-						// ########## update USERS >> benutzerkurs
-						// get all students who 
-						$students = array();
-						$students = $this->get_student_ids($stdgng_id);
-
-
-						// run through students and generate benutzerkurse
-						foreach ($students as $s){
-							$isActive = false; // init
-							// mark courses as active if they are 'vorlesung' = 1 or 'tutorium' = 6
-							if($event_type_id == 1 || $event_type_id == 6){
-								$isActive = true;
-							} else {
-								// all other courses are inactive
-								$isActive = false;
-							}
-							// get semester that should be added to benutzerkurs
-							$semester_tmp = array();
-							$semester_tmp = $this->get_user_course_semester($s->BenutzerID, $course_id);
-							$semester = '';
-							if($semester_tmp){
-								$semester = $semester_tmp->Semester;
-							}
-
-	//						echo $this->pre($semester);
-
-							// proceed only if there is a course_name
-							// otherwise this part of array is empty (i.e. no courses at this time)
-							if($semester){
-//								$this->save_data_to_benutzerkurs(
-//									$s->BenutzerID,
-//									$course_id,
-//									$spcourse_id,
-//									$semester,
-//									(($isActive) ? 1 : 0),
-//									'stdplan_parsing',
-//									99 // TODO get session_id from admin
-//								);
-							}
-						}
+						// update benutzerkurs-table for each student
+			/*>>*/		$this->helper_model->update_benutzerkurs($this->editor_id, $event_type_id, $course_id, $spcourse_id, $stdgng_id);
+						
+//						// ########## update USERS >> benutzerkurs
+//						// get all students who 
+//						$students = array();
+//						$students = $this->get_student_ids($stdgng_id);
+//
+//
+//						// run through students and generate benutzerkurse
+//						foreach ($students as $s){
+//							$isActive = false; // init
+//							// mark courses as active if they are 'vorlesung' = 1 or 'tutorium' = 6
+//							if($event_type_id == 1 || $event_type_id == 6){
+//								$isActive = true;
+//							} else {
+//								// all other courses are inactive
+//								$isActive = false;
+//							}
+//							// get semester that should be added to benutzerkurs
+//							$semester_tmp = array();
+//							$semester_tmp = $this->get_user_course_semester($s->BenutzerID, $course_id);
+//							$semester = '';
+//							if(isset($semester_tmp)){
+//								$semester = $semester_tmp->Semester;
+//							}
+//
+//	//						echo $this->pre($semester);
+//
+//							// proceed only if there is a course_name
+//							// otherwise this part of array is empty (i.e. no courses at this time)
+//							if($semester){
+////								$this->save_data_to_benutzerkurs(
+////									$s->BenutzerID,
+////									$course_id,
+////									$spcourse_id,
+////									$semester,
+////									(($isActive) ? 1 : 0),
+////									'stdplan_parsing',
+////									$this->editorID
+////								);
+//							}
+//						}
 
 
 					} //endif duplicate entry
@@ -580,7 +591,12 @@ class Admin_model_parsing extends CI_Model {
     }
     
     
-    // get all users with role dozent
+    /**
+	 * Helper to get all students for a specific degree program
+	 * 
+	 * @param int $stdgng_id id is passed
+	 * @return array students
+	 */
     private function get_student_ids($stdgng_id){
 		$data = array();
 		$this->db->distinct();
@@ -599,6 +615,13 @@ class Admin_model_parsing extends CI_Model {
 		}
     }
     
+	/**
+	 * Helper to get degree_program-id from po and abk
+	 * 
+	 * @param int $po pruefungsordnung
+	 * @param int $stdgng_short abkuerzung
+	 * @return object
+	 */
     private function get_stdgng_id($po, $stdgng_short){
 		$data = array();
 		$this->db->select('StudiengangID');
@@ -615,6 +638,13 @@ class Admin_model_parsing extends CI_Model {
     }
     
     
+	/**
+	 * Helper to get course_id for passed name and stdgng_id
+	 * 
+	 * @param string $course_name
+	 * @param int $stdgng_id
+	 * @return object
+	 */
     private function get_course_id($course_name, $stdgng_id){
 		$data = array();
 		$this->db->select('KursID');
@@ -633,10 +663,10 @@ class Admin_model_parsing extends CI_Model {
 	
 	/**
 	 * Creates an empty record in stdgang-table when parsed course doesn't exist yet
-	 * @param type $course_name
-	 * @param type $short_name
-	 * @param type $stdg_semester
-	 * @param type $stdgng_id
+	 * @param string $course_name
+	 * @param string $short_name
+	 * @param int $stdg_semester
+	 * @param int $stdgng_id
 	 */
 	private function create_new_course_in_stdgng($course_name, $short_name, $stdg_semester, $stdgng_id){
 		$data = array(
@@ -667,7 +697,7 @@ class Admin_model_parsing extends CI_Model {
 	
 	/**
 	 * Returns a new created (highest) course_id from table studiengangkurs
-	 * @return type
+	 * @return object
 	 */
 	private function get_max_course_id_from_studiengangkurs(){
 		$data = array();
@@ -694,7 +724,9 @@ class Admin_model_parsing extends CI_Model {
 		$this->db->update('studiengangkurs', array('Semester' => $sem));
 	}
     
-    
+    /**
+	 * Helper function to create a new group-entry in db
+	 */
     private function create_new_group(){
 		$a = array(
 			'TeilnehmerMax' => 0,
@@ -705,6 +737,10 @@ class Admin_model_parsing extends CI_Model {
     }
     
     
+	/**
+	 * Helper to get the highest (i.e. mostly newest) group_id from gruppe-table
+	 * @return object
+	 */
     private function get_max_group_id_from_gruppe(){
 		$data = array();
 		$this->db->select_max('GruppeID');
@@ -719,6 +755,10 @@ class Admin_model_parsing extends CI_Model {
     }
     
     
+	/**
+	 * Helper to get the highest (i.e. mostly newest) sp_course_id from stundenplankurs-table
+	 * @return object
+	 */
     private function get_max_spkurs_id(){
 		$data = array();
 		$this->db->select_max('SPKursID');
@@ -759,7 +799,7 @@ class Admin_model_parsing extends CI_Model {
     }
     
     
-    function save_data_to_benutzerkurs($user_id, $course_id, $spcourse_id, $semester, $active_flag, $comment, $edit_id){
+    private function save_data_to_benutzerkurs($user_id, $course_id, $spcourse_id, $semester, $active_flag, $comment, $edit_id){
 		$benutzerkurs_record = array(
 			'BenutzerID' => $user_id,
 			'KursID' => $course_id,

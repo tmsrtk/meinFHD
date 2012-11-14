@@ -82,6 +82,12 @@ class Helper_model extends CI_Model {
     }
     
     
+	/**
+	 * Helper to fetch name for course_id
+	 * 
+	 * @param int $course_id course_id to get the name for
+	 * @return array
+	 */
     public function get_course_name($course_id){
 		$this->db->select('Kursname');
 		$q = $this->db->get_where('studiengangkurs', $course_id);
@@ -234,6 +240,222 @@ class Helper_model extends CI_Model {
 		// save data
 		$this->db->insert('logging_kursverwaltung', $log_data);
 	}
+	
+	
+	
+	/**
+	 * Helper function to create a new group-entry in db
+	 */
+    public function create_new_group(){
+		$a = array(
+			'TeilnehmerMax' => 20,
+			'TeilnehmerWartelisteMax' => 0,
+			'Anmeldung_zulassen' => 0
+		);
+		$this->db->insert('gruppe', $a);
+    }
+	
+	/**
+	 * Helper to get the highest (i.e. mostly newest) group_id from gruppe-table
+	 * @return object
+	 */
+    public function get_max_group_id_from_gruppe(){
+		$data = array();
+		$this->db->select_max('GruppeID');
+		$q = $this->db->get('gruppe');
+
+		if($q->num_rows() == 1){
+			foreach ($q->result() as $row){
+				$data = $row;
+			}
+			return $data;
+		}
+    }
+	
+	
+	/**
+	 * Helper to get the highest (i.e. mostly newest) sp_course_id from stundenplankurs-table
+	 * @return object
+	 */
+    public function get_max_spkurs_id(){
+		$data = array();
+		$this->db->select_max('SPKursID');
+		$q = $this->db->get('stundenplankurs');
+
+		if($q->num_rows() == 1){
+			foreach ($q->result() as $row){
+				$data = $row;
+			}
+			return $data;
+		}
+    }
+	
+
+	/**
+	 * Helper to update benutzerkurs-table for each student in this degree_program
+	 * 
+	 * @param int $editor_id
+	 * @param int $event_type_id
+	 * @param int $course_id
+	 * @param int $sp_course_id
+	 * @param int/array $stdgng_id passed during parsing; when not parsed >> id has to be generated from unique combi po, abk that is passed
+	 */
+	public function update_benutzerkurs($editor_id, $event_type_id, $course_id, $sp_course_id, $stdgng_id){
+		
+		// if stdgng_id = -1 >> get it through course_id
+		if(is_array($stdgng_id)){
+			$stdgng_id_tmp = ''; // init
+			$stdgng_id_tmp = $this->get_stdgng_id($stdgng_id[0], $stdgng_id[2]);
+			$stdgng_id = $stdgng_id_tmp->StudiengangID;
+		}
+		
+		// get all students for degree program
+		$students = array();
+		$students = $this->get_student_ids($stdgng_id);
+
+
+		// run through students and generate benutzerkurse
+		foreach ($students as $s){
+			$isActive = false; // init
+			// mark courses as active if they are 'vorlesung' = 1 or 'tutorium' = 6
+			if($event_type_id == 1 || $event_type_id == 6){
+				$isActive = true;
+			} else {
+				// all other courses are inactive
+				$isActive = false;
+			}
+			// get semester that should be added to benutzerkurs
+			$semester_tmp = array();
+			$semester_tmp = $this->get_user_course_semester($s->BenutzerID, $course_id);
+			$semester = '';
+			if(isset($semester_tmp)){
+				$semester = $semester_tmp->Semester;
+			}
+
+//						echo $this->pre($semester);
+
+			// proceed only if there is a course_name
+			// otherwise this part of array is empty (i.e. no courses at this time)
+			if($semester){
+				$this->save_data_to_benutzerkurs(
+					$s->BenutzerID,
+					$course_id,
+					$sp_course_id,
+					$semester,
+					(($isActive) ? 1 : 0),
+					'stdplan_parsing',
+					$editor_id
+				);
+			}
+		}
+	}
+	
+	
+	/**
+	 * Helper
+	 * Returns semester in which a given user put the course
+	 * 
+	 * @param int $user_id
+	 * @param int $course_id
+	 * @return object
+	 */
+    private function get_user_course_semester($user_id, $course_id){
+		$data = array();
+		$this->db->select('b.Semester');
+		$this->db->from('semesterplan as a');
+		$this->db->join('semesterkurs as b', 'a.SemesterplanID = b.SemesterplanID');
+		$this->db->where('b.KursID = '.$course_id . ' and a.BenutzerID = '. $user_id);
+
+		$q = $this->db->get();
+
+		if($q->num_rows() == 1){
+			foreach ($q->result() as $row){
+				$data = $row;
+			}
+			return $data;
+		}
+	
+//	select b.`Semester`
+//	from semesterplan as a
+//	inner join semesterkurs as b
+//	on a.`SemesterplanID` = b.`SemesterplanID`
+//	where b.`KursID` = 1 and a.`BenutzerID` = 1383;
+    }
+	
+	
+	/**
+	 * Helper to save data to benutzerkurs-table for a single user
+	 * 
+	 * @param int $user_id
+	 * @param int $course_id
+	 * @param int $spcourse_id
+	 * @param int $semester 
+	 * @param int $active_flag 1/0
+	 * @param string $comment where does the update come from - admin-view or parsing
+	 * @param int $edit_id 
+	 */
+	private function save_data_to_benutzerkurs($user_id, $course_id, $spcourse_id, $semester, $active_flag, $comment, $edit_id){
+		$benutzerkurs_record = array(
+			'BenutzerID' => $user_id,
+			'KursID' => $course_id,
+			'SPKursID' => $spcourse_id,
+			'SemesterID' => $semester,
+			'aktiv' => $active_flag,
+			'changed_at' => $comment,
+			'edited_by' => $edit_id
+		);
+
+		$this->db->insert('benutzerkurs', $benutzerkurs_record);
+    } 
+	
+
+	/**
+	 * Helper to get all students for a specific degree program
+	 * 
+	 * @param int $stdgng_id id is passed
+	 * @return array students
+	 */
+    private function get_student_ids($stdgng_id){
+		$data = array();
+		$this->db->distinct();
+		$this->db->select('a.BenutzerID');
+		$this->db->from('benutzer as a');
+		$this->db->join('benutzer_mm_rolle as b', 'a.BenutzerID = b.BenutzerID and b.RolleID = 5');
+		$this->db->where('StudiengangID', $stdgng_id);
+
+		$q = $this->db->get();
+
+		if($q->num_rows() >= 1){
+			foreach ($q->result() as $row){
+				$data[] = $row;
+			}
+			return $data;
+		}
+    }
+	
+	
+	/**
+	 * Helper to get degree_program-id from po and abk
+	 * 
+	 * @param int $po pruefungsordnung
+	 * @param int $stdgng_short abkuerzung
+	 * @return object
+	 */
+    public function get_stdgng_id($po, $stdgng_short){
+		$data = array();
+		$this->db->select('StudiengangID');
+		$this->db->where('Pruefungsordnung', $po);
+		$this->db->where('StudiengangAbkuerzung', $stdgng_short);
+		$q = $this->db->get('studiengang');
+
+		if($q->num_rows() == 1){
+			foreach ($q->result() as $row){
+				$data = $row;
+			}
+			return $data;
+		}
+    }
+	
 }
 
 ?>

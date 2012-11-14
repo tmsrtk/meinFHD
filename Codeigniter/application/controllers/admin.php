@@ -1779,8 +1779,8 @@ class Admin extends FHD_Controller {
 			}
 		}
 		
-//		echo print_r($save_to_db);
-		$this->admin_model->save_new_course_in_stdplan($save_to_db);
+		echo print_r($save_to_db, $stdplan_ids);
+//		$this->admin_model->save_new_course_in_stdplan($save_to_db, $stdplan_ids);
 		
 		// return updated view
 		echo $this->ajax_show_events_of_stdplan($stdplan_ids);

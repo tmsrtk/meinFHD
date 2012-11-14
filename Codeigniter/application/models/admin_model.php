@@ -1566,26 +1566,40 @@ class Admin_model extends CI_Model {
 	
 	
 	/**
-	 * TODO !!!!!
+	 * Save data to db. Therefore same methods used as during parsing.
+	 * >> helper_model
+	 * 1. & 2. create new group to fetch new group_id
+	 * 3. & 4. create new sp_course to fetch new sp_course_id
+	 * 5. update benuterkurs-table for all students in that po
+	 * 
 	 * @param array $data
+	 * @param array $degree_program_ids combination of po(int year), semester(not needed) and dp_abbreviation(string)
 	 */
-	public function save_new_course_in_stdplan($data){
+	public function save_new_course_in_stdplan($data, $degree_program_ids){
 		// create new group
+		$this->helper_model->create_new_group();
 		
 		// fetch new highest group_id
+		$max_group_id = '';
+		$max_group_id = $this->helper_model->get_max_group_id_from_gruppe();
 		
-		// what about gruppenteilnehmer?!?!!?!
-		// shouldn't be critical >> as soon as course is in benutzerkurs there's one new group for each student
-		// gruppenteilnehmer is populated whiles students register in timetable
-		// 
+		// add last data
+		$data['GruppeID'] = $max_group_id;
+		$data['EditorID'] = $this->user_model->get_userid();
+		
+		// thoughts about gruppenteilnehmer-table:
+		// should be UNcritical >> as soon as course is in benutzerkurs there's one new group for each student
+		// gruppenteilnehmer is populated while students register in timetable
 		
 		// insert new record in stundenplankurs
 		$this->db->insert('stundenplankurs', $data);
 		
 		// fetch new highest spcourse_id
+		$max_sp_course_id = '';
+		$max_sp_course_id = $this->helper_model->get_max_spkurs_id();
 		
 		// update all users in benutzerkurs who got this course-id in semesterplan where semester = semester?
-		
+		$this->helper_model->update_benutzerkurs($data['VeranstaltungsformID'], $data['KursID'], $max_sp_course_id, $degree_program_ids);
 		
 	}
 	
@@ -1604,6 +1618,8 @@ class Admin_model extends CI_Model {
 	function delete_stdplan_related_records($stdplan_ids){
 	    // get spkursids to delete
 	    $stdplan_course_ids = $this->get_stdplan_sp_course_ids($stdplan_ids);
+		
+		echo $stdplan_course_ids;
 	    
 	    // get groupids
 	    $group_ids = '';
