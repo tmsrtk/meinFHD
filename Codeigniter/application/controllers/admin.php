@@ -1458,6 +1458,12 @@ class Admin extends FHD_Controller {
 	 */
 	public function stdplan_edit(){
 	    $reload = $this->session->flashdata('reload');
+
+		// when called from parsing-page
+		$post = $this->input->post('stdplan_id');
+		if($post){
+			$reload = $post;
+		}
 		
 		if(!$reload){
 			$reload = 0; // if nothing is passed
@@ -1806,7 +1812,7 @@ class Admin extends FHD_Controller {
 	 */
 	public function stdplan_import(){
 	    // inits
-		$uplaod_dir = array();
+		$upload_dir = array();
 		$parsing_result = '';
 		$this->load->helper('directory');
 		
@@ -1832,65 +1838,65 @@ class Admin extends FHD_Controller {
 			$this->data->add('view_feedback_dialog', '');
 		}
 		
-	    // get files from upload-folder
-	    $upload_dir = directory_map('./resources/uploads');
-	    // get degree programs
-	    $degree_programs = $this->admin_model->get_all_degree_programs();
-	    $data['stdgng_uploads'] = '';
-	    
-		// init helper var
-	    $last_id = 0;
-	    
-	    if($upload_dir){
-			// prepare data for view
-			// generate array, that contains all 
-			foreach($degree_programs as $dp){
-				$po = $dp->Pruefungsordnung;
-				$abk = $dp->StudiengangAbkuerzung;
-				$id = $dp->StudiengangID;
-				$data['stdgng_uploads_headlines'][$id] = $abk.' - '.$po;
-				// run through dirs and distribute found data to view-array
-				foreach($upload_dir as $dir){
-					$needle_po = strstr($dir, $po);
-					$needle_abk = strstr($dir, $abk);
-					if($needle_po != null && $needle_abk != null){
-						$data['stdgng_uploads'][$id][] = $dir;
-					}
-				}
-				$last_id = $id;
-			}
-
-			if($data['stdgng_uploads'] != null){
-				// prepare data to 
-				foreach($data['stdgng_uploads'] as $nested_array){
-					foreach($nested_array as $file){
-						$files_with_po[] = $file;
-					}
-				}
-
-			//	    echo '<pre>';
-			//	    print_r($clean);
-			//	    echo '</pre>';  
-
-				// one additional field for other
-				// CHECK - will all other files be displayed in here?
-				// perhaps some fine-tuning in recognition of po needed?
-				$data['stdgng_uploads_headlines'][42] = 'Andere:';
-
-				// check if there are dirs, that don't belong to a po
-				// i.e. not in array, that contains the files that are already shown
-				foreach($upload_dir as $dir){
-					if(!in_array($dir, array_values($files_with_po))){
-						$data['stdgng_uploads'][42][] = $dir;
-					}
-				}
-			}
-		}
+//	    // get files from upload-folder
+//	    $upload_dir = directory_map('./resources/uploads');
+//	    // get degree programs
+//	    $degree_programs = $this->admin_model->get_all_degree_programs();
+//	    $data['stdgng_uploads'] = '';
+//	    
+//		// init helper var
+//	    $last_id = 0;
+//	    
+//	    if($upload_dir){
+//			// prepare data for view
+//			// generate array, that contains all 
+//			foreach($degree_programs as $dp){
+//				$po = $dp->Pruefungsordnung;
+//				$abk = $dp->StudiengangAbkuerzung;
+//				$id = $dp->StudiengangID;
+//				$data['stdgng_uploads_headlines'][$id] = $abk.' - '.$po;
+//				// run through dirs and distribute found data to view-array
+//				foreach($upload_dir as $dir){
+//					$needle_po = strstr($dir, $po);
+//					$needle_abk = strstr($dir, $abk);
+//					if($needle_po != null && $needle_abk != null){
+//						$data['stdgng_uploads'][$id][] = $dir;
+//					}
+//				}
+//				$last_id = $id;
+//			}
+//
+//			if($data['stdgng_uploads'] != null){
+//				// prepare data to 
+//				foreach($data['stdgng_uploads'] as $nested_array){
+//					foreach($nested_array as $file){
+//						$files_with_po[] = $file;
+//					}
+//				}
+//
+//			//	    echo '<pre>';
+//			//	    print_r($clean);
+//			//	    echo '</pre>';  
+//
+//				// one additional field for other
+//				// CHECK - will all other files be displayed in here?
+//				// perhaps some fine-tuning in recognition of po needed?
+//				$data['stdgng_uploads_headlines'][42] = 'Andere:';
+//
+//				// check if there are dirs, that don't belong to a po
+//				// i.e. not in array, that contains the files that are already shown
+//				foreach($upload_dir as $dir){
+//					if(!in_array($dir, array_values($files_with_po))){
+//						$data['stdgng_uploads'][42][] = $dir;
+//					}
+//				}
+//			}
+//		}
 
 //	    $this->data->add('stdgng_uploads_headlines', $data['stdgng_uploads_headlines']);
 //	    $this->data->add('stdgng_uploads', $data['stdgng_uploads']);
-		$this->data->add('stdgng_uploads_list_filelist',
-				$this->load->view('admin/partials/stdplan_import_filelist', $data, TRUE));
+//		$this->data->add('stdgng_uploads_list_filelist',
+//				$this->load->view('admin/partials/stdplan_import_filelist', $data, TRUE));
 	    
 		$this->load->view('admin/stdplan_import', $this->data->load());
 	}
@@ -1929,20 +1935,22 @@ class Admin extends FHD_Controller {
 			$upload_data = $this->upload->data();
 		
 			// start parsing stdplan - pass data to parsing-model 
-			$delete_file = $this->admin_model_parsing->parse_stdplan($upload_data);
+//			$delete_file = $this->admin_model_parsing->parse_stdplan($upload_data);
+			$ids = $this->admin_model_parsing->parse_stdplan($upload_data);
+			$this->data->add('ids', $ids);
 			
 			// if parser returns error-message (PO not found in DB) show message
 			// to user and delete temporary stored file
-			if($delete_file){
-				$this->session->set_flashdata('parsing_result', 'Datei wurde nicht hochgeladen - PO noch nicht angelegt.');
-				unlink($config['upload_path'].$upload_data['file_name']);
-
-			// else rediret to view
-			} else {
-				$this->session->set_flashdata('parsing_result', $upload_data);
-			}
-			redirect('admin/stdplan_import');
-//			$this->load->view('admin/partials/stdplan_import_success', $this->data->load());
+//			if($delete_file){
+//				$this->session->set_flashdata('parsing_result', 'Datei wurde nicht hochgeladen - PO noch nicht angelegt.');
+//				unlink($config['upload_path'].$upload_data['file_name']);
+//
+//			// else rediret to view
+//			} else {
+//				$this->session->set_flashdata('parsing_result', $upload_data);
+//			}
+//			redirect('admin/stdplan_import');
+			$this->load->view('admin/partials/stdplan_import_DEBUG_view', $this->data->load());
 	    }
 	}
 	
