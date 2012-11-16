@@ -79,24 +79,54 @@ class Admin_model_parsing extends CI_Model {
 		xml_parser_free($xml_parser);
 
 		
-		// find out how many degree-programs with that PO-Abk-Kombi there are
-		$count_dp = 0;
-		$count_dp = $this->count_degree_programs($this->stdg_short, $this->stdg_pov);
+		// IMPORTANT - NOT FINAL YET
+		// get some more detailed error-messages
+		// should be extended by JOCHEN while TESTING 
+		// 
+		// >> run through the parsed data and check for sources of error
+		$error_messages = array(
+			'errors'
+		);
+		foreach($this->array_veranstaltungen as $days){
+			// run through hours
+			foreach ($days as $hours) {
+				// run through courses
+				foreach ($hours as $course) {
+					// empty tag
+					if(count($course) < 3){
+						$error_messages[] = 'Empty tag @ Tag-'.$course[4].' Stunde-'.$course[5];
+					}
+					// some more sources?
+				}
+			}
+		}
+		// if errors has been added >> return here
+		if(count($error_messages) > 1){
+			return $error_messages;
+		}
+				
 		
 		// prepare array to return unique combination
-		$return_ids = array(
+		$ids = array(
 			$this->stdg_short,
 			$this->stdg_pov,
 			$this->stdg_semester
 		);
+		// and add them to return-array
+		$return_parsing_info = array(
+			$ids
+		);
+		
+		// find out how many degree-programs with that PO-Abk-Kombi there are
+		$count_dp = 0;
+		$count_dp = $this->count_degree_programs($this->stdg_short, $this->stdg_pov);
 
 		// only if there is exactly one degreep-program with that PO-Abk-Kombi
-		// start parsing - otherwise >> ERROR
-				
+		// start working on data - otherwise >> ERROR
 		if($count_dp === 1){
-			// get data from parser and prepare for db-queries
-			$this->prepare_parsed_stdplan_data();
-			return $return_ids;
+			// get information from parser and return to view
+			$return_parsing_info[] = $this->prepare_parsed_stdplan_data();
+			return $return_parsing_info;
 		} else {
 			// delete file
 //			unlink('./resources/uploads/'.$file_data['file_name']);
@@ -258,6 +288,10 @@ class Admin_model_parsing extends CI_Model {
 		// >> run through parsed data
 		//run through days
 		
+		// some reporting to check parsing more comfortably
+		$debugging = array();
+		
+		// DEBUG
 //		echo '<pre>';	
 //		print_r($this->array_veranstaltungen);
 //		echo '</pre>';
@@ -400,47 +434,22 @@ class Admin_model_parsing extends CI_Model {
 						}
 
 						// DEBUG
-						echo '<div class="well">';
-						echo '<p>********************nächster Datensatz********************</p>';
-						echo 'KursID:';
-						print_r($course_id);
-						echo '<br />';
-						echo 'VeranstaltungsformID:';
-						print_r($event_type_id);
-						echo '<br />';
-						echo 'VeranstaltungsformAlternative:';
-						print_r(substr($course[1], 2));
-						echo '<br />';
-						echo 'WPFName:';
-						print_r(($isWPF ? $wpfname : ''));
-						echo '<br />';
-						echo 'Raum:';
-						print_r($course[2]);
-						echo '<br />';
-						echo 'DozentID:';
-						print_r($dozent_id);
-						echo '<br />';
-						echo 'StartID:';
-						print_r($course[5] + 1);
-						echo '<br />';
-						echo 'EndeID:';
-						print_r($course[5] + $course_duration);
-						echo '<br />';
-						echo 'TagID:';
-						print_r($course[4] + 1);
-						echo '<br />';
-						echo 'isWPF:';
-						print_r(($isWPF ? '1' : '0'));
-						echo '<br />';
-						echo 'Farbe:';
-						print_r($course[6]);
-						echo '<br />';
-						echo 'GruppeID:';
-						print_r($group_id);
-						echo '<br />';
-						echo 'Editor:';
-						print_r(99);
-						echo '</div>';
+						$data = '';
+						$data .= '<div>********************nächster Datensatz********************<br />';
+						$data .= 'KursID:'.$course_id.'<br />';
+						$data .= 'VeranstaltungsformID:'.$event_type_id.'<br />';
+						$data .= 'VeranstaltungsformAlternative:'.substr($course[1], 2).'<br />';
+						$data .= 'WPFName:'.($isWPF ? $wpfname : '').'<br />';
+						$data .= 'Raum:'.$course[2].'<br />';
+						$data .= 'DozentID:'.$dozent_id.'<br />';
+						$data .= 'StartID:'.($course[5] + 1).'<br />';
+						$data .= 'EndeID:'.($course[5] + $course_duration).'<br />';
+						$data .= 'TagID:'.($course[4] + 1).'<br />';
+						$data .= 'isWPF:'.($isWPF ? '1' : '0').'<br />';
+						$data .= 'Farbe:'.$course[6].'<br />';
+						$data .= 'GruppeID:'.$group_id.'<br />';
+						$data .= 'Editor:'.$this->editor_id.'</div>';
+						$debugging[] = $data;
 
 						// save data
 			/*>>*/		$this->write_stdplan_data(
@@ -472,13 +481,12 @@ class Admin_model_parsing extends CI_Model {
 					} //endif duplicate entry
 
 					// DEBUG
-					echo '<pre>';	
-					print_r($course);
-					echo '</pre>';
+					$debugging [] = $course;
 					
 				} // end foreach hours
 			}// end foreach days
 		} // end foreach
+		return $debugging;
     }
     
 

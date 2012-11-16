@@ -1936,8 +1936,17 @@ class Admin extends FHD_Controller {
 		
 			// start parsing stdplan - pass data to parsing-model 
 //			$delete_file = $this->admin_model_parsing->parse_stdplan($upload_data);
-			$ids = $this->admin_model_parsing->parse_stdplan($upload_data);
-			$this->data->add('ids', $ids);
+			$ids_or_errors = $this->admin_model_parsing->parse_stdplan($upload_data);
+			
+			if($ids_or_errors[0] != 'errors'){
+				$this->data->add('ids', $ids_or_errors[0]);
+				unset($ids_or_errors[0]);
+				$this->data->add('data', $ids_or_errors);
+				$this->load->view('admin/partials/stdplan_import_DEBUG_view', $this->data->load());
+			} else {
+				$this->data->add('errors', $ids_or_errors);
+				$this->load->view('admin/partials/stdplan_import_ERROR_view', $this->data->load());
+			}
 			
 			// if parser returns error-message (PO not found in DB) show message
 			// to user and delete temporary stored file
@@ -1950,7 +1959,6 @@ class Admin extends FHD_Controller {
 //				$this->session->set_flashdata('parsing_result', $upload_data);
 //			}
 //			redirect('admin/stdplan_import');
-			$this->load->view('admin/partials/stdplan_import_DEBUG_view', $this->data->load());
 	    }
 	}
 	
