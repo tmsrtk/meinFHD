@@ -41,6 +41,15 @@ $btn_attributes = 'class = "btn-warning input-xxxlarge"';
 							    $key == 'Pruefungsordnung' || 
 							    $key == 'Regelsemester' || 
 							    $key == 'Creditpoints') {
+								
+									// change placeholder-text
+									$placeholder = '';
+									switch($key){
+										case 'StudiengangName' : $placeholder = 'Studiengang'; break;
+										case 'StudiengangAbkuerzung' : $placeholder = 'Abkürzung'; break;
+										case 'Regelsemester' : $placeholder = 'Semester'; break;
+										default : $placeholder = $key; break;
+									}
 
 								    // create empty fields - new course will be created
 								    $inputFieldData = array(
@@ -48,7 +57,7 @@ $btn_attributes = 'class = "btn-warning input-xxxlarge"';
 									    'id' => $key,
 									    'class' => 'input-xxxlarge',
 									    'value' => set_value($key, ''),
-									    'placeholder' => $key
+									    'placeholder' => $placeholder
 								    );
 
 								    // print input field

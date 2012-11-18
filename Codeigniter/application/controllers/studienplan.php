@@ -42,7 +42,7 @@ class Studienplan extends FHD_Controller
     }
 
     /**
-     * Index-Method, which loads the Studienplan
+     * Index-Method, which loads the Studienplan for the Desktop version.
      */
     public function desktop_index()
     {

@@ -261,9 +261,11 @@ class Kursverwaltung extends FHD_Controller {
 						$act_app_data['button_label'] = 'Anmeldung aktivieren';
 					}
 
-					// getting data and save for view
-					if(in_array(2, $eventtypes) || in_array(3, $eventtypes) || in_array(4, $eventtypes)){
+					// if user is no tutor >> getting data and save for view
+					if(in_array(2, $eventtypes) || in_array(3, $eventtypes) || in_array(4, $eventtypes) && !$subview_data['is_tut']){
 						$activate_application[$id] = $this->load->view('courses/partials/courses_activate_application', $act_app_data, TRUE);
+					} else {
+						$activate_application[$id] = '';
 					}
 				}
 				
@@ -684,28 +686,6 @@ class Kursverwaltung extends FHD_Controller {
 		if(count($staff) === 1){
 	//	    echo 'if'; // DEBUG
 			// get course_id i.e. first element key
-			// TODO redirect!!!!!!!!!!!!!!!
-			// Following error appeared when saving staff (removed one person from labings)
-			// then without reloading added new tutor via dialog
-			/*
-			 * <h4>A PHP Error was encountered</h4>
-
-				<p>Severity: Warning</p>
-				<p>Message:  reset() expects parameter 1 to be array, boolean given</p>
-				<p>Filename: controllers/kursverwaltung.php</p>
-				<p>Line Number: 551</p>
-
-				</div><div style="border:1px solid #990000;padding-left:20px;margin:0 0 10px 0;">
-
-				<h4>A PHP Error was encountered</h4>
-
-				<p>Severity: Warning</p>
-				<p>Message:  key() expects parameter 1 to be array, boolean given</p>
-				<p>Filename: controllers/kursverwaltung.php</p>
-				<p>Line Number: 552</p>
-
-				</div>
-			 */
 			reset($staff); // setting pointer to first element - necessary?!?!
 			$course_id = key($staff);
 			// delete staff for that course_id
@@ -912,7 +892,7 @@ class Kursverwaltung extends FHD_Controller {
 		$student_data = $this->input->post('student_data');
 		
 		// assign tut-role to student and for passed course_id
-		if($this->kursverwaltung_model->assign_tut_role_to_student($student_data)){
+		if($this->kursverwaltung_model->assign_tut_role_to_student($student_data, $this->user_model->get_userid())){
 			echo 'Der Student ist nun Tutor des Kurses und kann Tutorien verwalten.';
 		} else {
 			echo 'Fehler bei der Verarbeitung. Kontaktieren Sie einen Administrator.';
@@ -1210,7 +1190,7 @@ class Kursverwaltung extends FHD_Controller {
 	 * array[0] element_name
 	 * array[1] cb_status
 	 * array[2] user_id
-	 * array[3] event_id starts with 0 runs to number set by user for this lab
+	 * array[3] event_id starts with 0 runs to number set by user for this lab - xtra-events = x1, x2
 	 * Depending on the checkbox that has been clicked db is updated
 	 * 
 	 */
@@ -1263,12 +1243,18 @@ class Kursverwaltung extends FHD_Controller {
 	 * Course-id fetched from db, because more complicated to get inside view at that point.
 	 * 
 	 */
-	public function reload_lab_mgt_group(){
-		// TODO pass new id via flashdata
-		$sp_course_id_to_show = $this->input->post('sp_course_id');
-		$course_id_to_show = $this->kursverwaltung_model->get_course_id_for_spkursid($sp_course_id_to_show);
+	public function save_and_reload_lab_mgt_group(){
+		$sp_course_id = $this->input->post('sp_course_id');
+		$text_xtra_1 = $this->input->post('xtra_event_1');
+		$text_xtra_2 = $this->input->post('xtra_event_2');
+		$number_of_events = $this->input->post('number_of_events');
+		
+		// save passed data
+		$this->kursverwaltung_model->update_xtra_event($sp_course_id, $text_xtra_1, $text_xtra_2, $number_of_events);
+			
+		$course_id_to_show = $this->kursverwaltung_model->get_course_id_for_spkursid($sp_course_id);
 
-		$this->session->set_flashdata('sp_course_id', $sp_course_id_to_show);
+		$this->session->set_flashdata('sp_course_id', $sp_course_id);
 		$this->session->set_flashdata('course_id', $course_id_to_show->KursID);
 		
 		// goto view
@@ -1281,16 +1267,45 @@ class Kursverwaltung extends FHD_Controller {
 	 * Data passed via POST contains array
 	 * array[0] - sp_course_id
 	 * array[1] - event_id !! +1 because of array-index
-	 * array[2] - new date
+	 * array[2] - day
+	 * array[3] - month
+	 * array[4] - year
 	 * 
 	 */
 	public function ajax_save_new_date_for_event(){
 		$save_data = $this->input->post('save_event_data');
 		
-		echo $save_data[2];
+		// building date to be stored in db
+		$store_date = '';
+		$store_date = $save_data[4].'-'.$save_data[3].'-'.$save_data[2];
 		
-		$this->kursverwaltung_model->update_eventdate($save_data[0], $save_data[1]+1, $save_data[2]);
+		$this->kursverwaltung_model->update_eventdate($save_data[0], $save_data[1]+1, $store_date);
 	}
+	
+	
+//	/**
+//	 * Saving new text for an extra-event.
+//	 * Data passed via POST contains array
+//	 * array[0] - sp_course_id
+//	 * array[1] - text - new text to store
+//	 * array[2] - event - 1 or 2
+//	 * 
+//	 */
+//	public function ajax_save_xtra_event(){
+//		$sp_course_id = '';
+//		$text = '';
+//		
+//		$data = $this->input->post('new_data');
+//		$sp_course_id = $data[0];
+//		$text = $data[1];
+//		$event = $data[2];
+//		
+//		// save to db
+//		$this->kursverwaltung_model->update_xtra_event($sp_course_id, $text, $event);
+//		
+//		// reload page - otherwise there are cache-problems with input-fields
+//		$this->reload_lab_mgt_group($sp_course_id);
+//	}
 	
 
 	/* 

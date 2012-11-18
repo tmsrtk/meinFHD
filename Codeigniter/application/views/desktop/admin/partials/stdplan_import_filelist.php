@@ -22,7 +22,7 @@
 						<td>
 							<?php
 								echo form_open('admin/delete_stdplan_file');
-								echo form_submit('delete_file', 'Löschen!', $btn_delete_attrs);
+								echo form_submit('delete_file', 'Löschen', $btn_delete_attrs);
 								echo form_hidden('std_file_to_delete', $filename);
 								echo form_close();
 							?>
@@ -30,7 +30,7 @@
 						<td>
 							<?php
 								echo form_open('admin/open_stdplan_file');
-								echo form_submit('open_file', 'Öffnen!', $btn_open_attrs);
+								echo form_submit('open_file', 'Datei ansehen', $btn_open_attrs);
 								echo form_hidden('std_file_to_open', $filename);
 								echo form_close();
 							?>

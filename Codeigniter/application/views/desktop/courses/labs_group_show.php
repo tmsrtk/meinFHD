@@ -8,11 +8,6 @@
 	
 <?php
 	// general form setup
-	// TODO
-	// to change number of shown labs >> there must be an additional field in db to store this value
-	// at first static in this view
-//	$number_of_events = ;
-
 	// storing group-ids to array - needed in jq-part to run through all tabs
 	$sp_course_ids = array();
 	foreach($event_dates as $spc_id => $array_with_group_headers){
@@ -90,6 +85,8 @@
 								echo '<div class="well well-small">';
 								echo '<h4>'.$value->Kursname.'</h4>';
 								echo $value->TagName.', '.$value->Beginn.' - '.$value->Ende.' Uhr, ' .$value->Raum;
+								echo '<br /><br />';
+								echo 'Spaltenüberschriften anklicken, um Anwesenheit/Testat abzuhaken.';
 								echo '</div>';
 							}
 						}
@@ -142,7 +139,7 @@
 									'id' => 'presence-uid-'.$i.'-'.$one_participant->BenutzerID,
 									'data-uid' => $one_participant->BenutzerID,
 									'data-eid' => $i,
-									'class' => 'lab-cb',
+									'class' => 'lab-cb lab-cb-'.$sp_course_id.'-'.$i,
 									'value' => 'accept',
 									'checked' => 'TRUE'
 								);
@@ -151,7 +148,7 @@
 									'id' => 'testat-uid-'.$i.'-'.$one_participant->BenutzerID,
 									'data-uid' => $one_participant->BenutzerID,
 									'data-eid' => $i,
-									'class' => 'lab-cb',
+									'class' => 'lab-cb lab-cb-'.$sp_course_id.'-'.$i,
 									'value' => 'accept',
 									'checked' => 'TRUE'
 								);
@@ -183,12 +180,12 @@
 								'name' => 'pretestat1-uid-'.$i.'-'.$one_participant->BenutzerID,
 								'id' => 'pretestat1-uid-'.$i.'-'.$one_participant->BenutzerID,
 								'data-uid' => $one_participant->BenutzerID,
-								'data-eid' => 0,
-								'class' => 'lab-cb',
+								'data-eid' => 'x1',
+								'class' => 'lab-cb lab-cb-'.$sp_course_id.'-x1',
 								'value' => 'accept',
 								'checked' => ($one_participant->zwischentestat1 ? TRUE:FALSE)
 							);
-							if($zwtestat1[$sp_course_id] != 0){
+							if(strlen($zwtestat1[$sp_course_id]) > 0){
 								echo form_checkbox($cb_data_pre_testat1);
 								echo '</td><td>';
 							}
@@ -198,12 +195,12 @@
 								'name' => 'pretestat2-uid-'.$i.'-'.$one_participant->BenutzerID,
 								'id' => 'pretestat2-uid-'.$i.'-'.$one_participant->BenutzerID,
 								'data-uid' => $one_participant->BenutzerID,
-								'data-eid' => 0,
-								'class' => 'lab-cb',
+								'data-eid' => 'x2',
+								'class' => 'lab-cb lab-cb-'.$sp_course_id.'-x2',
 								'value' => 'accept',
 								'checked' => ($one_participant->zwischentestat1 ? TRUE:FALSE)
 							);
-							if($zwtestat2[$sp_course_id] != 0){
+							if(strlen($zwtestat2[$sp_course_id]) > 0){
 								echo form_checkbox($cb_data_pre_testat2);
 								echo '</td><td>';
 							}
@@ -213,8 +210,8 @@
 								'name' => 'final-uid-'.$i.'-'.$one_participant->BenutzerID,
 								'id' => 'final-uid-'.$i.'-'.$one_participant->BenutzerID,
 								'data-uid' => $one_participant->BenutzerID,
-								'data-eid' => 0,
-								'class' => 'lab-cb',
+								'data-eid' => 'final',
+								'class' => 'lab-cb  lab-cb-'.$sp_course_id.'-final',
 								'value' => 'accept',
 								'checked' => ($one_participant->gesamttestat ? TRUE:FALSE)
 							);
@@ -232,8 +229,8 @@
 								'name' => 'disable-uid-'.$i.'-'.$one_participant->BenutzerID,
 								'id' => 'disable-uid-'.$i.'-'.$one_participant->BenutzerID,
 								'data-uid' => $one_participant->BenutzerID,
-								'data-eid' => 0,
-								'class' => 'lab-cb',
+								'data-eid' => 'disable',
+								'class' => 'lab-cb lab-cb-'.$sp_course_id.'-disable',
 								'value' => 'accept',
 								'checked' => ($one_participant->ende ? TRUE:FALSE)
 							);
@@ -247,7 +244,7 @@
 						echo '</div>';
 						$index_groups++;
 					
-						echo '<div id="update-group-details-modal-'.$sp_course_id.'"></div>';
+						echo '<div id="edit-xtra-event-modal-'.$sp_course_id.'"></div>';
 					}
 				}
 			?>
@@ -272,6 +269,71 @@
 	} else {
 		$('#tab-panel-'+activeTabId).addClass("active");
 		$('#lab-tab-'+activeTabId).addClass("active");
+	}
+	
+	// create variable that contains all sp_course_ids in that view
+	// to run through the tabs
+    var spCourseIdsInView = <?php echo json_encode($sp_course_ids_for_jq); ?>;
+	
+	// get all input-elements
+	//var inputs = $('input')
+	
+	
+	// disable checkboxes - default-status
+	$('.lab-cb').attr('disabled', true);
+	
+	// behaviour of checkboxes, when table-head is clicked
+	$.each(spCourseIdsInView, function(index, spCourseId){
+		// standard-events 1-20
+		$('.event-date-'+spCourseId).click(function(){
+			enableCbForEvent($(this));
+		});
+		
+		// extra-events
+		$('.event-additional-'+spCourseId).click(function(index, val){
+			enableCbForEvent($(this));
+		});
+		
+		// final testat
+		$('.event-final-'+spCourseId).click(function(index, val){
+			enableCbForEvent($(this));
+		});
+		
+		// disable participants
+		$('.participant-disable-'+spCourseId).click(function(index, val){
+			enableCbForEvent($(this));
+		});
+	});
+	
+	
+	/**
+	 * Helper to enable 
+	 */
+	function enableCbForEvent(self){
+		// if checkboxes are enabled
+		// >> get id of current element and run over all inputfields and check for eid
+		// >> enable and set class
+		if(self.data('enabled') == 0){
+			var id = self.data('eventid');
+			$.each($('input'), function(index, val){
+				if($(val).data('eid') == id){
+					console.log($(val).data('eid'));
+					$(val).removeAttr('disabled');
+				}
+			});
+			self.data('enabled', 1);
+			self.addClass('text-success');
+		// otherwise same but disable and remove class
+		} else {
+			var id = self.data('eventid');
+			$.each($('input'), function(index, val){
+				if($(val).data('eid') == id){
+					$(val).attr('disabled', true);
+				}
+			});
+			self.data('enabled', 0);
+			self.removeClass('text-success');
+		}
 	}
 	
 	
@@ -414,13 +476,9 @@
 	};
 	
 	
+
 	<!--<script>-->
-
-	// create variable that contains all sp_course_ids in that view
-	// to run through the tabs
-    var spCourseIdsInView = <?php echo json_encode($sp_course_ids_for_jq); ?>;
 	
-
 	// handle all group-details-buttons in view
 	// each tab (i.e. sp_course_id) has it's own button
 	$.each(spCourseIdsInView, function(indexAll, spCourseId){
@@ -434,24 +492,31 @@
 
 			
 			if(editStatus == 'inactive'){
-				console.log('if'+editStatus);
-				// if inactive then activate date-picker and change button color, text, status
+				// if inactive then:
+				// - activate date-picker, 
+				// - change button color, text, status and
+				// - add edit-button and activate it
+				
 				// date-picker
 				$('.event-date-'+spCourseId).datepicker().
 					on('changeDate', function(ev){
 						// getting element-id and some other data
 						var textId = $(this).attr('id');
 						var eventId = $(this).data('eventid');
-						var saveData = new Array(
-							spCourseId,
-							eventId,
-							ev.date
-						);
 						
 						//console.log(ev.date);
 						var d = ev.date.getDate();
 						var m = ev.date.getMonth()+1;
+						var y = ev.date.getFullYear();
 						$('#'+textId).html(d+'.'+m+'.'+ getDateIcon());
+						
+						var saveData = new Array(
+							spCourseId,
+							eventId,
+							d,
+							m,
+							y
+						);
 						
 						// saving new date to db
 						$.ajax({
@@ -466,10 +531,67 @@
 						
 					});
 				$('.event-date-'+spCourseId).append(getDateIcon());
-				$('.event-additional-'+spCourseId).append(getWrenchIcon());
 				
 				// button
-				switchButtonColorStatus(changeDetailsButtonId, editStatus, spCourseId);
+				var xtraText1 = $('#event-additional-1-'+spCourseId).data('text');
+				var xtraText2 = $('#event-additional-2-'+spCourseId).data('text');
+				var numberEvents = $('#event-additional-1-'+spCourseId).data('numberofevents');
+				
+				console.log(xtraText1);
+				console.log(xtraText2);
+				console.log(numberEvents);
+				
+				$('#change-group-dates-'+spCourseId).html(getSubmitReloadButton(spCourseId, xtraText1, xtraText2, numberEvents));
+				
+//				// edit-button
+//				//$('.event-additional-'+spCourseId).append(getWrenchIcon());
+//				$('.event-additional-'+spCourseId).click(function(){
+//					var eventId = $(this).data('eventid');
+//					var currentText = $(this).data('text');
+//					var dialog = getXtraEventModal(eventId, spCourseId, currentText, 'Beschriftung wählen', 'Nutzen Sie Zusatztermine um zum Beispiel Zwischenabgaben zu verwalten.');
+//					$('#edit-xtra-event-modal-'+spCourseId).html(dialog);
+//					
+//					// function of dialog
+//					$('#change-xtra-text').modal({
+//						keyboard: false,
+//						backdrop: 'static'
+//					}).on('show', function(){
+//						//$('#add-tutor-dialog-confirm').data('id', courseId);
+//					// on hide hide
+//					}).on('hide', function(){
+//						// 
+//					}).modal('show');
+//
+//					return false;
+//				});
+//				
+//				// behaviour when search started
+//				$('#edit-xtra-event-modal-'+spCourseId).on('click', '#change-event-text-save', function(){
+//					// creating array to pass spCourseId and new text
+//					var self = $(this);
+//					var newData = new Array(
+//						spCourseId,
+//						$('#event-text-'+spCourseId).attr('value'),
+//						$('#event-text-'+spCourseId).data('eventid')
+//					);
+//
+//					$('.modal-body').html('Text wird geändert.');
+//					$('.modal-header button').hide();
+//					$('.modal-footer').hide();
+//					$.ajax({
+//						   type: "POST",
+//						   url: "<?php echo site_url();?>kursverwaltung/ajax_save_xtra_event/",
+//						   dataType: 'html',
+//						   data : {new_data : newData},
+//						   success: function (data){
+//							   location.reload();
+//							   // nothing to do
+//						   }
+//						});
+//
+//				});
+				
+				
 			} else {
 				// else nothing to do
 				// reload triggered 
@@ -480,97 +602,20 @@
 		
 	});
 	
-	/**
-	 * Function that dis/enables table-header-editing.
-	 * Color, data-editing (html), text
-	 */
-	function switchButtonColorStatus(buttonId, editStatus, spCourseId){
-		// alter text and status depending on former status
-//		if(editStatus == 'inactive'){
-			// not even necessary because page reloads 
-//			$('#activation-status-'+courseId+' p').text('Anmeldung ist aktiviert');
-//			buttonText = 'Bearbeiten deaktivieren und neu laden';
-//			editStatus = 'active';
-//			rClass = 'btn-warning';
-//			aClass = 'btn-success';
-			
-			$('#change-group-dates-'+spCourseId).html(getSubmitReloadButton(spCourseId));
-			
-//		} else {
-//			$('#activation-status-'+courseId+' p').text('Anmeldung ist deaktivert');
-//			buttonText = 'Anmeldung aktivieren';
-//			editStatus = 'disabled';
-//			rClass = 'btn-success';
-//			aClass = 'btn-warning';
-//		}
-		
-		// change data
-//		$(buttonId).data('editing', editStatus);
-//		$(buttonId).text('Bearbeiten deaktivieren und neu laden');
-//		$(buttonId).addClass('btn-warning');
-//		$(buttonId).removeClass('btn-info');
-
-	};
 	
-		
+//	function getXtraEventModal(xtraEventId, spCourseId, currentText, title, text){
+//		var myDialog = 
+//			$('<div class="modal hide" id="change-xtra-text"></div>')
+//			.html('<div class="modal-header"><button class="close" type="button" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
+//			.append('<div class="modal-body" id="modal-body"><p>'+text+'</p>\n\
+//			<p>Title eingeben: <input type="text" id="event-text-//'+spCourseId+'" data-eventid="'+xtraEventId+'" name="description" value="'+currentText+'" >\n\
+//			<input type="submit" class="btn-info" id="change-event-text-save" value="Speichern"></div>//')
+//			.append('<div class="modal-footer"><a href="#" class="btn" id="change-event-text-cancel" data-dismiss="modal">Abbrechen</a>\n\
+//			</div>//');
+//
+//		return myDialog;
+//    };
 	
-//	$('.event-date').each(function () {
-//		var config = { format: "dd/mm/yyyy", weekStart: 0, autoclose: true  };
-//		if ($(this).data("startDate") != undefined) {
-//			config.startDate = $(this).data("startDate");
-//		}
-//		$(this).datepicker(config);
-//	});
-
-//	var btnId = $('#change-dates-button-2460');
-//	$('.change-group-dates').on('click', btnId, function(){
-//		var id = $(this).attr('id');
-//		console.log('test: my id >> '+id);
-//	});
-
-	
-	
-
-	
-//	var test = $('.')
-//	$('th').on('datepicker',  event-date().click(function(){
-//		var id = '#'+$(this).attr('id');
-//	});
-	
-	
-	
-	/*
-	function createChangeGroupDetailsModal(title, spCourseId) {
-		var myDialog = 
-			$('<div class="modal hide" id="change-details-modal"></div>')
-			.html('<div class="modal-header"><button class="close" type="button" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
-			.append('<div class="modal-body" id="modal-body">\n\
-			<form action="<?php echo base_url('kursverwaltung/save_group_details');?>" method="post" accept-charset="utf-8">
-				<input type="hidden" name="sp-course-id" value="'+spCourseId+'">
-				<p>Wählen Sie die Anzahl der Termine die in der Übersicht für diese Gruppe angezeigt werden soll und ändern Sie die Termine wie gewünscht.</p>
-				
-				<input type="submit" class="btn btn-success save-notes-button" id="save-notes-button-" value="Speichern">
-				</form>\n\
-			</div>')
-			.append('<div class="modal-footer"><a href="#" class="btn" id="add-tutor-dialog-cancel" data-dismiss="modal">Abbrechen</a>\n\
-			</div>');
-
-		return myDialog;
-    };
-	
-	function getChangeGroupDetailsModal(spCourseId){
-		var changeDetailsModal = 
-			$('<div class="change-group-details-container></div>')
-			.html('<form action="<?php echo base_url('kursverwaltung/save_group_details');?>" method="post" accept-charset="utf-8">')
-			.append('<input type="hidden" name="sp-course-id" value="'+spCourseId+'">')
-			.append('<p>Wählen Sie die Anzahl der Termine die in der Übersicht für diese Gruppe angezeigt werden soll und ändern Sie die Termine wie gewünscht.</p>')
-			.append('<input type="submit" class="btn btn-success save-notes-button" id="save-notes-button-" value="Speichern">')
-			.append('</form>')
-			;
-			
-		return changeDetailsModal;
-	};
-	*/
 	
 	/**
 	 * Helper function to generate calendar-icon for changing dates
@@ -587,16 +632,37 @@
 		return '<div class="change-free-icon label label-info" stlye="text-align:center"><i class="icon-wrench icon-white"></i></div>';
 	};
 	
-	
+	<!--<script>-->
 	/**
 	 * Helper function to return form with submit-button
+	 * and checkboxes for each extra-event
 	 * Used to trigger submit-action (+passing id) and redirect to show_labmgt_group
 	 */
-	function getSubmitReloadButton(spCourseId, courseId){
-		var v = '';
-		v = '<form accept-charset="utf-8" method="post" action="<?php echo base_url(); ?>kursverwaltung/reload_lab_mgt_group/"><input type="hidden" value="'+spCourseId+'" name="sp_course_id"><input id="submit-reload-'+spCourseId+'" type="submit" class="btn btn-warning" value="Bearbeiten beenden und neu laden" name="'+spCourseId+'-reload"></form>';
-		return v;
+	function getSubmitReloadButton(spCourseId, text1, text2, numberEvents){
+		var button = 
+			$('<div></div>')
+			.append('<form accept-charset="utf-8" method="post" action="<?php echo base_url(); ?>kursverwaltung/save_and_reload_lab_mgt_group/">\n\
+			<div><input type="hidden" value="'+spCourseId+'" name="sp_course_id">\n\
+			<input type="submit" id="submit-reload-'+spCourseId+'" class="btn btn-warning" value="Bearbeiten beenden" name="'+spCourseId+'-reload"></div>\n\
+			<div class="well well-small clearfix" id="xtra-event-panel-'+spCourseId+'">\n\
+			<div class="span4"><label>Beschriftung Zusatztermin (+) 1</label>\n\
+			<input type="text" class="" value="'+text1+'" name="xtra_event_1"></div>\n\
+			<div class="span4"><label>Beschriftung Zusatztermin (+) 2</label>\n\
+			<input type="text" class="" value="'+text2+'" name="xtra_event_2"></div>\n\
+			<div class="span4"><label>Anzahl Termine (max. 20)</label>\n\
+			<input type="text" class="" value="'+numberEvents+'" name="number_of_events"></div>\n\
+			</div></form>');
+		return button;
 	};
+	
+	/*
+			<div class="span4"><label class="checkbox"><input type="checkbox" name="xtra-event-1-cb" id="xtra-event-1-cb-'+spCourseId+'"/>Beschriftung Zusatztermin 1</label>\n\
+			<input type="text" class="" value="" placeholder="Beschriftung" name="xtra-event-1-'+spCourseId+'"></div>\n\
+			<div class="span4"><label class="checkbox"><input type="checkbox" name="xtra-event-2-cb" id="xtra-event-2-cb-'+spCourseId+'"/>Beschriftung Zusatztermin 2</label>\n\
+			<input type="text" class="" value="" placeholder="Beschriftung" name="xtra-event-2-'+spCourseId+'"></div>\n\
+			<div class="span4"><label class="checkbox"><input type="checkbox" name="number-event-2-cb" id="xtra-event-2-cb-'+spCourseId+'"/>Anzahl Termine</label>\n\
+			<input type="text" class="" value="" placeholder="Beschriftung" name="xtra-event-2-'+spCourseId+'"></div>\n\
+	*/
 	
 	
 <?php endblock(); ?>

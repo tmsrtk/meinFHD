@@ -824,7 +824,7 @@ class Kursverwaltung_model extends CI_Model {
 	 * @param array $student_data [0] => matrno; [1] => courseId
 	 * @return int
 	 */
-	public function assign_tut_role_to_student($student_data){
+	public function assign_tut_role_to_student($student_data, $assign_id){
 		$q = ''; // init
 
 		// find user_id for that matrno
@@ -847,6 +847,9 @@ class Kursverwaltung_model extends CI_Model {
 						
 			// assign tut-role to that user_id - rolle 4=tutor
 			$this->db->insert('benutzer_mm_rolle', array('BenutzerID' => $user_id, 'RolleID' => '4'));
+			
+			// log assign-activity
+			$this->helper_model->log_activities(6, $assign_id, $user_id);
 
 			// add course to kurstutor-table
 			$this->db->insert('kurstutor', array('BenutzerID' => $user_id, 'KursID' => $student_data[1]));
@@ -1068,6 +1071,26 @@ class Kursverwaltung_model extends CI_Model {
 		// save to gruppenteilnehmer_aufzeichnungen for that user
 		$this->db->where('GruppeID', $group_id->GruppeID);
 		$this->db->update('gruppentermin', $save);
+	}
+	
+	
+	public function update_xtra_event($sp_course_id, $text1, $text2, $number_of_events){
+		$group_id = '';
+		$collumn = '';
+
+		// get group_id for sp_course_id
+		$group_id = $this->get_group_id_for_spkursid($sp_course_id);
+		
+		$save = array(
+			'zeigezwischentestat1' => $text1,
+			'zeigezwischentestat2' => $text2,
+			'anzahltermine' => $number_of_events > 20 ? 20 : $number_of_events
+		);
+		
+		// save to gruppenteilnehmer_aufzeichnungen for that user
+		$this->db->where('GruppeID', $group_id->GruppeID);
+		$this->db->update('gruppentermin', $save);
+		
 	}
 
 	/* 

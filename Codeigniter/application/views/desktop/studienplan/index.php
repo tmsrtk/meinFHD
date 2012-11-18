@@ -197,7 +197,7 @@
 		$(this).html('Studienplan');
 	});
 
-	// initialize the Studienplan var
+	// initialize the Studienplan object
 	var Studienplan = {
 			init: function( config ) {
 				var self = this;
@@ -220,12 +220,15 @@
 				// this.initResetButton();
 			},
 
+			// global ajax configuration
 			setupAjax : function() {
 				$.ajaxSetup({
 					type : 'GET'
 				});
 			},
 			
+			// initialize and set the needed event methods for the jQuery UI
+			// "sortable" module
 			initJQUIsortable: function() {
 				var self = this;
 
@@ -295,6 +298,7 @@
 				});
 			},
 
+			// initialize and setup all modules in the Studienplan
 			initModules : function() {
 				var self = this;
 
@@ -353,6 +357,7 @@
 				this._progressChanged();
 			},
 
+			// initialize and setup the mark input form fields
 			initModulNotenInputs : function() {
 				var self = this;
 
@@ -420,8 +425,8 @@
 
 			},
 
-			
-
+			// override the default submit behaviour, to get the _saveSemesterplan() mehthod
+			// working
 			initSendButton : function() {
 				var self = this;
 
@@ -439,18 +444,19 @@
 				});
 			}, 
 
-			initResetButton : function() {
-				var self = this;
+			// initResetButton : function() {
+			// 	var self = this;
 
-				this.config.resetButton.click(function() {
+			// 	this.config.resetButton.click(function() {
 
-					self.config.semesterplanspalten.sortable( "cancel" );
-					self.config.changedModulesHistory = [];
+			// 		self.config.semesterplanspalten.sortable( "cancel" );
+			// 		self.config.changedModulesHistory = [];
 
-					return false;
-				});
-			},
+			// 		return false;
+			// 	});
+			// },
 
+			// setup all P(ruefen) buttons
 			initPruefenButtons : function() {
 				// // get the status for this button | on / off ?
 				// $(this.config.pruefenButtons).each(function(index, elem) {
@@ -511,6 +517,7 @@
 				});
 			},
 
+			// setup all T(eilnehmen) buttons
 			initHoerenButtons : function() {
 				var self = this;
 
@@ -601,8 +608,7 @@
 				});
 			},
 
-			
-
+			// config the "properties" for the modules
 			initInfoModalButtons : function() {
 				// cache main object
 				var self = this;
@@ -636,6 +642,7 @@
 				});
 			},
 
+			// config the "properties" button for the Studienplan
 			initSemesterplanEdit : function() {
 				var self = this;
 
@@ -661,7 +668,7 @@
 					}).promise().done(function() {
 						self._saveSemesterplan().done(function() {
 							// reload page
-							location.reload();
+							self._reload();
 						});
 					});
 				});
@@ -674,7 +681,7 @@
 					// if so, no deleting possible
 
 					regelSemester = "<?php echo $userdata['studiengang_data']['Regelsemester'] ?>";
-					// console.log(regelSemester);
+					console.log(regelSemester);
 					// return;
 
 					if ( regelSemester != self.config.semesterplanspalten.length ) {
@@ -702,7 +709,7 @@
 							}).promise().done(function() {
 								self._saveSemesterplan().done(function() {
 									// reload page
-									location.reload();
+									self._reload();
 								});
 							});
 						}
@@ -762,7 +769,7 @@
 							}).promise().done(function() {
 								self._saveSemesterplan().done(function() {
 									// reload page
-									location.reload();
+									self._reload();
 								});
 							});
 						}
@@ -773,7 +780,7 @@
 						}).promise().done(function() {
 							self._saveSemesterplan().done(function() {
 								// reload page
-								location.reload();
+								self._reload();
 							});
 						});
 					}
@@ -845,6 +852,10 @@
 
 			// helper methods --------------------------------------------------------------------------
 
+			// this method is called, when things has been changed in the Studienpan
+			// e.g. you entered a module mark or moved it in an other semester..
+			// the whole "live-display" is happening here, so things like SWS/CP are
+			// getting reloaded
 			_progressChanged : function () {
 				var self = this
 
@@ -872,7 +883,7 @@
 
 					// average mark stuff
 					markSum += self._getModuleMark($(el))
-					if (self._getModuleMark($(el)) != 'NULL' ) { counter2 += 100 };
+					if (self._getModuleMark($(el)) != 0 ) { counter2 += 1 };
 					// console.log(markSum)
 
 					// sws/cp stuff
@@ -892,8 +903,10 @@
 				// AVERAGE MARK //
     				//////////////////
 
-    				averageMarkT = markSum/counter2*100
-    				self.config.averageMark.fadeOut(600).text(Math.round(averageMarkT)).fadeIn(600)
+    				averageMarkT = Math.round(markSum/counter2)
+    				self.config.averageMark.fadeOut(600).text(averageMarkT).fadeIn(600)
+
+    				console.log(markSum, counter2)
 
     				//////////////////
 				//   SWS / CP   //
@@ -958,10 +971,11 @@
 
 			// modules ---------------------------------------
 
+			// checks the user input for a valide mark
 			_validateUserInput : function(mark) {
 				if ( mark <= 100 && mark >= 0 ) {
 				return true;
-			}
+				}
 				else return false;
 			},
 
@@ -975,6 +989,8 @@
 			// 	else return false;
 			// },
 
+			// Gibt zurück ob sich die übergebenen Semester in geraden oder ungeraden Semestern befinden.
+			// returns if the passed semester, are both in odd or even semester numbers
 			_checkSemesterEquality : function(actSem, regSem) {
 				regEven = false;
 				actEven = false;
@@ -986,6 +1002,7 @@
 
 			},
 
+			// resets a module, visually to its regular position and its values
 			_resetModule : function(module) {
 				// reset input field
 				// module.find('input.modulnote').val('');
@@ -1028,8 +1045,9 @@
 			},
 			_getModuleMark : function(module) {
 				mark = module.find('.modulnote').val();
-				// return (isNaN(parseInt(mark, 10))?0:parseInt(mark, 10));
-				return mark;
+				// console.log(mark)
+				return (isNaN(parseInt(mark, 10))?0:parseInt(mark, 10));
+				// return mark;
 			},
 			_setModuleMark : function(module, mark) {
 				module.find('.modulnote').val(mark);
@@ -1098,6 +1116,8 @@
 				});
 			},
 
+			// saves, whenever needed, the whole Studienplan with its actual values
+			// into the db, and reloads the page
 			_saveSemesterplan : function() {
 				var dfd = $.Deferred();
 
@@ -1153,7 +1173,7 @@
 					    //called when complete
 					  },
 					  success: function(data, textStatus, xhr) {
-					    console.log("count: "+count+" | i: "+successfulDbWritings);
+					    // console.log("count: "+count+" | i: "+successfulDbWritings);
 					    if (count === successfulDbWritings) dfd.resolve();
 					    successfulDbWritings++;
 					  },
@@ -1165,12 +1185,14 @@
 					i++;
 				});
 
+				// alert('drinne');
+
 				return dfd.promise();
 			}
 		};
 
 
-		
+		// initialize the Studienplan object with the needet configs
 		Studienplan.init({
 			semesterplanspalten: $('.semesterplanspalte')
 			, connectWithColumns: '.semesterplanspalte'

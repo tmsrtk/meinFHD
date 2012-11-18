@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * User Model Class which stores all the needed user data.
+ */
 class User_model extends CI_Model {
 
 	private $user_id = 0;
@@ -91,12 +94,26 @@ class User_model extends CI_Model {
 
 	}
 
+	/**
+	 * Updates the current Semester of the user. Called everytime the user
+	 * logs into the system.
+	 *
+	 * @param  integer  $user_id   UserID of the user.
+	 * @param  integer $sem_count actual semester.
+	 *
+	 */
 	public function update_usersemester($user_id, $sem_count=0)
 	{
 		$this->db->update('benutzer', array("Semester" => $sem_count), "BenutzerID = {$user_id}");
 	}
 
-	/** */
+	/**
+	 * Abstract method to get all the DB data of one row.
+	 *
+	 * @param  String $columnname From which column you want to receive the data.
+	 *
+	 * @return mixed             Array with all the data of the queried column.
+	 */
 	private function _query_user_singlecolumndata($columnname)
 	{
 		$this->db->select($columnname)
@@ -107,6 +124,11 @@ class User_model extends CI_Model {
 		return ($q[$columnname]);
 	}
 
+	/**
+	 * Queries the Studiengang of the actual user.
+	 *
+	 * @return integer the desired studiengang id.
+	 */
 	public function _query_studiengang_id()
 	{
 		$this->db->select('StudiengangID')
@@ -117,7 +139,11 @@ class User_model extends CI_Model {
 		return $q['StudiengangID'];
 	}
 
-
+	/**
+	 * Queries the studiengang data by the studiengang id.
+	 *
+	 * @return mixed Array with all Studiengangdata.
+	 */
 	public function _query_studiengang_data()
 	{
 		$this->db->select('*')
@@ -128,6 +154,11 @@ class User_model extends CI_Model {
 		return $q;
 	}
 
+	/**
+	 * Queries the semesterplan id by the actual user id.
+	 *
+	 * @return mixed All semesterplan data.
+	 */
 	private function _query_semesterplanid()
 	{
 		$this->db->select('SemesterplanID')
@@ -139,7 +170,11 @@ class User_model extends CI_Model {
 		if ( ! empty($q)) return $q['SemesterplanID'];
 	}
 
-	/** */
+	/**
+	 * Queries all the permission the actual user has.
+	 *
+	 * @return Array one-dim array with all permissions the user has.
+	 */
 	private function _query_all_permissions()
 	{
 		$this->db->select('RolleID')
@@ -226,7 +261,11 @@ class User_model extends CI_Model {
 		return $permissions_cleaned;
 	}
 
-
+	/**
+	 * Queries all roles the actual user has.
+	 *
+	 * @return Array Return all the roles, the actual user has.
+	 */
 	private function _query_all_roles()
 	{
 		$this->db->select('RolleID')
@@ -390,6 +429,11 @@ class User_model extends CI_Model {
 		}
 	}
 
+	/**
+	 * Returns the semesterplan-id.
+	 *
+	 * @return int semesterplan-id
+	 */
 	public function get_semesterplanid()
 	{
 		if ( ! empty($this->semesterplan_id) )
@@ -398,6 +442,11 @@ class User_model extends CI_Model {
 		}
 	}
 
+	/**
+	 * Returns the actual semester.
+	 *
+	 * @return int actual semester.
+	 */
 	public function get_actsemester()
 	{
 		if ( ! empty($this->act_semester) )
@@ -406,6 +455,11 @@ class User_model extends CI_Model {
 		}
 	}
 
+	/**
+	 * Returns the Studienbeginn Semestertyp
+	 *
+	 * @return String WS or SS
+	 */
 	public function get_studienbeginn_semestertyp()
 	{
 		if ( ! empty($this->studienbeginn_typ) )
@@ -414,6 +468,11 @@ class User_model extends CI_Model {
 		}
 	}
 
+	/**
+	 * Returns the Studiebeginn Jahr.
+	 *
+	 * @return int e.g.: 2012
+	 */
 	public function get_studienbeginn_jahr()
 	{
 		if ( ! empty($this->studienbeginn_jahr) )
@@ -423,14 +482,6 @@ class User_model extends CI_Model {
 	}
 
 
-
-
-
-
-
-
-
-	
 	/**
 	 * Returns course-ids for a single user mapped to roles
 	 * @return array [course_id] => [role_id]
@@ -440,12 +491,7 @@ class User_model extends CI_Model {
 	}
 
 
-	
-	
-	
-	
-	
-	
+
 //	// HAS BEEN NECESSARY AS LONG AS LAGING- & TUT-TABLE CONTAIN SPKURSID (CHANGED TO KURSID)
 //	/**
 //	 * Runs through an array of spcourse_ids to find the matching course_ids
