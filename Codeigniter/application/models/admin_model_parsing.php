@@ -48,12 +48,12 @@ class Admin_model_parsing extends CI_Model {
 		$array_check[0][2] = "";
 
 		// Erzeuge neuen XML-Parser
-		$xml_parser = xml_parser_create();
+		$xml_parser = xml_parser_create("UTF-8");
 
 		// Setze Optionen:
-		xml_parser_set_option( $xml_parser, XML_OPTION_TARGET_ENCODING, "UTF-8" ); 	// Encoding-Typ ISO-8859-1
+		xml_parser_set_option( $xml_parser, XML_OPTION_TARGET_ENCODING, "UTF-8" ); 	// Encoding-Typ war vorher ISO-8859-1
 		xml_parser_set_option( $xml_parser, XML_OPTION_CASE_FOLDING, 0 ); 					// kein Case-Folding
-		xml_parser_set_option( $xml_parser, XML_OPTION_SKIP_WHITE, 1 ); 					// �berspringe whitespaces an Anfang und Ende
+		xml_parser_set_option( $xml_parser, XML_OPTION_SKIP_WHITE, 1 ); 					// ueberspringe whitespaces an Anfang und Ende
 
 		// Setze Elementhandler: searchElement und searchEndElement
 		xml_set_element_handler( $xml_parser, array($this, 'searchElement'), array($this, 'searchEndElement') );
@@ -78,18 +78,55 @@ class Admin_model_parsing extends CI_Model {
 		// Entlasse XML-Parser
 		xml_parser_free($xml_parser);
 
+
+		// IMPORTANT - NOT FINAL YET
+		// get some more detailed error-messages
+		// should be extended by JOCHEN while TESTING 
+		// 
+		// >> run through the parsed data and check for sources of error
+		$error_messages = array(
+			'errors'
+		);
+		foreach($this->array_veranstaltungen as $days){
+			// run through hours
+			foreach ($days as $hours) {
+				// run through courses
+				foreach ($hours as $course) {
+					// empty tag
+					if(count($course) < 3){
+						$error_messages[] = 'Empty tag @ Tag-'.$course[4].' Stunde-'.$course[5];
+					}
+					// some more sources?
+				}
+			}
+		}
+		// if errors has been added >> return here
+		if(count($error_messages) > 1){
+			return $error_messages;
+		}
+				
 		
+		// prepare array to return unique combination
+		$ids = array(
+			$this->stdg_short,
+			$this->stdg_pov,
+			$this->stdg_semester
+		);
+		// and add them to return-array
+		$return_parsing_info = array(
+			$ids
+		);
+
 		// find out how many degree-programs with that PO-Abk-Kombi there are
 		$count_dp = 0;
 		$count_dp = $this->count_degree_programs($this->stdg_short, $this->stdg_pov);
 
 		// only if there is exactly one degreep-program with that PO-Abk-Kombi
-		// start parsing - otherwise >> ERROR
-				
+		// start working on data - otherwise >> ERROR
 		if($count_dp === 1){
-			// get data from parser and prepare for db-queries
-			$this->prepare_parsed_stdplan_data();
-			return false;
+			// get information from parser and return to view
+			$return_parsing_info[] = $this->prepare_parsed_stdplan_data();
+			return $return_parsing_info;
 		} else {
 			// delete file
 //			unlink('./resources/uploads/'.$file_data['file_name']);
@@ -250,12 +287,24 @@ class Admin_model_parsing extends CI_Model {
 		$duplicate_event = array();
 		// >> run through parsed data
 		//run through days
+		
+		// some reporting to check parsing more comfortably
+		$debugging = array();
+		
+		// DEBUG
+//		echo '<pre>';	
+//		print_r($this->array_veranstaltungen);
+//		echo '</pre>';
+
 		foreach($this->array_veranstaltungen as $days){
 			// run through hours
 			foreach ($days as $hours) {
 				// run through courses
 				foreach ($hours as $course) {
-					
+
+					// verlängere erlaubte skriptausführungszeit
+					set_time_limit(30);
+
 					// the xml-files contain one entry for every hour!
 					// >> same course over more than one hour exists more than one time
 					// check if combination already has been saved to $duplicate_event-array 
@@ -270,10 +319,11 @@ class Admin_model_parsing extends CI_Model {
 //						print_r($course_name);
 //						echo '</pre>';
 
+
 						// search array_fachtext for kurs[0](='kursname')
 						$course_name = '';
 						for( $i=1 ; $i <= count($this->array_fachtext); $i++) {
-							// if there is a kurs then save it to separate variable $course_name
+							// if there is a course then save it to separate variable $course_name
 							if($this->array_fachtext[$i][0] == $course[0]){
 								$course_name = $this->array_fachtext[$i][2];
 								// note:
@@ -281,11 +331,9 @@ class Admin_model_parsing extends CI_Model {
 								// and to create correct entry in studiengangkurs if it doesn't alread exist
 							}
 						}
-						
 
 						// get dozent_id
 						$dozent_tmp = array();
-						echo $course[3];
 						$dozent_tmp = $this->get_dozentid_for_name($course[3]);
 						// only if there is a known dozent
 						if($dozent_tmp){
@@ -322,10 +370,10 @@ class Admin_model_parsing extends CI_Model {
 						$stdgng_tmp = array();
 						$stdgng_id = '';
 						$stdgng_tmp = $this->helper_model->get_stdgng_id($this->stdg_pov, $this->stdg_short);
-						if(isset($stdgng_tmp)){
+
+						if($stdgng_tmp){
 							$stdgng_id = $stdgng_tmp->StudiengangID;
 						}
-
 
 						// get course_id
 						$course_id_tmp = '';
@@ -359,7 +407,8 @@ class Admin_model_parsing extends CI_Model {
 						// Ermittel anhand von Fallunterscheidung die VeranstaltungsformID
 						// should be done by querying data from db
 						// if types should change we get a problem here!!
-						switch( substr($course[1],0,1) ) {
+
+						switch( mb_substr($course[1],0,1, "UTF-8") ) {
 							case "V": $event_type_id = 1; break;
 							case "Ü": $event_type_id = 2; break;
 							case "S": $event_type_id = 3; break;
@@ -434,18 +483,36 @@ class Admin_model_parsing extends CI_Model {
 //						print_r(99);
 //						echo '</div>';
 
+						$data = '';
+						$data .= '<div>********************nächster Datensatz********************<br />';
+						$data .= 'KursID:'.$course_id.'<br />';
+						$data .= 'VeranstaltungsformID:'.$event_type_id.'<br />';
+						$data .= 'VeranstaltungsformAlternative:'.substr($course[1], 2).'<br />';
+						$data .= 'WPFName:'.($isWPF ? $wpfname : '').'<br />';
+						$data .= 'Raum:'.$course[2].'<br />';
+						$data .= 'DozentID:'.$dozent_id.'<br />';
+						$data .= 'StartID:'.($course[5] + 1).'<br />';
+						$data .= 'EndeID:'.($course[5] + $course_duration).'<br />';
+						$data .= 'TagID:'.($course[4] + 1).'<br />';
+						$data .= 'isWPF:'.($isWPF ? '1' : '0').'<br />';
+						$data .= 'Farbe:'.$course[6].'<br />';
+						$data .= 'GruppeID:'.$group_id.'<br />';
+						$data .= 'Editor:'.$this->editor_id.'</div>';
+						$debugging[] = $data;
+
 						// save data
 			/*>>*/		$this->write_stdplan_data(
 							$course_id,
 							$event_type_id,
-							substr($course[1], 2),
+							(substr($course[1], 2) != '') ? substr($course[1],2) : '',
 							($isWPF ? $wpfname : ''),
 							$course[2],
 							$dozent_id,
 							$course[5] + 1,
 							$course[5] + $course_duration,
-							$course[4] + 1,
 							($isWPF ? '1' : '0'),
+							$course[4] + 1,
+
 							$group_id,
 							$course[6],
 							$this->editor_id
@@ -463,9 +530,13 @@ class Admin_model_parsing extends CI_Model {
 						
 					} //endif duplicate entry
 
+					// DEBUG
+					$debugging [] = $course;
+					
 				} // end foreach hours
 			}// end foreach days
 		} // end foreach
+		return $debugging;
     }
     
 
@@ -671,7 +742,7 @@ class Admin_model_parsing extends CI_Model {
 	/**
 	 * Updates record in studiengangkurs
 	 * >> semester will be set to value that has been parsed
-	 * EXPLANATION?!
+	 * EXPLANATION?! Jochen's parsing!! 
 	 * @param type $course_id
 	 */
 	private function update_semester_of_course($course_id, $sem){
@@ -679,94 +750,93 @@ class Admin_model_parsing extends CI_Model {
 		$this->db->update('studiengangkurs', array('Semester' => $sem));
 	}
     
-    /**
-	 * Helper function to create a new group-entry in db
-	 */
-    private function create_new_group(){
-		$a = array(
-			'TeilnehmerMax' => 0,
-			'TeilnehmerWartelisteMax' => 0,
-			'Anmeldung_zulassen' => 0
-		);
-		$this->db->insert('gruppe', $a);
-    }
+//    /**
+//	 * Helper function to create a new group-entry in db
+//	 */
+//    private function create_new_group(){
+//		$a = array(
+//			'TeilnehmerMax' => 0,
+//			'TeilnehmerWartelisteMax' => 0,
+//			'Anmeldung_zulassen' => 0
+//		);
+//		$this->db->insert('gruppe', $a);
+//    }
+    
+//	/**
+//	 * Helper to get the highest (i.e. mostly newest) group_id from gruppe-table
+//	 * @return object
+//	 */
+//    private function get_max_group_id_from_gruppe(){
+//		$data = array();
+//		$this->db->select_max('GruppeID');
+//		$q = $this->db->get('gruppe');
+//
+//		if($q->num_rows() == 1){
+//			foreach ($q->result() as $row){
+//				$data = $row;
+//			}
+//			return $data;
+//		}
+//    }
     
     
-	/**
-	 * Helper to get the highest (i.e. mostly newest) group_id from gruppe-table
-	 * @return object
-	 */
-    private function get_max_group_id_from_gruppe(){
-		$data = array();
-		$this->db->select_max('GruppeID');
-		$q = $this->db->get('gruppe');
-
-		if($q->num_rows() == 1){
-			foreach ($q->result() as $row){
-				$data = $row;
-			}
-			return $data;
-		}
-    }
+//	/**
+//	 * Helper to get the highest (i.e. mostly newest) sp_course_id from stundenplankurs-table
+//	 * @return object
+//	 */
+//    private function get_max_spkurs_id(){
+//		$data = array();
+//		$this->db->select_max('SPKursID');
+//		$q = $this->db->get('stundenplankurs');
+//
+//		if($q->num_rows() == 1){
+//			foreach ($q->result() as $row){
+//				$data = $row;
+//			}
+//			return $data;
+//		}
+//    }
+    
+//    /**
+//     * Returns semester in which a given user put the course
+//     */
+//    private function get_user_course_semester($user_id, $course_id){
+//		$data = array();
+//		$this->db->select('b.Semester');
+//		$this->db->from('semesterplan as a');
+//		$this->db->join('semesterkurs as b', 'a.SemesterplanID = b.SemesterplanID');
+//		$this->db->where('b.KursID = '.$course_id . ' and a.BenutzerID = '. $user_id);
+//
+//		$q = $this->db->get();
+//
+//		if($q->num_rows() == 1){
+//			foreach ($q->result() as $row){
+//				$data = $row;
+//			}
+//			return $data;
+//		}
+//	
+////	select b.`Semester`
+////	from semesterplan as a
+////	inner join semesterkurs as b
+////	on a.`SemesterplanID` = b.`SemesterplanID`
+////	where b.`KursID` = 1 and a.`BenutzerID` = 1383;
+//    }
     
     
-	/**
-	 * Helper to get the highest (i.e. mostly newest) sp_course_id from stundenplankurs-table
-	 * @return object
-	 */
-    private function get_max_spkurs_id(){
-		$data = array();
-		$this->db->select_max('SPKursID');
-		$q = $this->db->get('stundenplankurs');
-
-		if($q->num_rows() == 1){
-			foreach ($q->result() as $row){
-				$data = $row;
-			}
-			return $data;
-		}
-    }
-    
-    /**
-     * Returns semester in which a given user put the course
-     */
-    private function get_user_course_semester($user_id, $course_id){
-		$data = array();
-		$this->db->select('b.Semester');
-		$this->db->from('semesterplan as a');
-		$this->db->join('semesterkurs as b', 'a.SemesterplanID = b.SemesterplanID');
-		$this->db->where('b.KursID = '.$course_id . ' and a.BenutzerID = '. $user_id);
-
-		$q = $this->db->get();
-
-		if($q->num_rows() == 1){
-			foreach ($q->result() as $row){
-				$data = $row;
-			}
-			return $data;
-		}
-	
-//	select b.`Semester`
-//	from semesterplan as a
-//	inner join semesterkurs as b
-//	on a.`SemesterplanID` = b.`SemesterplanID`
-//	where b.`KursID` = 1 and a.`BenutzerID` = 1383;
-    }
-    
-    
-    private function save_data_to_benutzerkurs($user_id, $course_id, $spcourse_id, $semester, $active_flag, $comment, $edit_id){
-		$benutzerkurs_record = array(
-			'BenutzerID' => $user_id,
-			'KursID' => $course_id,
-			'SPKursID' => $spcourse_id,
-			'SemesterID' => $semester,
-			'aktiv' => $active_flag,
-			'changed_at' => $comment,
-			'edited_by' => $edit_id
-		);
-
-		$this->db->insert('benutzerkurs', $benutzerkurs_record);
-    } 
+//    private function save_data_to_benutzerkurs($user_id, $course_id, $spcourse_id, $semester, $active_flag, $comment, $edit_id){
+//		$benutzerkurs_record = array(
+//			'BenutzerID' => $user_id,
+//			'KursID' => $course_id,
+//			'SPKursID' => $spcourse_id,
+//			'SemesterID' => $semester,
+//			'aktiv' => $active_flag,
+//			'changed_at' => $comment,
+//			'edited_by' => $edit_id
+//		);
+//
+//		$this->db->insert('benutzerkurs', $benutzerkurs_record);
+//    }
     
 }
 

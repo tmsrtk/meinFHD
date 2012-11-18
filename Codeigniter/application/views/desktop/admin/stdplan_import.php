@@ -42,13 +42,13 @@
 				?>
 			</div>
 			
-			<h3>Importierte Dateien:</h3>
+			<!--<h3>Importierte Dateien:</h3>-->
 
 			<?php
-			if($stdgng_uploads != null){
-				// load filelist
-				echo $stdgng_uploads_list_filelist;
-				}
+//				if($stdgng_uploads != null){
+//					// load filelist
+//					echo $stdgng_uploads_list_filelist;
+//				}
 			?>
 
 		</div>

@@ -8,11 +8,6 @@
 	
 <?php
 	// general form setup
-	// TODO
-	// to change number of shown labs >> there must be an additional field in db to store this value
-	// at first static in this view
-//	$number_of_events = ;
-
 	// storing group-ids to array - needed in jq-part to run through all tabs
 	$sp_course_ids = array();
 	foreach($event_dates as $spc_id => $array_with_group_headers){

@@ -443,7 +443,6 @@
 //			console.log('modal-testing');
 //			var test = $(assignNewTutorButton).data('test');
 //			console.log(test);
-			// TODO show modal with prompt to 
 			var dialog = createSearchModal('Einen Studenten zum Tutor machen',
 				'Suchen Sie einen Studenten über die Matrikelnummer und weisen Sie ihm die Tutorrolle zu. \n\
 				Er wird danach automatisch Tutor des Kurses und kann Tutorientermine verwalten.',
