@@ -149,12 +149,12 @@ $submitForgotPasswordButtonAttributes = array(
 					</div>
 					<div class="accordion-group">
 						<div class="accordion-heading">
-							<h4 class="accordion-toggle" data-parent="#accordion-app" data-toggle="collapse" data-target="#forgot-content">Passwort vergessen <i class="icon-plus pull-right"></i></h4>
+							<h4 class="accordion-toggle" data-parent="#accordion-app" data-toggle="collapse" data-target="#forgot-content">Passwort vergessen? <i class="icon-plus pull-right"></i></h4>
 						</div>
 						<div id="forgot-content" class="accordion-body collapse">
 							<div class="accordion-inner">
-								<p>Kein Problem! Bitte trage deine E-Mail Adresse ein, das Passwort wird anschließend zugestellt.</p>
-								<?php echo form_open('app/forgot', $forgotPasswordFormAttributes ); // create opening tag of login form ?>
+								<p>Kein Problem! Bitte trage deine E-Mail Adresse ein, anschlie&szlig;end wird dir ein neues Passwort zugestellt.</p>
+								<?php echo form_open('app/forgot_password', $forgotPasswordFormAttributes ); // create opening tag of login form ?>
 									<div class="control-group">
 										<div class="controls">
 											<div class="input-prepend input-append">

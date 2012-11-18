@@ -144,9 +144,8 @@ $submitForgotPasswordButtonAttributes = array(
 			</div>
 			<div id="forgot-content" class="accordion-body collapse">
 				<div class="accordion-inner">
-					<p>Kein Problem! Bitte trage deine E-Mail Adresse ein, das Passwort wird anschließend zugestellt.</p>
-					
-					<?php echo form_open('app/forgot', $forgotPasswordFormAttributes ); // create opening tag of login form ?>
+                    <p>Kein Problem! Bitte trage deine E-Mail Adresse ein, anschlie&szlig;end wird dir ein neues Passwort zugestellt.</p>
+                    <?php echo form_open('app/forgot_password', $forgotPasswordFormAttributes ); // create opening tag of login form ?>
 					
 						<?php echo form_input($forgotInputAttributes); // render the forgot-password email field ?>
 						<?php echo form_button($submitForgotPasswordButtonAttributes); ?>

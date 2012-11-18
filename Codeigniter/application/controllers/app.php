@@ -18,12 +18,15 @@
 class App extends FHD_Controller {
 
 	/**
-     * Default constructor to prepare all needed stuff,
+     * Default constructor to prepare all needed stuff.
      *
      * @return void
      */
 	function __construct(){
 		parent::__construct();
+
+        // load the admin model
+        $this->load->model('admin_model');
 
 	}
 	
@@ -141,6 +144,58 @@ class App extends FHD_Controller {
      */
     public function imprint(){
         $this->load->view('app/imprint', $this->data->load());
+    }
+
+    /**
+     * Generates a new password for the user that corresponds to the submitted
+     * email address. If the email does not correspond to an user an error message
+     * will be populated.
+     * If the input corresponds not to an email address an error message will
+     * be populated.
+     *
+     * @access public
+     * @return void
+     */
+    public function forgot_password(){
+        // save the inputted email
+        $email = $this->input->post('forgot-email');
+
+        /*
+         * Set the form validation to validate if the user input is an email address.
+         * Only valid user email addresses will be accepted.
+         */
+        $this->form_validation->set_rules('forgot-email', 'E-Mail', 'required|valid_email');
+
+        // validate if the submitted user input (email address) corresponds to an existing user
+        if($this->form_validation->run()){ // inputted email address is valid
+            // check if the email corresponds to an existing user
+            if($this->admin_model->query_existing_user_for_email($email)){
+                // generate a new password for the corresponding user
+                $new_password = $this->adminhelper->passwort_generator();
+
+                // update the user record
+                $this->admin_model->update_user_password_for_email($email, $new_password);
+
+                // send an email with the password to the user
+                $message = "Hallo, <br/><p>Dein Passwort wurde ge&auml;ndert.<br/> Dein neues Passwort lautet: " . $new_password . "</p><p>Bis bald, bei meinFHD!</p>";
+                $this->mailhelper->send_meinfhd_mail($email, 'Passwort geändert', $message);
+
+                // show an feedback message
+                $this->message->set(sprintf('Ein neues Passwort wurde dir an die hinterlegte E-Mail-Adresse geschickt!'));
+                redirect('app/login');
+            }
+            else{
+                // there is no user with the inputted email address
+                $this->message->set(sprintf('Es existiert kein Benutzer mit der E-Mail-Adresse: %s', $email), 'error');
+                redirect('app/login'); // reload the login page
+            }
+
+        }
+        else{ // the inputted email address corresponds not to an existing user
+            // construct an error message and show it
+            $this->message->set(sprintf('Sorry, aber die von dir eingegebene E-Mail-Adresse entspricht leider nicht dem korrekten Format.'), 'error');
+            redirect('app/login');
+        }
     }
 }
 /* End of file App.php */

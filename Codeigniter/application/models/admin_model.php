@@ -199,7 +199,6 @@ class Admin_model extends CI_Model {
 	}
 
 	/**
-<<<<<<< HEAD
 	 * <p>
      * Saves an new user from an invitation with the given id.
      * Edits by Christian Kundruss: Adding the global uid from the invitation data set
@@ -209,13 +208,7 @@ class Admin_model extends CI_Model {
      * @param integer $invitation_id ID of the saved invitation data set
      * @return void
      * @todo missing email functions
-=======
-	 * Saves an accepted user into the 'benutzer' DB and sends an email to the accepted
-	 * user with his login and password.
-	 * @param  int $invitation_id Invitation ID of the user request.
-	 *
 	 * @category user_invite.php
->>>>>>> 02f1c438d9951b146d2587b3e624113793813498
 	 */
 	public function save_new_user_from_invitation($invitation_id)
 	{
@@ -886,8 +879,53 @@ class Admin_model extends CI_Model {
      *
      * Christian Kundruss (CK)
      */
-	
-	
+
+
+    /**
+     * Looks in the 'benutzer' table, if there is an user, that
+     * corresponds to the given email address.
+     *
+     * @access public
+     * @param $email String Email address where an user should be looked up for.
+     * @return bool TRUE if there is an user that corresponds to the email,
+     *              otherwise FALSE
+     */
+    public function query_existing_user_for_email($email){
+        // query the benutzer table for an user with the given email address
+        $this->db->select('*');
+        $this->db->from('benutzer');
+        $this->db->where('Email', $email);
+
+        $query = $this->db->get();
+
+        // check if there is an user, than return true
+        if($query->num_rows > 0){
+            return TRUE;
+        }
+
+        // there is no user, that corresponds to the inputted email address
+        return FALSE;
+    }
+
+    /**
+     * Updates the user password that corressponds to the given email address,
+     * to the given password.
+     * @access public
+     * @param $email String Email address, that corressponds to the user
+     * @param $password String the new password, that should be saved in the database
+     * @return void
+     */
+	public function update_user_password_for_email($email, $password){
+        // prepare the data to insert
+        $data = array(
+            'Passwort' => md5($password),
+        );
+
+        // update the password in the user record
+        $this->db->where('Email', $email);
+        $this->db->update('benutzer', $data);
+    }
+
 	/* ************************************************************************
 	 * 
 	 * ******************************* Studiengangverwaltung
