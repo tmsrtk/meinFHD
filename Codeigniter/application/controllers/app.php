@@ -13,7 +13,8 @@
 /**
  * Class App
  *
- * Description...
+ * The app-controller implements the login / logout - routines and deals with all
+ * necessary operations to give the user access to. (Ask for an account, reset the password, start sso login etc.)
  */
 class App extends FHD_Controller {
 
@@ -35,6 +36,8 @@ class App extends FHD_Controller {
 	 *
 	 * .../app
 	 * .../app/index
+     *
+     * Loads the standard/start page of meinfhd (dashboard) for authenticated users.
      *
      * @access public
      * @return void
@@ -66,7 +69,6 @@ class App extends FHD_Controller {
 	{
         // --- Modification for automatic authentication if an global session exists Begin ---
         // a global session exists and the user has got an linked account -> log him in
-        //if ($this->samlauthentication->is_authenticated() && has_linked_account()) {
         if ($this->samlauthentication->is_authenticated() && $this->samlauthentication->has_linked_account()) {
             redirect('sso/establish_local_session');
         }
@@ -136,7 +138,7 @@ class App extends FHD_Controller {
         }
         // --- Modification End ---
         else { // otherwise perform a regular logout
-            //$this->message->set(sprintf('Ausgeloggt! (ID: %s)', $this->authentication->user_id()));
+            $this->message->set(sprintf('Ausgeloggt! (ID: %s)', $this->authentication->user_id()));
             $this->authentication->logout();
             redirect('login');
         }
@@ -253,7 +255,7 @@ class App extends FHD_Controller {
         // which role was selected?
         $role = $this->input->post('role');
 
-        // depending on role, different validations are necessary
+        // depending on the selected role, different validations are necessary
 
         // role -> student
         if ($role === '5')
