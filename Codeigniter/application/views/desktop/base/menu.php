@@ -137,11 +137,11 @@
 								<?php if ( $this->authentication->has_permissions('hat_hilfe') ) : ?>
 								<li><a href="<?php print base_url('hilfe/index'); ?>">Hilfe</a></li>
 								<?php endif ?>
-                                <li><a href="<?php print base_url('app/imprint'); ?>">Impressum</a></li>
                                 <?php if ( $this->authentication->is_logged_in() ) : ?>
 								<li><a href="<?php print base_url('app/logout'); ?>">Logout</a></li>
 								<?php endif; ?>
-							</ul> <!-- /.nav.level-1 -->
+                                <li><a href="<?php print base_url('app/imprint'); ?>">Impressum</a></li>
+                            </ul> <!-- /.nav.level-1 -->
 						</div> <!-- /.nav-collapse -->
 					</div>
 				</div>
