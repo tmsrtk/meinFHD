@@ -59,6 +59,15 @@
         'name' => 'semesteranfang',
         'id' => 'semesteranfang'
     );
+
+    // modify the studiengaenge dropdown
+    $studiengaenge_dropdown = array();
+    $studiengaenge_dropdown[0] = "Bitte ausw&auml;hlen";
+    $i = 1;
+    foreach($studiengaenge as $single_studiengang){
+        $studiengaenge_dropdown[$i] = $single_studiengang;
+        $i = $i + 1;
+    }
 ?>
 <?php
 	echo form_open('app/validate_user_invitation_form/', $data_formopen);
@@ -152,7 +161,7 @@ if( ! empty( $b ) ) $radio_val2 = TRUE;
 	<div class="control-group">
 		<?php echo form_label('Studiengang', 'studiengang', $data_labelattrs); ?>
 		<div class="controls docs-input-sizes">
-			<?php echo form_dropdown('studiengang', $studiengaenge, '', $class_dd); ?>
+			<?php echo form_dropdown('studiengang', $studiengaenge_dropdown, '', $class_dd); ?>
 		</div>
 	</div>
 

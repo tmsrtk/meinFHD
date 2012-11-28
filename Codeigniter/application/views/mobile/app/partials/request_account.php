@@ -1,70 +1,79 @@
 <?php
-	# general form setup
-	$data_formopen = array('class' => 'form-horizontal', 'id' => 'request_invitation');
-	$data_forename = array(
-			'class' => 'span12',
-			'name' => 'forename',
-            'id' => 'forename',
-			'placeholder' => 'Vorname',
-			'value' => set_value('forename')
-		);
-	$data_lastname = array(
-			'class' => 'span12',
-			'name' => 'lastname',
-            'id' => 'lastname',
-			'placeholder' => 'Nachname',
-			'value' => set_value('lastname')
-		);
-	$data_jahr = array(
-			'class' => 'span12',
-			'name' => 'startjahr',
-            'id' => 'startjahr',
-			'placeholder' => 'Startjahr',
-			'value' => set_value('startjahr')
-		);
-	$class_dd = 'class="span12 studiengang_dd" id="studiengang"';
-	$data_email = array(
-		'class' => 'span12',
-		'name' => 'email',
-        'id' => 'email',
-		'placeholder' => 'E-Mail*',
-		'value' => set_value('email')
-	);
-	$data_matrikelnummer = array(
-		'class' => 'span12',
-		'name' => 'matrikelnummer',
-        'id' => 'matrikelnummer',
-		'placeholder' => 'Matrikelnummer',
-		'value' => set_value('matrikelnummer')
-	);
-	$submit_data = array(
-			'name'			=> 'los',
-			'class'			=> 'btn btn-danger'
-		);
-	$data_labelattrs = array(
-		'class' => 'control-label'
-	);
+# general form setup
+$data_formopen = array('class' => 'form-horizontal', 'id' => 'request_invitation');
+$data_forename = array(
+    'class' => 'span12',
+    'name' => 'forename',
+    'id' => 'forename',
+    'placeholder' => 'Vorname',
+    'value' => set_value('forename')
+);
+$data_lastname = array(
+    'class' => 'span12',
+    'name' => 'lastname',
+    'id' => 'lastname',
+    'placeholder' => 'Nachname',
+    'value' => set_value('lastname')
+);
+$data_jahr = array(
+    'class' => 'span12',
+    'name' => 'startjahr',
+    'id' => 'startjahr',
+    'placeholder' => 'Startjahr',
+    'value' => set_value('startjahr')
+);
+$class_dd = 'class="span12 studiengang_dd" id="studiengang"';
+$data_email = array(
+    'class' => 'span12',
+    'name' => 'email',
+    'id' => 'email',
+    'placeholder' => 'E-Mail*',
+    'value' => set_value('email')
+);
+$data_matrikelnummer = array(
+    'class' => 'span12',
+    'name' => 'matrikelnummer',
+    'id' => 'matrikelnummer',
+    'placeholder' => 'Matrikelnummer',
+    'value' => set_value('matrikelnummer')
+);
+$submit_data = array(
+    'name'			=> 'los',
+    'class'			=> 'btn btn-danger'
+);
+$data_labelattrs = array(
+    'class' => 'control-label'
+);
 
-    $data_role_radio_attrs = array(
-        'name' => 'role',
-        'id' => 'role',
-    );
+$data_role_radio_attrs = array(
+    'name' => 'role',
+    'id' => 'role',
+);
 
-    $data_erstsemestler_cb = array(
-        'name' => 'erstsemestler',
-        'id' => 'erstsemestler',
-    );
+$data_erstsemestler_cb = array(
+    'name' => 'erstsemestler',
+    'id' => 'erstsemestler',
+);
 
-    $data_startsemester_radio = array(
-        'name' => 'semesteranfang',
-        'id' => 'semesteranfang'
-    );
+$data_startsemester_radio = array(
+    'name' => 'semesteranfang',
+    'id' => 'semesteranfang'
+);
+
+// modify the studiengaenge dropdown
+$studiengaenge_dropdown = array();
+$studiengaenge_dropdown[0] = "Bitte ausw&auml;hlen";
+$i = 1;
+foreach($studiengaenge as $single_studiengang){
+    $studiengaenge_dropdown[$i] = $single_studiengang;
+    $i = $i + 1;
+}
 ?>
 <?php
-	echo form_open('app/validate_user_invitation_form/', $data_formopen);
+echo form_open('app/validate_user_invitation_form/', $data_formopen);
 ?>
 
-<?php 
+<?php
 $v = set_radio('role', '5', TRUE);
 $b = set_radio('role', '2');
 $radio_val1 = FALSE;
@@ -108,67 +117,67 @@ if( ! empty( $b ) ) $radio_val2 = TRUE;
 </div>
 
 <div class="control-group">
-	<?php echo form_label('E-Mail', 'email', $data_labelattrs); ?>
-	<div class="controls docs-input-sizes">
-		<?php echo form_input($data_email); ?>
-	</div>
+    <?php echo form_label('E-Mail', 'email', $data_labelattrs); ?>
+    <div class="controls docs-input-sizes">
+        <?php echo form_input($data_email); ?>
+    </div>
 </div>
 
 <div id="studentendaten">
-<hr />
-	<div class="control-group">
-		<?php echo form_label('Ich bin Erstsemestler!', 'erstsemestler', $data_labelattrs); ?>
-		<div class="controls docs-input-sizes">
-			<?php  echo form_checkbox($data_erstsemestler_cb, 'accept', FALSE) ?>
-		</div>
-	</div>
+    <hr />
+    <div class="control-group">
+        <?php echo form_label('Ich bin Erstsemestler!', 'erstsemestler', $data_labelattrs); ?>
+        <div class="controls docs-input-sizes">
+            <?php  echo form_checkbox($data_erstsemestler_cb, 'accept', FALSE) ?>
+        </div>
+    </div>
 
-	<div id="erstsemestler_daten">
+    <div id="erstsemestler_daten">
 
-		<div class="control-group">
-			<?php echo form_label('Jahr', 'startjahr', $data_labelattrs); ?>
-			<div class="controls docs-input-sizes">
-				<?php echo form_input($data_jahr); ?>
-			</div>
-		</div>
+        <div class="control-group">
+            <?php echo form_label('Jahr', 'startjahr', $data_labelattrs); ?>
+            <div class="controls docs-input-sizes">
+                <?php echo form_input($data_jahr); ?>
+            </div>
+        </div>
 
-		<div class="control-group">
-			<?php echo form_label('Semesteranfang', 'semesteranfang', $data_labelattrs); ?>
-			<div class="controls">
-				<label class="radio">
-					<?php echo form_radio($data_startsemester_radio, 'WS', TRUE); ?>
-					WS
-				</label>
-			</div>
-			<div class="controls">
-				<label class="radio">
-					<?php echo form_radio('semesteranfang', 'SS', FALSE); ?>
-					SS
-				</label>
-			</div>
-		</div>
-	</div>
+        <div class="control-group">
+            <?php echo form_label('Semesteranfang', 'semesteranfang', $data_labelattrs); ?>
+            <div class="controls">
+                <label class="radio">
+                    <?php echo form_radio($data_startsemester_radio, 'WS', TRUE); ?>
+                    WS
+                </label>
+            </div>
+            <div class="controls">
+                <label class="radio">
+                    <?php echo form_radio('semesteranfang', 'SS', FALSE); ?>
+                    SS
+                </label>
+            </div>
+        </div>
+    </div>
 
-	<div class="control-group">
-		<?php echo form_label('Studiengang', 'studiengang', $data_labelattrs); ?>
-		<div class="controls docs-input-sizes">
-			<?php echo form_dropdown('studiengang', $studiengaenge, '', $class_dd); ?>
-		</div>
-	</div>
+    <div class="control-group">
+        <?php echo form_label('Studiengang', 'studiengang', $data_labelattrs); ?>
+        <div class="controls docs-input-sizes">
+            <?php echo form_dropdown('studiengang', $studiengaenge_dropdown, '', $class_dd); ?>
+        </div>
+    </div>
 
-	<div class="control-group">
-		<?php echo form_label('Matrikelnummer', 'matrikelnummer', $data_labelattrs); ?>
-		<div class="controls docs-input-sizes">
-			<?php echo form_input($data_matrikelnummer) ?>
-		</div>
-	</div>
+    <div class="control-group">
+        <?php echo form_label('Matrikelnummer', 'matrikelnummer', $data_labelattrs); ?>
+        <div class="controls docs-input-sizes">
+            <?php echo form_input($data_matrikelnummer) ?>
+        </div>
+    </div>
     <p style="text-align: center;">
         Der Verarbeitung meiner Daten auf Grundlage der <a href="#datenschutzerklaerung" data-toggle="modal">Datenschutzerkl&auml;rung</a> stimme ich mit dem Absenden dieses Formulars ausdr&uuml;cklich zu.
     </p>
 </div>
 
 <div class="form-actions">
-<?php echo form_submit($submit_data, 'Zugang anfordern'); ?>
+    <?php echo form_submit($submit_data, 'Zugang anfordern'); ?>
 </div>
 
 <div id="datenschutzerklaerung" class="modal hide ">

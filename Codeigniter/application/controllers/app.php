@@ -264,9 +264,10 @@ class App extends FHD_Controller {
             $rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
             $rules[] = $this->adminhelper->get_formvalidation_startjahr();
             $rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
-            $rules[] = $this->adminhelper->get_formvalidation_studiengang();
 
             $this->form_validation->set_rules($rules);
+            // custom rule to validate the selected degree program
+            $this->form_validation->set_rules('studiengang', 'Studiengang', 'callback_validate_selected_degree_program');
 
             // generate actual year for the form value "Startjahr", if "Erstsemestler" was selected
             if (isset($form_values['erstsemestler']) && $form_values['erstsemestler'] == 'accept')
@@ -281,13 +282,13 @@ class App extends FHD_Controller {
             $this->message->set('Beim Speichern der Einladung ist ein Fehler aufgetreten.', 'error');
             redirect('app/login');
         }
-        else // validation was successful
+        else // validation was successful -> all required input fields have got an correct input
         {
             // save new user in the database and send an ma
             $this->admin_model->put_new_user_to_invitation_requests($form_values);
 
             // send mail to admin, that a new request was saved
-            //$email_reciever = 'meinfhd.medien@fh-duesseldorf.de'; // TODO: where to get the email address from?!
+            //$email_reciever = 'meinfhd.medien@fh-duesseldorf.de'; // TODO: where to get the email address from?! Maybe create a config file?
             $email_reciever = 'christian.kundruss@fh-duesseldorf.de'; // just for debug / for live installation the address needs to be changed
 
             $email_subject = '[meinFHD] Neue Einladungs-Anforderung wurde gespeichert';
@@ -296,7 +297,6 @@ class App extends FHD_Controller {
                                   '<p><strong>Vorname: </strong>'. $form_values['forename'].'</br>' .
                                   '<strong>Nachname: </strong>' . $form_values['lastname'] . '</br>' .
                                   '<strong>E-Mail: </strong>' . $form_values['email'] . '</br>' .
-                                  '<strong>Benutzerrolle: </strong>' . $form_values['role'] . '</p>'.
                                   '<p>Bitte &uuml;berpr&uuml;fe die vorliegende Anfrage.</p>';
 
             // call the sendmail method
@@ -317,8 +317,26 @@ class App extends FHD_Controller {
             $this->message->set('Die Einladungsanforderung wurde erfolgreich abgeschickt! '.
             'Bitte haben Sie Verständnis dafür, dass Ihre Freischaltung nicht sofort erfolgen kann, '.
             'da Sie durch einen Administrtor persönlich freigeschaltet werden muss. In der Regel dauert dies nicht länger als einen Tag.');
+            // load the login page another time to show the info
             redirect('app/login');
         }
+    }
+
+    /**
+     * Custom validation method, to validate the selected degree program in the user invitation form.
+     * The validation will return true, if an degree program id rather than 0 is selected by the user.
+     *
+     * @param $degree_program_id Integer ID of the selected degree program
+     * @return bool TRUE if an valid degree program was selected by the user, otherwise the return value is FALSE
+     */
+    public function validate_selected_degree_program($degree_program_id) {
+
+        // is the selected degree program != 0 than return TRUE
+        if($degree_program_id != 0){
+            return TRUE;
+        }
+
+        return FALSE;
     }
 }
 /* End of file App.php */
