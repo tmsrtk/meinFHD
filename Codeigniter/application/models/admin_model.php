@@ -338,8 +338,10 @@ class Admin_model extends CI_Model {
 	}
 
 	/**
-	 * Returns all possible Studiengänge.
-	 * @return mixed Array of all possible Studiengänge. Structure -> [0=>Medieninformatik, ...]
+	 * Returns all possible degree programs (Studiengänge) with it` latest PO version.
+     * Outgoing situation: Creating Accounts for older / deprecated are not longer necessary.
+     *
+	 * @return mixed Array of all possible degree programs (Studiengänge). Structure -> [0=>Medieninformatik, ...]
 	 * 
 	 * @category user_invite.php|user_add.php
 	 */
@@ -347,10 +349,10 @@ class Admin_model extends CI_Model {
 	{
 		// query raw data
 		$this->db->select('StudiengangID, StudiengangName, Pruefungsordnung')
-				 ->from('studiengang');
+				 ->from('studiengang')
+                ->where('Pruefungsordnung >', 2008);
 		$q = $this->db->get();
 
-		// var_dump($q->result_array());
 
 		$my_result = array();
 		foreach ($q->result_array() as $row)

@@ -55,6 +55,8 @@ class App extends FHD_Controller {
 	 *
 	 * .../app/login
 	 * .../login
+     *
+     * Loads the login view and controls the login process.
      * Modifications and minor changes by Christian Kundruss (CK), 2012
      *
      * @access public
@@ -95,6 +97,8 @@ class App extends FHD_Controller {
                 }
             }
         }
+        // load user request subview and add the data
+        $this->data->add('request_account_mask', $this->_load_request_account_form());
 		// if there's no post data, we should show the login screen
 		$this->load->view('app/login', $this->data->load());
 	}
@@ -104,6 +108,8 @@ class App extends FHD_Controller {
 	 *
 	 * .../app/logout
 	 * .../logout
+     *
+     * Controls and executes the logout process.
      * Modifications and minor changes by Christian Kundruss
      *
      * @access public
@@ -194,6 +200,123 @@ class App extends FHD_Controller {
         else{ // the inputted email address corresponds not to an existing user
             // construct an error message and show it
             $this->message->set(sprintf('Sorry, aber die von dir eingegebene E-Mail-Adresse entspricht leider nicht dem korrekten Format.'), 'error');
+            redirect('app/login');
+        }
+    }
+
+    /**
+     * Loads the request user mask as an subview and returns the view as an string.
+     *
+     * @access private
+     * @return String The request user view as an string.
+     */
+    private function _load_request_account_form(){
+
+        // get all possible degree programs for the form dropdown
+        $this->data->add('studiengaenge', $this->admin_model->get_all_studiengaenge());
+
+        // load the request user mask as an subview (string) and return it
+        return $this->load->view('app/partials/request_account', $this->data->load(), TRUE);
+    }
+
+
+    /**
+     * Form validation for the user invitation mask.
+     * If all inputs are correct a new invitation is going to be saved in the database and an
+     * e-mail notification will be sent to the support and the user.
+     * The validation method will be called from the app / login page (View request_account.php)
+     *
+     * @access public
+     * @return void
+     * @category app/partials/request_account.php
+     */
+    public function validate_user_invitation_form()
+    {
+        // set custom delimiter for validation errors
+        $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+
+        // read the values from actual form
+        $form_values = $this->input->post();
+
+        $rules = array();
+
+        // add the form validation rules to the rules array
+        $rules[] = $this->adminhelper->get_formvalidation_role();
+        $rules[] = $this->adminhelper->get_formvalidation_forename();
+        $rules[] = $this->adminhelper->get_formvalidation_lastname();
+        $rules[] = $this->adminhelper->get_formvalidation_email();
+        $rules[] = $this->adminhelper->get_formvalidation_erstsemestler();
+
+        // set the rules
+        $this->form_validation->set_rules($rules);
+
+        // which role was selected?
+        $role = $this->input->post('role');
+
+        // depending on role, different validations are necessary
+
+        // role -> student
+        if ($role === '5')
+        {
+            $rules = array();
+
+            // configure the student specific validation rules
+            $rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
+            $rules[] = $this->adminhelper->get_formvalidation_startjahr();
+            $rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
+            $rules[] = $this->adminhelper->get_formvalidation_studiengang();
+
+            $this->form_validation->set_rules($rules);
+
+            // generate actual year for the form value "Startjahr", if "Erstsemestler" was selected
+            if (isset($form_values['erstsemestler']) && $form_values['erstsemestler'] == 'accept')
+            {
+                $form_values['startjahr'] = date("Y");
+            }
+        }
+
+        // check for input errors
+        if($this->form_validation->run() == FALSE) // errors during validation
+        {
+            $this->message->set('Beim Speichern der Einladung ist ein Fehler aufgetreten.', 'error');
+            redirect('app/login');
+        }
+        else // validation was successful
+        {
+            // save new user in the database and send an ma
+            $this->admin_model->put_new_user_to_invitation_requests($form_values);
+
+            // send mail to admin, that a new request was saved
+            //$email_reciever = 'meinfhd.medien@fh-duesseldorf.de'; // TODO: where to get the email address from?!
+            $email_reciever = 'christian.kundruss@fh-duesseldorf.de'; // just for debug / for live installation the address needs to be changed
+
+            $email_subject = '[meinFHD] Neue Einladungs-Anforderung wurde gespeichert';
+
+            $email_message_body = '<h2>Einladungs-Anfoderung</h2><p>Es wurde eine neue eine Einladungs-Aufforderung f&uuml;r folgenden Benutzer gespeichert: </p>' .
+                                  '<p><strong>Vorname: </strong>'. $form_values['forename'].'</br>' .
+                                  '<strong>Nachname: </strong>' . $form_values['lastname'] . '</br>' .
+                                  '<strong>E-Mail: </strong>' . $form_values['email'] . '</br>' .
+                                  '<strong>Benutzerrolle: </strong>' . $form_values['role'] . '</p>'.
+                                  '<p>Bitte &uuml;berpr&uuml;fe die vorliegende Anfrage.</p>';
+
+            // call the sendmail method
+            $this->mailhelper->send_meinfhd_mail($email_reciever, $email_subject, $email_message_body);
+
+            // send mail to the user, that he has to wait
+            $email_reciever = $form_values['email']; // the users email address
+
+            $email_subject = '[meinFHD] Deine Anfrage wurde gespeichert';
+
+            $email_message_body = '<p>Deine Anfrage wurde als Einladung gespeichert. Bitte habe Verst&auml;ndnis, dass die Freischaltung nicht sofort erfolgen kann, ' .
+                'sondern erst durch einen Administrator pers&ouml;nlich freigeschaltet werden muss. In der Regel dauert das nicht l&auml;nger als einen Tag.</p>';
+
+            // call the sendmail method
+            $this->mailhelper->send_meinfhd_mail($email_reciever, $email_subject, $email_message_body);
+
+            // reload the startpage (loginpage) with an success message
+            $this->message->set('Die Einladungsanforderung wurde erfolgreich abgeschickt! '.
+            'Bitte haben Sie Verständnis dafür, dass Ihre Freischaltung nicht sofort erfolgen kann, '.
+            'da Sie durch einen Administrtor persönlich freigeschaltet werden muss. In der Regel dauert dies nicht länger als einen Tag.');
             redirect('app/login');
         }
     }

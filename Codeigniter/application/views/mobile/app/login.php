@@ -124,15 +124,9 @@ $submitForgotPasswordButtonAttributes = array(
 			</div>
 			<div id="request-content" class="accordion-body collapse">
 				<div class="accordion-inner">
-
-					<p>Kein Problem! Bitte trage deine E-Mail Adresse ein, das Passwort wird anschließend zugestellt.</p>
-					
-					<?php echo form_open('app/request_account', $requestAccountFormAttributes ); // create opening tag of login form ?>
-					
-						<?php echo form_input($requestAccountInputAttributes); // render the forgot-password email field ?>
-						<?php echo form_button($submitRequestAccountButtonAttributes); ?>
-
-					<?php echo form_close(); // close the whole login form ?>
+                    <div class="row-fluid">
+                        <?php echo $request_account_mask; ?>
+                    </div>
 
 				</div>
 			</div>
@@ -159,12 +153,74 @@ $submitForgotPasswordButtonAttributes = array(
 </div>
 <?php endblock(); ?>
 
-<?php #startblock('postCodeFooter'); # use for hidden markup like modals ?>
+<?php startblock('customFooterJQueryCode');?>
 
-<?php #endblock(); ?>
+    /**
+    * Object which handles the UI functions.
+    * @type {Object}
+    */
+    var AdditionalInfo = {
+        init : function(config) {
+            this.config = config;
+            this.bindEvents();
+            this.build();
 
-<?php # startblock('headJSfiles'); ?>
+            this.changeToStudent();
+        },
+        bindEvents : function() {
+            context = this;
+            this.config.roleInput.change(function() {
+                context.toggle_studentdata($(this));
+            });
+        this.config.erstsemestler.change(function() {
+        context.toggle_erstsemestlerdata($(this));
+        });
+    },
+    build : function() {
+        this.toggle_studentdata($("label[for='role']").parent().find("input:checked"));
+        this.toggle_erstsemestlerdata($("label[for='erstsemestler']").parent().find("input"));
+    },
+    toggle_studentdata : function(c) {
+        additional_student_data = $("div#studentendaten");
 
-<?php # endblock(); ?>
+        // c jQuery object of toggle button
+        if (c.val() === '5') {
+            // show additional student da
+            additional_student_data.slideDown('slow');
+            this.changeToStudent();
+        }
+        else {
+        additional_student_data.slideUp('slow');
+        this.changeToDozent();
+        }
+    },
+    toggle_erstsemestlerdata : function(c) {
+        var erstsemestler_data = $("div#erstsemestler_daten");
+
+        if (c.attr('checked')) {
+            erstsemestler_data.slideUp('slow');
+        }
+        else {
+            erstsemestler_data.slideDown('slow');
+        }
+    },
+    changeToStudent : function() {
+        // this.config.additionalInfoContent = this.studentenInfo;
+        this.config.additionalInfoContent.html(this.studentenInfo);
+    },
+    changeToDozent : function() {
+        this.config.additionalInfoContent.html(this.dozentenInfo);
+    },
+    studentenInfo : "Gib bitte die folgenden Daten an, damit wir feststellen können, dass Du ein Student an diesem Fachbereich bist. Die Emailadresse wird für die Kommunikation mit meinFHD, den Dozenten und Studierenden verwendet.",
+        dozentenInfo : "Geben Sie bitte hier Ihren vollen Namen an, da dieser für die Kommunikation mit den Studierenden gebraucht wird. Die Emailadresse wird für die Kommunikation mit meinFHD und den Studierenden verwendet. "
+    };
+
+    // initialise the object
+    AdditionalInfo.init({
+        additionalInfoContent : $("div#additional-info"),
+        roleInput : $("input[name='role']"),
+        erstsemestler : $("input[name='erstsemestler']")
+    });
+<?php endblock(); ?>
 
 <?php end_extend(); ?>

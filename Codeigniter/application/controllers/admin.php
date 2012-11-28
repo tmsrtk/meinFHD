@@ -296,24 +296,6 @@ class Admin extends FHD_Controller {
 	}
 
 	/**
-	 * Gets the input data and puts the user to the invitation requests. Sends an email
-	 * to the admin, that a new request is open.
-	 *
-	 * @category user_invite.php
-	 */
-	private function put_user_into_invitation_requests()
-	{
-		// get values from post
-		$form_data = $this->input->post();
-
-		// save new user in db
-		$this->admin_model->put_new_user_to_invitation_requests($form_data);
-
-		// TODO: send mail to admin, that a new request was send
-		// TODO: send mail to user, that he has to wait 
-	}
-
-	/**
 	 * Creates the user from his invitation request.
 	 *
 	 * @category user_invite.php
@@ -431,75 +413,6 @@ class Admin extends FHD_Controller {
 			// flash message
 			$this->message->set('User erfolgreich erstellt!', 'error');
 			redirect(site_url().'admin/create_user_mask');
-		}
-	}
-
-
-	/**
-	 * Validation for a new user invitation.
-	 *
-	 * @category user_invite.php
-	 */
-	public function validate_request_user_invitation_form()
-	{
-		// set custom delimiter for validation errors
-		$this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
-
-		$rules = array();
-
-		// values, from actual form
-		$form_values = $this->input->post();
-
-		// add rules
-		$rules[] = $this->adminhelper->get_formvalidation_role();
-		$rules[] = $this->adminhelper->get_formvalidation_forename();
-		$rules[] = $this->adminhelper->get_formvalidation_lastname();
-		$rules[] = $this->adminhelper->get_formvalidation_email();
-		$rules[] = $this->adminhelper->get_formvalidation_erstsemestler();
-
-		// set the rules
-		$this->form_validation->set_rules($rules);
-
-
-		// which role was selected?
-		$role = $this->input->post('role');
-
-		// depending on role, different validations
-		// if student
-		if ($role === '5'/*student*/)
-		{
-			$rules = array();
-
-			$rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
-			$rules[] = $this->adminhelper->get_formvalidation_startjahr();
-			$rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
-			$rules[] = $this->adminhelper->get_formvalidation_studiengang();
-
-			$this->form_validation->set_rules($rules);
-
-			// generate actual year for the form value "Startjahr", if "Erstsemestler" was selected
-			if (isset($form_values['erstsemestler']) && $form_values['erstsemestler'] == 'accept')
-			{
-				$form_values['startjahr'] = date("Y");
-			}
-		}
-
-		// check for (in)correctness
-		if($this->form_validation->run() == FALSE)
-		{
-			// $this->message->set('Beim setzten des Users auf die Einladungsliste ' .
-				// ' ist ein Fehler unterlaufen', 'error');
-			// redirect(site_url().'admin/request_user_invitation_mask');
-			$this->request_user_invitation_mask();
-		}
-		else
-		{
-			// save in db
-			$this->put_user_into_invitation_requests();
-
-			// load new view with success message
-			$this->message->set('User wurde erfolgreich auf die Einladungsliste gesetzt!', 'error');
-			redirect(site_url().'admin/request_user_invitation_mask');
 		}
 	}
 
