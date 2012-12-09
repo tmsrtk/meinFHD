@@ -59,7 +59,8 @@ class App extends FHD_Controller {
 	 * .../app/login
 	 * .../login
      *
-     * Loads the login view and controls the login process.
+     * Main login function. Loads the login view and controls the login process.
+     * Supports the following login processes: Regular authentication, permanent login authentication, shibboleth authentication.
      * Modifications and minor changes by Christian Kundruss (CK), 2012
      *
      * @access public
@@ -74,30 +75,46 @@ class App extends FHD_Controller {
         }
         // --- Modification End ---
 
-        // there is no global session & no linked account -> show the local login page when visiting the page
-        else {
+        // check if the requesting user has got an valid permanent login cookie
+        if($this->input->cookie('meinFHD_remember_me')){
 
+            // validate the permanent login cookie value. If the cookie value is valid the user will be validated.
+            $this->authentication->validate_permanent_login_cookie_and_authenticate($this->input->cookie('meinFHD_remember_me'));
+            redirect('dashboard/index'); // the session has been established
+        }
+
+        // there is no global session & no linked account & no permanent login cookie -> show the local login page when visiting the page
+        else {
             // read the post parameters
-            $username = $this->input->post('username');
-            $password = $this->input->post('password');
+            $username = $this->input->post('username'); // read the username input
+            $password = $this->input->post('password'); // read the corresponding password input
+            $permanent_login = $this->input->post('permanent_login'); // read the value of the permanent_login checkbox
 
             // if we have a value
-            if ($username || $password)
-            {
-                // call the login funtion from the authentication class
+            if ($username || $password){
+
+                // call the login function from the authentication class -> regular authentication
                 if ($this->authentication->login($username, $password))
                 {
-                    // user is logged in -> set message and redirect to frontpage
+                    // the login was successful and the permanent login - button was "checked"
+                    if($permanent_login == "yes"){
+
+                        // generate and set an permanent login cookie for the visiting user
+                        $this->authentication->set_permanent_login_cookie($username);
+                    }
+
+                    // user is logged in -> set message and redirect to the frontpage / dashboard
                     $this->message->set(sprintf('Eingeloggt! (ID: %s)', $this->authentication->user_id()));
                     redirect('dashboard/index');
                 }
-                else
+                else // the authentication was not successful
                 {
                     // something got wrong -> set message and redirect to login page
                     $this->message->set('User oder Passwort falsch!', 'error');
                     redirect('app/login');
                 }
             }
+
         }
         // load user request subview and add the data
         $this->data->add('request_account_mask', $this->_load_request_account_form());

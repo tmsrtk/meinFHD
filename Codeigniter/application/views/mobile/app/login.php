@@ -24,13 +24,6 @@ $passwordInputAttributes = array(
 	'class'			=> 'span special'
 );
 
-// prepare attributes for permanent login checkbox 
-$permanentLoginAttributes = array(
-    'name'			=> 'permanentLogin',
-    'id'			=> 'permanentLogin',
-    'class'			=> ''
-);
-
 // prepare attributes for submit button 
 $submitLoginButtonAttributes = array(
 	'name'			=> 'submit',
@@ -92,25 +85,11 @@ $submitForgotPasswordButtonAttributes = array(
 <?php startblock('content'); # content for this view ?>
 <div class="row-fluid">
 	<div class="well span6">
-
 		<h1 class="maintitle">meinFHD<span>mobile</span></h1>
-		
 		<?php echo form_open('app/login', $loginFormAttributes ); // create opening tag of login form ?>
-
 				<?php echo form_input($usernameInputAttributes); // render the username field ?>
 				<?php echo form_password($passwordInputAttributes); // render the password field ?>
-
-				<!--<div class="control-group">
-					<div class="controls">
-						<label class="checkbox">
-							<?php echo form_checkbox($permanentLoginAttributes); // render the permaLogin field ?>
-							Angemeldet bleiben
-						</label>
-					</div>
-				</div>-->
-
 				<?php echo form_submit($submitLoginButtonAttributes); // render the submit button ?>
-
 		<?php echo form_close(); // close the whole login form ?>
         <div class="row-fluid">
             <a href="<?php echo site_url(); ?>sso/authenticate" class="mfhd-btn-block-primary">Login &uuml;ber Shibboleth</a>
@@ -127,7 +106,6 @@ $submitForgotPasswordButtonAttributes = array(
                     <div class="row-fluid">
                         <?php echo $request_account_mask; ?>
                     </div>
-
 				</div>
 			</div>
 		</div>

@@ -168,6 +168,7 @@ class Authentication {
      * @param string $username
      * @param string $hashed_password
      * @return bool TRUE if the login was successful, otherwise FALSE
+     * @todo Rename Method to be able to use it for the permanent login also, Namen beim sso aufrufer entsprechend refactorn...
      */
     public function sso_login($username, $hashed_password) {
 
@@ -188,7 +189,7 @@ class Authentication {
 
             // establish the session
             $this->CI->session->set_userdata('uid', $this->uid);
-            $this->CI->session->set_userdata('SSO-Login', 'TRUE');
+            //$this->CI->session->set_userdata('SSO-Login', 'TRUE'); TODO wird vermutlich nicht gebraucht.... PRUEFEN!
 
             return TRUE; // session has been established
         }
@@ -300,11 +301,10 @@ class Authentication {
 	 *
 	 * @access public
 	 * @return void
-     * @todo Prüfen, ob das Löschen der UID ausreichend ist, oder ob nochmehr getan werden muss
 	 */
 	public function logout()
 	{
-        // IS DELETING uid SAVE ENOUGH???
+        // unset the whole session data and initialize them to nothing
         $this->CI->session->unset_userdata('uid');
         $this->CI->session->unset_userdata('admin_uid');
         $this->CI->session->unset_userdata('login_from_admin'); // regular logout -> the login is not provided by an admin
@@ -313,6 +313,11 @@ class Authentication {
         $this->name = 'Guest';
         $this->email = '';
         $this->roles = array('guest');
+
+        $this->CI->session->sess_destroy(); // destroy the whole session
+
+        // delete the remember me cookie
+        delete_cookie('meinFHD_remember_me');
 	}
 
     /**
@@ -455,6 +460,74 @@ class Authentication {
         }
 
         return FALSE;
+    }
+
+    /**
+     * Generates and returns an permanent login cookie (token) for the given username.
+     * An hash of the permanent login token will be saved in the database to be able to recognize the
+     * cookie owner when visiting the page.
+     *
+     * @access public
+     * @param $username Name of the user, for who an permanent login token should be created.s
+     * @return void
+     */
+    public function set_permanent_login_cookie($username){
+
+        // first of all get the uid that corresponds to the given username
+        // select the needed uid of the local user
+        $this->CI->db->select('BenutzerID');
+        $this->CI->db->from('benutzer');
+        $this->CI->db->where('LoginName', $username);
+
+        $uid = $this->CI->db->get()->row()->BenutzerID; // query the corresponding uid
+
+        // construct the custom permanent login code -> cookie value
+        $permanent_login_code = md5(md5($uid) . '_' . md5(date("YmdHis")));
+
+        // save the permanent login code in the database
+        $update_data = array(
+            'DauerLoginCode' => $permanent_login_code,
+        );
+        $this->CI->db->where('BenutzerID', $uid);
+        $this->CI->db->update('benutzer', $update_data);
+
+        // construct the permanent login (remember me) cookie
+        $permanent_login_cookie = array(
+            'name'   => 'meinFHD_remember_me',
+            'value'  => $permanent_login_code,
+            'expire' => '8640000',  // 100 days till now (60*60*24*100)
+        );
+
+        // set the generated permanent login cookie
+        $this->CI->input->set_cookie($permanent_login_cookie);
+    }
+
+    /**
+     * Validates the given, encrypted (permanent login) cookie value against the saved users. If the permanent
+     * login cookie is valid an session will be established.
+     *
+     * @access public
+     * @param $cookie_value string The encrypted value of the cookies identifier.
+     * @return void
+     */
+    public function validate_permanent_login_cookie_and_authenticate($cookie_value){
+
+        // look for the user that corresponds to the encrypted permanent login cookie value
+        $this->CI->db->select('LoginName, Passwort');
+        $this->CI->db->from('benutzer');
+        $this->CI->db->where('DauerLoginCode', $cookie_value);
+
+        $query = $this->CI->db->get();
+
+        // is there a user that corresponds to the permanent login cookie value?
+        if($query->num_rows == 1){
+            // establish a session for the user
+            $this->sso_login($query->row()->LoginName, $query->row()->Passwort);
+        }
+
+        // validate the hash against the database
+        // if everything is valid -> read out the username and the hashed password
+        //$this->sso_login($username, $hashed_password);
     }
 }
 /* End of file Authentication.php */

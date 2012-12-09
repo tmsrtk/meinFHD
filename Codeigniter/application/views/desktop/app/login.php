@@ -26,9 +26,8 @@ $passwordInputAttributes = array(
 
 // prepare attributes for permanent login checkbox 
 $permanentLoginAttributes = array(
-	'name'			=> 'permanentLogin',
-	'id'			=> 'permanentLogin',
-	'class'			=> ''
+	'name'			=> 'permanent_login',
+	'id'			=> 'permanent_login',
 );
 
 // prepare attributes for submit button 
@@ -36,11 +35,9 @@ $submitLoginButtonAttributes = array(
 	'name'			=> 'submit',
 	'type'			=> 'submit',
 	'id'			=> 'submitLoginForm',
-	'content'			=> 'lokal Anmelden',
+	'content'		=> 'lokal Anmelden',
 	'class'			=> 'btn btn-primary btn-medium pull-right'
 );
-
-
 
 # general form setup: request-account-form
 $requestAccountFormAttributes = array(
@@ -112,7 +109,7 @@ $submitForgotPasswordButtonAttributes = array(
 							<div class="control-group">
 								<div class="controls">
 									<label class="checkbox">
-										<?php echo form_checkbox($permanentLoginAttributes); // render the permaLogin field ?>
+										<?php echo form_checkbox($permanentLoginAttributes, 'yes', false);?>
 										Angemeldet bleiben
 									</label>
 								</div>
