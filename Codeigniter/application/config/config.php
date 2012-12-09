@@ -245,7 +245,7 @@ $config['encryption_key'] = '7b4cba38e080cb7298f62f2138a7a967717468277f470f0206d
 |
 */
 $config['sess_cookie_name']		= 'meinFHD';
-$config['sess_expiration']		= 7200;
+$config['sess_expiration']		= 3600;
 $config['sess_expire_on_close']	= FALSE;
 $config['sess_encrypt_cookie']	= FALSE;
 $config['sess_use_database']	= FALSE;
