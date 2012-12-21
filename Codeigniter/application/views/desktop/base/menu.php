@@ -13,7 +13,7 @@
 								<li><a href="<?php print base_url('dashboard/index'); ?>">Dashboard</a></li>
 								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_persoenlichedaten_verwaltung') ) : ?>
-								<li><a href="<?php print base_url('einstellungen/index'); ?>">Persönliche Daten</a></li>
+								<li><a href="<?php print base_url('einstellungen/index'); ?>">Einstellungen</a></li>
 								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_stundenplan') ) : ?>
 								<li><a href="<?php print base_url('stundenplan/woche'); ?>">Stundenplan</a></li>

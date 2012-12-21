@@ -69,7 +69,7 @@
     );
 
     $data_raum = array(
-        'class' => 'span1',
+        'class' => 'span2',
         'name' => 'room',
         'id' => 'room',
         'placeholder' => 'Raum',
@@ -89,6 +89,11 @@
         'value' => $formdata['StudienbeginnJahr'],
     );
 
+    $data_private_correspondence = array(
+        'name' => 'EmailDarfGezeigtWerden',
+        'id' => 'EmailDarfGezeigtWerden',
+    );
+
     $submit_data = array(
         'name'			=> 'speichern',
         'class'			=> 'btn btn-danger'
@@ -105,6 +110,16 @@
             $check_ss = TRUE;
         }
     }
+
+    # define variable to present the saved status for private mail correspondence
+    if (in_array(Roles::STUDENT, $userroles)){
+        if($formdata['EmailDarfGezeigtWerden'] == 1){
+            $show_email_cb = TRUE;
+        }
+        else {
+            $show_email_cb = FALSE;
+        }
+    }
 ?>
 
 <?php startblock('content'); # content for this view ?>
@@ -112,18 +127,22 @@
         <div class="row-fluid"><!-- preferences header -->
             <div class="span12">
                 <h2>Pers&ouml;nliche Einstellungen</h2>
-                <h4><?php if ( in_array(Roles::DOZENT, $userroles)) print $formdata['Titel'].' ' ?><?php print $formdata['Vorname'].' '.$formdata['Nachname'] ?></h4>
+                <h4><?php if ( in_array(Roles::DOZENT, $userroles) || in_array(Roles::BETREUER, $userroles)) print $formdata['Titel'].' ' ?><?php print $formdata['Vorname'].' '.$formdata['Nachname'] ?></h4>
                 <?php if ( in_array(Roles::STUDENT, $userroles)) : ?>
-                <h4><?php print 'Aktuelles Semester: '. $userdata['act_semester']?></h4>
+                <h4><?php print 'Fachsemester: '. $userdata['act_semester']; ?></h4>
+                <h4><?php print 'Matrikelnummer: '. $formdata['Matrikelnummer']; ?></h4>
+                <h4><?php print 'Studiengang: '. $formdata['StudiengangAbkuerzung'].' '.$formdata['Pruefungsordnung'] ?></h4>
                 <?php endif ?>
                 <hr/>
             </div>
         </div><!-- preferences header end -->
         <div class="row-fluid"><!-- preferences content -->
             <?php
-                echo form_open('einstellungen/validate/', $data_formopen);
+                echo form_open('einstellungen/validate_edits/', $data_formopen);
                 echo validation_errors();
             ?>
+            <h4>Login-Details</h4>
+            <br/>
             <div class="control-group">
                 <?php echo form_label('Loginname', 'loginname', $data_labelattrs); ?>
                 <div class="controls">
@@ -143,7 +162,9 @@
                 </div>
             </div>
             <hr/>
-            <?php if ( in_array(Roles::DOZENT, $userroles)) : ?>
+            <h4>Kontaktinformationen</h4>
+            <br/>
+            <?php if ( in_array(Roles::DOZENT, $userroles) || in_array(Roles::BETREUER, $userroles)) : ?>
                 <div class="control-group">
                     <?php echo form_label('Titel', 'title', $data_labelattrs); ?>
                     <div class="controls">
@@ -163,14 +184,22 @@
                     <?php echo form_input($data_name); ?>
                 </div>
             </div>
-            <hr/>
             <div class="control-group">
                 <?php echo form_label('Emailadresse', 'email', $data_labelattrs); ?>
                 <div class="controls">
                     <?php echo form_input($data_email); ?>
                 </div>
             </div>
-            <?php if ( in_array(Roles::DOZENT, $userroles)) : ?>
+
+            <?php if (in_array(Roles::STUDENT, $userroles)) : ?>
+            <div class="control-group">
+                <?php echo form_label('Dozenten dürfen mich unter dieser Adresse auch persönlich erreichen', 'show_email_flag', $data_labelattrs); ?>
+                <div class="controls">
+                    <?php echo form_checkbox($data_private_correspondence, 1, $show_email_cb); ?>
+                </div>
+            </div>
+            <?php endif ?>
+            <?php if ( in_array(Roles::DOZENT, $userroles) || in_array(Roles::BETREUER, $userroles)) : ?>
             <div class="control-group">
                 <?php echo form_label('Raum', 'raum', $data_labelattrs); ?>
                 <div class="controls">
@@ -179,17 +208,9 @@
             </div>
             <?php endif ?>
             <hr/>
-
-            <?php if ( in_array(Roles::DOZENT, $userroles)) : ?>
-            <div class="control-group">
-                <?php echo form_label('Raum', 'raum', $data_labelattrs); ?>
-                <div class="controls">
-                    <?php echo form_input($data_raum); ?>
-                </div>
-            </div>
-            <?php endif ?>
-
             <?php if ( in_array(Roles::STUDENT, $userroles)) : ?>
+                <h4>Studiengangsinformationen</h4>
+                <br/>
                 <div class="control-group">
                     <label class="control-label" for="studiengang">Studiengang</label>
                     <div class="controls">
@@ -213,7 +234,7 @@
                     </div>
                 </div>
                 <div class="control-group">
-                    <?php echo form_label('Starjahr', 'startjahr', $data_labelattrs); ?>
+                    <?php echo form_label('Startjahr', 'startjahr', $data_labelattrs); ?>
                     <div class="controls">
                         <?php echo form_input($data_startjahr); ?>
                     </div>
@@ -228,4 +249,5 @@
 
     </div>
 <?php endblock(); ?>
+
 <?php end_extend(); ?>

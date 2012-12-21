@@ -23,35 +23,46 @@ class Einstellungen_model extends CI_Model {
 		return $this->db->get()->row_array();
 	}
 
-	public function save_edits()
+    /**
+     * Saves the edits of the personal information for the currently authenticated user
+     * in the database.
+     *
+     * @access public
+     * @param $form_data array The array with the user input from the form
+     * @return void
+     */
+	public function save_edits($form_data)
 	{
-		$formdata = $this->input->post();
-
+        // construct the array with the basic user information
 		$update = array(
-			'LoginName'				=> $formdata['loginname'],
-			'Vorname'				=> $formdata['forename'],
-			'Nachname'				=> $formdata['lastname'],
-			'Email'					=> $formdata['email']
-			);
+			'LoginName' => $form_data['loginname'],
+			'Vorname' => $form_data['forename'],
+			'Nachname' => $form_data['lastname'],
+			'Email' => $form_data['email'],
+		);
 
-		if ( in_array(Roles::STUDENT, $userroles))
-		{
-			$update['StudienbeginnSemestertyp'] = 	$formdata['semesteranfang'];
-			$update['StudienbeginnJahr'] = 			$formdata['startjahr'];
+        // extract the students specific information and add them to the update-array, if the user is an student
+		if ( in_array(Roles::STUDENT, $this->user_model->get_all_roles())){
+			$update['StudienbeginnSemestertyp'] = $form_data['semesteranfang'];
+			$update['StudienbeginnJahr'] = 	$form_data['startjahr'];
+            $update['EmailDarfGezeigtWerden'] = $form_data['EmailDarfGezeigtWerden'];
 		}
 
-		if ( in_array(Roles::DOZENT, $userroles))
-		{
-			$update['Raum'] = 						$formdata['room'];
-			$update['Titel'] = 					$formdata['title'];
+        // extract the dozent specific information and add them to the update-array, if the user is an student
+		if ( in_array(Roles::DOZENT, $this->user_model->get_all_roles()) ||  in_array(Roles::BETREUER, $this->user_model->get_all_roles())){
+			$update['Raum'] = $form_data['room'];
+			$update['Titel'] = $form_data['title'];
 		}
 
-		if ( ! empty($formdata['password'])) $update['Passwort'] = md5($formdata['password']);
+        // extract the new password and add it to the update-array, if it is set in the form_data-array
+		if ( ! empty($form_data['password'])){
+            $update['Passwort'] = md5($form_data['password']);
+        }
 
-		// FB::log($update);
-
+        // update the database with the update array
 		$this->db->where('BenutzerID', $this->user_model->get_userid());
 		$this->db->update('benutzer', $update);
-	}
+
+    }
 
 }
