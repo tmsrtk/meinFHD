@@ -1,9 +1,42 @@
 <?php
 
+/**
+ * meinFHD WebApp
+ *
+ * @version 0.0.2
+ * @copyright Fachhochschule Duesseldorf, 2012
+ * @link http://www.fh-duesseldorf.de
+ * @author Jan Eichler(JE), <jan.eichler@fh-duesseldorf.de>
+ * @author Christian Kundruß(CK), <christian.kundruss@fh-duesseldorf.de>
+ */
+
+/**
+ * Class / Model Einstellungen_model
+ *
+ * Implements all necessary database operations for the custom user settings.
+ */
 class Einstellungen_model extends CI_Model {
 
+    /**
+     * Default constructor. Used for initialization.
+     *
+     * @access public
+     * @return void
+     */
+    public function __construct(){
+
+        parent::__construct();
+    }
+
+    /**
+     * Selects the students user data from the database for the given user-id
+     * and returns it as an array.
+     * @param $userid Integer ID of the user, where the data should be selected for.
+     * @return mixed An array will be returned if there are information for the given user id, otherwise NULL will be returned.
+     */
 	public function query_userdata_student($userid)
 	{
+        // select the student specific user information and return it
 		$this->db->select('b.*, sg.*')
 				->from('benutzer b')
 				->join('studiengang sg', 'b.StudiengangID = sg.StudiengangID')
@@ -13,8 +46,16 @@ class Einstellungen_model extends CI_Model {
 		return $this->db->get()->row_array();
 	}
 
+    /**
+     * Selects the user data from the database for the given user id and returns it as an
+     * array.
+     *
+     * @param $userid Integer ID of the user, where the data should be selected for.
+     * @return mixed An array will be returned if there are information for the given user id, otherwise NULL will be returned.
+     */
 	public function query_userdata($userid)
 	{
+        // select the whole user information and return it
 		$this->db->select('b.*')
 				->from('benutzer b')
 				->where('b.BenutzerID', $userid)
@@ -66,3 +107,5 @@ class Einstellungen_model extends CI_Model {
     }
 
 }
+/* End of file einstellungen_model.php */
+/* Location: ./application/models/einstellungen_model.php */
