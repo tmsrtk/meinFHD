@@ -3,8 +3,6 @@
 
 <?php
     # general form setup
-    $userroles = $this->user_model->get_all_roles();
-
     $data_formopen = array(
         'class' => 'form-horizontal',
         'id' => 'change_personal_preferences'
@@ -129,8 +127,8 @@
                 <h2>Pers&ouml;nliche Einstellungen</h2>
                 <h4><?php if ( in_array(Roles::DOZENT, $userroles) || in_array(Roles::BETREUER, $userroles)) print $formdata['Titel'].' ' ?><?php print $formdata['Vorname'].' '.$formdata['Nachname'] ?></h4>
                 <?php if ( in_array(Roles::STUDENT, $userroles)) : ?>
-                <h4><?php print 'Fachsemester: '. $userdata['act_semester']; ?></h4>
                 <h4><?php print 'Matrikelnummer: '. $formdata['Matrikelnummer']; ?></h4>
+                <h4><?php print 'Fachsemester: '. $userdata['act_semester']; ?></h4>
                 <h4><?php print 'Studiengang: '. $formdata['StudiengangAbkuerzung'].' '.$formdata['Pruefungsordnung'] ?></h4>
                 <?php endif ?>
                 <hr/>
@@ -193,7 +191,7 @@
 
             <?php if (in_array(Roles::STUDENT, $userroles)) : ?>
             <div class="control-group">
-                <?php echo form_label('Dozenten dürfen mich unter dieser Adresse auch persönlich erreichen', 'show_email_flag', $data_labelattrs); ?>
+                <?php echo form_label('Dozenten dürfen mich unter dieser Adresse auch persönlich erreichen', 'EmailDarfGezeigtWerden', $data_labelattrs); ?>
                 <div class="controls">
                     <?php echo form_checkbox($data_private_correspondence, 1, $show_email_cb); ?>
                 </div>
@@ -215,7 +213,7 @@
                     <label class="control-label" for="studiengang">Studiengang</label>
                     <div class="controls">
                         <input type="text" name="studiengang" placeholder="Studiengang" value="<?php print $formdata['StudiengangName'] . ' ' . $formdata['Pruefungsordnung'] ?>" disabled>
-                        <a href="<?php echo base_url('einstellungen/studiengang_wechseln') ?>" class="btn btn-warning">Studiengang wechseln</a>
+                        <a href="#" class="btn btn-warning">Studiengang wechseln</a>
                     </div>
                 </div>
                 <div class="control-group">
