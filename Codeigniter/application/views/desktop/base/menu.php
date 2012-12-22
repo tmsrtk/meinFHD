@@ -12,9 +12,6 @@
 								<?php if ( $this->authentication->has_permissions('hat_dashboard') ) : ?>
 								<li><a href="<?php print base_url('dashboard/index'); ?>">Dashboard</a></li>
 								<?php endif ?>
-								<?php if ( $this->authentication->has_permissions('hat_persoenlichedaten_verwaltung') ) : ?>
-								<li><a href="<?php print base_url('einstellungen/index'); ?>">Einstellungen</a></li>
-								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_stundenplan') ) : ?>
 								<li><a href="<?php print base_url('stundenplan/woche'); ?>">Stundenplan</a></li>
 								<?php endif ?>
@@ -129,8 +126,11 @@
 								</li>
 								<?php endif ?>
                                 <?php if( $this->authentication->has_permissions('hat_logbuch') ) :?>
-                                <li><a href="<?php print base_url('logbuch/index'); ?>">Logbuch</a></li>
+                                    <li><a href="<?php print base_url('logbuch/index'); ?>">Logbuch</a></li>
                                 <?php endif ?>
+                                <?php if ( $this->authentication->has_permissions('hat_persoenlichedaten_verwaltung') ) : ?>
+                                    <li><a href="<?php print base_url('einstellungen/index'); ?>">Einstellungen</a></li>
+                                    <?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_faq') ) : ?>
 								<li><a href="<?php print base_url('faq/index'); ?>">FAQ</a></li>
 								<?php endif ?>
