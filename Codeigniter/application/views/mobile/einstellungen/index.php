@@ -13,7 +13,7 @@
     );
 
     $data_loginname = array(
-        'class' => 'span6',
+        'class' => 'span3',
         'name' => 'loginname',
         'id' => 'loginname',
         'placeholder' => 'Loginname',
@@ -21,21 +21,21 @@
     );
 
     $data_passwort = array(
-        'class' => 'span6',
+        'class' => 'span3',
         'name' => 'password',
         'id' => 'password',
         'placeholder' => 'Passwort',
     );
 
     $data_passwort_repeat = array(
-        'class' => 'span6',
+        'class' => 'span3',
         'name' => 'password2',
         'id' => 'password2',
         'placeholder' => 'Passwort bestätigen',
     );
 
     $data_forename = array(
-        'class' => 'span6',
+        'class' => 'span3',
         'name' => 'forename',
         'id' => 'forename',
         'placeholder' => 'Vorname',
@@ -43,7 +43,7 @@
     );
 
     $data_name = array(
-        'class' => 'span6',
+        'class' => 'span3',
         'name' => 'lastname',
         'id' => 'lastname',
         'placeholder' => 'Nachname',
@@ -51,7 +51,7 @@
     );
 
     $data_title = array(
-        'class' => 'span6',
+        'class' => 'span3',
         'name' => 'title',
         'id' => 'title',
         'placeholder' => 'Titel',
@@ -59,7 +59,7 @@
     );
 
     $data_email = array(
-        'class' => 'span6',
+        'class' => 'span3',
         'name' => 'email',
         'id' => 'email',
         'placeholder' => 'Emailadresse',
@@ -67,38 +67,49 @@
     );
 
     $data_raum = array(
-        'class' => 'span4',
+        'class' => 'span2',
         'name' => 'room',
         'id' => 'room',
         'placeholder' => 'Raum',
         'value' => $formdata['Raum'],
     );
 
-    $data_semesteranfang = array(
-        'name' => 'semesteranfang',
-        'id' => 'semesteranfang',
-    );
+    // declare student specific data only when the authenticated user is a student
+    if(in_array(Roles::STUDENT, $userroles)){
 
-    $data_startjahr = array(
-        'class' => 'span2',
-        'name' => 'startjahr',
-        'id' => 'startjahr',
-        'placeholder' => 'Startjahr',
-        'value' => $formdata['StudienbeginnJahr'],
-    );
+        $data_semesteranfang = array(
+            'name' => 'semesteranfang',
+            'id' => 'semesteranfang',
+        );
 
-    $data_private_correspondence = array(
-        'name' => 'EmailDarfGezeigtWerden',
-        'id' => 'EmailDarfGezeigtWerden',
-    );
+        $data_startjahr = array(
+            'class' => 'span1',
+            'name' => 'startjahr',
+            'id' => 'startjahr',
+            'placeholder' => 'Startjahr',
+            'value' => $formdata['StudienbeginnJahr'],
+        );
 
-    $submit_data = array(
-        'name'			=> 'speichern',
-        'class'			=> 'btn btn-danger'
-    );
+        $data_private_correspondence = array(
+            'name' => 'EmailDarfGezeigtWerden',
+            'id' => 'EmailDarfGezeigtWerden',
+        );
 
-    # define variables for studienbeginn semester type radio buttons, that should be selected by default (only for students)
-    if (in_array(Roles::STUDENT, $userroles)){
+        $data_studiengang = array(
+            'name' => 'studiengang',
+            'id' => 'studiengang',
+            'disabled' => 'disabled',
+            'value' => $formdata['StudiengangName'] . ' ' . $formdata['Pruefungsordnung'],
+        );
+
+        $change_degree_program_data = array(
+            'name' => 'change_degree_program',
+            'id' => 'btn_change_degree_program',
+            'class' => 'btn btn-warning',
+            'content' => 'Studiengang wechseln',
+        );
+
+        // define variables for studienbeginn semester type radio buttons, that should be selected by default (only for students)
         if($userdata['studienbeginn_semestertyp'] == 'WS'){
             $check_ws = TRUE;
             $check_ss = FALSE;
@@ -107,10 +118,8 @@
             $check_ws = FALSE;
             $check_ss = TRUE;
         }
-    }
 
-    # define variable to present the saved status for private mail correspondence
-    if (in_array(Roles::STUDENT, $userroles)){
+        // define variable to present the saved status for private mail correspondence
         if($formdata['EmailDarfGezeigtWerden'] == 1){
             $show_email_cb = TRUE;
         }
@@ -118,6 +127,11 @@
             $show_email_cb = FALSE;
         }
     }
+
+    $submit_data = array(
+        'name'	=> 'speichern',
+        'class'	=> 'btn btn-danger'
+    );
 ?>
 
 <?php startblock('content'); # content for this view ?>

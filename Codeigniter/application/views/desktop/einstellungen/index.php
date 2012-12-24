@@ -74,31 +74,44 @@
         'value' => $formdata['Raum'],
     );
 
-    $data_semesteranfang = array(
-        'name' => 'semesteranfang',
-        'id' => 'semesteranfang',
-    );
 
-    $data_startjahr = array(
-        'class' => 'span1',
-        'name' => 'startjahr',
-        'id' => 'startjahr',
-        'placeholder' => 'Startjahr',
-        'value' => $formdata['StudienbeginnJahr'],
-    );
 
-    $data_private_correspondence = array(
-        'name' => 'EmailDarfGezeigtWerden',
-        'id' => 'EmailDarfGezeigtWerden',
-    );
+    // declare student specific data only when the authenticated user is a student
+    if(in_array(Roles::STUDENT, $userroles)){
 
-    $submit_data = array(
-        'name'			=> 'speichern',
-        'class'			=> 'btn btn-danger'
-    );
+        $data_semesteranfang = array(
+            'name' => 'semesteranfang',
+            'id' => 'semesteranfang',
+        );
 
-    # define variables for studienbeginn semester type radio buttons, that should be selected by default (only for students)
-    if (in_array(Roles::STUDENT, $userroles)){
+        $data_startjahr = array(
+            'class' => 'span1',
+            'name' => 'startjahr',
+            'id' => 'startjahr',
+            'placeholder' => 'Startjahr',
+            'value' => $formdata['StudienbeginnJahr'],
+        );
+
+        $data_private_correspondence = array(
+            'name' => 'EmailDarfGezeigtWerden',
+            'id' => 'EmailDarfGezeigtWerden',
+        );
+
+        $data_studiengang = array(
+            'name' => 'studiengang',
+            'id' => 'studiengang',
+            'disabled' => 'disabled',
+            'value' => $formdata['StudiengangName'] . ' ' . $formdata['Pruefungsordnung'],
+        );
+
+        $change_degree_program_data = array(
+            'name' => 'change_degree_program',
+            'id' => 'btn_change_degree_program',
+            'class' => 'btn btn-warning',
+            'content' => 'Studiengang wechseln',
+        );
+
+        // define variables for studienbeginn semester type radio buttons, that should be selected by default (only for students)
         if($userdata['studienbeginn_semestertyp'] == 'WS'){
             $check_ws = TRUE;
             $check_ss = FALSE;
@@ -107,10 +120,8 @@
             $check_ws = FALSE;
             $check_ss = TRUE;
         }
-    }
 
-    # define variable to present the saved status for private mail correspondence
-    if (in_array(Roles::STUDENT, $userroles)){
+        // define variable to present the saved status for private mail correspondence
         if($formdata['EmailDarfGezeigtWerden'] == 1){
             $show_email_cb = TRUE;
         }
@@ -118,6 +129,11 @@
             $show_email_cb = FALSE;
         }
     }
+
+    $submit_data = array(
+        'name'	=> 'speichern',
+        'class'	=> 'btn btn-danger'
+    );
 ?>
 
 <?php startblock('content'); # content for this view ?>
