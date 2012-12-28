@@ -52,7 +52,7 @@ $autoload['packages'] = array();
 |	$autoload['libraries'] = array('database', 'session', 'xmlrpc');
 */
 
-$autoload['libraries'] = array('krumo', 'user_agent', 'detection', 'database', 'session', 'data', 'message','samlauthentication', 'authentication', 'form_validation', 'adminhelper', 'firephp/lib/FirePHPCore/fb', 'less', 'mailhelper', 'static/Roles', 'static/Messages');
+$autoload['libraries'] = array('krumo', 'user_agent', 'detection', 'database', 'session', 'data', 'message','samlauthentication', 'authentication', 'form_validation', 'adminhelper', 'firephp/lib/FirePHPCore/fb', 'less', 'mailhelper', 'static/Roles', 'static/Messages', 'static/Log');
 
 
 /*
