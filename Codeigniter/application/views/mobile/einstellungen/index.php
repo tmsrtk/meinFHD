@@ -224,10 +224,10 @@
             <h4>Studiengangsinformationen</h4>
             <br/>
             <div class="control-group">
-                <label class="control-label" for="studiengang">Studiengang</label>
+                <?php echo form_label('Studiengang', 'studiengang', $data_labelattrs); ?>
                 <div class="controls">
-                    <input type="text" name="studiengang" placeholder="Studiengang" value="<?php print $formdata['StudiengangName'] . ' ' . $formdata['Pruefungsordnung'] ?>" disabled>
-                    <a href="#" class="btn btn-warning">Studiengang wechseln</a>
+                    <?php echo form_input($data_studiengang); ?>&nbsp;&nbsp;
+                    <?php echo form_button($change_degree_program_data); ?>
                 </div>
             </div>
             <div class="control-group">
@@ -261,5 +261,29 @@
 
 </div>
 <?php endblock(); ?>
+
+<?php startblock('postCodeContent'); ?>
+<div id="modalcontent"></div><!-- place for modals after content -->
+<?php endblock(); ?>
+
+<?php startblock('customFooterJQueryCode');?>
+    // register a click on the change degree programm - button
+    $("#btn_change_degree_program").click(function(){
+        // load the change degree program view via ajax and open up the modal
+        var request_url = "<?php print base_url('einstellungen/ajax_load_change_degree_program_view/'); ?>"
+
+        $.ajax({
+            url: request_url,
+            type: 'POST',
+            success: function(success_data){
+                $('#modalcontent').html(success_data);
+                // before prompting the modal scroll view to the top -> modal is presented on top of the page
+                $(document).scrollTop(1);
+                $('#change_degree_program_modal').modal('show');
+            }
+        });
+    });
+<?php endblock(); ?>
+
 
 <?php end_extend(); ?>

@@ -106,6 +106,94 @@ class Einstellungen_model extends CI_Model {
 
     }
 
+    /**
+     * Selects information of all degree program courses and returns them as an array.
+     *
+     * @access public
+     * @return array The array with all different degree programs. Each row represents one degree program
+     *               -> StudiengangID, Pruefungsordnung, StudiengangAbkuerzung, StudiengangName
+     */
+    public function get_all_degree_programs()
+    {
+        // select all degree programs from the database
+        $this->db->select('StudiengangID, Pruefungsordnung, StudiengangAbkuerzung, StudiengangName')
+            ->from('studiengang')
+            ->order_by('StudiengangAbkuerzung','asc')
+            ->order_by('Pruefungsordnung','asc');
+
+        $query = $this->db->get();
+
+        return $query->result_array();
+    }
+
+    /**
+     * Selects all courses and the corresponding grades of the actual degree program plan for the
+     * authenticated user.
+     *
+     * @access public
+     * @return array Associative array with all courses and grades. Each row represents one courses with
+     *               the following keys: Kursname, Notenpunkte.
+     */
+    public function get_courses_and_grades($userid)
+    {
+        $this->db->select('studiengangkurs.Kursname, semesterkurs.Notenpunkte')
+            ->from('semesterplan')
+            ->join('semesterkurs','semesterplan.SemesterplanID = semesterkurs.SemesterplanID')
+            ->join('studiengangkurs','semesterkurs.KursID = studiengangkurs.KursID')
+            ->where('BenutzerID', $userid);
+
+        $query = $this->db->get();
+
+        return $query->result_array();
+    }
+
+    /**
+     * Creates an csv-file with the provided data and uploads it to the standard /upload - folder of the
+     * application.
+     *
+     * @access public
+     * @param $filename_prefix string Prefix of the filename
+     * @param $content string Content, that should be written into the file
+     * @return string The full qualified path and name of the uploaded file, if everything went fine. Otherwise an
+     *                error message ('unable to write file') will be returned.
+     */
+    public function create_csv_file($filename_prefix, $content){
+
+        $filename = $filename_prefix . md5($this->user_model->get_loginname()) . '.csv'; // construct the filename
+        $filepath = './resources/uploads/' . $filename; // specify the full storage path
+
+        // if there already exists a file -> delete it‚
+        if(file_exists($filepath))
+            unlink($filepath);
+
+        // create the file with the specified content and save it
+        if(write_file($filepath,$content,'a+')){
+            chmod($filepath, 0640); // set the correct permissions
+            $filepath = substr($filepath, 1); // remove the first sign (.) from the filepath to avoid problems
+            return $filepath;
+        }
+        return 'unable to write file';
+    }
+
+    /**
+     * All db operations for changing the degree program of the current authenticated user to the specified
+     * degree program id (parameter). Creates also a new semesterplan and all students courses for the new
+     * degree program.
+     *
+     * @access public
+     * @param $new_deg_prog_id integer ID of the new degree program
+     * @return void
+     */
+    public function change_degree_program($new_deg_prog_id){
+
+        // update / change the degree program in the user table
+        $user_table_update_data = array(
+            'StudiengangID' => $new_deg_prog_id,
+        );
+
+        $this->db->where('BenutzerID',$this->user_model->get_userid());
+        $this->db->update('benutzer',$user_table_update_data);
+    }
 }
 /* End of file einstellungen_model.php */
 /* Location: ./application/models/einstellungen_model.php */

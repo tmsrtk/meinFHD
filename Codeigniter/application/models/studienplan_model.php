@@ -51,8 +51,10 @@ class Studienplan_Model extends CI_Model
         // write all membervariables
         parent::__construct();
         $this->userID = $this->authentication->user_id();
-        $this->studycourseID = $this->queryStudycourseId();
-        $this->studyplanID = $this->queryStudyplanId();
+        //$this->studycourseID = $this->queryStudycourseId();
+        $this->queryStudycourseId();
+        //$this->studyplanID = $this->queryStudyplanId();
+        $this->queryStudyplanId();
         $this->currentSemester = $this->queryCurrentSemester();
     }
     
@@ -60,9 +62,9 @@ class Studienplan_Model extends CI_Model
     /**
      * Queries the DB for the Studycourse-ID (Studiengang-ID)
      * 
-     * @return int
+     * @return void
      */
-    private function queryStudycourseId()
+    public function queryStudycourseId()
     {
         $id = 0;
         
@@ -80,16 +82,17 @@ class Studienplan_Model extends CI_Model
             }
         }
             
-        return $id;
+        //return $id;
+        $this->studycourseID = $id;
     }
     
     
     /**
      * Queries the DB for the Studyplan-ID (Semesterplan-ID)
      * 
-     * @return int
+     * @return void
      */
-    private function queryStudyplanId()
+    public function queryStudyplanId()
     {
         $id = 0;
         
@@ -107,7 +110,8 @@ class Studienplan_Model extends CI_Model
             }
         }
 
-        return $id;
+        //return $id;
+        $this->studyplanID = $id;
     }
     
     
@@ -412,7 +416,8 @@ class Studienplan_Model extends CI_Model
 
 
                 // query new studycourseID and set the classvariable
-                $this->studyplanID = $this->queryStudyplanId();
+                //$this->studyplanID = $this->queryStudyplanId();
+                $this->queryStudyplanId();
 
 
                 // query DB for all courses for the studycourse

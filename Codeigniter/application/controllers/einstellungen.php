@@ -16,7 +16,7 @@
  * Controller implements all necessary functions for the custom user settings.
  */
 class Einstellungen extends FHD_Controller {
-	
+
 	/**
      * Default constructor. Used for initialization.
      *
@@ -60,7 +60,6 @@ class Einstellungen extends FHD_Controller {
 
         // load the index view / page
         $this->load->view('einstellungen/index', $this->data->load());
-
     }
 
 	/**
@@ -197,8 +196,10 @@ class Einstellungen extends FHD_Controller {
 		{
 			// save changes in the database
 			$this->einstellungen_model->save_edits($new_form_values);
+            // fire an logging event
+            Log::new_log_entry(Log::PERSOENLICHE_DATEN_BEARBEITEN, 7);
 
-            // set a message and redirect to the index page
+            // set a message and redirect to the preferences index page
 			$this->message->set('Änderungen erfolgreich übernommen', 'success');
 			redirect(site_url('einstellungen/index'));
 
@@ -338,55 +339,125 @@ class Einstellungen extends FHD_Controller {
     }
 
     /**
-     * Method for changing the degree program. Actually not working!
+     * Loads the change degree program view as an string and echos the view out. Function
+     * is designed for ajax-requests.
      *
      * @access public
-     * @return void
-     * TODO Degree programm change is not working so far.
      */
-    public function studiengangWechseln()
-    {
+    public function ajax_load_change_degree_program_view(){
 
-        $data['stgng'] = $this->persDaten_model->getStudiengang();
-        $data['info'] = $this->persDaten_model->getUserInfo();
+        // load the needed data for changing the degree program and add id to the data array
+        $this->data->add('degree_programs', $this->einstellungen_model->get_all_degree_programs());
+        // get the student specific userdata (includes degree program name etc.)
+        $user_data = $this->einstellungen_model->query_userdata_student($this->user_model->get_userid());
+        $this->data->add('student_data', $user_data); // add the user data to the data array
 
-        // ----------- Not working --------------- //
-        //because the way the form_validation back in index() works, it does not recognize the StudiengangID (stgid) in the POST-Array, if it got submitted by the View of this function
-        //to fix this, we simply add the required POST-fields like they would be in the index()-function:
-        //$_POST['login'] = $data['info']['LoginName'];       //login = old login -> no error during form_validation
-        //$_POST['email'] = $data['info']['Email'];           //same
-        // ---------------------------------------------
+        // --- create the csv file with the old degree program data for export ---
+        // add the full qualified name of the student
+        $csv_data = "Name:;" . $user_data['Vorname'] . " " . $user_data['Nachname'] . ";\r\r";
+        // add the degree program
+        $csv_data .= "Studiengang:;" . $user_data['StudiengangName'] . ";\r";
+        // add the po
+        $csv_data .= "Prüfungsordnung:;" . $user_data['Pruefungsordnung'] . ";\r\r";
+        // add table headlines
+        $csv_data .= "Fach;Notenpunkte;\r\r";
 
-        //create a String in csv.-encoding
-        //first add the full name of the student
-        $table = "Name:;".$data['info']['Vorname']." ".$data['info']['Nachname'].";\r\r";
-        //then add the studycourse and PO
-        $table .= "Studiengang:;".$data['info']["StudiengangName"].";\rPrüfungsordnung:;".$data['info']["Pruefungsordnung"].";\r\r";
-        //then add all courses and the corresponding grades:
-        $result = $this->persDaten_model->getCoursesAndGrades();
-        foreach ($result as $row)
-        {
-            $table .= utf8_decode($row["Kursname"]).";".(($row["Notenpunkte"]==101) ? "-/-" : $row["Notenpunkte"]).";\r";
+        // add all degree program courses and the corresponding grades to the file
+        $courses_grades = $this->einstellungen_model->get_courses_and_grades($this->user_model->get_userid());
+
+        foreach($courses_grades as $single_course){
+            $csv_data .= utf8_decode($single_course['Kursname'] . ";" . (($single_course["Notenpunkte"]==101) ? "-/-" : $single_course["Notenpunkte"]) . ";\r");
         }
 
-        //create *.csv
-        $data['filepath'] = $this->persDaten_model->createCsv($table);
+        // create and upload the .csv-file
+        $path_to_csv_file = $this->einstellungen_model->create_csv_file('semplan_',$csv_data);
 
+        $this->data->add('csv_filepath', $path_to_csv_file);
+        // -- end csv file creation ---
 
-        //View
-        $this->load->view('einstellungen/studiengangWechseln', $data);
+        // load the view as an string and return it
+        $change_degree_program_view = $this->load->view('einstellungen/change_degree_program', $this->data->load(), TRUE);
+
+        echo $change_degree_program_view;
     }
 
     /**
-     * Recognizes if the degree program was changed by the authenticated user
+     * Form validation for the degree program change. Method is called if the user submits an degree program change.
+     * If all necessary inputs are correct the degree program will be changed and an success message will be displayed,
+     * otherwise an error message will be displayed.
      *
      * @access public
-     * @param $old_id
-     * @return bool
+     * @return void
      */
-    public function hasStudycourseChanged($old_id)
-    {
-        return (isset($_POST['stgid']) && $_POST['stgid'] != $old_id) ? TRUE : FALSE;
+    public function validate_change_degree_program(){
+
+        // set the custom delimiter for validation errors
+        $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+
+        // read the values, from actual form
+        $new_form_values = $this->input->post();
+
+        // get the current user data from the database
+        $current_user_data = $this->einstellungen_model->query_userdata($this->user_model->get_userid());
+
+        // -- set the different form validation rules --
+        $this->form_validation->set_rules('degree_program_change_to_id', 'Studiengang', 'callback_validate_selected_degree_program'); // rule for the degree program selection
+        $this->form_validation->set_rules('startjahr_change', 'Startjahr', 'required|integer|exact_length[4]'); // rule for the begin year -> is required, and only an 4 character integer value
+        $this->form_validation->set_rules('semesteranfang_change', 'Semesteranfang', 'required|alpha'); // rule for the begin semester type -> is required
+        // -- end setting form validation rules --
+
+        // only validate the inputs, if there was another degree program selected
+        if($new_form_values['degree_program_change_to_id'] != $current_user_data['StudiengangID']){ // another degree program was selected
+
+            if($this->form_validation->run()){ // validation was correct -> save changes
+
+                // change the degree program in the user table
+                $this->einstellungen_model->change_degree_program($new_form_values['degree_program_change_to_id']);
+
+                // update the degree program id and the studyplan class variables of the studienplan_model, because the degree program id has changed
+                $this->studienplan_model->queryStudycourseId();
+                $this->studienplan_model->queryStudyplanId();
+
+                $this->studienplan_model->deleteAll(); // delete the old study plan
+
+                // create a new study plan and an new timetable
+                $this->studienplan_model->createStudyplan();
+
+                // add logging
+                Log::new_log_entry(Log::PERSOENLICHE_DATEN_BEARBEITEN,7);
+
+                // set a message and redirect to the preferences index page
+                $this->message->set('Studiengang wurde erfolgreich gewechselt', 'success');
+                redirect(site_url('einstellungen/index'));
+            }
+            else { // validation was incorrect -> display error message and reload the preferences view
+
+                // set a message and redirect to the preferences index page
+                $this->message->set('Beim Wechsel des Studiengangs ist ein Fehler aufgetreten. Möglicherweise waren nicht alle Felder des Formulars gefüllt', 'error');
+                redirect(site_url('einstellungen/index'));
+            }
+        }
+        else{ // if there were no changes in the degree program -> return to the personal preferences index page
+            $this->index();
+        }
+    }
+
+    /**
+     * Validation for the selected degree program. If the id of the degree program is not 0 the validation returns
+     * true.
+     *
+     * @access public
+     * @return bool TRUE if the id of the selected degree program is not 0, otherwise FALSE will be returned
+     */
+    public function validate_selected_degree_program(){
+        // get the form inputs
+        $form_input = $this->input->post();
+
+        if($form_input['degree_program_change_to_id'] != 0){
+            return TRUE;
+        }
+
+        return FALSE;
     }
 }
 
