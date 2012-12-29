@@ -1,7 +1,4 @@
-<?php
-
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
  * meinFHD WebApp
@@ -13,27 +10,35 @@ if (!defined('BASEPATH'))
  */
 
 /**
- * Hilfe-Controller
+ * FAQ-Controller
+ *
+ * Controller with all necessary functions for the frequently asked questions.
  */
 class FAQ extends FHD_Controller {
 	
-	// default constructor to prepare all needed stuff
-	function __construct(){
+    /**
+     * Default constructor. Used for initialization.
+     *
+     * @access public
+     * @return void
+     */
+	public function __construct(){
 		parent::__construct();
-
 	}
 	
 	/**
-	 * Index
-	 *
+	 * Loads the faq index view.
+	 * Function is usually called when the following url patterns are submitted:
 	 * .../faq
 	 * .../faq/index
+     *
+     * @access public
+     * @return void
 	 */
 	public function index()
 	{
 		$this->load->view('faq/index', $this->data->load());
 	}
 }
-
-/* End of file App.php */
+/* End of file faq.php */
 /* Location: ./application/controllers/faq.php */
