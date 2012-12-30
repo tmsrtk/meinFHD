@@ -1,7 +1,4 @@
-<?php
-
-if (!defined('BASEPATH'))
-    exit('No direct script access allowed');
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
  * meinFHD WebApp
@@ -14,25 +11,34 @@ if (!defined('BASEPATH'))
 
 /**
  * Hilfe-Controller
+ *
+ * Controller provides all methods for displaying the help content.
  */
 class Hilfe extends FHD_Controller {
 	
-	// default constructor to prepare all needed stuff
-	function __construct(){
+	/**
+     * Default constructor. Used for initialization.
+     *
+     * @access public
+     * @return void
+     */
+	public function __construct(){
 		parent::__construct();
 	}
 	
 	/**
-	 * Index
-	 *
+	 * Loads the help/hilfe index view
+	 * Function is usually called when the following url patterns are submitted:
 	 * .../hilfe
 	 * .../hilfe/index
+     *
+     * @access public
+     * @return void
 	 */
 	public function index()
 	{
 		$this->load->view('hilfe/index', $this->data->load());
 	}
 }
-
-/* End of file App.php */
+/* End of file hilfe.php */
 /* Location: ./application/controllers/hilfe.php */
