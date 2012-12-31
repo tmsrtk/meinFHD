@@ -55,7 +55,7 @@
 								<?php if ( $this->authentication->has_permissions('hat_studiengang_verwaltung') ) : ?>
 								<li class="dropdown">
 									<a href="<?php print base_url('admin/show_stdgng_course_list'); ?>" class="dropdown-toggle" data-toggle="dropdown">
-										Studiengangverwaltung
+										Studiengangsverwaltung
 										<b class="caret"></b>
 									</a>
 									<ul class="dropdown-menu level-2">
