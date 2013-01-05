@@ -199,24 +199,19 @@ class Admin_model extends CI_Model {
 	}
 
 	/**
-	 * <p>
      * Saves an new user from an invitation with the given id.
      * Edits by Christian Kundruss: Adding the global uid from the invitation data set
      * directly to the new created user, to link the local identity with his global account.
-     * </p>
+
      * @access public
      * @param integer $invitation_id ID of the saved invitation data set
-     * @return void
-     * @todo missing email functions
+     * @return array Associative array with some information of the created user (Vorname, Nachname, Email, Password)
 	 * @category user_invite.php
 	 */
 	public function save_new_user_from_invitation($invitation_id)
 	{
 		// query data from invitation_id
-		$this->db->select('*')
-				 ->from('anfrage')
-				 ->where('AnfrageID', $invitation_id);
-		$q = $this->db->get()->row_array();
+		$q = $this->_query_invitation_info($invitation_id);
 
 		// generate password
 		$password = $this->adminhelper->passwort_generator();
@@ -241,40 +236,69 @@ class Admin_model extends CI_Model {
 		$last_id = mysql_insert_id();
 
 		// insert into benutzer_mm_rolle
-		$data = array(
+		$mm_data = array(
 				'BenutzerID' => $last_id,
 				'RolleID' => $q['TypID']
 			);
-		$this->db->insert('benutzer_mm_rolle', $data);
-
-		// send email to just accepted user
-		// $this->mailhelper->send_meinfhd_mail(											///////////////////////////////////
-		// 	$form_data['email'],
-		// 	"Ihre Benutzeranfrage wurde akzeptiert.",
-		// 	"Ihr Anmeldename ist Ihre Emailadresse und das Passwort lautet: {$password}"
-		// 	);
-
-		// delete requested invitation
+		$this->db->insert('benutzer_mm_rolle', $mm_data);
 
         // -- EDIT by CK --
         // remove global uid from blacklist, if the id is on it
         $this->db->where('FHD_IdP_UID', $q['FHD_IdP_UID']);
         $this->db->delete('shibbolethblacklist');
-		$this->delete_invitation($invitation_id);
+
+        // delete requested invitation
+        $this->delete_invitation($invitation_id);
+
+        // create the array with some info of the accepted user and return it
+        $created_user_info = array(
+            'Vorname' => $data['Vorname'],
+            'Nachname' => $data['Nachname'],
+            'Emailadresse' => $data['Email'],
+            'Passwort' => $password
+        );
+
+        return $created_user_info;
 	}
 
 	/**
-	 * Deletes an user request by an invitation id.
-	 * @param  int $invitation_id The invitation id, which should be deleted.
-	 *
-	 * @category user_invite.php
-	 */
+	 * Deletes an user request by an invitation id and returns some information about the deleted
+     * request.
+     *
+     * @category user_invite.php
+     * @param $invitation_id int The invitation id, which should be deleted.
+	 * @access public
+     * @return array
+     */
 	public function delete_invitation($invitation_id)
 	{
+        // get information about the asking user to be able to return it
+        $deleted_request_info = $this->_query_invitation_info($invitation_id);
+
+        // delete the invitation
 		$this->db->where('AnfrageID', $invitation_id);
-		$this->db->delete('anfrage'); 
+		$this->db->delete('anfrage');
+
+        return $deleted_request_info;
 	}
-	
+
+    /**
+     * Selects all saved information for the given invitation id and returns them as
+     * an array.
+     *
+     * @param $invitation_id int ID of the specified invitation
+     * @access public
+     * @return array Associative array with all saved information about the person, that requested an account.
+     */
+    private function _query_invitation_info($invitation_id){
+
+        // query data from invitation_id to be able to return some info
+        $this->db->select('*')
+            ->from('anfrage')
+            ->where('AnfrageID', $invitation_id);
+
+        return $this->db->get()->row_array();
+    }
 	/**
 	 * Returns all possible roles.
 	 * @return mixed Array of all possible roles. Structure -> [0=>admin, ...]
