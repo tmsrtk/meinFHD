@@ -8,33 +8,54 @@
  * @link http://www.fh-duesseldorf.de
  * @author Konstantin Voth, <konstantin.voth@fh-duesseldorf.de>
  * @author Frank Gottwald, <frank.gottwald@fh-duesseldorf.de>
+ * @author Christian Kundruß, <christian.kundruss@fh-duesseldorf.de>
  */
 
+/**
+ * Admin-Controller
+ * The admin controller provides all necessary meinFHD 2.0 admin functions.
+ */
 class Admin extends FHD_Controller {
-	
+
+    /**
+     * @var array Array holds all possible permissions.
+     */
 	private $permissions;
-	public $roles;
-	private $roleIds;
-	
-	function __construct(){
+
+    /**
+     * @var array Array holds all possible user roles.
+     */
+    public $roles;
+
+    /**
+     * @var array Array holds all role ids
+     */
+    private $role_ids;
+
+    /**
+     * Default constructor. Used for initialization.
+     *
+     * @access public
+     * @return void
+     */
+	public function __construct(){
 	    parent::__construct();
 
+        // load necessary models
 	    $this->load->model('admin_model');
 
-	    // Daten holen - Alle Rollen mit Bezeichnung, Alle Berechtigungen mit Bezeichnung, gesondert die RoleIds
+	    // get all roles, role ids and nomenclature
 	    $this->roles = $this->admin_model->getAllRoles();
 	    $this->permissions = $this->admin_model->getAllPermissions();
-	    $this->roleIds = $this->admin_model->getAllRoleIds();
-
-//	    // get all stdgnge for the views
-//	    $data['all_degree_programs'] = $this->admin_model->get_all_degree_programs();
-
+	    $this->role_ids = $this->admin_model->getAllRoleIds();
 	}
-	
+
 	/**
 	 * Admin Interface - Starter Method
 	 * Beginning method for the admin interface.
-	 *
+     *
+     * @access public
+     * @return void
 	 */
 	public function index()
 	{
@@ -43,136 +64,119 @@ class Admin extends FHD_Controller {
 	
 	/**
 	* Edit Permissions - Overview
-	* Shows all permissions and roles and lets an admin to edit these.
+	* Shows all permissions and roles and gives an admin the possibility to edit those.
 	*
 	* @category permissions_edit.php
+    * @access public
+    * @return void
 	*/
 	public function show_role_permissions(){
-			
-		// Alle RoleIDs durchlaufen und in einem verschachtelten Array speichern
-		// >> je RoleID ein Array aller zugeordneter Permissions (array([roleid] => array([index] => permissions)...)
-		foreach ($this->roleIds as $rid) {
-			// Permissions einer Rolle holen
-			// da es vorkommen kann, dass eine Rolle noch keine Permissions hat, wurde das Array mit null initialisiert (siehe getAllRolePermissions in admin_model.php)
-			// dadurch ist der 0te Index des Arrays leer 
+
+        /*
+         * Iterate through all role ids and save them in an nested array.
+         * -> Per role id one array with all correspondig permissions (array([roleid] => array([index] => permissions)...).
+         * Alle RoleIDs durchlaufen und in einem verschachtelten Array speichern.
+         */
+		foreach ($this->role_ids as $rid) {
+            /*
+             * Get the permissions for a specified role id.
+             * It is possbile that a role has no permissions. Therefore the array is going to be initialized with null. Index 0 of the array
+             * will be empty.
+             */
 			$single_role_permissions = $this->admin_model->getAllRolePermissions($rid);
-			// sofern es zu dieser Rolle Berechtigungen gibt
+			// if there permissions for the role? if not -> do nothing
 			if($single_role_permissions){ 
-				foreach ($single_role_permissions as $rp){
-					$all_role_permissions[$rid][]= $rp;
+
+                foreach ($single_role_permissions as $rp){
+
+						$all_role_permissions[$rid][]= $rp;
 				}
 			}
 		}
 
-// 			echo '<pre>';
-// 			print_r($this->roles);
-// 			print_r($this->permissions);
-// 			print_r($this->roleIds);
-// 			print_r($all_role_permissions);
-// 			echo '</pre>';
+        /*
+         * Create an array, that is going to be used for the data output.
+         * -> Simple array with all used roles and permissions. The following index encryption is used; index % 5 == 0 is the RoleId.
+         */
 		
-		// Erzeugen eines Arrays, das für die Ausgabe genutzt werden kann
-		// >> einfaches Array, das der Reihe nach alle genutzten Werte enthält mit: index % 5 == 0 als RoleID
-		
-		// Alle Permissions durchlaufen
+		// iterate through all permissions
 		foreach ($this->permissions as $p) {
 		
-// 			$data['tableviewData'][] = $p->bezeichnung;
-			$data['tableviewData'][] = $p->BerechtigungID; // ID speichern
+			$data['tableviewData'][] = $p->BerechtigungID; // save the permission ID
 			
-			// Je Permission jede Rolle durchlaufen
+            // iterate through all permissions for every role
 			foreach ($this->roles as $r){
 		
-				// wenn im Array Role_permissions[RoleID] Werte enthalten sind (siehe oben - Index 0 ist ein leeres Feld)
+				// if there are values in the array Role_permissions[RoleID] (Index 0 is an empty field)
 				if(array_key_exists('1', $all_role_permissions[$r->RolleID])){
-					// Wenn das zur Rolle zugehörige Array die RechteID als Wert enthält
+                    // Wenn das zur Rolle zugehörige Array die RechteID als Wert enthält
 					if(array_search($p->BerechtigungID, $all_role_permissions[$r->RolleID])){
-						// speichern der ID
+						// save the ID
 						$data['tableviewData'][] = $p->BerechtigungID;
-					} else {
-						// RechteID ist dieser Rolle nicht zugewiesen - x wird gespeichert
+					}
+                    else {
+						// the permission_id does not correpsond to the role - save x
 						$data['tableviewData'][] = 'x';
 					}
-				} else {
-					// Rolle hat noch gar keine Rechte - 4 mal x wird gespeichert
+				}
+                else {
+					// there are no permissions for the role - save 4 times the x
 					$data['tableviewData'][] = 'x';
 				}
 			}
 		}
-		$this->data->add('tableviewData', $data['tableviewData']);
+		$this->data->add('tableviewData', $data['tableviewData']); // add the data to the global data array
 
-		
-		// Speichern weiterer Daten die in der View benötigt werden in das Data-Array 
-		// $data['roleCounter'] = $this->admin_model->countRoles(); // Zur Anwendung des Modulo
+		// save the data, that is needed for the view and add them to the global data array
 		$this->data->add('roleCounter', $this->admin_model->countRoles());
-		// $data['roles'] = $this->roles; // Permission-Objekte (ID und Bezeichnung)
 		$this->data->add('roles', $this->roles);
-		// $data['permissions'] = $this->permissions; // Permission-Objekte (ID und Bezeichnung)  
 		$this->data->add('permissions', $this->permissions);
-		
-// 		echo '<pre>';
-// 		print_r($data);
-// 		echo '</pre>';
-		
-		// VIEW
-		// $data['global_data'] = $this->data->load();
 
+        // view information
 		$siteinfo = array(
 			'title'			=> 'Rollenverwaltung',
 			'main_content'	=>	'admin_rollenverwaltung'
-			);
-		$this->data->add('siteinfo', $siteinfo);
-		
-	#	$this->load->view('includes/template', $this->data->load());
-		$this->load->view('admin/permissions_edit', $this->data->load());
+        );
+
+		$this->data->add('siteinfo', $siteinfo); // add the view information
+		$this->load->view('admin/permissions_edit', $this->data->load()); // load the view and load the global data array content
 	}
 	
 	/**
-	* Edit Permissions - Overview
-	* Saves all permission edits.
+	* Saves all made permission edits.
 	*
 	* @category permissions_edit.php
+    * @access public
+    * @return void
 	*/
-	function savePermissions(){
+	public function savePermissions(){
 
-// 		echo '<pre>';
-// 		print_r($this->input->post());
-// 		echo '</pre>';
-		
 		$this->admin_model->deleteRolePermissions();
 		
-		// Durchlaufen für jede Berechtigung und Rolle
+		// iterate through each role and permission
 		foreach($this->permissions as $p){
-			foreach($this->roleIds as $r){
-				// wenn für diese Rollen-Permission-Kombination ein Eintrag enthalten ist
+
+			foreach($this->role_ids as $r){
+
+					// if there are entries for the role-permission-combination
 				if($this->input->post(($p->BerechtigungID).$r)){
-//					echo $_POST;
-					$rp['RolleID'] = $r;
+
+						$rp['RolleID'] = $r;
 					$rp['BerechtigungID'] = $p->BerechtigungID;
 					
-					// speichern
+					// save the permission changes
 					$this->admin_model->updateRolePermissions($rp);
 				}
 			}
 		}
-		
-// 		echo '<pre>';
-// 		print_r($rp);
-// 		echo '</pre>';
 
-		// View neu laden
+		// reload the view
 		$this->show_role_permissions();
 	}
-	
-	/***************************************************************************
-	* User management
-	* 
-	* Konstantin Voth
-	*/
-	
-	// view controller =========================================================
 
-
+    /*
+     * User management
+     */
 
 	/**
 	* User Invitation - Overview
@@ -186,99 +190,98 @@ class Admin extends FHD_Controller {
 	{
 		// get all open user requests
 		$this->data->add('user_invitations', $this->admin_model->request_all_invitations());
-
-		//----------------------------------------------------------------------
+        // load the view and add the content of the global data array
 		$this->load->view('admin/user_requests', $this->data->load());
 	}
 
 	/**
 	* Create User - Form
-	* Create a new user.
+	* Loads the create user form, that is displayed in the admin backend.
 	* 
 	* @category user_add.php
+    * @access public
+    * @return void
 	*/
 	public function create_user_mask()
 	{
 		// get all possible roles for the form dropdown
 		$this->data->add('all_roles', $this->admin_model->get_all_roles());
-		
-		// get all possible studiengänge for the form dropdown
+		// get all possible degree programs for the form dropdown
 		$this->data->add('studiengaenge', $this->admin_model->get_all_studiengaenge());
-		
-		//----------------------------------------------------------------------
+        // load the view with the specified data
 		$this->load->view('admin/user_add', $this->data->load());
 	}
 	
 	/**
-	* Edit User - Form
+	* Shows the edit user - form
 	* 
 	* @category user_edit.php
+    * @access public
+    * @return void
 	*/
 	public function edit_user_mask()
 	{
 		// get all possible roles for the form dropdown
 		$this->data->add('all_roles', $this->admin_model->get_all_roles());
-		
-		//----------------------------------------------------------------------
+        // load the view
 		$this->load->view('admin/user_edit', $this->data->load());
 	}
 
 	/**
-	* Delete User - Form
+	* Shows the delete user - form
 	* 
 	* @category user_delete.php
+    * @access public
+    * @return void
 	*/
 	public function delete_user_mask()
 	{
-		// get all user	
+		// get all users
 		$this->data->add('user', $this->admin_model->get_all_user());
-
-		//----------------------------------------------------------------------
+        // load the view
 		$this->load->view('admin/user_delete', $this->data->load());
 	}
 
 	/**
-	* Role to Permission - List
-	* Shows all possible roles and their associated permissions.
+	* Shows the import user mask
 	*
 	* @category user_import.php
+    * @access public
+    * @return void
 	*/
 	public function import_user_mask()
 	{
-
-		//----------------------------------------------------------------------
 		$this->load->view('admin/user_import', $this->data->load());
 	}
-
-	// ->>> show_role_permissions
 
 	/**
 	* Shows all users and their associated roles. 
 	*
 	* @category user_edit_roles.php
+    * @access public
+    * @return void
 	*/
 	public function edit_roles_mask()
 	{
-		// all users
+		// get all users
 		$this->data->add('all_user', $this->admin_model->get_all_user_with_roles());
-
-		// all roles
+		// get all roles
 		$this->data->add('all_roles', $this->admin_model->get_all_roles());
-
-		//----------------------------------------------------------------------
+		// load the view
 		$this->load->view('admin/user_edit_roles', $this->data->load());
 	}
 
-	// action controller =======================================================
-
-
-
+    /*
+     * User management after this comment.
+     */
 
 	/**
 	 * Gets the input data, generates a password, routes to the model function to save 
 	 * the user in the DB and sends an email to the created user.
 	 * 
 	 * @category user_add.php
+     * @access public
+     * @return void
 	 */
 	private function create_user()
 	{
@@ -296,9 +299,12 @@ class Admin extends FHD_Controller {
 	}
 
 	/**
-	 * Creates the user from his invitation request.
+	 * Creates or deletes the user from his invitation request or deletes
+     * otherwise the selected / specified invitation.
 	 *
 	 * @category user_invite.php
+     * @access public
+     * @return void
 	 */
 	public function create_user_from_invitation_requests()
 	{
@@ -314,7 +320,7 @@ class Admin extends FHD_Controller {
          * 1: delete request
          */
 		switch ($user_function)
-		{   // TODO Emails richtig formatieren... HTML IM GANZEN CONTROLLER.....
+		{
 			case '0':
 				// create a new user from the invitation
 				$new_user_info = $this->admin_model->save_new_user_from_invitation($invitation_id);
@@ -344,40 +350,46 @@ class Admin extends FHD_Controller {
 				redirect(site_url().'admin/show_open_user_requests');
 				break;
 			default:
-				# code...
 				break;
 		}
 	}
 
 	/**
-	 * Saves user changes.
+	 * Saves the user changes that where made by an admin.
 	 *
 	 * @category user_edit.php
+     * @access public
+     * @return void
 	 */
 	public function save_user_changes()
 	{
+        // get the id of the changed user via post
 		$user_id = $this->input->post('user_id');
 
-		// var_dump($user_id);
-
+        // create the update array -> new user information
 		$data = array(
 				'LoginName'					=> $this->input->post('loginname'),
 				'Vorname'					=> $this->input->post('forename'),
 				'Nachname'					=> $this->input->post('lastname'),
 				'Email'						=> $this->input->post('email')
-			);
+        );
+        // update the user dataset
 		$this->admin_model->update_user($user_id, $data);
 	}
 
 	/**
-	 * Validation for a new user.
+	 * Formvalidation method for creating a new user.
 	 *
 	 * @category user_add.php
+     * @access public
+     * @return void
 	 */
 	public function validate_create_user_form()
 	{
+        // set the custom error delimiters for displaying the form validation errors
 		$this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
 
+        // specifiy the form validation rules
 		$rules = array();
 
 		$rules[] = $this->adminhelper->get_formvalidation_role();
@@ -388,12 +400,14 @@ class Admin extends FHD_Controller {
 
 		$this->form_validation->set_rules($rules);
 
-		// which role was selected?
+		// get the selected user role
 		$role = $this->input->post('role');
 
-		// depending on role, different validations
-		// if student
-		if ($role === '5'/*student*/)
+		/*
+		 * Depending on the role, there are different validations necessary.
+		 */
+        // if a student was selected?
+		if ($role === '5')
 		{
 			$rules = array();
 
@@ -402,7 +416,7 @@ class Admin extends FHD_Controller {
 
 			$this->form_validation->set_rules($rules);
 
-			// query if erstsemestler checkbox was checked or not
+			// if erstsemestler checkbox was checked or not
 			if ( empty($form_values['erstsemestler']) )
 			{
 				// if not checked, -> invitation for non erstsemestler, -> more inputs to fill out
@@ -416,40 +430,36 @@ class Admin extends FHD_Controller {
 		// check for correctness
 		if($this->form_validation->run() == FALSE)
 		{
-			// call create user mask again
-			// $this->message->set('Beim Erstellen des Users ist ein Fehler unterlaufen.', 'error');
-
-			// set flashdata
-			// $this->session->set_flashdata('item', 'value');
-
-			// redirect(site_url().'admin/create_user_mask');
 			$this->create_user_mask();
 		}
-		else 
+		else // validation was correct
 		{
 			// save in db
 			$this->create_user();
 
-			// flash message
+			// display a message
 			$this->message->set('User erfolgreich erstellt!', 'error');
 			redirect(site_url().'admin/create_user_mask');
 		}
 	}
 
 	/**
-	 * Decides which function was selected and routes to the associated methods.
+	 * Decides which function was selected and routes to the associated method.
 	 *
 	 * @category user_edit.php
+     * @access public
+     * @return void
 	 */
 	public function validate_edit_user_form()
 	{
-		// TODO: decide which submit button was clicked by hidden inputs
-		// 0: save, 1: pw reset, 2: semesterplan reset, 3: log-in as
-
-		// get choosen action from "functions dropdown"
+		/*
+		 * Get the choosen action from "functions dropdown".
+		 * 0: save, 1: pw reset, 2: semesterplan reset, 3: log-in as
+		 */
 		$user_function = $this->input->post('user_function');
 
 		switch ($user_function) {
+
 			case '0':
 				$this->_validate_edits();
 				break;
@@ -462,23 +472,22 @@ class Admin extends FHD_Controller {
 			case '3':
 				$this->_login_as_user();
 				break;
-
 			default:
-				# code...
 				break;
 		}
 	}
 
 	/**
-	 * Validation for user changes.
+	 * Validation method for the user changes.
 	 *
 	 * @category user_edit.php
+     * @access private
+     * @return void
 	 */
 	private function _validate_edits()
 	{
 		// set custom delimiter for validation errors
 		$this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
-
 
 		$rules = array();
 
@@ -487,9 +496,6 @@ class Admin extends FHD_Controller {
 
 		// current user data in db
 		$current_user_data = $this->admin_model->get_user_by_id($this->input->post('user_id'));
-
-		// search empty validation, to get the value, to put it in the searchbox after invalid validation
-		// $rules[] = $this->adminhelper->get_formvalidation_searchbox();
 
 		// check if current value is different from the value in db
 		if ($current_user_data['LoginName'] != $new_form_values['loginname']) 
@@ -503,8 +509,10 @@ class Admin extends FHD_Controller {
 			$rules[] = $this->adminhelper->get_formvalidation_email();
 		}
 
-		// even if these fields do not need any validation rules, they have to be set, otherwise
-		// they are not avaliable after the ->run() method
+		/*
+		 * Even if these fields do not need any validation rules, they have to be set, otherwise
+		 * they are not avaliable after the ->run() method.
+		 */
 		if ($current_user_data['Vorname'] != $new_form_values['forename'])
 		{
 			$rules[] = $this->adminhelper->get_formvalidation_forename();
@@ -515,51 +523,57 @@ class Admin extends FHD_Controller {
 			$rules[] = $this->adminhelper->get_formvalidation_lastname();
 		}
 
-		$this->form_validation->set_rules($rules);
+        // set the validation rules
+        $this->form_validation->set_rules($rules);
 
 		// check for (in)correctness
 		if($this->form_validation->run() == FALSE)
 		{
 			// call edit user mask again
-			// $this->message->set('Beim Bearbeiten des Users ist ein Fehler aufgetreten.', 'error');
-			// redirect(site_url().'admin/edit_user_mask');
 			$this->edit_user_mask();
 		}
 		else
 		{
 			// save in db
 			$this->save_user_changes();
-
+            // display a message
 			$this->message->set('Der User wurde erfolgreich bearbeitet.', 'error');
 			$this->session->set_flashdata('searchbox', $new_form_values['email']);
-
+            // redirect back to the edit user mask
 			redirect(site_url().'admin/edit_user_mask');
 		}
 	}
 
 	/**
-	 * Resets a user´s password, and sends an email to him with the new one.
+	 * Resets a user´s password, and sends an email to him with the new password.
 	 *
 	 * @category user_edit.php
+     * @access private
+     * @return void
 	 */
 	private function _reset_pw()
 	{
 		// values, from actual form inputs
 		$new_form_values = $this->input->post();
 
+        // generate a new password
+        $password = $this->adminhelper->passwort_generator();
+
+        // create the user update array with the md5 hashed password
 		$data = array(
-				'Passwort' => $this->adminhelper->passwort_generator()
+				'Passwort' => md5($password),
 			);
 
 		$this->admin_model->update_user($new_form_values['user_id'], $data);
 
-		// send email
-		// $this->mailhelper->send_meinfhd_mail(											///////////////////////////////////
-		// 	$new_form_values['email'],
-		// 	"Ihr Passwort wurde zurückgesetzt",
-		// 	"Ihr Passwort lautet: {$data['Passwort']}"
-		// 	);
+		// send email with the new password to the user
+		 $this->mailhelper->send_meinfhd_mail(
+		 	$new_form_values['email'],
+		 	"Ihr Passwort wurde zurückgesetzt".
+		 	"<p>Ihr neues Passwort lautet: {$password}</p>"
+         );
 
+        // display a message and redirect the user back to the edit user mask
 		$this->message->set('Das Passwort wurde erfolgreich zurückgesetzt.', 'error');
 		redirect(site_url().'admin/edit_user_mask');
 	}
@@ -568,19 +582,23 @@ class Admin extends FHD_Controller {
 	 * Resets a user´s semesterplan.
 	 *
 	 * @category user_edit.php
+     * @access private
+     * @return void
 	 */
 	private function _reset_semesterplan()
 	{
-		// get the id of which user the semesterplan should be deleted
+		// get the id of which user the semesterplan should be restored
 		$input_data = $this->input->post();
+        // reset the semesterplan
 		$this->admin_model->reconstruct_semesterplan($input_data['user_id']);
-
+        // display a message and redirect back to the edit user mask
 		$this->message->set('Der Studienplan wurde erfolgreich zurückgesetzt.', 'error');
 		redirect(site_url().'admin/edit_user_mask');
 	}
 
 	/**
-	 * <p>deletes an user by his id. The id is submitted via POST.
+	 * <p>
+     * Deletes an user by his id. The id is submitted via POST.
      * Modifications by Christian Kundruss: If the local account is linked to an global
      * user id, the global uid will be add to the 'shibboleth blacklist'.
      * </p>
@@ -590,6 +608,7 @@ class Admin extends FHD_Controller {
 	 */
 	public function delete_user()
 	{
+        // get the id of the user that should be deleted
 		$user_id = $this->input->post('user_id');
 
         // modifications for blacklisting by CK
@@ -601,17 +620,20 @@ class Admin extends FHD_Controller {
         }
         // end modifications by CK
 
+        // delete the user from the database
 		$this->admin_model->model_delete_user($user_id);
-
+        // display a success message and return to the delete user mask
 		$this->message->set('Der User wurde erfolreich gelöscht.', 'error');
 		redirect(site_url().'admin/delete_user_mask');
 	}
 
-    /*
-     *  authenticates the admin under the account of the seleccted user
-     *  by Christian Kundruss (c) 2012
+    /**
+     * Authenticates the admin under the account of the selected user.
+     * @author Christian Kundruß (c) 2012
+     * @access private
+     * @return void
      */
-    public function _login_as_user() {
+    private function _login_as_user() {
         $user_information = $this->input->post(); // get the whole information of the selected user
 
         if($this->authentication->login_as_user($user_information)) { // authentication was successful
@@ -624,94 +646,92 @@ class Admin extends FHD_Controller {
         }
     }
 
-	/*
-	* builds the needed html markup an content (db) from incoming ajax request
-	*/
-	// public function ajax_show_user_backup()
-	// {
-	// 	// get value
-	// 	$role_id = $this->input->get('role_id');
-	// 	$searchletter = $this->input->get('searchletter');
-
-	// 	$q = $this->admin_model->get_user_per_role_searchletter($role_id, $searchletter);  ///////////////////// query if result 0 !!!!!!!!!!!
-
-	// 	$result = '';
-
-	// 	foreach ($q as $key => $value) {
-	// 		$result .= $this->load->view('admin-subviews/user_tr', $value, TRUE);
-	// 	}
-	// 	echo $result;
-	// }
-
-
 	/**
-	 * This method is used to render the needed search-response and HTML Markup.
+	 * Method for rendering the needed search-response and HTML Markup.
+     * It`s usually used via ajax.
 	 * 
 	 * @category user_edit.php
+     * @access public
+     * @return void
 	 */
 	public function ajax_show_user()
 	{
+        // variable to hold the result string
 		$result = '';
 
-
-		// get value
+		// get the selected role and the search input
 		$role_id = $this->input->get('role_id');
 		$searchletter = $this->input->get('searchletter');
 
-		// if nothing set, query would response all users, so lets prevent this
+		// if nothing is set, query would response all users, so lets prevent this
 		if ( empty($role_id) && empty($searchletter) )
 		{
+            // no users are going to be displayed
 			$result = 'Kein Ergebnis';
 		}
-		else
+		else // there is some input
 		{
+            // query the database for a result
 			$q = $this->admin_model->get_user_per_role_searchletter($role_id, $searchletter);
 
-			// get user with needed html markup and return it
+			// get the user with needed html markup and add it to the result string
 			foreach ($q as $key => $value)
 			{
 				$result .= $this->load->view('admin/partials/user_single_form', $value, TRUE);
 			}
 		}
 
-		( empty($result)) ? print 'Kein Ergebnis' : print $result;
-
-		// echo $result;
+        // if the result string is not empty display the result, otherwise display 'Kein Ergebnis'
+        if(empty($result)){
+            echo 'Kein Ergebnis';
+        }
+        else {
+            echo $result;
+        }
 	}
 
 	/**
 	 * Returns the sum of all matched users.
-	 * @return string Sum of matched users.
+     * Method is usually called via ajax. The result is going
+     * to be echoed.
+	 * @access public
+     * @return void
 	 */
 	public function ajax_show_user_count()
 	{
+        // variable to hold the result string
 		$result = '';
 
-
-		// get value
-		$role_id = $this->input->get('role_id');
+        // get the selected role and the search input
+        $role_id = $this->input->get('role_id');
 		$searchletter = $this->input->get('searchletter');
 
-		// if nothing set, query would response all users, so lets prevent this
+		// if there is nothing set, the query would response all users, so lets prevent this
 		if ( empty($role_id) && empty($searchletter) )
 		{
 			$result = '0';
 		}
 		else
 		{
+            // get the matching users and calculate the count that should be displayed
 			$q = $this->admin_model->get_user_per_role_searchletter($role_id, $searchletter);
 			$result = count($q);
 		}
+
+        // echo the result -> equal to return, because the method is called via ajax
 		echo $result;
 	}
 
 	/**
-	 * Changes the userroles.
+	 * Changes the role for the selected user.
 	 * 
 	 * @category user_edit_roles.php
+     * @access public
+     * @return void
 	 */
 	public function changeroles_user()
 	{
+        // get the form input from the POST-array
 		$formdata = $this->input->post();
 
 		// clear saves for the actual user
@@ -726,81 +746,69 @@ class Admin extends FHD_Controller {
 			}
 		}
 
+        // reload the edit roles mask after the changes have been saved in the databse
 		redirect('/admin/edit_roles_mask/', 'refresh');
 	}
 
-	/*
-	* User management
-	* 
-	* Konstantin Voth
-	***************************************************************************/
-	
-	
-	
-	/* ************************************************************************
-	 * 
-	 * ******************************* Studiengangverwaltung
-	 * ************************************** Frank Gottwald
-	 * 
-	 */
-	
-	
-	/*** add >> ***************************************************************
-	**************************************************************************/
-	
+    /*
+     * ===================================================
+     * Degree program management after this comment.
+     * ===================================================
+     */
+
+    // ==== adding a new degree program ====
+
 	/**
-	 * Show page with empty input-fields.
-	 * Called from within menue
-	 * 
+	 * Show the add degree program view with empty input-fields.
+	 * Method is usually called from the main menu.
+	 *
+     * @access public
+     * @return void
 	 */
-	function degree_program_add(){
+	public function degree_program_add(){
 				
 	    // get all degree programs for the view
 	    $this->data->add('all_degree_programs', $this->admin_model->get_all_degree_programs());
 	    $this->load->view('admin/degree_program_add', $this->data->load());
 
-//	    echo '<div class="well"><pre>';
-//	    echo 'DEBUG - if you see this tell developer - Frank ^^';
-//	    print_r($this->admin_model->copy_degree_program(2));
-//	    echo '</pre></div>';
 	}
 	
 	/**
-	 * Validates if degree-program-add-form is filled correctly.
-	 * 
+	 * Form validation for the add degree program form.
+	 *
+     * @access public
+     * @return void
 	 */
-	function validate_new_created_degree_program(){
-		
-	    $this->form_validation->set_rules(
-		    'Pruefungsordnung', 'Pruefungsordnung fehlt', 'required|numeric');
-	    $this->form_validation->set_rules(
-		    'StudiengangName', 'Name für den Studiengang fehlt', 'required');
-	    $this->form_validation->set_rules(
-		    'StudiengangAbkuerzung', 'Abkürzung fehlt', 'required');
-	    $this->form_validation->set_rules(
-		    'Regelsemester', 'Regelsemester fehlt', 'required|numeric');
-	    $this->form_validation->set_rules(
-		    'Creditpoints', 'Creditpoints fehlen', 'required|numeric');
-	    $this->form_validation->set_rules(
-		    'Beschreibung', 'Beschreibung fehlt', 'required');
-	    
-	    if ($this->form_validation->run() == FALSE) {
-			// reload view
+	public function validate_new_created_degree_program(){
+
+        // set the form validation rules
+	    $this->form_validation->set_rules('Pruefungsordnung', 'Pruefungsordnung fehlt', 'required|numeric');
+	    $this->form_validation->set_rules('StudiengangName', 'Name für den Studiengang fehlt', 'required');
+	    $this->form_validation->set_rules('StudiengangAbkuerzung', 'Abkürzung fehlt', 'required');
+	    $this->form_validation->set_rules('Regelsemester', 'Regelsemester fehlt', 'required|numeric');
+	    $this->form_validation->set_rules('Creditpoints', 'Creditpoints fehlen', 'required|numeric');
+	    $this->form_validation->set_rules('Beschreibung', 'Beschreibung fehlt', 'required');
+
+        // run the form validation
+	    if ($this->form_validation->run() == FALSE) { // validation was not successful
+			// reload the view
 			$this->degree_program_add();
-	    } else {
-			$this->save_new_created_degree_program();
+	    }
+        else { // form validation was successful
+			$this->save_new_created_degree_program(); // save the newly created degree program
 	    }
 	}
 	
-	
 	/**
-	 * Save new degree program to db.
-	 * Insert new entry into db with given values ($_POST)
+	 * Saves a new degree program into the database wit the given values via POST.
+     *
+     * @access public
+     * @return void
+     * TODO check if the given name of the degree programm is already used -> maybe it does not need to be checked
 	 */
-	function save_new_created_degree_program(){
-	    // TODO?? check if given name and version are already used
-		// perhaps not necessary because admin should know that this isn't possible
+	public function save_new_created_degree_program(){
 
+        // specify the needed input attributes
 	    $insert_fields = array(
 			    'Pruefungsordnung',
 			    'StudiengangName',
@@ -812,53 +820,58 @@ class Admin extends FHD_Controller {
 			    'Beschreibung'
 			    );
 
-	    // get data from form-submission
+	    // get the data from the form-submission corresponding to the defined input fields above
 	    for($i = 0; $i < count($insert_fields); $i++){
+
 		    if($_POST[$insert_fields[$i]] != null){
-			    $insert_new_dp[$insert_fields[$i]] = $_POST[$insert_fields[$i]];
+
+			        $insert_new_dp[$insert_fields[$i]] = $_POST[$insert_fields[$i]];
 		    }
 	    }
 
-	    // save new record - model returns id of new created dp
+	    // save new record - model returns id of new created degree program
 		$new_id = 0;
 	    $new_id = $this->admin_model->create_new_degree_program($insert_new_dp);
 
 	    // redirect to degree program view with active dropdown (i.e. the new created)
-		// pass new id via flashdata
-		$this->session->set_flashdata('reload', $new_id);
-	    redirect('admin/degree_program_edit');
+		$this->session->set_flashdata('reload', $new_id); // pass new id via flashdata
+        redirect('admin/degree_program_edit');
 	}
-	
-	/*** << add ***************************************************************
-	**************************************************************************/
-	
-	/*** copy/delete >> *******************************************************
-	**************************************************************************/
-	
+
+    // ==== copying and deleting a degree program ====
+
 	/**
-	 * Helper method called when degree programm should be deleted
-	 * points to degree_program_copy_delete and passes boolean
-	 * called from menue
+	 * Helper method called when degree programm should be deleted.
+	 * Routes to the degree_program_copy_delete-method and passes a boolean that
+	 * specifies that the method has been called from the main-menue.
+     *
+     * @access public
+     * @return void
 	 */
 	public function degree_program_delete(){
-	    $this->degree_program_copy_delete(TRUE);
+	    $this->_degree_program_copy_delete(TRUE);
 	}
 	
 	/**
-	 * Helper method called when degree programm should be copied
-	 * points to degree_program_copy_delete and passes boolean
-	 * called from menue
+	 * Helper method called when degree program should be copied.
+	 * Routes to the degree_program_copy_delete-method and passes a boolean that
+	 * specifies that the method has been called from the main menue.
+     *
+     * @access public
+     * @return void
 	 */
 	public function degree_program_copy(){
-	    $this->degree_program_copy_delete(FALSE);
+	    $this->_degree_program_copy_delete(FALSE);
 	}
-	
-	
+
 	/**
-	 * Shows list of all degree programs to give the opportunity to delete/copy them.
-	 * @param boolean $delete flag to use the same view for copying and deleting
+	 * Shows a list of all degree programs to give the opportunity to delete/copy them.
+	 * @param $delete boolean Flag to use the same view for copying and deleting.
+     * @access private
+     * @return void
 	 */
-	private function degree_program_copy_delete($delete){
+	private function _degree_program_copy_delete($delete){
+
 	    // get all degree programs for the view
 	    $this->data->add('all_degree_programs', $this->admin_model->get_all_degree_programs());
 	    $this->data->add('delete', $delete);
@@ -867,50 +880,62 @@ class Admin extends FHD_Controller {
 	}
 	
 	/**
-	 * Deletes a whole degree program
-	 * Called from within view after OK button is clicked
+	 * Deletes a whole degree program.
+	 * Called from within view after OK button has been submitted.
+     *
+     * @access public
+     * return void
 	 */
 	public function delete_degree_program() {
+
+        // get the id of the degree program that should be deleted and delete it from the database
 	    $delete_id = $this->input->post('degree_program_id');
 	    $this->admin_model->delete_degree_program($delete_id);
 
 	    // show view again
-//	    $this->degree_program_delete();
 	    redirect('admin/degree_program_delete');
 	}
 	
 	/**
-	 * Deltes a whole degree program - called when button is clicked
-	 * called from within view after button is clicked
+	 * Copies a whole degree program - called when the ok button is submitted.
+	 * Called from within view after the OK button is submitted.
+     *
+     * @access public
+     * @return void
 	 */
 	public function copy_degree_program() {
+
+        // get the id of the degree program that should be copied
 	    $copy_id = $this->input->post('degree_program_id');
-	    // copy that degree program >> returns id of copied dp
-		$new_id = 0;
+
+        // copy that degree program >> returns id of copied dp
+        $new_id = 0;
 		$new_id = $this->admin_model->copy_degree_program($copy_id);
 
 		// pass new id via flashdata
 		$this->session->set_flashdata('reload', $new_id);
 	    // call degree-program-edit view of that course
 	    redirect('admin/degree_program_edit');
-		
 	}
-	
-	/*** << copy/delete *******************************************************
-	**************************************************************************/
 
-	/*** edit >> **************************************************************
-	**************************************************************************/
-	
+    // ==== editing a degree program ====
+    // TODO check for deprecated stuf, test functionality and behaviour. Is everything as expected?
+
 	/**
-	 * Shows view with dropdown for degree programs
-	 * If there is something passed (via flashdata) the view loads a specific degree-program
-	 * if not: user will see the empty view
+	 * Shows the edit degree program view with dropdown.
+	 * If there is something passed (via flashdata) the view loads a specific degree-program,
+	 * if not: user will see the empty view.
+     *
+     * @access public
+     * @return void
 	 */
 	public function degree_program_edit(){
+
+        // is there something submitted via flashdata?
 		$reload = $this->session->flashdata('reload');
+
 		if(!$reload){
-			$reload = 0; // if nothing is passed
+			$reload = 0; // if nothing has been passed
 		}
 
 	    // get all degree programs for filter-view
@@ -922,11 +947,17 @@ class Admin extends FHD_Controller {
 	    $this->load->view('admin/degree_program_edit', $this->data->load());
 	}
 	
-	
 	/**
-	 * Returns an div with the degree-program-table for a passed degree-program-id
-	 * either passed via GET >> $this->input->get('degree_program_id')
-	 * or if called from within this controller (deleting, adding one course) as parameter
+     * Displays / echoes an table with all courses, which belong to the given degree program id.
+	 * An div with the degree-program-table for a passed degree-program-id will be "returned".
+	 * The degree program id can be passed via GET >> $this->input->get('degree_program_id'),
+	 * or it can be passed as an parameter, when the method is called from another controller method(deleting, adding one course).
+     * Method is designed to be called via ajax. So the result will be echoed.
+     *
+     * @access public
+     * @param $degree_program_id int ID of the degree program, where the courses should be displayed for. If no parameter is passed, the default value is 0.
+     * @return void
+     * @TODO check for deprecated (outcommented) stuff, test functionality
 	 */
 	public function ajax_show_courses_of_degree_program($degree_program_id = '0'){
 
@@ -934,19 +965,19 @@ class Admin extends FHD_Controller {
 	    if($degree_program_id === '0'){
 			// get submitted data - AJAX
 			$degree_program_chosen_id = $this->input->get('degree_program_id');
-		// otherwise method called from within controller (delete/add  course)
-		// id is passed
-	    } else {
-			$degree_program_chosen_id = $degree_program_id;
 	    }
-		
+        else { // otherwise method called from within controller (delete/add course) an id is passed
+            $degree_program_chosen_id = $degree_program_id;
+	    }
+
+        // get all courses of the specified degree program
 	    $courses_of_single_degree_program = array();
 	    $courses_of_single_degree_program = $this->admin_model->get_degree_program_courses($degree_program_chosen_id);
-
 	    $details_of_single_degree_program = $this->admin_model->get_degree_program_details_asrow($degree_program_chosen_id);
 
 	    // get number of semesters and prepare data for dropdown
 	    $regelsemester = $details_of_single_degree_program->Regelsemester;
+
 	    for($i = 0; $i < $regelsemester; $i++){
 //		if($i != 0){
 			$semester_dropdown_options[$i] = $i+1;
@@ -958,10 +989,6 @@ class Admin extends FHD_Controller {
 	    // degree_program_id is already needed here to generate unique ids for delete-buttons
 	    $data['dp_id'] = $degree_program_chosen_id;
 	    $data['semester_dropdown'] = $semester_dropdown_options;
-
-//		echo '<pre>';
-//		print_r($courses_of_single_degree_program);
-//		echo '</pre>';
 
 	    // fill first element of object-array with default-values -
 	    // >> necessary because first line of table view should be
@@ -998,9 +1025,11 @@ class Admin extends FHD_Controller {
 	    
 	    // if there are courses - otherwise only course-details has been created
 	    if($courses_of_single_degree_program){
+
 			//for each record - print out table-row with form-fields
 			foreach($courses_of_single_degree_program as $sd){
-				// build a table-row for each course
+
+					// build a table-row for each course
 				$data['KursID'] = $sd['KursID'];
 				$data['Kursname'] = $sd['Kursname'];
 				$data['kurs_kurz'] = $sd['kurs_kurz'];
@@ -1034,16 +1063,15 @@ class Admin extends FHD_Controller {
 	    $data['dp_course_rows'] = $rows;
 //	    $data['course_tablehead'] = $this->load->view('admin/partials/degree_program_coursetable_head', '', TRUE);
 
-	    // return content
+	    // prepare the result content
 	    $result = '';
 	    $result .= $this->load->view('admin/partials/degree_program_details', $data, TRUE);
 	    $result .= $this->load->view('admin/partials/degree_program_coursetable_content', $data, TRUE);
 
+        // return(echo) the result
 	    echo $result;
-
 	}
-	
-	
+
 	/**
 	 * validates if all changes that've been made are correct
 	 * - PO - required, numeric
@@ -1364,7 +1392,10 @@ class Admin extends FHD_Controller {
 	 * ************************************** Frank Gottwald
 	 * 
 	 * ***********************************************************************/
-	
+
+
+    // ==== Stundenplanverwaltung after this comment ====
+    // TODO check for deprecated stuff, test functionality and behaviour. Is everything as expected?
 	
 	
 	/* ************************************************************************
@@ -1729,6 +1760,9 @@ class Admin extends FHD_Controller {
 	 * ************************************** Frank Gottwald
 	 * 
 	 */
+
+    // ==== Stundenplanimport after this comment ====
+    // TODO check for deprecated stuff, test functionality and behaviour. Is everything as expected?
 	
 	/**
 	 * Shows view with upload and all uploaded files till now
