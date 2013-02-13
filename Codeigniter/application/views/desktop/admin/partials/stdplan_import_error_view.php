@@ -6,17 +6,15 @@
 	<div class="span3"></div>
 	<div class="span6 well well-small">
 <?php endblock(); ?>
-	
-<?php
-	// general form setup
-	
-?>
 
 <?php startblock('content'); # additional markup before content ?>
 
 	<h1>Fehler beim Parsen</h1>
-	<p>Nachfolgend eine Auflistung der Fehler die dazu führen, dass das xml-Dokument nicht geparst werden kann.</p>
-
+    <p>W&auml;hrend des Einlesens der ausgew&auml;hlten Stundenplan-Datei sind Fehler aufgetreten, die dazu gef&uuml;hrt haben, dass das XML-Dokument nicht
+        eingelesen werden konnte. Diese werden im Folgenden aufgeflistet. Bitte pr&uuml;fe das XML-Dokument und starte den Parsing-Prozess dann erneut.
+        Das XML-Dokument wurde vom Server gel&ouml;scht und die &Auml;nderungen wurden nicht in die Datenbank &uuml;bernommen.
+    </p>
+    <hr/>
 	<ul>
 		<?php 
 			foreach($errors as $e){
@@ -26,12 +24,8 @@
 			}
 		?>
 	</ul>
-
-
-	<form id="submit-import" accept-charset="utf-8" method="post" action="http://localhost/meinFHD/Codeigniter/admin/stdplan_import">
-		<input class="btn btn-info" type="submit" value="Zurück zum Stundenplan-Import" name="importstdplan">
-	</form>
-
+    <hr/>
+    <a href="<?php print base_url('admin/show_timetable_import'); ?>" class="btn btn-info">Zur&uuml;ck zum Stundenplan-Import</a>
 <?php endblock(); ?>
 <?php startblock('postCodeContent'); # additional markup before content ?>
 	</div>

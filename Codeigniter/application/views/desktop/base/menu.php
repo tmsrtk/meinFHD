@@ -81,9 +81,9 @@
 										<b class="caret"></b>
 									</a>
 									<ul class="dropdown-menu level-2">
-										<?php if ( $this->authentication->has_permissions('hat_stundenplan_importieren') ) : ?>
-										<li><a href="<?php print base_url('admin/stdplan_import'); ?>">Stundenplan importieren</a></li>
-										<?php endif ?>
+                                        <?php if ( $this->authentication->has_permissions('hat_stundenplan_importieren') ) : ?>
+                                        <li><a href="<?php print base_url('admin/show_timetable_import'); ?>">Stundenplan importieren</a></li>
+                                        <?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_stundenplan_bearbeiten') ) : ?>
 										<li><a href="<?php print base_url('admin/stdplan_edit'); ?>">Stundenplan bearbeiten</a></li>
 										<?php endif ?>

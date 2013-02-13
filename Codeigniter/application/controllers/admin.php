@@ -2,7 +2,7 @@
 
 /**
  * Admin Controller
- * 
+ *
  * @version 0.0.1
  * @copyright Fachhochschule Duesseldorf, 2012
  * @link http://www.fh-duesseldorf.de
@@ -61,7 +61,7 @@ class Admin extends FHD_Controller {
 	{
 		$this->create_user_mask();
 	}
-	
+
 	/**
 	* Edit Permissions - Overview
 	* Shows all permissions and roles and gives an admin the possibility to edit those.
@@ -85,7 +85,7 @@ class Admin extends FHD_Controller {
              */
 			$single_role_permissions = $this->admin_model->getAllRolePermissions($rid);
 			// if there permissions for the role? if not -> do nothing
-			if($single_role_permissions){ 
+			if($single_role_permissions){
 
                 foreach ($single_role_permissions as $rp){
 
@@ -98,15 +98,15 @@ class Admin extends FHD_Controller {
          * Create an array, that is going to be used for the data output.
          * -> Simple array with all used roles and permissions. The following index encryption is used; index % 5 == 0 is the RoleId.
          */
-		
+
 		// iterate through all permissions
 		foreach ($this->permissions as $p) {
-		
+
 			$data['tableviewData'][] = $p->BerechtigungID; // save the permission ID
-			
+
             // iterate through all permissions for every role
 			foreach ($this->roles as $r){
-		
+
 				// if there are values in the array Role_permissions[RoleID] (Index 0 is an empty field)
 				if(array_key_exists('1', $all_role_permissions[$r->RolleID])){
                     // Wenn das zur Rolle zugehörige Array die RechteID als Wert enthält
@@ -141,7 +141,7 @@ class Admin extends FHD_Controller {
 		$this->data->add('siteinfo', $siteinfo); // add the view information
 		$this->load->view('admin/permissions_edit', $this->data->load()); // load the view and load the global data array content
 	}
-	
+
 	/**
 	* Saves all made permission edits.
 	*
@@ -152,7 +152,7 @@ class Admin extends FHD_Controller {
 	public function savePermissions(){
 
 		$this->admin_model->deleteRolePermissions();
-		
+
 		// iterate through each role and permission
 		foreach($this->permissions as $p){
 
@@ -163,7 +163,7 @@ class Admin extends FHD_Controller {
 
 						$rp['RolleID'] = $r;
 					$rp['BerechtigungID'] = $p->BerechtigungID;
-					
+
 					// save the permission changes
 					$this->admin_model->updateRolePermissions($rp);
 				}
@@ -197,7 +197,7 @@ class Admin extends FHD_Controller {
 	/**
 	* Create User - Form
 	* Loads the create user form, that is displayed in the admin backend.
-	* 
+	*
 	* @category user_add.php
     * @access public
     * @return void
@@ -211,10 +211,10 @@ class Admin extends FHD_Controller {
         // load the view with the specified data
 		$this->load->view('admin/user_add', $this->data->load());
 	}
-	
+
 	/**
 	* Shows the edit user - form
-	* 
+	*
 	* @category user_edit.php
     * @access public
     * @return void
@@ -229,7 +229,7 @@ class Admin extends FHD_Controller {
 
 	/**
 	* Shows the delete user - form
-	* 
+	*
 	* @category user_delete.php
     * @access public
     * @return void
@@ -255,7 +255,7 @@ class Admin extends FHD_Controller {
 	}
 
 	/**
-	* Shows all users and their associated roles. 
+	* Shows all users and their associated roles.
 	*
 	* @category user_edit_roles.php
     * @access public
@@ -276,9 +276,9 @@ class Admin extends FHD_Controller {
      */
 
 	/**
-	 * Gets the input data, generates a password, routes to the model function to save 
+	 * Gets the input data, generates a password, routes to the model function to save
 	 * the user in the DB and sends an email to the created user.
-	 * 
+	 *
 	 * @category user_add.php
      * @access public
      * @return void
@@ -422,7 +422,7 @@ class Admin extends FHD_Controller {
 				// if not checked, -> invitation for non erstsemestler, -> more inputs to fill out
 				$rules[] = $this->adminhelper->get_formvalidation_startjahr();
 				$rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
-				
+
 				$this->form_validation->set_rules($rules);
 			}
 		}
@@ -498,13 +498,13 @@ class Admin extends FHD_Controller {
 		$current_user_data = $this->admin_model->get_user_by_id($this->input->post('user_id'));
 
 		// check if current value is different from the value in db
-		if ($current_user_data['LoginName'] != $new_form_values['loginname']) 
+		if ($current_user_data['LoginName'] != $new_form_values['loginname'])
 		{
 			$rules[] = $this->adminhelper->get_formvalidation_loginname();
 		}
 
 		// same procedure for the other form inputs
-		if ($current_user_data['Email'] != $new_form_values['email']) 
+		if ($current_user_data['Email'] != $new_form_values['email'])
 		{
 			$rules[] = $this->adminhelper->get_formvalidation_email();
 		}
@@ -649,7 +649,7 @@ class Admin extends FHD_Controller {
 	/**
 	 * Method for rendering the needed search-response and HTML Markup.
      * It`s usually used via ajax.
-	 * 
+	 *
 	 * @category user_edit.php
      * @access public
      * @return void
@@ -724,7 +724,7 @@ class Admin extends FHD_Controller {
 
 	/**
 	 * Changes the role for the selected user.
-	 * 
+	 *
 	 * @category user_edit_roles.php
      * @access public
      * @return void
@@ -766,13 +766,13 @@ class Admin extends FHD_Controller {
      * @return void
 	 */
 	public function degree_program_add(){
-				
+
 	    // get all degree programs for the view
 	    $this->data->add('all_degree_programs', $this->admin_model->get_all_degree_programs());
 	    $this->load->view('admin/degree_program_add', $this->data->load());
 
 	}
-	
+
 	/**
 	 * Form validation for the add degree program form.
 	 *
@@ -798,7 +798,7 @@ class Admin extends FHD_Controller {
 			$this->save_new_created_degree_program(); // save the newly created degree program
 	    }
 	}
-	
+
 	/**
 	 * Saves a new degree program into the database wit the given values via POST.
      *
@@ -851,7 +851,7 @@ class Admin extends FHD_Controller {
 	public function degree_program_delete(){
 	    $this->_degree_program_copy_delete(TRUE);
 	}
-	
+
 	/**
 	 * Helper method called when degree program should be copied.
 	 * Routes to the degree_program_copy_delete-method and passes a boolean that
@@ -878,7 +878,7 @@ class Admin extends FHD_Controller {
 
 	    $this->load->view('admin/degree_program_copy_delete', $this->data->load());
 	}
-	
+
 	/**
 	 * Deletes a whole degree program.
 	 * Called from within view after OK button has been submitted.
@@ -895,7 +895,7 @@ class Admin extends FHD_Controller {
 	    // show view again
 	    redirect('admin/degree_program_delete');
 	}
-	
+
 	/**
 	 * Copies a whole degree program - called when the ok button is submitted.
 	 * Called from within view after the OK button is submitted.
@@ -946,7 +946,7 @@ class Admin extends FHD_Controller {
 
 	    $this->load->view('admin/degree_program_edit', $this->data->load());
 	}
-	
+
 	/**
      * Displays / echoes an table with all courses, which belong to the given degree program id.
 	 * An div with the degree-program-table for a passed degree-program-id will be "returned".
@@ -1017,12 +1017,12 @@ class Admin extends FHD_Controller {
 //	    $courses_of_single_degree_program[0]['pruefungstyp_7'] = FALSE;
 //	    $courses_of_single_degree_program[0]['pruefungstyp_8'] = FALSE;
 
-	    
+
 	    // building a first line to save a new course to db
 	    $data['new_course'] = $this->load->view('admin/partials/degree_program_coursetable_row_first', $data, TRUE);
-	    
+
 	    $rows = array(); // init
-	    
+
 	    // if there are courses - otherwise only course-details has been created
 	    if($courses_of_single_degree_program){
 
@@ -1057,7 +1057,7 @@ class Admin extends FHD_Controller {
 				$rows[] = $this->load->view('admin/partials/degree_program_coursetable_row', $data, TRUE);
 			}
 	    }
-	    
+
 	    // make data available in view
 	    $data['dp_details'] = $details_of_single_degree_program;
 	    $data['dp_course_rows'] = $rows;
@@ -1081,12 +1081,12 @@ class Admin extends FHD_Controller {
 	 * - CP - required, numeric
 	 */
 	public function validate_degree_program_details_changes(){
-	    
+
 	    // TODO??? PO-Name-Abk-Kombi must be UNIQUE
-	    
+
 	    // get degree_program_id
 	    $dp_id = $this->input->post('degree_program_id');
-	    
+
 	    $this->form_validation->set_rules(
 		    $dp_id.'Pruefungsordnung', 'Pruefungsordnung fehlt', 'required|numeric');
 	    $this->form_validation->set_rules(
@@ -1099,25 +1099,25 @@ class Admin extends FHD_Controller {
 		    $dp_id.'Creditpoints', 'Creditpoints fehlen', 'required|numeric');
 	    $this->form_validation->set_rules(
 		    $dp_id.'Beschreibung', 'Beschreibung fehlt', 'required');
-	    
+
 	    if ($this->form_validation->run() == FALSE) {
 			// reload view
 			$this->session->set_flashdata('reload', $dp_id);
-			redirect('admin/degree_program_edit');	
+			redirect('admin/degree_program_edit');
 	    } else {
 			$this->save_degree_program_details_changes();
 	    }
 	}
-	
+
 	/**
 	 * Validates if changes match validation-criteria
 	 */
 	public function validate_degree_program_course_changes(){
-	    
+
 	    // get all course-ids belonging to a specified degree program
 	    $dp_id = $this->input->post('degree_program_id');
 	    $degree_program_course_ids = $this->admin_model->get_degree_program_course_ids($dp_id);
-	    
+
 	    foreach($degree_program_course_ids as $id){
 			// run through all ids and generate id-specific validation-rules
 			$this->form_validation->set_rules(
@@ -1127,7 +1127,7 @@ class Admin extends FHD_Controller {
 			$this->form_validation->set_rules(
 				$id->KursID.'Creditpoints', 'Creditpoints fehlen oder nicht numerisch - ID: '.$id->KursID, 'required|numeric');
 	    }
-	    
+
 	    if ($this->form_validation->run() == FALSE) {
 			// reload view
 			$this->session->set_flashdata('reload', $dp_id);
@@ -1136,9 +1136,9 @@ class Admin extends FHD_Controller {
 			$this->save_degree_program_course_changes();
 	    }
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Saving all values after submit button has been clicked.
 	 */
@@ -1146,7 +1146,7 @@ class Admin extends FHD_Controller {
 		// getting id from post
 		$dp_id = 0; // it shouldn't happen that no id comes from post.. but..
 		$dp_id = $this->input->post('degree_program_id');
-				
+
 //		echo '<pre>';
 //		print_r($this->input->post());
 //		echo '</pre>';
@@ -1175,7 +1175,7 @@ class Admin extends FHD_Controller {
 			    'ext_6',
 			    'ext_7',
 			    'ext_8'
-	    );  
+	    );
 
 	    // get ids of a single studiengang - specified by id
 	    $dp_ids = $this->admin_model->get_degree_program_course_ids($dp_id);
@@ -1197,17 +1197,17 @@ class Admin extends FHD_Controller {
 					default : $update_dp_data[$update_fields[$i]] = $this->input->post($id.$update_fields[$i]); break;
 				}
 			}
-			
+
 			// call function in model to update records
 			$this->admin_model->update_degree_program_courses($update_dp_data, $id);
 
 			$exam_cb_data = array(); // init
 			$tmp_exam_cb_data = array(); // init
-			
+
 			// handle checkboxes
 			// !! have to be handled different, because not every field is submitted,
 			// but only the ones that are active at the moment
-			// >> run through all possible updates and 
+			// >> run through all possible updates and
 			foreach ($update_checkboxes as $value) {
 				// check if the box is checked
 				if($this->input->post($id.$value) === '1'){
@@ -1215,24 +1215,24 @@ class Admin extends FHD_Controller {
 					$split = explode('_', $value); // second value is exam-type-id
 					$tmp_exam_cb_data['KursID'] = $id;
 					$tmp_exam_cb_data['PruefungstypID'] = $split[1];
-					
+
 					// both information are stored into another array
 					// this array can be iterated to fetch all checked boxes
 					$exam_cb_data[] = $tmp_exam_cb_data;
 				}
 			}
-		
+
 			// save cb-data to db - passed array contains all checkboxes that have to be stored
 			$this->admin_model->save_exam_types_for_course($exam_cb_data, $id);
-			
+
 	    }
 
 	    // show degree-program-edit-view again with activated dp_id
 		$this->session->set_flashdata('reload', $dp_id);
-	    redirect('admin/degree_program_edit');	
+	    redirect('admin/degree_program_edit');
 	}
-	
-	
+
+
 	/**
 	 * Save all fields (degree program) - getting data from POST
 	 */
@@ -1261,16 +1261,16 @@ class Admin extends FHD_Controller {
 	    // show StudiengangDetails-List again
 	    $this->session->set_flashdata('reload', $dp_id);
 	    redirect('admin/degree_program_edit');
-		
+
 	}
-	
+
 //	/**
 //	 * Gets data of new course to create and validates
 //	 * DEPRECATED - use these functions when there is one single line (1! form) for adding new course
 //	 */
 //	function validate_new_degree_program_course(){
 //	    $stdgng_id = $this->input->post('StudiengangID');
-//	    
+//
 //	    $this->form_validation->set_rules('Kursname', 'Kursname fehlt', 'required');
 //	    $this->form_validation->set_rules('kurs_kurz', 'Abkürzung fehlt', 'required');
 //	    $this->form_validation->set_rules('Creditpoints', 'Creditpoints fehlen oder nicht numerisch', 'required|numeric');
@@ -1280,8 +1280,8 @@ class Admin extends FHD_Controller {
 //	    $this->form_validation->set_rules('SWS_Projekt', 'SWS-Projekt nicht numerisch', 'numeric');
 //	    $this->form_validation->set_rules('SWS_Seminar', 'SWS-Seminar nicht numerisch', 'numeric');
 //	    $this->form_validation->set_rules('SWS_SeminarUnterricht', 'SWS-SeminarUnterricht nicht numerisch', 'numeric');
-//	    
-//	    
+//
+//
 //	    if ($this->form_validation->run() == FALSE) {
 //			// reload view
 //			$this->session->set_flashdata('reload', $stdgng_id);
@@ -1290,7 +1290,7 @@ class Admin extends FHD_Controller {
 //			$this->save_degree_program_new_course();
 //	    }
 //	}
-//	
+//
 //	/**
 //	 * After validation, new course is saved here.
 //	 * DEPRECATED - use these functions when there is one single line (1! form) for adding new course
@@ -1298,11 +1298,11 @@ class Admin extends FHD_Controller {
 //	function save_degree_program_new_course(){
 //	    $new_course = array();
 //	    $new_course = $this->input->post();
-//	    
+//
 //	    // data
 //	    $course_data = array();
 //	    $exam_data = array();
-//	    
+//
 //	    // run through data and prepare for saving
 //	    foreach ($new_course as $key => $value) {
 //			// if not submit-button-data
@@ -1316,15 +1316,15 @@ class Admin extends FHD_Controller {
 //				}
 //			}
 //	    }
-//	    
+//
 //	    // insert course-data into db
 //	    $this->admin_model->insert_new_course($course_data, $exam_data);
-//	    
+//
 //	    // back to view
 //	    $this->degree_program_edit();
 //	}
-	
-	
+
+
 	/**
 	 * Deletes single course from studiengangkurs-table
 	 * Called from degree_program_edit view after user confirmed
@@ -1334,17 +1334,17 @@ class Admin extends FHD_Controller {
 	 */
 	public function ajax_delete_single_course_from_degree_program(){
 	   $delete_course_id =  $this->input->post('course_data');
-	   
+
 	   $split = explode('_', $delete_course_id);
-	   
+
 	   // $split[0] = course id
 	   $this->admin_model->delete_degree_program_single_course($split[0]);
-	   
-	   // call view with updated data	   
+
+	   // call view with updated data
 	   echo $this->ajax_show_courses_of_degree_program($split[1]);
 	}
-	
-	
+
+
 	/**
 	 * Creates a new course for that degree program and returns updated view.
 	 * After altering db, ajax_show_course_of_degree_program
@@ -1354,11 +1354,11 @@ class Admin extends FHD_Controller {
 		$new_course_data = $this->input->post('course_data');
 		$course_data_save_to_db = array();
 		$exam_data_save_to_db = array();
-		
+
 		// get degree-program-id for reload
 		$dp_id = $new_course_data[0];
-		
-		// run through submitted course data 
+
+		// run through submitted course data
 		foreach($new_course_data as $data){
 			$split = explode('-', $data);
 			if(!stristr($split[1], 'ext')){
@@ -1374,51 +1374,58 @@ class Admin extends FHD_Controller {
 				}
 			}
 		}
-		
-//		echo print_r($course_data_save_to_db).print_r($exam_data_save_to_db); // DEBUG
+
 		$this->admin_model->insert_new_course($course_data_save_to_db, $exam_data_save_to_db);
-		
+
 		echo $this->ajax_show_courses_of_degree_program($dp_id);
-		
 	}
-	
+
 	/*** << edit **************************************************************
 	**************************************************************************/
-	
-	
-	/* 
-	 * 
+
+
+	/*
+	 *
 	 * ******************************* Studiengangverwaltung
 	 * ************************************** Frank Gottwald
-	 * 
+	 *
 	 * ***********************************************************************/
 
 
     // ==== Stundenplanverwaltung after this comment ====
     // TODO check for deprecated stuff, test functionality and behaviour. Is everything as expected?
-	
-	
+
+
 	/* ************************************************************************
-	 * 
+	 *
 	 * ******************************* Stundenplanverwaltung
 	 * ************************************** Frank Gottwald
-	 * 
+	 *
 	 */
-	
+
+
+    /*
+    * ===================================================
+    * Timetable administration after this comment
+    * ===================================================
+    */
+
 	/**
 	 * Shows stdplan-edit view
 	 * If called from menue: reload is empty >> no active dropdown
 	 * otherwise: id to reload is passed via flashdata
 	 */
 	public function stdplan_edit(){
-	    $reload = $this->session->flashdata('reload');
+        $reload = $this->session->flashdata('reload');
 
+        $reload = 0;
 		// when called from parsing-page
-		$post = $this->input->post('stdplan_id');
-		if($post){
-			$reload = $post;
+		$timetable_id = $this->input->get('timetable_id');
+
+        if($timetable_id){
+			$reload = $timetable_id;
 		}
-		
+
 		if(!$reload){
 			$reload = 0; // if nothing is passed
 		}
@@ -1428,46 +1435,48 @@ class Admin extends FHD_Controller {
 
 	    // no autoreload without validation
 	    $this->data->add('stdplan_id_automatic_reload', $reload);
+
 		$this->load->view('admin/stdplan_edit', $this->data->load());
-	}
-	
-	
+    }
+
+
 	/**
 	 * Returns an div with the stdplan-table for a specified stdplan >> $this->input->get('stdplan_id')
 	 * !! combined id: StudiengangAbkuerzung, Semester, PO
 	 * @param array $reload_ids holding unique abk, sem, po combination - passed when called from within controller >> reload view (dropdown)
 	 */
 	public function ajax_show_events_of_stdplan($reload_ids = ''){
+
 	    // if reload_ids is empty function has been called from view
 		if(!$reload_ids){
 			$ids = $this->input->post('stdplan_ids');
 			$splitted_ids = explode("_", "$ids");
 		// otherwise function called from within controller
 		// >> delete or add single row
-		} else {
+		}
+        else {
 			$splitted_ids = $reload_ids;
 		}
 //	    $ids = "BMI_2_2010";
-	    
 	    // get all events of a stundenplan specified by stdgng-abk., semester, po
 	    $data['kurs_ids_split'] = $splitted_ids;
 	    $stdplan_events_of_id = $this->admin_model->get_stdplan_data($splitted_ids);
-	    
+
 	    // get dropdown-data: all event-types, profs, times, days
 	    $eventtypes = $this->admin_model->get_eventtypes();
 	    $all_profs = $this->admin_model->get_profs_for_stdplan_list();
 	    $colors = $this->admin_model->get_colors_from_stdplan();
 	    $course_ids = $this->admin_model->get_stdplan_course_ids($splitted_ids);
-		
+
 		// getting data directly from helper_model - not implemented for all dropdowns
 		$starttimes_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
 		$endtimes_dropdown_options = $this->helper_model->get_dropdown_options('endtimes');
 		$days_dropdown_options = $this->helper_model->get_dropdown_options('days');
-		
+
 //	    echo '<pre>';
 //	    print_r($all_profs[$i]->DozentID);
 //	    echo '</pre>';
-	    
+
 	    // and prepare for dropdowns
 		// courses
 	    for($i = 0; $i < count($course_ids); $i++){
@@ -1481,7 +1490,7 @@ class Admin extends FHD_Controller {
 	    for($i = 0; $i < count($all_profs); $i++){
 			$profs_dropdown_options[$all_profs[$i]->DozentID] = $all_profs[$i]->Nachname.', '.$all_profs[$i]->Vorname;
 		}
-		
+
 	    // colors
 	    for($i = 0; $i < count($colors); $i++){
 			$colors_dropdown_options[$i] = $colors[$i]->Farbe;
@@ -1495,12 +1504,12 @@ class Admin extends FHD_Controller {
 	    $data['endtimes_dropdown_options'] = $endtimes_dropdown_options;
 	    $data['days_dropdown_options'] = $days_dropdown_options;
 	    $data['colors_dropdown_options'] = $colors_dropdown_options;
-	    
+
 		$data['first_row'] = TRUE;
-		
+
 		// getting first row - empty fields
 		$data['stdplan_first_row'] = $this->load->view('admin/partials/stdplan_coursetable_row', $data, TRUE);
-	    
+
 	    foreach ($stdplan_events_of_id as $sp_events){
 			$data['first_row'] = FALSE;
 			$data['spkurs_id'] = $sp_events->SPKursID;
@@ -1518,40 +1527,40 @@ class Admin extends FHD_Controller {
 
 			// array holding all rows
 			$rows[] = $this->load->view('admin/partials/stdplan_coursetable_row', $data, TRUE);
-			
+
 //			echo '<pre>';
 //			echo print_r($data['eventtype_dropdown_options']);
 //			echo '</pre>';
-		
+
 	    }
-	    
+
 	    $data['stdplan_course_rows'] = $rows;
-	    
+
 	    echo $this->load->view('admin/partials/stdplan_coursetable_content', $data, TRUE);
-	    
+
 	}
 
 	/**
 	 * Validating all inputs.
 	 */
 	public function validate_stdplan_changes(){
-	    
+
 	    // get all course-ids belonging to a specified stdgng
 	    $stdplan_id = array(
 		$this->input->post('stdplan_id_abk'),
 		$this->input->post('stdplan_id_sem'),
 		$this->input->post('stdplan_id_po'));
-	    
+
 	    $stdplan_course_ids = $this->admin_model->get_stdplan_sp_course_ids($stdplan_id);
-	    
-	    
+
+
 	    foreach($stdplan_course_ids as $id){
 			// run through all ids and generate id-specific validation-rules
 			$this->form_validation->set_rules($id->SPKursID.'_Raum', 'Fehler', 'required');
 	    }
-	    
+
 	    $stdplan_id_automatic_reload = $stdplan_id[0].'_'.$stdplan_id[1].'_'.$stdplan_id[2];
-	    
+
 	    if ($this->form_validation->run() == FALSE) {
 			// reload view
 			$this->session->set_flashdata('reload', $stdplan_id_automatic_reload);
@@ -1560,13 +1569,13 @@ class Admin extends FHD_Controller {
 			$this->save_stdplan_changes($stdplan_id_automatic_reload);
 	    }
 	}
-	
+
 	/**
 	 * Updates data of Stdplan
 	 * @param int $reload id to be reloaded (if passed / 0 >> no active stdplan)
 	 */
 	public function save_stdplan_changes($reload = 0){
-		
+
 	    // build an array, containing all keys that have to be updated in db
 	    $update_fields = array(
 			'VeranstaltungsformID',
@@ -1580,27 +1589,27 @@ class Admin extends FHD_Controller {
 			'TagID',
 			'Farbe'
 		);
-	    
+
 	    // get data from form-submission
 	    $post_data = $this->input->post();
-		
+
 //		echo '<pre>';
 //		print_r($post_data);
 //		echo '</pre>';
-		
+
 		// get spcourse_ids for stdplan that has been saved
 		// 1. get id from submission | 2. get ids from db
 		$stdplan_ids[] = $post_data['stdplan_id_abk'];
 		$stdplan_ids[] = $post_data['stdplan_id_sem'];
 		$stdplan_ids[] = $post_data['stdplan_id_po'];
 		$sp_course_ids = $this->admin_model->get_stdplan_sp_course_ids($stdplan_ids);
-		
+
 		// getting additonal data for colors - necessaray to map from array
 	    $colors = $this->admin_model->get_colors_from_stdplan();
 	    for($i = 0; $i < count($colors); $i++){
 			$colors_dropdown_options[$i] = $colors[$i]->Farbe;
 	    }
-		
+
 		// run through ids to save submitted data
 		foreach ($sp_course_ids as $id) {
 			$spc_id = $id->SPKursID; // save id from object
@@ -1621,28 +1630,28 @@ class Admin extends FHD_Controller {
 						break;
 					default : $update_stdplan_data[$field_name] = $post_data[$spc_id.'_'.$field_name]; break;
 				}
-				
+
 				// handling of checkbox
 				if(array_key_exists($spc_id.'_isWPF', $post_data)){
 					$update_stdplan_data['isWPF'] = 1;
 				} else {
 					$update_stdplan_data['isWPF'] = 0;
 				}
-				
+
 			}
-			// update data in db - for every 
+			// update data in db - for every
 			$this->admin_model->update_stdplan_details($update_stdplan_data, $spc_id);
 //			echo '<pre>';
 //			print_r($update_stdplan_data);
 //			echo '</pre>';
-			
+
 		}
-		
+
 		$this->session->set_flashdata('reload', $reload);
 	    redirect('admin/stdplan_edit');
 	}
-	
-	
+
+
 	/**
 	 * Calls view to delete single stdplan
 	 */
@@ -1650,14 +1659,14 @@ class Admin extends FHD_Controller {
 	    $this->data->add('delete_view_data', $this->admin_model->get_stdplan_filterdata_plus_id());
 		$this->load->view('admin/stdplan_delete', $this->data->load());
 	}
-	
-	
+
+
 	/**
 	 * Deletes single stdplan.
 	 * Called from within view - button.
 	 */
 	public function delete_stdplan(){
-	    
+
 	    // get data from post
 	    $degree_program_ids = array(
 			$this->input->post('stdplan_abk'),
@@ -1667,13 +1676,13 @@ class Admin extends FHD_Controller {
 
 	    // delete all data related to chosen stdplan
 	    $this->admin_model->delete_stdplan_related_records($degree_program_ids);
-	    
+
 	    // reload view
 	    redirect('admin/stdplan_delete');
-	    
+
 	}
-	
-	
+
+
 	/**
 	 * Deletes a single line from stdplan-table-view - after button-click
 	 */
@@ -1682,18 +1691,18 @@ class Admin extends FHD_Controller {
 		$sp_course_id = $this->input->post('course_data');
 		// split ids >> abk, sem, po, SP_COURSE_ID
 		$split_ids = explode('_', $sp_course_id);
-		
+
 		// delete data DB
 		$this->admin_model->delete_single_event_from_stdplan($split_ids[3]);
-		
+
 		// delete spcourse_id from array
 		unset($split_ids[3]);
-		
+
 		// reload view with unique abk, sem, po combination
-		echo $this->ajax_show_events_of_stdplan($split_ids);		
-		
+		echo $this->ajax_show_events_of_stdplan($split_ids);
+
 	}
-	
+
 	/**
 	 * Creates new event in stdplan after click on Button
 	 */
@@ -1701,24 +1710,24 @@ class Admin extends FHD_Controller {
 		$new_course_data = $this->input->post('course_data');
 		$save_to_db = array();
 		$stdplan_ids = explode('_', $new_course_data[0]);
-		
+
 		// delete first key from array
 		unset($new_course_data[0]);
-		
+
 //		echo print_r($new_course_data); // DEBUG
-		
+
 		// additional data of courses - mapping values to ids
 	    $courses = $this->admin_model->get_stdplan_course_ids($stdplan_ids);
 	    for($i = 0; $i < count($courses); $i++){
 			$courses_dropdown_options[$i] = $courses[$i]->KursID;
 	    }
-		
+
 		// getting additonal data for colors - necessaray to map from array
 	    $colors = $this->admin_model->get_colors_from_stdplan();
 	    for($i = 0; $i < count($colors); $i++){
 			$colors_dropdown_options[$i] = $colors[$i]->Farbe;
 	    }
-		
+
 		// run through course-data and prepare for saving
 		foreach($new_course_data as $data){
 			$split_data = explode('_', $data);
@@ -1738,224 +1747,236 @@ class Admin extends FHD_Controller {
 				default : $save_to_db[$split_data[1]] = ($split_data[0]); break;
 			}
 		}
-		
+
 //		echo print_r($save_to_db, $stdplan_ids);
 		$this->admin_model->save_new_course_in_stdplan($save_to_db, $stdplan_ids);
-		
+
 		// return updated view
 		echo $this->ajax_show_events_of_stdplan($stdplan_ids);
 	}
-	
-	/* 
-	 * 
+
+	/*
+	 *
 	 * ******************************* Stundenplanverwaltung
 	 * ************************************** Frank Gottwald
-	 * 
+	 *
 	 * ***********************************************************************/
-	
-	
-	/* ***********************************************************************
-	 * 
-	 * *********************************** Stundenplanimport
-	 * ************************************** Frank Gottwald
-	 * 
-	 */
 
-    // ==== Stundenplanimport after this comment ====
-    // TODO check for deprecated stuff, test functionality and behaviour. Is everything as expected?
-	
-	/**
-	 * Shows view with upload and all uploaded files till now
-	 */
-	public function stdplan_import(){
-	    // inits
-		$upload_dir = array();
-		$parsing_result = '';
-		$this->load->helper('directory');
-		
-		// getting parsing_result - if there is any
-		// and put into dialog
-		$parsing_result = $this->session->flashdata('parsing_result');
-		
-		if($parsing_result){
-			if(is_array($parsing_result)){
-				$data_for_dialog = '<ul>';
-				// run through array and build string for dialog
-				foreach ($parsing_result as $item => $value){
-					$data_for_dialog .= '<li>'.$item.': '.$value.'</li>';
-				}
-				$data_for_dialog .= '</ul>';
-				$this->data->add('view_feedback_dialog', $data_for_dialog);
-			} else {
-				// error
-				$this->data->add('view_feedback_dialog', 'error');
-			}
-		} else {
-			// default-value: no data was parsed
-			$this->data->add('view_feedback_dialog', '');
-		}
+    /*
+    * ===================================================
+    *                   Timetable import
+    * ===================================================
+    */
 
-        // stuff before - Refactoring of import by Frank Gottwald
 
-//	    // get files from upload-folder
-//	    $upload_dir = directory_map('./resources/uploads');
-//	    // get degree programs
-//	    $degree_programs = $this->admin_model->get_all_degree_programs();
-//	    $data['stdgng_uploads'] = '';
-//	    
-//		// init helper var
-//	    $last_id = 0;
-//	    
-//	    if($upload_dir){
-//			// prepare data for view
-//			// generate array, that contains all 
-//			foreach($degree_programs as $dp){
-//				$po = $dp->Pruefungsordnung;
-//				$abk = $dp->StudiengangAbkuerzung;
-//				$id = $dp->StudiengangID;
-//				$data['stdgng_uploads_headlines'][$id] = $abk.' - '.$po;
-//				// run through dirs and distribute found data to view-array
-//				foreach($upload_dir as $dir){
-//					$needle_po = strstr($dir, $po);
-//					$needle_abk = strstr($dir, $abk);
-//					if($needle_po != null && $needle_abk != null){
-//						$data['stdgng_uploads'][$id][] = $dir;
-//					}
-//				}
-//				$last_id = $id;
-//			}
-//
-//			if($data['stdgng_uploads'] != null){
-//				// prepare data to 
-//				foreach($data['stdgng_uploads'] as $nested_array){
-//					foreach($nested_array as $file){
-//						$files_with_po[] = $file;
-//					}
-//				}
-//
-//			//	    echo '<pre>';
-//			//	    print_r($clean);
-//			//	    echo '</pre>';  
-//
-//				// one additional field for other
-//				// CHECK - will all other files be displayed in here?
-//				// perhaps some fine-tuning in recognition of po needed?
-//				$data['stdgng_uploads_headlines'][42] = 'Andere:';
-//
-//				// check if there are dirs, that don't belong to a po
-//				// i.e. not in array, that contains the files that are already shown
-//				foreach($upload_dir as $dir){
-//					if(!in_array($dir, array_values($files_with_po))){
-//						$data['stdgng_uploads'][42][] = $dir;
-//					}
-//				}
-//			}
-//		}
+    /**
+     * Shows and loads the timetable import view with all currently uploaded timetable files.
+     * Gives the user the possibility to import (and upload) an new timetable xml-file.
+     *
+     * @access public
+     * @return void
+     */
+    public function show_timetable_import(){
 
-//	    $this->data->add('stdgng_uploads_headlines', $data['stdgng_uploads_headlines']);
-//	    $this->data->add('stdgng_uploads', $data['stdgng_uploads']);
-//		$this->data->add('stdgng_uploads_list_filelist',
-//				$this->load->view('admin/partials/stdplan_import_filelist', $data, TRUE));
-	    
-		$this->load->view('admin/stdplan_import', $this->data->load());
-	}
-	
-	
-	/**
-	 * Starts parsing of a xml-file with a new timetable
-	 */
-	public function stdplan_import_parse(){
-		// init path and type
-	    $config['upload_path'] = './resources/uploads/';
-	    $config['allowed_types'] = 'xml';
+        // needed initializations
+        $this->load->helper('directory'); // load the ci directory helper to be able to get access to the upload directory
+        $upload_dir = array(); // array for holding the content of the timetable import directory on the server
 
-		// load codeigniter-libs and parsing-model
-	    $this->load->library('upload', $config);
-	    $this->upload->initialize($config);
-//	    $this->load->controller('stdplan_parser');
-	    $this->load->model('admin_model_parsing');
+        // get all uploaded files
+        $upload_dir = directory_map('./resources/uploads/stundenplaene');
+        $this->data->add('upload_dir', $upload_dir);
 
-		// if upload DID NOT work: 
-	    if ( ! $this->upload->do_upload()){
-			// go back to view and show errors
-//			$this->session->set_flashdata('errors', validation_errors());
-//			$this->data->add('error', validation_errors());
-			
-			// TODO redirect to correct view WITH errors not working properly
-			$this->stdplan_import($this->upload->display_errors());
-//			sleep(5);
-//			redirect('admin/stdplan_import');
-			
-//			$this->stdplan_import($this->upload->display_errors());
+        // construct and add the uploaded files list to the main import view
+        $this->data->add('stdgng_uploads_list_filelist', $this->_show_uploaded_timetables_file_list());
 
-		// else: process data and show success view
-	    } else {
-			// upload data
-			$upload_data = $this->upload->data();
-		
-			// start parsing stdplan - pass data to parsing-model
-//			$delete_file = $this->admin_model_parsing->parse_stdplan($upload_data);
-			$ids_or_errors = $this->admin_model_parsing->parse_stdplan($upload_data);
-			
-			if($ids_or_errors[0] != 'errors'){
-				$this->data->add('ids', $ids_or_errors[0]);
-				unset($ids_or_errors[0]);
-				$this->data->add('data', $ids_or_errors);
-				$this->load->view('admin/partials/stdplan_import_DEBUG_view', $this->data->load());
-			} else {
-				$this->data->add('errors', $ids_or_errors);
-				$this->load->view('admin/partials/stdplan_import_ERROR_view', $this->data->load());
-			}
-			
-			// if parser returns error-message (PO not found in DB) show message
-			// to user and delete temporary stored file
-//			if($delete_file){
-//				$this->session->set_flashdata('parsing_result', 'Datei wurde nicht hochgeladen - PO noch nicht angelegt.');
-//				unlink($config['upload_path'].$upload_data['file_name']);
-//
-//			// else rediret to view
-//			} else {
-//				$this->session->set_flashdata('parsing_result', $upload_data);
-//			}
-//			redirect('admin/stdplan_import');
-	    }
-	}
-	
-	/**
-	 * Deletes a uploaded file from file-list
-	 */
-	function delete_stdplan_file(){
-		// file passed on button-click
-	    $file_to_delete = $this->input->post('std_file_to_delete');
-	    
-	    // delete file
-	    unlink('./resources/uploads/'.$file_to_delete);
-	    
-	    redirect('admin/stdplan_import');
-	}
-	
-	
-	
-	/**
-	 * Opens file from file-list in notepad
-	 */
-	function open_stdplan_file(){
-		// file passed on button-click
-	    $file_to_open = $this->input->post('std_file_to_open');
-	    
-		$file = './resources/uploads/'.$file_to_open;
-		
-	    // open file
-	    shell_exec('start '.$file);
-	    
-	    redirect('admin/stdplan_import');
-	}
-	
-	/* 
-	 * 
-	 * *********************************** Stundenplanimport
-	 * ************************************** Frank Gottwald
-	 * 
-	 * ***********************************************************************/
-	
+        // load the timetable import view
+        $this->load->view('admin/stdplan_import', $this->data->load());
+    }
+
+    /**
+     * Shows and loads the list with the already uploaded files and returns the partial view as an string.
+     *
+     * @access private
+     * @return string The uploaded files list partial view as an string.
+     */
+    private function _show_uploaded_timetables_file_list(){
+
+        $upload_dir = directory_map('./resources/uploads/stundenplaene');
+
+        // declaration of arrays to hold the timetable group headlines and timetable file information
+        $degree_program_headlines = array(); // array for group headlines
+        $degree_program_files = array(); // array for file information
+
+        // if there are already some uploaded timetable files prepare them to be able to display them
+        if($upload_dir){
+
+            // get all degree programs
+            $all_degree_programs = $this->admin_model->get_all_degree_programs();
+
+            // for each degree program search the corresponding files and group them for the view
+            foreach($all_degree_programs as $single_degree_program){
+
+                // save some values in temp variables
+                $po = $single_degree_program->Pruefungsordnung; // po version of the viewed degree program
+                $abk = $single_degree_program->StudiengangAbkuerzung; // abbreviation of the viewed degree program
+                $id = $single_degree_program->StudiengangID; // id of the viewed degree program
+
+                // construct the headline for the viewed degree program, that is used to group the corresponding files
+                $degree_program_headlines[$id] = $abk.' - '.$po;
+
+                // loop through each file in the degree program upload directory and distribute the matching files to the view data-array
+                foreach($upload_dir as $single_file){
+
+                    // check if the po and the abbreviation is part of the viewed filename
+                    $po_in_filename = strstr($single_file, $po); // look if the po is part of the filename
+                    $abk_in_filename = strstr($single_file, $abk); // look if the abbreviation is part of the filename
+
+                    // if the viewed file corresponds to the actual viewed degree program -> add id to the view data array
+                    if($po_in_filename != null && $abk_in_filename!= null){
+                        $degree_program_files[$id][] = $single_file;
+                    }
+                }
+
+            }
+
+            // look for files that do not belong to any degree program
+            if($degree_program_files!= null){
+
+                // fetch all files that belong to a degree program in an array
+                $files_with_po = array(); // array to hold the files that belong to a degree program
+
+                // loop through the ordered timetable files and add them to an array
+                foreach($degree_program_files as $degree_program => $degree_prog_array ){
+
+                    foreach($degree_prog_array as $single_file){
+
+                        $files_with_po[] = $single_file;
+                    }
+                }
+
+                // check if every file in the upload directory is already assigned to a degree program -> if not save it under the group 'others'
+                $degree_program_headlines['others'] = 'Andere:';
+
+                // loop through all files in the directory and check if they are already assigned to a degree program
+                foreach($upload_dir as $single_file){
+
+                    // the viewed filed does not belong to a degree program -> add id to the category others
+                    if(!in_array($single_file,array_values($files_with_po))){
+                        $degree_program_files['others'][] = $single_file;
+                    }
+                }
+            }
+        }
+
+        // add the headlines and files to the data-array and return the view as an string
+	    $this->data->add('stdgng_uploads_headlines', $degree_program_headlines);
+	    $this->data->add('stdgng_uploads', $degree_program_files);
+
+        return $this->load->view('admin/partials/stdplan_import_filelist', $this->data->load(), TRUE);
+    }
+
+    /**
+     * Deletes a timetable file from the upload directory / from the server.
+     * Method will be called via a submit button. The file that should be deleted is submitted via POST
+     * (hidden input field).
+     *
+     * @access public
+     * @return void
+     */
+    public function delete_timetable_file(){
+
+        // get the file, that should be deleted (the filename is passed on button-click via hidden input)
+        $file_to_delete = $this->input->post('timetable_file_to_delete');
+
+        // delete the file
+        unlink('./resources/uploads/stundenplaene/'.$file_to_delete);
+
+        // redirect back to the timetable import start view
+        redirect('admin/show_timetable_import');
+    }
+
+    /**
+     * Opens a timetable file from the upload directory / from the server in notepad (text editor).
+     * Method will be called via a submit button. The file that should be opened is submitted via POST
+     * (hidden input field).
+     *
+     * @access public
+     * @return void
+     */
+    public function open_timetable_file(){
+
+        // get the file, that should be opened (the filename is passed on button-click via hidden input)
+        $file_to_open = $this->input->post('std_file_to_open');
+
+        // construct the filepath
+        $filepath = './resources/uploads/stundenplaene/'.$file_to_open;
+
+        // open the file file
+        shell_exec('start '.$filepath);
+
+        // redirect back to the timetable import start view
+        redirect('admin/show_timetable_import');
+    }
+
+    /**
+     * Starts uploading and parsing an timetable xml file, that has been chosen by the user in the upload
+     * / timetable import mask. Method responds on view activity.
+     *
+     * @access public
+     * @return void
+     */
+    public function upload_and_parse_timetable(){
+
+        // === file upload  configuration ===
+
+        // init path and upload type
+        $config['upload_path'] = './resources/uploads/stundenplaene';
+        $config['allowed_types'] = 'xml|XML';
+
+        // load ci upload library and initialize it
+        $this->load->library('upload', $config);
+        $this->upload->initialize($config);
+
+        // === start file upload and parsing ===
+
+        // the upload was not successful
+        if (!$this->upload->do_upload()){
+
+            // an error occured during uploading the file -> construct an error message and add it to the view
+            $error_message = "Der Datei-Upload war nicht erfolgreich. Entweder du du hast gar keine Datei zum Upload ausgew&auml;hlt, oder es besteht ein Fehler auf Seiten des Servers.";
+
+            $this->data->add('error_starting_import', $error_message); // add the error message to the data array
+            $this->show_timetable_import(); // reload the timetable import start view
+        }
+        // upload was successful
+        else {
+
+            // load parser and start parsing
+            $this->load->library('timetable_xml_parser');
+            $ids_or_errors = $this->timetable_xml_parser->parse_timetable_xml($this->upload->data());
+
+            // check for errors during the parsing process
+
+            // the parsing process was fine -> show an view with the parsed data, so that the admin can check the parsed data
+            if($ids_or_errors[0] != 'errors') {
+                $this->data->add('ids', $ids_or_errors[0]);
+                unset($ids_or_errors[0]);
+                $this->data->add('data', $ids_or_errors);
+                $this->load->view('admin/partials/stdplan_import_success_view', $this->data->load());
+            }
+
+            // there occurred some errors during the parsing process -> show an detailed error view for the admin
+            else {
+                $this->data->add('errors', $ids_or_errors);
+                $this->load->view('admin/partials/stdplan_import_error_view', $this->data->load());
+            }
+        }
+    }
+
+    /*
+    * ===================================================
+    *                   End timetable import
+    * ===================================================
+    */
+
 }

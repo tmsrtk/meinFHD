@@ -6,111 +6,63 @@
 	<div class="span3"></div>
 	<div class="span6 well well-small">
 <?php endblock(); ?>
-	
-<?php
-	// general form setup
-	
+
+<?php // general form setup
+
+    // preparing some variables
+    $btn_send_attrs = 'class = "btn-warning"';
 ?>
 
 <?php startblock('content'); # additional markup before content ?>
-		
 		<div class="row-fluid">
 			<h2>Stundenplan importieren</h2>
 		</div>
-		<hr>
-
+		<hr/>
 		<div class="row-fluid">
-			<?php
-			// preparing some varibles
-				$btn_send_attrs = 'class = "btn-warning"';
-				$input_attrs = array(
-					'name' => 'userfile',
-					'type' => 'file',
-					'value' => ''
-				);
-
-			?>
-
 			<div class="well">
 				<!-- print out submission-form -->
 				<?php 
-					echo form_open_multipart('admin/stdplan_import_parse');
-					echo form_input($input_attrs);
+					echo form_open_multipart('admin/upload_and_parse_timetable');
+				?>
+                <input type="file" name="userfile"/>
+                <?php
 					echo '<br />';
 					echo form_submit('import_stdplan', 'Stundenplan importieren', $btn_send_attrs);
 					echo form_close();
 				?>
 			</div>
 			
-			<!--<h3>Importierte Dateien:</h3>-->
+			<h3>Importierte Dateien:</h3>
 
 			<?php
-//				if($stdgng_uploads != null){
-//					// load filelist
-//					echo $stdgng_uploads_list_filelist;
-//				}
+				if($stdgng_uploads != null){
+					// display the list with the uploaded files
+					echo $stdgng_uploads_list_filelist;
+                }
+                else{
+                    echo 'Es wurden bisher keine Dateien hochgeladen';
+                }
+
 			?>
 
 		</div>
-		<div id="info-modal-container"></div>
-		
+
 <?php endblock(); ?>
 <?php startblock('postCodeContent'); # additional markup before content ?>
 	</div>
 	<div class="span3"></div>
+    <div id="modalcontent"></div>
 <?php endblock(); ?>
-	
-<?php startblock('customFooterJQueryCode');?>
-	
-	// getting data that indicates if dialog should be showed
-	// string 'error' if there is one, any other string for successfully parsed data, empty string for no dialog
-	var parsedData = "<?php echo $view_feedback_dialog; ?>";
-	
-	// check if dialog should be showed
-	if(parsedData == ''){
-		// nothing
-	} else {
-		if(parsedData != 'error'){
-			// parsing was successful - show data in modal
-			showInfoDialog('Stundenplan wurde hinzugefügt', parsedData);
-		} else {
-			// >> ERROR during parsing
-			showInfoDialog('Fehler beim Parsen', 'Der Stundenplan konnte nicht geparst werden.');
-		}
-	}
 
-	// function to show a dialog
-	function showInfoDialog(title, text){
-		// open dialog and set text to show
-		var dialog = createInfoDialog(title, text);
-		$('#info-modal-container').html(dialog);
-		
-		// function of dialog - just disable keyboard-control
-		$('#info-dialog').modal({
-			keyboard: false,
-			backdrop: 'static'
-		}).on('show', function(){
-			// nothing to do
-		}).modal('show');
+<?php startblock('customFooterJQueryCode'); # custom jquery code?>
 
-		return false;
-	}
-	
-	// create dialog element
-	// title > simple string; text > string with data and line-breakings
-	function createInfoDialog(title, text) {
-		var myDialog = 
-			$('<div class="modal hide" id="info-dialog"></div>')
-			.html('<div class="modal-header"><h3>'+title+'</h3></div>')
-			.append('<div class="modal-body"><p>'+text+'</p></div>')
-			.append('<div class="modal-footer"><a href="" class="btn btn-primary" id="info-dialog-confirm" data-dismiss="modal">OK</a></div>');
+    // if there is an error message passed from the controller open up a modal view
+    var error = "<?php echo $error_starting_import; ?>";
 
-		return myDialog;
-    };
-	
-	
+    if(error != '0'){
+        _showModal('Fehler beim Hochladen der Datei', error, false);
+    }
+
 <?php endblock(); ?>
-	
-	
 
 <?php end_extend(); ?>

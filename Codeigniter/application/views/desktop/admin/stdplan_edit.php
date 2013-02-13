@@ -55,66 +55,49 @@
 	
 <?php startblock('customFooterJQueryCode');?>
 		
-		// update stdplan-view according to chosen field in dropdown
-		$('#admin-stdplanfilter').change(function() {
-			$("#stdplan-change-view").html('suche...');
-			// ajax
-			if($(this).val() != 0) {
-				
-				$.ajax({
-				   type: "POST",
-				   url: "<?php echo site_url();?>admin/ajax_show_events_of_stdplan/",
-				   dataType: 'html',
-				   data : {stdplan_ids : $(this).val()},
-				   success: function (data){
-				       $('#stdplan-change-view').html(data);
-					   // get wpf-name fields and disable if checkbox unchecked
-					   disableUncheckedWpf();
-					   bindFixedHeader();
-					   
-				   }
-				});
-				
-//				$.get(
-//					"<?php echo site_url();?>admin/ajax_show_events_of_stdplan/",
-//					'stdplan_id='+stdplanIds,
-//					function(response) {
-//						// 
-//						$('#stdplan-change-view').html(response);
-//					});
-			} else {
-				$("#stdplan-change-view").html('');
-			}
+    // if an timetable has been selected in the filter dropdown load the corresponding timetable content and display the content
+    $('#admin-stdplanfilter').change(function() {
+        // if an valid value has been selected start loading the timetable content
+        if($(this).val() != 0) {
+            // load the timetable content
+            loadTimetableContent($(this).val());
+        }
+        else {
+            $("#stdplan-change-view").html('Der ausgewählte Stundenplan ist nicht korrekt.');
+        }
+    });
 
-		});
-		
-	
-	    
-		
-	// autoreload after submission AND validation-errors
-	var stdplanId = "<?php echo $stdplan_id_automatic_reload; ?>"
-	if(stdplanId != '0'){
-		reloadStdplan(stdplanId);
-	}
-	
-	// reloads a stdplan - the one that has been selected via dropdown before
-	function reloadStdplan(id){
-	    $.ajax({
+    // autoload of an timetable if the page is requested from the parsing success view or the timetable-id has been passed while loading the view
+    var timetable_id= "<?php echo $stdplan_id_automatic_reload; ?>"
+
+    // if the timetable_id has been set load the timetable content
+    if(timetable_id != '0'){
+        loadTimetableContent(timetable_id); // call function to load the timetable content
+    }
+
+    /*
+     * Loads the timetable content via AJAX, that corresponds to the id, that has been passed as an parameter.
+     */
+	function loadTimetableContent(id){
+        $('#stdplan-change-view').html('Stundenplan wird geladen...');
+	    // request the timetable content via AJAX
+        $.ajax({
 			type: "POST",
 			url: "<?php echo site_url();?>admin/ajax_show_events_of_stdplan/",
 			dataType: 'html',
 			data : {stdplan_ids : id},
 			success: function (data){
 				$('#stdplan-change-view').html(data);
+                // get wpf-name fields and disable if checkbox unchecked
+                disableUncheckedWpf();
 				bindFixedHeader();
 				
-				// set correct drowdown
+				// set the correct dropwdown content
 				$('#admin-stdplanfilter').val(id);
 			}
 	    });
 	}
-	
-	
+
 	// show delete dialogs
     $('#stdplan-change-view').on('click', 'button.delete-stdpln-btn', function(){
 		var spCourseId = $(this).attr('name');
