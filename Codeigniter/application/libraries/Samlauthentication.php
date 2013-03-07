@@ -1,4 +1,4 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+ <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
  * meinFHD WebApp
@@ -35,7 +35,7 @@ class Samlauthentication {
         @require_once('simplesamlphp/lib/_autoload.php');
 
         // select and create the authentication source
-        $this->authSource = new SimpleSAML_Auth_Simple('default-sp');
+        $this->authSource = new SimpleSAML_Auth_Simple('meinfhd-sp');
     }
 
     /**

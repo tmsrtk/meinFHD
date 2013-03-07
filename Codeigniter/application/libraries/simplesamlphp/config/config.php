@@ -69,7 +69,7 @@ $config = array (
 	 * metadata listing and diagnostics pages.
 	 * You can also put a hash here; run "bin/pwgen.php" to generate one.
 	 */
-	'auth.adminpassword'		=> 'changeit',
+	'auth.adminpassword'		=> '3kZJG9',
 	'admin.protectindexpage'	=> false,
 	'admin.protectmetadata'		=> false,
 
@@ -88,8 +88,8 @@ $config = array (
 	 * The email address will be used as the recipient address for error reports, and
 	 * also as the technical contact in generated metadata.
 	 */
-	'technicalcontact_name'     => 'Christian Kundruss',
-	'technicalcontact_email'    => 'christian.kundruss@fh-duesseldorf.de',
+	'technicalcontact_name'     => 'Jens Lambert',
+	'technicalcontact_email'    => 'jens.lambert@fh-duesseldorf.de',
 
 	/*
 	 * The timezone of the server. This option should be set to the timezone you want
