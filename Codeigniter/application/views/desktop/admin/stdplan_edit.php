@@ -2,14 +2,12 @@
 
 <?php startblock('title');?><?php get_extended_block();?> - Stundenplan bearbeiten<?php endblock(); ?>
 
-<?php startblock('preCodeContent'); # additional markup before content ?>
-	<div class="span12 well well-small">
-<?php endblock(); ?>
-	
-<?php
-# general form setup
-	// peraparation of studiengan-dropdown
-	$stdplanFilter[0] = 'Bitte auswählen';
+<?php # general form setup
+
+	// peraparation of degree program dropdown
+	$stdplanFilter[0] = 'Bitte ausw&auml;hlen';
+
+    // for each passed timetable create an custom filter entry
 	foreach($all_stdplan_filterdata as $spf){ 
 		$stdplanFilter[
 			$spf->StudiengangAbkuerzung.'_'
@@ -19,51 +17,50 @@
 				.$spf->Semester.' - '
 				.$spf->Pruefungsordnung; 
 	}
+
 	$js = 'id="admin-stdplanfilter"';
-	
 ?>
 
 <?php startblock('content'); # additional markup before content ?>
+    <div class="row-fluid">
+        <div class="span8"><h2>Stundenplan bearbeiten</h2></div>
+        <div class="span4">
+            <h5>Filter</h5>
+            <?php echo form_dropdown('stdplanFilter', $stdplanFilter, '', $js); ?>
+        </div>
+    </div>
+    <hr/>
 
-		<div class="row-fluid">
-			<div class="span8"><h2>Stundenplan bearbeiten</h2></div>
-			<div class="span4">
-				<h5>Filter</h5>
-				<!-- build array for Studiengang-Filter -->
-				<?php echo form_dropdown('stdplanFilter', $stdplanFilter, '', $js); ?>
-				
-			</div>
-		</div>
-		<hr>
-		
-		<?php echo validation_errors(); ?>
-		
-		<div class="row-fluid">
-			<div id="stdplan-change-view">
-				<!-- load data dynamically via AJAX -->
-			</div>
+    <?php echo validation_errors(); # display the validation errors ?>
 
-			<div id="confirmation-dialog-container"></div>
+    <div class="row-fluid">
+        <div id="success-message">
+            <!-- container for displaying the success message after saving the data -->
+        </div>
 
-		</div>
+        <div id="stdplan-change-view">
+            <!-- load timetable content dynamically via AJAX -->
+        </div>
+        <div id="confirmation-dialog-container"></div>
+    </div>
 <?php endblock(); ?>
-
-<?php startblock('postCodeContent'); # additional markup before content ?>
-		
-<?php endblock(); ?>
-	
 	
 <?php startblock('customFooterJQueryCode');?>
 		
-    // if an timetable has been selected in the filter dropdown load the corresponding timetable content and display the content
+    /*
+     * If an timetable has been selected in the filter dropdown load the corresponding timetable
+     * content and display the content.
+     */
     $('#admin-stdplanfilter').change(function() {
         // if an valid value has been selected start loading the timetable content
         if($(this).val() != 0) {
             // load the timetable content
             loadTimetableContent($(this).val());
+            $('#success-message').remove(); // remove the success message
         }
         else {
-            $("#stdplan-change-view").html('Der ausgew�hlte Stundenplan ist nicht korrekt.');
+            $("#stdplan-change-view").html('Der ausgew&auml;hlte Stundenplan ist nicht korrekt.');
+        $('#success-message').remove(); // remove the success message
         }
     });
 
@@ -73,6 +70,18 @@
     // if the timetable_id has been set load the timetable content
     if(timetable_id != '0'){
         loadTimetableContent(timetable_id); // call function to load the timetable content
+    }
+
+    // display the save success message and delete the php variable
+    var success_message_to_display = "";
+    <?php if(isset($success_message)):?>
+    // display success message if an message is passed
+    success_message_to_display = "<?php echo $success_message; ?>";
+    <?php endif; ?>
+
+    if (success_message_to_display > ""){
+        // display it in the html container
+        $('#success-message').html('<div class="alert alert-success">'+success_message_to_display+'</div>');
     }
 
     /*
@@ -85,14 +94,13 @@
 			type: "POST",
 			url: "<?php echo site_url();?>admin/ajax_show_events_of_stdplan/",
 			dataType: 'html',
-			data : {stdplan_ids : id},
+			data : {timetable_id: id},
 			success: function (data){
 				$('#stdplan-change-view').html(data);
-                // get wpf-name fields and disable if checkbox unchecked
-                disableUncheckedWpf();
-				bindFixedHeader();
+                disableUncheckedWpf(); // get wpf-name fields and disable if checkbox unchecked
+                bindFixedHeader(); // bind the table header while scrolling to the buttom of the page
 				
-				// set the correct dropwdown content
+				// set the correct dropwdown/filter content
 				$('#admin-stdplanfilter').val(id);
 			}
 	    });
@@ -103,7 +111,7 @@
 		var spCourseId = $(this).attr('name');
 
 		// open dialog and set text to show
-		var dialog = createConfirmationDialog('Veranstaltgung löschen', 'Soll diese Veranstaltung gelöscht werden?');
+		var dialog = createConfirmationDialog('Veranstaltung l&ouml;schen', 'Soll diese Veranstaltung gel&ouml;scht werden?');
 		$('#confirmation-dialog-container').html(dialog);
 
 		// function of dialog
@@ -129,7 +137,7 @@
 		var spId = $(this).attr('name');
 		
 		// open dialog and set text to show
-		var dialog = createConfirmationDialog('Veranstaltgung erstellen', 'Soll die Veranstaltung erzeugt werden?');
+		var dialog = createConfirmationDialog('Veranstaltung erstellen', 'Soll die Veranstaltung erzeugt werden?');
 		$('#confirmation-dialog-container').html(dialog);
 
 		// function of dialog
@@ -152,7 +160,7 @@
 	function createConfirmationDialog(title, text) {
 		var myDialog = 
 			$('<div class="modal hide" id="confirmation-dialog"></div>')
-			.html('<div class="modal-header"><button class="close" type="button" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
+			.html('<div class="modal-header"><button class="close" type="button" data-dismiss="modal">X</button><h3>'+title+'</h3></div>')
 			.append('<div class="modal-body"><p>'+text+'</p></div>')
 			.append('<div class="modal-footer"><a href="#" class="btn" id="conf-dialog-cancel" data-dismiss="modal">Abbrechen</a>\n\
 			<a href="" class="btn btn-primary" data-id="0" data-delete="0" id="conf-dialog-confirm" data-accept="modal">OK</a></div>');
@@ -171,10 +179,11 @@
 		
 		// decide which method in controller should be called
 		if(deleteId != 0){
-			$('#confirmation-dialog-container .modal-body').html('Veranstaltung wird gelöscht.');
+			$('#confirmation-dialog-container .modal-body').html('Veranstaltung wird gel&ouml;scht.');
 			callMethod = "<?php echo site_url();?>admin/ajax_delete_single_event_from_stdplan/";
 			submitData = {course_data : spId};
-		} else {
+		}
+        else {
 			$('#confirmation-dialog-container .modal-body').html('Veranstaltung wird erstellt.');
 			callMethod = "<?php echo site_url();?>admin/ajax_create_new_event_in_stdplan/";
 
@@ -241,8 +250,7 @@
 		// add fixed header to table
 		stdplanTable.fixedHeader();
 	}
-	
-	
+
 <?php endblock(); ?>
 	
 <?php end_extend(); ?>

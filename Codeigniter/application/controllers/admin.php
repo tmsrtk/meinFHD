@@ -1391,112 +1391,126 @@ class Admin extends FHD_Controller {
 	 *
 	 * ***********************************************************************/
 
-
-    // ==== Stundenplanverwaltung after this comment ====
-    // TODO check for deprecated stuff, test functionality and behaviour. Is everything as expected?
-
-
-	/* ************************************************************************
-	 *
-	 * ******************************* Stundenplanverwaltung
-	 * ************************************** Frank Gottwald
-	 *
-	 */
-
+    // TODO check for deprecated stuff, test functionality and behaviour. Is everything as expected
 
     /*
-    * ===================================================
-    * Timetable administration after this comment
-    * ===================================================
+    * ===============================================================================
+    *                           Timetable administration
+    * ===============================================================================
     */
 
 	/**
-	 * Shows stdplan-edit view
-	 * If called from menue: reload is empty >> no active dropdown
-	 * otherwise: id to reload is passed via flashdata
+     * Opens the timetable edit view. The method could be called from the main menue
+     * or from another view. If it is called from another view the timetable id needs
+     * to be passed via GET, otherwise the id to reload is passed via flashdata.
+     *
+     * @access public
+     * @return void
 	 */
 	public function stdplan_edit(){
-        $reload = $this->session->flashdata('reload');
 
         $reload = 0;
-		// when called from parsing-page
+
+		// when called from the parsing page get the timetable id
 		$timetable_id = $this->input->get('timetable_id');
 
+        // if called from another method, the timetable id is already placed in the data array
+        if (array_key_exists('stdplan_id_automatic_reload',$this->data->load())){
+            $timetable_id = $this->data->load()['stdplan_id_automatic_reload'];
+        }
+
+        // if called from the parsing page
         if($timetable_id){
 			$reload = $timetable_id;
 		}
 
+        // if nothing is passed
 		if(!$reload){
-			$reload = 0; // if nothing is passed
+			$reload = 0;
 		}
 
-		// get all stdplan-data
+		// get all stdplan-data and add it to the data-array
 	    $this->data->add('all_stdplan_filterdata', $this->admin_model->get_stdplan_filterdata());
 
-	    // no autoreload without validation
+	    // no autoreload without validation and add it to the data-array
 	    $this->data->add('stdplan_id_automatic_reload', $reload);
 
+        // load the view and pass the data
 		$this->load->view('admin/stdplan_edit', $this->data->load());
     }
 
 
 	/**
-	 * Returns an div with the stdplan-table for a specified stdplan >> $this->input->get('stdplan_id')
-	 * !! combined id: StudiengangAbkuerzung, Semester, PO
-	 * @param array $reload_ids holding unique abk, sem, po combination - passed when called from within controller >> reload view (dropdown)
-	 */
-	public function ajax_show_events_of_stdplan($reload_ids = ''){
+	 * Prints/echo`s an div with the timetable content table for a specified/selected timetable, that the user has chosen in the dropdown field.
+     * Therefore the timetable id is passed via post. >> $this->input->post('stdplan_ids')!! combined id: StudiengangAbkuerzung, Semester, PO.
+     * To be able to call the function from another controller function, the timetable id could als be passed as an parameter.
+     *
+	 * @access public
+     * @param int $timetable_id_to_load ID of the timetable, where the events should be loaded for. Parameter is optional,
+     *                                  because the timetable id is sometimes submitted via post. If nothing is passed, the
+     *                                  default value is 0.
+     * @return void
+     */
+	public function ajax_show_events_of_stdplan($timetable_id_to_load  = 0){
 
-	    // if reload_ids is empty function has been called from view
-		if(!$reload_ids){
-			$ids = $this->input->post('stdplan_ids');
-			$splitted_ids = explode("_", "$ids");
-		// otherwise function called from within controller
-		// >> delete or add single row
-		}
-        else {
-			$splitted_ids = $reload_ids;
-		}
-//	    $ids = "BMI_2_2010";
-	    // get all events of a stundenplan specified by stdgng-abk., semester, po
-	    $data['kurs_ids_split'] = $splitted_ids;
-	    $stdplan_events_of_id = $this->admin_model->get_stdplan_data($splitted_ids);
+	    // read out the id of the timetable, that should be loaded
+        $id = $this->input->post('timetable_id');
+        /*
+         * if the timetable id has been submitted via POST use it, otherwise use the id,
+         * that has been passed as an parameter (timetable_id_to_load)
+         */
+        // use the id that has been submitted via POST
+        if ($id){
+            $timetable_id_to_load = $id;
+        }
+
+        // split the id of the selected timetable and save the parts in an array
+        $splitted_id = explode("_", "$timetable_id_to_load");
+
+	    // get all events of the selected timetable specified by degree program abbreviation, semester, po
+	    $data['kurs_ids_split'] = $splitted_id;
+	    $timetable_events_of_id = $this->admin_model->get_stdplan_data($splitted_id);
 
 	    // get dropdown-data: all event-types, profs, times, days
 	    $eventtypes = $this->admin_model->get_eventtypes();
 	    $all_profs = $this->admin_model->get_profs_for_stdplan_list();
 	    $colors = $this->admin_model->get_colors_from_stdplan();
-	    $course_ids = $this->admin_model->get_stdplan_course_ids($splitted_ids);
+	    $course_ids = $this->admin_model->get_stdplan_course_ids($splitted_id); // get all course ids
 
 		// getting data directly from helper_model - not implemented for all dropdowns
 		$starttimes_dropdown_options = $this->helper_model->get_dropdown_options('starttimes');
 		$endtimes_dropdown_options = $this->helper_model->get_dropdown_options('endtimes');
 		$days_dropdown_options = $this->helper_model->get_dropdown_options('days');
 
-//	    echo '<pre>';
-//	    print_r($all_profs[$i]->DozentID);
-//	    echo '</pre>';
+	    // --- prepare the dropdown data for the view ---
 
-	    // and prepare for dropdowns
-		// courses
+		// prepare all courses
 	    for($i = 0; $i < count($course_ids); $i++){
 			$courses_dropdown_options[$i] = $course_ids[$i]->Kursname;
 	    }
-	    // eventtypes
+
+	    // prepare all eventtypes
 	    for($i = 0; $i < count($eventtypes); $i++){
 			$eventtype_dropdown_options[$i] = $eventtypes[$i]->VeranstaltungsformName;
 	    }
-	    // profs
-	    for($i = 0; $i < count($all_profs); $i++){
-			$profs_dropdown_options[$all_profs[$i]->DozentID] = $all_profs[$i]->Nachname.', '.$all_profs[$i]->Vorname;
-		}
 
-	    // colors
+	    // prepare all profs
+	    for($i = 0; $i < count($all_profs); $i++){
+            // prepare entry for first prof (dummy, placeholder)
+            if ($i == 0){
+                $profs_dropdown_options[0] = "Bitte Dozent ausw&auml;hlen";
+            }
+            else { // use the name for all other profs
+                $profs_dropdown_options[$all_profs[$i]->DozentID] = $all_profs[$i]->Nachname.', '.$all_profs[$i]->Vorname;
+            }
+        }
+
+	    // prepare all colors
 	    for($i = 0; $i < count($colors); $i++){
 			$colors_dropdown_options[$i] = $colors[$i]->Farbe;
 	    }
 
-	    // save dropdown options into $data
+	    // save dropdown options into the $data-array
 	    $data['courses_dropdown_options'] = $courses_dropdown_options;
 	    $data['eventtype_dropdown_options'] = $eventtype_dropdown_options;
 	    $data['profs_dropdown_options'] = $profs_dropdown_options;
@@ -1505,78 +1519,101 @@ class Admin extends FHD_Controller {
 	    $data['days_dropdown_options'] = $days_dropdown_options;
 	    $data['colors_dropdown_options'] = $colors_dropdown_options;
 
-		$data['first_row'] = TRUE;
+		$data['first_row'] = TRUE; // variable indicates, that an empty first row should be displayed at the top of the table
 
-		// getting first row - empty fields
+		// get the first row - empty fields to be able to add new events
 		$data['stdplan_first_row'] = $this->load->view('admin/partials/stdplan_coursetable_row', $data, TRUE);
 
-	    foreach ($stdplan_events_of_id as $sp_events){
+	    foreach ($timetable_events_of_id as $timetable_event){
 			$data['first_row'] = FALSE;
-			$data['spkurs_id'] = $sp_events->SPKursID;
-			$data['kursname'] = $sp_events->Kursname;
-			$data['veranstaltungsform_id'] = $sp_events->VeranstaltungsformID;
-			$data['alternative'] = $sp_events->VeranstaltungsformAlternative;
-			$data['raum'] = $sp_events->Raum;
-			$data['dozent_id'] = $sp_events->DozentID;
-			$data['beginn_id'] = $sp_events->StartID;
-			$data['ende_id'] = $sp_events->EndeID;
-			$data['tag_id'] = $sp_events->TagID;
-			$data['wpf_flag'] = $sp_events->isWPF;
-			$data['wpf_name'] = $sp_events->WPFName;
-			$data['farbe'] = $sp_events->Farbe;
+			$data['spkurs_id'] = $timetable_event->SPKursID;
+			$data['kursname'] = $timetable_event->Kursname;
+			$data['veranstaltungsform_id'] = $timetable_event->VeranstaltungsformID;
+			$data['alternative'] = $timetable_event->VeranstaltungsformAlternative;
+			$data['raum'] = $timetable_event->Raum;
+			$data['dozent_id'] = $timetable_event->DozentID;
+			$data['beginn_id'] = $timetable_event->StartID;
+			$data['ende_id'] = $timetable_event->EndeID;
+			$data['tag_id'] = $timetable_event->TagID;
+			$data['wpf_flag'] = $timetable_event->isWPF;
+			$data['wpf_name'] = $timetable_event->WPFName;
+			$data['farbe'] = $timetable_event->Farbe;
 
-			// array holding all rows
+			/*
+			 * Each timetable course represents an single row -> load the partial view for the currently viewed timetable event
+			 * and save it in the array, that holds each single row of the selected timetable
+			 */
+
 			$rows[] = $this->load->view('admin/partials/stdplan_coursetable_row', $data, TRUE);
-
-//			echo '<pre>';
-//			echo print_r($data['eventtype_dropdown_options']);
-//			echo '</pre>';
-
 	    }
 
+        // add the row array to the global data array
 	    $data['stdplan_course_rows'] = $rows;
 
+        // load the timetable coursetable view as an string and echo it out
 	    echo $this->load->view('admin/partials/stdplan_coursetable_content', $data, TRUE);
-
 	}
 
-	/**
-	 * Validating all inputs.
-	 */
+    /**
+     * Validates all made changes and inputs, that were made during editing an specified timetable.
+     * If the validation is correct, the changes will be saved in the database. Otherwise the
+     * the validation errors and the timetable will be displayed.
+     *
+     * @access public
+     * @return void
+     */
 	public function validate_stdplan_changes(){
 
-	    // get all course-ids belonging to a specified stdgng
+	    // save the submitted information about the timetable
 	    $stdplan_id = array(
-		$this->input->post('stdplan_id_abk'),
-		$this->input->post('stdplan_id_sem'),
-		$this->input->post('stdplan_id_po'));
+		    $this->input->post('stdplan_id_abk'),
+		    $this->input->post('stdplan_id_sem'),
+		    $this->input->post('stdplan_id_po')
+        );
 
-	    $stdplan_course_ids = $this->admin_model->get_stdplan_sp_course_ids($stdplan_id);
+        // get all course-ids, that belong to the timetable that has been changed
+        $stdplan_course_ids = $this->admin_model->get_stdplan_sp_course_ids($stdplan_id);
 
+        // construct the id of the timetable, that should be reloaded
+        $stdplan_id_automatic_reload = $stdplan_id[0].'_'.$stdplan_id[1].'_'.$stdplan_id[2];
 
+        // run through all ids and generate id-specific validation-rules
 	    foreach($stdplan_course_ids as $id){
-			// run through all ids and generate id-specific validation-rules
-			$this->form_validation->set_rules($id->SPKursID.'_Raum', 'Fehler', 'required');
+			$this->form_validation->set_rules($id->SPKursID.'_Raum', 'Raum', 'required');
 	    }
 
-	    $stdplan_id_automatic_reload = $stdplan_id[0].'_'.$stdplan_id[1].'_'.$stdplan_id[2];
+        // modify the validation error message
+        $this->form_validation->set_message('required', 'Die Angabe eines Raumes zu einer Veranstaltung ist zwingend erforderlich. Die vorgenommenen'.
+                                            ' &Auml;nderungen wurden nicht in der Datenbank gespeichert.');
 
+        // set the custom error delimiters
+        $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+
+        // run the form validation
+        // if some errors occured during the form validation repopulate the timetable and display the validation errors
 	    if ($this->form_validation->run() == FALSE) {
-			// reload view
-			$this->session->set_flashdata('reload', $stdplan_id_automatic_reload);
-			redirect('admin/stdplan_edit');
-		} else {
+			// reload timetable with the the validation errors // TODO repopulation and displaying validation errors does not work
+            $this->data->add('stdplan_id_automatic_reload', $stdplan_id_automatic_reload);
+			$this->stdplan_edit();
+		}
+        // the validation was correct
+        else {
+            // save the timetable changes
 			$this->save_stdplan_changes($stdplan_id_automatic_reload);
 	    }
 	}
 
 	/**
-	 * Updates data of Stdplan
-	 * @param int $reload id to be reloaded (if passed / 0 >> no active stdplan)
+	 * Updates / saves the changes for the viewed timetable, that have been submitted via POST and reloads the timetable.
+     * Therefore the id of the timetable is passed as an parameter. If no id is passed, no timetable will be reloaded.
+     *
+     * @access public
+	 * @param int $reload ID of the timetable, that should be reloaded. If nothing is passed, the default value is 0.
+     *                    (No timetable will be reloaded)
 	 */
-	public function save_stdplan_changes($reload = 0){
+	public function save_stdplan_changes($id_to_reload = 0){
 
-	    // build an array, containing all keys that have to be updated in db
+	    // build an array, containing all keys that have to be updated in the database
 	    $update_fields = array(
 			'VeranstaltungsformID',
 			'VeranstaltungsformAlternative',
@@ -1585,38 +1622,40 @@ class Admin extends FHD_Controller {
 			'DozentID',
 			'StartID',
 			'EndeID',
-//			'isWPF', // has to be handled separately
 			'TagID',
 			'Farbe'
 		);
 
-	    // get data from form-submission
+	    // get all data from the form-submission
 	    $post_data = $this->input->post();
 
-//		echo '<pre>';
-//		print_r($post_data);
-//		echo '</pre>';
-
 		// get spcourse_ids for stdplan that has been saved
-		// 1. get id from submission | 2. get ids from db
+
+		// 1. get the timetable id(s) from the form-submission
 		$stdplan_ids[] = $post_data['stdplan_id_abk'];
 		$stdplan_ids[] = $post_data['stdplan_id_sem'];
 		$stdplan_ids[] = $post_data['stdplan_id_po'];
+
+        // 2. get the spcourse-ids from the database
 		$sp_course_ids = $this->admin_model->get_stdplan_sp_course_ids($stdplan_ids);
 
-		// getting additonal data for colors - necessaray to map from array
+		// get additonal data for colors - necessaray to map from array
 	    $colors = $this->admin_model->get_colors_from_stdplan();
+        // add each color to an array, that represents the dropdown data for further mapping
 	    for($i = 0; $i < count($colors); $i++){
 			$colors_dropdown_options[$i] = $colors[$i]->Farbe;
 	    }
 
-		// run through ids to save submitted data
+		// run through all timetable courses to save the submitted data
 		foreach ($sp_course_ids as $id) {
-			$spc_id = $id->SPKursID; // save id from object
-			$update_stdplan_data = array(); // array for data to save
-			// run through array with fields to update
+
+			$spc_id = $id->SPKursID; // save spcourse-id from object
+			$update_stdplan_data = array(); // array for the (update)data that should be saved
+
+			// run through all attributes of an course and store the data
 			foreach ($update_fields as $field_name) {
-				// different behaviour depending on field-typ (cb has to be mapped from array-index to ID (+1))
+
+				// different behaviour depending on field-type (checkbox has to be mapped from array-index to ID (+1))
 				switch($field_name){
 					case 'VeranstaltungsformID' :
 					case 'StartID' :
@@ -1624,118 +1663,116 @@ class Admin extends FHD_Controller {
 					case 'TagID' : $update_stdplan_data[$field_name] = ($post_data[$spc_id.'_'.$field_name] + 1) ; break;
 					case 'Farbe' : $update_stdplan_data[$field_name] = $colors_dropdown_options[$post_data[$spc_id.'_'.$field_name]]; break;
 					case 'WPFName' :
-						if(key_exists($spc_id.'_'.$field_name, $post_data)){
+						if(array_key_exists($spc_id.'_'.$field_name, $post_data)){
 							$update_stdplan_data[$field_name] = $post_data[$spc_id.'_'.$field_name];
 						}
 						break;
 					default : $update_stdplan_data[$field_name] = $post_data[$spc_id.'_'.$field_name]; break;
 				}
 
-				// handling of checkbox
-				if(array_key_exists($spc_id.'_isWPF', $post_data)){
+				// mapping / handling of the wpf checkbox
+				if(array_key_exists($spc_id.'_isWPF', $post_data)){ // course is a wpf
 					$update_stdplan_data['isWPF'] = 1;
-				} else {
+				}
+                else { // course is not a wpf
 					$update_stdplan_data['isWPF'] = 0;
+                    // delete/remove the name of the wpf
+                    $update_stdplan_data['WPFName']='';
 				}
 
 			}
-			// update data in db - for every
-			$this->admin_model->update_stdplan_details($update_stdplan_data, $spc_id);
-//			echo '<pre>';
-//			print_r($update_stdplan_data);
-//			echo '</pre>';
 
+			// update data in the database - for each timetable-course
+			$this->admin_model->update_stdplan_details($update_stdplan_data, $spc_id);
 		}
 
-		$this->session->set_flashdata('reload', $reload);
-	    redirect('admin/stdplan_edit');
+        // add an success message to the view
+        $this->data->add('success_message', 'Die &Auml;nderungen am Stundenplan wurden erfolgreich gespeichert!');
+
+        // reload the timetable edit view
+        $this->data->add('stdplan_id_automatic_reload', $id_to_reload);
+        $this->stdplan_edit();
 	}
 
-
 	/**
-	 * Calls view to delete single stdplan
-	 */
-	public function stdplan_delete(){
-	    $this->data->add('delete_view_data', $this->admin_model->get_stdplan_filterdata_plus_id());
-		$this->load->view('admin/stdplan_delete', $this->data->load());
-	}
-
-
-	/**
-	 * Deletes single stdplan.
-	 * Called from within view - button.
-	 */
-	public function delete_stdplan(){
-
-	    // get data from post
-	    $degree_program_ids = array(
-			$this->input->post('stdplan_abk'),
-			$this->input->post('stdplan_semester'),
-			$this->input->post('stdplan_po'),
-	    );
-
-	    // delete all data related to chosen stdplan
-	    $this->admin_model->delete_stdplan_related_records($degree_program_ids);
-
-	    // reload view
-	    redirect('admin/stdplan_delete');
-
-	}
-
-
-	/**
-	 * Deletes a single line from stdplan-table-view - after button-click
+	 * Deletes a single timetable course from edit timetable-view - after the delete button for an
+     * specified course.
+     * Method is usually called via ajax, so the result will be echoed and not returned!
+     *
+     * @access public
+     * @return void
 	 */
 	public function ajax_delete_single_event_from_stdplan(){
-		// get id from post
+
+		// get timetable-course-id from post
 		$sp_course_id = $this->input->post('course_data');
-		// split ids >> abk, sem, po, SP_COURSE_ID
+
+		// split the timetable-course-id (sp_course_id) into an array with the following elements:
+        // 0-> abk, 1-> sem, 2-> po, 3-> SP_COURSE_ID
 		$split_ids = explode('_', $sp_course_id);
 
-		// delete data DB
+		// delete the timetable course in the database
 		$this->admin_model->delete_single_event_from_stdplan($split_ids[3]);
 
-		// delete spcourse_id from array
+		// delete/remove the spcourse_id from the array
 		unset($split_ids[3]);
 
 		// reload view with unique abk, sem, po combination
-		echo $this->ajax_show_events_of_stdplan($split_ids);
+        $this->ajax_show_events_of_stdplan($sp_course_id);
 
 	}
 
 	/**
-	 * Creates new event in stdplan after click on Button
+	 * Creates a new event in the timetable after the add Button (Hinzufuegen) has been clicked
+     * and reloads the timetable view.
+     * Method is usually called via ajax.
+     *
+     * @access public
+     * @return void
 	 */
 	public function ajax_create_new_event_in_stdplan(){
+
+        // get the data for the new course from the post array
 		$new_course_data = $this->input->post('course_data');
-		$save_to_db = array();
+
+        // split the id of the timetable. The timetable id is the first element (0) in the array
 		$stdplan_ids = explode('_', $new_course_data[0]);
 
-		// delete first key from array
+        // save the completed timetable id, to be able to reload the timetable view on an easy way
+        $timetable_id = $new_course_data[0];
+
+		// delete the first key(timetable id) from the array
 		unset($new_course_data[0]);
 
-//		echo print_r($new_course_data); // DEBUG
+        // array, that holds the data, that should be inserted into the database
+        $save_to_db = array();
 
-		// additional data of courses - mapping values to ids
+        // additional data of courses - mapping values to ids
 	    $courses = $this->admin_model->get_stdplan_course_ids($stdplan_ids);
+        // prepare the elements to be able to map them to the selected dropdown values
 	    for($i = 0; $i < count($courses); $i++){
 			$courses_dropdown_options[$i] = $courses[$i]->KursID;
 	    }
 
-		// getting additonal data for colors - necessaray to map from array
+		// getting additional data for colors - necessary to map from the array
 	    $colors = $this->admin_model->get_colors_from_stdplan();
+        // prepare the elements to be able to map them to the selected dropdown values
 	    for($i = 0; $i < count($colors); $i++){
 			$colors_dropdown_options[$i] = $colors[$i]->Farbe;
 	    }
 
-		// run through course-data and prepare for saving
+		// run through the course-data and prepare it for saving in the database
 		foreach($new_course_data as $data){
-			$split_data = explode('_', $data);
-			// prepare data for saving
-			// - eventtype, starttime, endtime, day has to be mapped from array-index to id
-			// - isWPF: checked = 1 , undefined = 0
-			// - color need additional data >> array
-			// - KursID same as color
+
+            $split_data = explode('_', $data);
+
+            /*
+             * prepare data for saving
+             * - eventtype, starttime, endtime, day has to be mapped from array-index to id
+             * - isWPF: checked = 1 , undefined = 0
+             * - color need additional data >> array
+             * - KursID same as color
+             */
 			switch($split_data[1]) {
 				case 'VeranstaltungsformID' :
 				case 'StartID' :
@@ -1746,14 +1783,59 @@ class Admin extends FHD_Controller {
 				case 'KursID' : $save_to_db[$split_data[1]] = $courses_dropdown_options[$split_data[0]]; break;
 				default : $save_to_db[$split_data[1]] = ($split_data[0]); break;
 			}
+
 		}
 
-//		echo print_r($save_to_db, $stdplan_ids);
+        // save the new course with alle information in the database
 		$this->admin_model->save_new_course_in_stdplan($save_to_db, $stdplan_ids);
-
-		// return updated view
-		echo $this->ajax_show_events_of_stdplan($stdplan_ids);
+		// reload the updated timetable view
+        $this->ajax_show_events_of_stdplan($timetable_id);
 	}
+
+    /**
+     * Loads view with all imported timetables and gives the user the ability to delete an single timetable
+     *
+     * @access public
+     * @return void
+     */
+    public function stdplan_delete(){
+        // get all already imported timetables and add them to the data array
+        $this->data->add('delete_view_data', $this->admin_model->get_stdplan_filterdata_plus_id());
+        $this->load->view('admin/stdplan_delete', $this->data->load()); // load the view
+    }
+
+
+    /**
+     * Deletes a single (selected) timetable.
+     * Called from the stdplan_delete view (delete button)
+     *
+     * @access public
+     * @return void
+     */
+    public function delete_stdplan(){
+
+        // get data from post
+        $degree_program_ids = array(
+            $this->input->post('stdplan_abk'),
+            $this->input->post('stdplan_semester'),
+            $this->input->post('stdplan_po'),
+        );
+
+        // delete all data related to chosen timetable
+        $this->admin_model->delete_stdplan_related_records($degree_program_ids);
+
+        // reload the timetable delete view
+        redirect('admin/stdplan_delete');
+
+    }
+
+    // Veranstaltungsgruppen bereinigen..
+
+    /*
+    * ===============================================================================
+    *                           End timetable administration
+    * ===============================================================================
+    */
 
 	/*
 	 *
@@ -1763,9 +1845,9 @@ class Admin extends FHD_Controller {
 	 * ***********************************************************************/
 
     /*
-    * ===================================================
+    * ==================================================================================
     *                   Timetable import
-    * ===================================================
+    * ==================================================================================
     */
 
 
@@ -1974,9 +2056,9 @@ class Admin extends FHD_Controller {
     }
 
     /*
-    * ===================================================
-    *                   End timetable import
-    * ===================================================
+    * ==================================================================================
+    *                                   End timetable import
+    * ==================================================================================
     */
 
 }
