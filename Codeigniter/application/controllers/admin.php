@@ -1829,7 +1829,40 @@ class Admin extends FHD_Controller {
 
     }
 
-    // Veranstaltungsgruppen bereinigen..
+    /**
+     * Shows the view, were the user can start the process to clean up all currently
+     * used event groups to delete/remove old timetables for the students.
+     *
+     * @access public
+     * @return void
+     */
+    public function show_clean_event_groups(){
+
+        // load the clean event groups view
+        $this->load->view('admin/clean_event_groups', $this->data->load());
+    }
+
+    /**
+     * Removes all students from their active event groups / courses.
+     *
+     * @access public
+     * @return void
+     */
+    public function clean_event_groups(){
+
+        // get all students, who take part in past courses
+        $students_with_groups_to_delete = $this->admin_model->get_all_students_with_groups_to_delete();
+
+        // delete all student and group participant combination from the group participants table
+        $this->admin_model->delete_students_from_past_groups($students_with_groups_to_delete);
+
+        // remove all group participants from the groups that doesn`t exist any longer
+        $this->admin_model->delete_group_participants_from_non_existing_groups();
+
+        // the cleaning process is finished -> load the success view
+        $this->load->view('admin/clean_event_groups_success', $this->data->load());
+
+    }
 
     /*
     * ===============================================================================

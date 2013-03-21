@@ -84,11 +84,14 @@
                                         <?php if ( $this->authentication->has_permissions('hat_stundenplan_importieren') ) : ?>
                                         <li><a href="<?php print base_url('admin/show_timetable_import'); ?>">Stundenplan importieren</a></li>
                                         <?php endif ?>
-										<?php if ( $this->authentication->has_permissions('hat_stundenplan_bearbeiten') ) : ?>
+                                        <?php if ( $this->authentication->has_permissions('hat_stundenplan_bearbeiten') ) : ?>
                                         <li><a href="<?php print base_url('admin/stdplan_edit'); ?>">Stundenplan bearbeiten</a></li>
                                         <?php endif ?>
-										<?php if ( $this->authentication->has_permissions('hat_stundenplan_loeschen') ) : ?>
-										<li><a href="<?php print base_url('admin/stdplan_delete'); ?>">Stundenplan l&ouml;schen</a></li>
+                                        <?php if ( $this->authentication->has_permissions('hat_stundenplan_loeschen') ) : ?>
+                                        <li><a href="<?php print base_url('admin/stdplan_delete'); ?>">Stundenplan l&ouml;schen</a></li>
+                                        <?php endif ?>
+                                        <?php if ( $this->authentication->has_permissions('hat_veranstaltungsgruppen_bereinigen') ) : ?>
+                                        <li><a href="<?php print base_url('admin/show_clean_event_groups');?>">Veranstaltungsgruppen bereinigen</a></li>
                                         <?php endif ?>
 									</ul> <!-- /.nav .level-2 -->
 								</li>
