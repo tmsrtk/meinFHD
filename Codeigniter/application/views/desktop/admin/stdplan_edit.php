@@ -7,16 +7,23 @@
 	// peraparation of degree program dropdown
 	$stdplanFilter[0] = 'Bitte ausw&auml;hlen';
 
-    // for each passed timetable create an custom filter entry
-	foreach($all_stdplan_filterdata as $spf){ 
-		$stdplanFilter[
-			$spf->StudiengangAbkuerzung.'_'
-			.$spf->Semester.'_'
-			.$spf->Pruefungsordnung] =
-				$spf->StudiengangAbkuerzung.' '
-				.$spf->Semester.' - '
-				.$spf->Pruefungsordnung; 
-	}
+    /*
+     * Create an custom filter array if there is at least one timetable passed.
+     * The timetables are passed as an array, so the variable needs to be an array and the count needs to be grater than 1
+     */
+    if (is_array($all_stdplan_filterdata) && count($all_stdplan_filterdata) > 0) {
+
+        // for each passed timetable create an custom filter entry
+        foreach($all_stdplan_filterdata as $spf){
+            $stdplanFilter[
+                $spf->StudiengangAbkuerzung.'_'
+                .$spf->Semester.'_'
+                .$spf->Pruefungsordnung] =
+                    $spf->StudiengangAbkuerzung.' '
+                    .$spf->Semester.' - '
+                    .$spf->Pruefungsordnung;
+        }
+    }
 
 	$js = 'id="admin-stdplanfilter"';
 ?>

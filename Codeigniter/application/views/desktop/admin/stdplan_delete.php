@@ -14,32 +14,40 @@
 <?php startblock('content'); # additional markup before content ?>
 
 		<div class="row-fluid">
-			<h2>Stundenplan löschen</h2>
+			<h2>Stundenplan l&ouml;schen</h2>
 		</div>
 		<hr>
 
 		<div class="row-fluid">
+            <?php
+
+            /*
+            * Display all imported timetables, to be able to delete them. The table will only be displayed, if there is an imported timetable.
+            * The timetables are passed as an array, so the variable needs to be an array and the count needs to be grater than 1
+            */
+            if (is_array($delete_view_data)):
+                foreach($delete_view_data as $sp):
+                    $btn_attributes = array(
+                        'name' => 'delete_sdtplan',
+                        'class' => 'btn-danger delete-stdplan',
+                        'id' => $sp->StudiengangAbkuerzung.'-'.$sp->Pruefungsordnung.'-'.$sp->Semester,
+                        'data-name' => $sp->StudiengangAbkuerzung.' - '.$sp->Pruefungsordnung.' - '.$sp->Semester.'. Semester'
+                    );
+
+
+            ?>
 			<table class="table table-striped"> 
 				<!-- tablehead -->
 				<thead>
 					<tr>
 						<th>Studiengang:</th>
 						<th>Kurzbezeichnung:</th>
-						<th>Löschen</th>
+						<th>L&ouml;schen</th>
 					</tr>
 				</thead>
 
 				<tbody>
-				<?php 
 
-					foreach($delete_view_data as $sp) :
-						$btn_attributes = array(
-							'name' => 'delete_sdtplan',
-							'class' => 'btn-danger delete-stdplan',
-							'id' => $sp->StudiengangAbkuerzung.'-'.$sp->Pruefungsordnung.'-'.$sp->Semester,
-							'data-name' => $sp->StudiengangAbkuerzung.' - '.$sp->Pruefungsordnung.' - '.$sp->Semester.'. Semester'
-						);
-					?>
 
 					<tr>
 						<td><?php echo $sp->StudiengangName; ?></td>
@@ -48,10 +56,8 @@
 							<?php
 								$form_attrs = 'id="submit-delete"';
 								echo form_open('admin/delete_stdplan', $form_attrs);
-								echo form_submit($btn_attributes, 'Stundenplan loeschen');
-								// put some static data into post - CreditpointsMin (actually not needed) and FachbereichID (final = 5)
+								echo form_submit($btn_attributes, 'Stundenplan l&ouml;schen');
 								$hiddenData = array(
-			//						'stdgng_id' => $sp->StudiengangID,
 									'stdplan_abk' => $sp->StudiengangAbkuerzung,
 									'stdplan_semester' => $sp->Semester,
 									'stdplan_po' => $sp->Pruefungsordnung
@@ -62,9 +68,15 @@
 						</td>
 					</tr>
 
-					<?php endforeach; ?>
+
 				</tbody>
-			</table>	
+			</table>
+            <?php
+                endforeach; // end of the foreach loop
+                else: // display a message if there is no timetable imported
+            ?>
+            <p>Es ist kein Stundenplan in der Datenbank vorhanden.</p>
+            <?php endif; ?>
 		</div>
 		<div id="delete-confirmation-container"></div>
 
@@ -77,9 +89,9 @@
 <?php startblock('customFooterJQueryCode');?>
 
 	<!--<script>-->
-	var title = 'Stundenplan löschen';
+	var title = 'Stundenplan l&ouml;schen';
 	var modalText = 'modal-text';
-	var modalTextProgress = 'Stundenplan wird gelöscht';
+	var modalTextProgress = 'Stundenplan wird gel&ouml;scht;
 
 	$('td').on('click', '.delete-stdplan', function(){
 	    var buttonId = $(this).attr('id');
@@ -109,7 +121,7 @@
 	function createModal(title, text, stdPlan){
 	    var confirmationModal = $('<div class="modal hide" id="delete-dialog"></div>')
 		.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
-		.append('<div class="modal-body"><p>Soll der Stundenplan ('+stdPlan+') wirklich gelöscht werden?</p></div>')
+		.append('<div class="modal-body"><p>Soll der Stundenplan ('+stdPlan+') wirklich gel&ouml;scht werden?</p></div>')
 		.append('<div class="modal-footer"><a href="#" class="btn" id="dismiss-delete-dialog" data-dismiss="modal">Abbrechen</a>\n\
 		    <a href="#" class="btn btn-primary" id="confirm-delete-dialog">OK</a></div>');
 	    
@@ -130,9 +142,6 @@
 	    return false;
 	});
 	
-	    
-	    
-	    
 <?php endblock(); ?>
 
 <?php end_extend(); ?>
