@@ -1,6 +1,6 @@
 <?php extend('admin/index.php'); # extend main template ?>
 
-<?php startblock('title');?><?php get_extended_block();?> - Stundenplan löschen<?php endblock(); ?>
+<?php startblock('title');?><?php get_extended_block();?> - Stundenplan l&ouml;schen<?php endblock(); ?>
 
 <?php startblock('preCodeContent'); # additional markup before content ?>
 	<div class="span3"></div>
@@ -56,7 +56,7 @@
 							<?php
 								$form_attrs = 'id="submit-delete"';
 								echo form_open('admin/delete_stdplan', $form_attrs);
-								echo form_submit($btn_attributes, 'Stundenplan l&ouml;schen');
+								echo form_submit($btn_attributes, 'Stundenplan löschen');
 								$hiddenData = array(
 									'stdplan_abk' => $sp->StudiengangAbkuerzung,
 									'stdplan_semester' => $sp->Semester,
