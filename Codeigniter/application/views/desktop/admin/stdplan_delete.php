@@ -26,37 +26,39 @@
             * The timetables are passed as an array, so the variable needs to be an array and the count needs to be grater than 1
             */
             if (is_array($delete_view_data)):
+
+            ?>
+
+                <table class="table table-striped">
+				<!-- tablehead -->
+                <thead>
+                <tr>
+                    <th>Studiengang:</th>
+                    <th>Kurzbezeichnung:</th>
+                    <th>L&ouml;schen</th>
+                </tr>
+                </thead>
+
+				<tbody>
+            <?php
+
                 foreach($delete_view_data as $sp):
                     $btn_attributes = array(
                         'name' => 'delete_sdtplan',
                         'class' => 'btn-danger delete-stdplan',
-                        'id' => $sp->StudiengangAbkuerzung.'-'.$sp->Pruefungsordnung.'-'.$sp->Semester,
+                        'id' => $sp->StudiengangAbkuerzung.'_'.$sp->Pruefungsordnung.'_'.$sp->Semester,
                         'data-name' => $sp->StudiengangAbkuerzung.' - '.$sp->Pruefungsordnung.' - '.$sp->Semester.'. Semester'
                     );
-
-
             ?>
-			<table class="table table-striped"> 
-				<!-- tablehead -->
-				<thead>
-					<tr>
-						<th>Studiengang:</th>
-						<th>Kurzbezeichnung:</th>
-						<th>L&ouml;schen</th>
-					</tr>
-				</thead>
-
-				<tbody>
-
-
 					<tr>
 						<td><?php echo $sp->StudiengangName; ?></td>
-						<td><?php echo $sp->StudiengangAbkuerzung.'_'.$sp->Semester.'_'.$sp->Pruefungsordnung; ?></td>
+						<td><?php echo $sp->StudiengangAbkuerzung.'_'.$sp->Pruefungsordnung.'_'.$sp->Semester; ?></td>
 						<td>
 							<?php
-								$form_attrs = 'id="submit-delete"';
-								echo form_open('admin/delete_stdplan', $form_attrs);
-								echo form_submit($btn_attributes, 'Stundenplan löschen');
+								$form_attrs = 'id="submit-delete-'.$sp->StudiengangAbkuerzung.'_'.$sp->Pruefungsordnung.'_'.$sp->Semester.'"'; // unique id for every button
+                                echo form_open('admin/delete_stdplan', $form_attrs);
+
+                                echo form_submit($btn_attributes, 'Stundenplan löschen');
 								$hiddenData = array(
 									'stdplan_abk' => $sp->StudiengangAbkuerzung,
 									'stdplan_semester' => $sp->Semester,
@@ -68,11 +70,12 @@
 						</td>
 					</tr>
 
-
-				</tbody>
-			</table>
             <?php
                 endforeach; // end of the foreach loop
+            ?>
+                </tbody>
+                </table>
+            <?php
                 else: // display a message if there is no timetable imported
             ?>
             <p>Es ist kein Stundenplan in der Datenbank vorhanden.</p>
@@ -88,10 +91,9 @@
 	
 <?php startblock('customFooterJQueryCode');?>
 
-	<!--<script>-->
 	var title = 'Stundenplan l&ouml;schen';
 	var modalText = 'modal-text';
-	var modalTextProgress = 'Stundenplan wird gel&ouml;scht;
+	var modalTextProgress = 'Stundenplan wird gel&ouml;scht';
 
 	$('td').on('click', '.delete-stdplan', function(){
 	    var buttonId = $(this).attr('id');
@@ -107,11 +109,9 @@
 			backdrop: 'static'
 	    }).on('show', function(){
 			$('#confirm-delete-dialog').attr('data-id', buttonId);
-			console.log(buttonId);
-		
+
 	    }).on('hide', function(){
-			console.log('hidden');
-		
+
 	    }).modal('show');
 	    
 	    return false;
@@ -122,8 +122,8 @@
 	    var confirmationModal = $('<div class="modal hide" id="delete-dialog"></div>')
 		.html('<div class="modal-header"><button type="button" class="close" data-dismiss="modal">×</button><h3>'+title+'</h3></div>')
 		.append('<div class="modal-body"><p>Soll der Stundenplan ('+stdPlan+') wirklich gel&ouml;scht werden?</p></div>')
-		.append('<div class="modal-footer"><a href="#" class="btn" id="dismiss-delete-dialog" data-dismiss="modal">Abbrechen</a>\n\
-		    <a href="#" class="btn btn-primary" id="confirm-delete-dialog">OK</a></div>');
+		.append('<div class="modal-footer"><a href="#" class="btn" id="dismiss-delete-dialog" data-dismiss="modal">Nein</a>\n\
+		    <a href="#" class="btn btn-primary" id="confirm-delete-dialog">Ja</a></div>');
 	    
 	    return confirmationModal;
 	}
@@ -132,14 +132,15 @@
 	// when clicking on ok
 	$('#delete-confirmation-container').on('click', '#confirm-delete-dialog', function(){
 	    var submitId = $(this).attr('data-id');
-	    
+
+
 	    // change modal to progress
 	    $('.modal-body').html(modalTextProgress);
 	    $('.modal-footer').hide();
 	    
-	    $('#'+submitId).parents('form#submit-delete').submit();
-	    
-	    return false;
+	    $('#'+submitId).parents('form#submit-delete-'+submitId).submit();
+
+        return false;
 	});
 	
 <?php endblock(); ?>
