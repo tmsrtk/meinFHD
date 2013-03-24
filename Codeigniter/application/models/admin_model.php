@@ -1693,22 +1693,22 @@ class Admin_model extends CI_Model {
 	    $group_ids = array();
         // for each single timetable course get the groups that should be deleted
 	    foreach($timetable_course_ids as $id){
-			$group_ids[] = $this->get_group_id_to_delete($id->SPKursID);
+			$group_ids[] = $this->_get_group_id_to_delete($id->SPKursID);
 	    }
 
 	    // delete all groups, that are related to the timetable that are related to the selected timetable
 	    foreach($group_ids as $id){
-			$this->delete_from_group($id);
+			$this->_delete_from_group($id);
 	    }
 	    
 	    // delete all user courses from benutzerkurs (spkurs_ids), that are related to the selected timetable
 	    foreach($timetable_course_ids as $id){
-			$this->delete_from_benutzerkurs($id->SPKursID);
+			$this->_delete_from_benutzerkurs($id->SPKursID);
 	    }
 	    
 	    // delete all timetable courses from the table stundenplankurs (spkursids), that are related to the selected timetable
 	    foreach($timetable_course_ids as $id){
-			$this->delete_from_stundenplankurs($id->SPKursID);
+			$this->_delete_from_stundenplankurs($id->SPKursID);
 	    }
 	    
 	}
@@ -1720,7 +1720,7 @@ class Admin_model extends CI_Model {
      * @access private
 	 * @return int The group id, that corresponds to the given timetable course id
 	 */
-	private function get_group_id_to_delete($spkurs_id){
+	private function _get_group_id_to_delete($spkurs_id){
 
         // query for the corresponding group id
 	    $this->db->select('GruppeID');
@@ -1745,7 +1745,7 @@ class Admin_model extends CI_Model {
      * @return void
      *
 	 */
-	private function delete_from_group($group_id){
+	private function _delete_from_group($group_id){
         // delete the group with the given id
         $this->db->where('GruppeID', $group_id);
 	    $this->db->delete('gruppe');
@@ -1760,7 +1760,7 @@ class Admin_model extends CI_Model {
      * @access private
      * @return void
 	 */
-	private function delete_from_benutzerkurs($spk_id){
+	private function _delete_from_benutzerkurs($spk_id){
         // delete the timetable course from the user course table
         $this->db->where('SPKursID', $spk_id);
         $this->db->delete('benutzerkurs');
@@ -1775,7 +1775,7 @@ class Admin_model extends CI_Model {
      * @access private
      * @return void
 	 */
-	private function delete_from_stundenplankurs($spk_id){
+	private function _delete_from_stundenplankurs($spk_id){
         // delete the timetabelcourse from the timetable course table
 	    $this->db->where('SPKursID', $spk_id);
 	    $this->db->delete('stundenplankurs');
