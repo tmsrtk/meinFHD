@@ -1810,14 +1810,32 @@ class Admin_model extends CI_Model {
     //######################### methods needed to clean all event groups
 
     /**
+     * Executes all necessary database operations to clean all existing event groups.
+     *
+     * @access public
+     * @return void
+     */
+    public function clean_all_event_groups(){
+
+        // get all students, who take part in past courses
+        $students_with_groups_to_delete = $this->_get_all_students_with_groups_to_delete();
+
+        // delete all student and group participant combination from the group participants table
+        $this->_delete_students_from_past_groups($students_with_groups_to_delete);
+
+        // remove all group participants from the groups that doesn`t exist any longer
+        $this->_delete_group_participants_from_non_existing_groups();
+
+    }
+    /**
      * Selects the group and user id of all students, who take part in event groups
      * of the past / major semester.
      *
-     * @access public
+     * @access private
      * @return array An nested array with the group id and the user id, where the students take part in.
      *               Structure: Array -> nested Array -> Keys "GruppeID", "BenutzerID"
      */
-    public function get_all_students_with_groups_to_delete(){
+    private function _get_all_students_with_groups_to_delete(){
 
         $this->db->select('a.GruppeID, a.BenutzerID');
         $this->db->from('gruppenteilnehmer as a, stundenplankurs as b, benutzerkurs as c, benutzer as d');
@@ -1850,10 +1868,10 @@ class Admin_model extends CI_Model {
      *
      * @param $students_groups_to_clean array Array with the combination of all students and groups that should be
      *                                        be deleted from the group participants table.
-     * @access public
+     * @access private
      * @return void
      */
-    public function delete_students_from_past_groups($students_groups_to_clean){
+    private function _delete_students_from_past_groups($students_groups_to_clean){
 
         // clean all students and groups from the group participants table (clean all combinations)
         foreach($students_groups_to_clean as $single_group_student_combination){
@@ -1867,10 +1885,10 @@ class Admin_model extends CI_Model {
     /**
      * Deletes all group participants from groups, that does not exist any longer.
      *
-     * @access public
+     * @access private
      * @return void
      */
-    public function delete_group_participants_from_non_existing_groups(){
+    private function _delete_group_participants_from_non_existing_groups(){
 
         $this->db->where('GruppeID NOT IN (SELECT GruppeID FROM stundenplankurs)');
         $this->db->delete('gruppenteilnehmer');

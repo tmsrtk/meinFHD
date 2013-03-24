@@ -1855,18 +1855,12 @@ class Admin extends FHD_Controller {
      */
     public function clean_event_groups(){
 
-        // get all students, who take part in past courses
-        $students_with_groups_to_delete = $this->admin_model->get_all_students_with_groups_to_delete();
+        // initiate the process to clean all existing event groups
+        $this->admin_model->clean_all_event_groups();
 
-        // delete all student and group participant combination from the group participants table
-        $this->admin_model->delete_students_from_past_groups($students_with_groups_to_delete);
-
-        // remove all group participants from the groups that doesn`t exist any longer
-        $this->admin_model->delete_group_participants_from_non_existing_groups();
-
-        // the cleaning process is finished -> load the success view
-        $this->load->view('admin/clean_event_groups_success', $this->data->load());
-
+        // the cleaning process is finished -> add an success message and redirect back to the clean event groups view
+        $this->message->set('Alle Veranstaltungsgruppen wurden erfolgreich bereinigt.', 'success');
+        redirect('admin/show_clean_event_groups');
     }
 
     /*
