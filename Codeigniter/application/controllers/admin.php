@@ -1904,7 +1904,7 @@ class Admin extends FHD_Controller {
         $this->data->add('stdgng_uploads_list_filelist', $this->_show_uploaded_timetables_file_list());
 
         // load the timetable import view
-        $this->load->view('admin/stdplan_import', $this->data->load());
+       $this->load->view('admin/stdplan_import', $this->data->load());
     }
 
     /**
@@ -1954,30 +1954,28 @@ class Admin extends FHD_Controller {
             }
 
             // look for files that do not belong to any degree program
-            if($degree_program_files!= null){
 
-                // fetch all files that belong to a degree program in an array
-                $files_with_po = array(); // array to hold the files that belong to a degree program
+            // fetch all files that belong to a degree program in an array
+            $files_with_po = array(); // array to hold the files that belong to a degree program
 
-                // loop through the ordered timetable files and add them to an array
-                foreach($degree_program_files as $degree_program => $degree_prog_array ){
+            // loop through the ordered timetable files and add them to an array
+            foreach($degree_program_files as $degree_program => $degree_prog_array ){
 
-                    foreach($degree_prog_array as $single_file){
+                foreach($degree_prog_array as $single_file){
 
-                        $files_with_po[] = $single_file;
-                    }
+                    $files_with_po[] = $single_file;
                 }
+            }
 
-                // check if every file in the upload directory is already assigned to a degree program -> if not save it under the group 'others'
-                $degree_program_headlines['others'] = 'Andere:';
+            // check if every file in the upload directory is already assigned to a degree program -> if not save it under the group 'others'
+            $degree_program_headlines['others'] = 'Andere:';
 
-                // loop through all files in the directory and check if they are already assigned to a degree program
-                foreach($upload_dir as $single_file){
+            // loop through all files in the directory and check if they are already assigned to a degree program
+            foreach($upload_dir as $single_file){
 
-                    // the viewed filed does not belong to a degree program -> add id to the category others
-                    if(!in_array($single_file,array_values($files_with_po))){
-                        $degree_program_files['others'][] = $single_file;
-                    }
+                // the viewed filed does not belong to a degree program -> add id to the category others
+                if(!in_array($single_file,array_values($files_with_po))){
+                    $degree_program_files['others'][] = $single_file;
                 }
             }
         }
