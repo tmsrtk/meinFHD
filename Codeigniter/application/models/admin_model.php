@@ -1672,97 +1672,111 @@ class Admin_model extends CI_Model {
 	//######################### methods needed to delete a stdplan
 	
 	/**
-	 * Deleting all records related to a stundenplan
-	 * - getting spkursIDs for this stundenplan
-	 * - getting groupids
-	 * - deleting from group
-	 * - deleting from benutzerkurs
-	 * - deleting from stundenplankurs
-	 * @param array $stdplan_ids unique combination of abbreviation, semester, po
+	 * Deletes all records, that are related to a timetable.
+     * Therefore the following operations will be performed:
+	 * - get all spkursIDs for this timetable
+	 * - get all groups and groupids, that correspond to the timetable
+	 * - delete all groups, that corresponds to the timetable
+	 * - delete all timetable courses from the benutzerkurs-table
+	 * - delete all timetable courses from the stundenplankurs-table
+     *
+	 * @param $timetable_ids array Array with the unique combination of abbreviation, semester and po (degree program)
+     * @access public
+     * @return void
 	 */
-	function delete_stdplan_related_records($stdplan_ids){
-	    // get spkursids to delete
-	    $stdplan_course_ids = $this->get_stdplan_sp_course_ids($stdplan_ids);
-		
-		echo $stdplan_course_ids;
-	    
-	    // get groupids
-	    $group_ids = '';
-	    foreach($stdplan_course_ids as $id){
+	public function delete_stdplan_related_records($timetable_ids){
+
+	    // get all timetable courses (spkursids) that should be deleted
+	    $timetable_course_ids = $this->get_stdplan_sp_course_ids($timetable_ids);
+
+	    // get all groupids that should be deleted
+	    $group_ids = array();
+        // for each single timetable course get the groups that should be deleted
+	    foreach($timetable_course_ids as $id){
 			$group_ids[] = $this->get_group_id_to_delete($id->SPKursID);
 	    }
-	    
-	    // delete from gruppe (group_ids)
+
+	    // delete all groups, that are related to the timetable that are related to the selected timetable
 	    foreach($group_ids as $id){
 			$this->delete_from_group($id);
 	    }
 	    
-	    // delete from benutzerkurs (spkurs_ids)
-	    foreach($stdplan_course_ids as $id){
+	    // delete all user courses from benutzerkurs (spkurs_ids), that are related to the selected timetable
+	    foreach($timetable_course_ids as $id){
 			$this->delete_from_benutzerkurs($id->SPKursID);
 	    }
 	    
-	    // delete from stundenplankurs (spkursids)
-	    foreach($stdplan_course_ids as $id){
+	    // delete all timetable courses from the table stundenplankurs (spkursids), that are related to the selected timetable
+	    foreach($timetable_course_ids as $id){
 			$this->delete_from_stundenplankurs($id->SPKursID);
 	    }
 	    
-//	    echo '<pre>';
-//	    print_r($id);
-//	    echo '<p/re>';
 	}
-	
-	
+
 	/**
-	 * Returns a group_id
-	 * @param int $spkurs_id sp_course_id to get group id for
-	 * @return int group_id
+	 * Returns the group_id, that corresponds to the (timetable) course id, which is passed as an parameter.
+     *
+	 * @param $spkurs_id int Timetable course id, where the group id should be determined for.
+     * @access private
+	 * @return int The group id, that corresponds to the given timetable course id
 	 */
 	private function get_group_id_to_delete($spkurs_id){
+
+        // query for the corresponding group id
 	    $this->db->select('GruppeID');
 	    $this->db->where('SPKursID', $spkurs_id);
 	    $q = $this->db->get('stundenplankurs');
-	    
-	    if($q->num_rows() > 0){
+
+        // generate the query result and return it
+	    if($q->num_rows() == 1){ // there should be only 1 corresponding group
 			foreach ($q->result() as $row){
 				return $row->GruppeID;
 			}
 	    }
+
 	}
 	
 	/**
-	 * Helper to delete groups from gruppe-table
-	 * @param int $g_id group id
+     * Deletes a single group from the database (table 'gruppe'). Therefore the id of the group
+     * to delete needs to be passed as an parameter.
+     *
+	 * @param int $g_id ID of the group, that should be deleted.
+     * @access private
+     * @return void
+     *
 	 */
-	private function delete_from_group($g_id){
-		// from gruppe !!
-	    $this->db->where('GruppeID', $g_id);
+	private function delete_from_group($group_id){
+        // delete the group with the given id
+        $this->db->where('GruppeID', $group_id);
 	    $this->db->delete('gruppe');
-		
-		// gruppenteilnehmer zu überlegen
-		// - mehrere pos in einer gruppe?
-		// - dahm: gruppen über das semesterende hinaus behalten
-		// wird das referenzmodul oder ?!?!
-//		// from gruppenteilnehmer !!
-//	    $this->db->where('GruppeID', $g_id);
-//	    $this->db->delete('gruppenteilnehmer');
 	}
 	
 	
 	/**
-	 * Helper to delete sp_courses from benutzerkurs-table
-	 * @param int $spk_id sp_course_id
+     * Deletes an single timetable course from the user course (benutzerkurs) table.
+     * Therefore the id of the timetable course to delete needs to be passed as an parameter.
+     *
+	 * @param int $spk_id The timetable course id (stundenplankurs id), that should be deleted.
+     * @access private
+     * @return void
 	 */
 	private function delete_from_benutzerkurs($spk_id){
-	    $this->db->where('SPKursID', $spk_id);
-	    $this->db->delete('benutzerkurs');
+        // delete the timetable course from the user course table
+        $this->db->where('SPKursID', $spk_id);
+        $this->db->delete('benutzerkurs');
 	}
 	
 	/**
 	 * Helper to delete courses from stundenplankurs-table
-	 * @param int $spk_id sp_course_id
+     * Deletes an single timetable course from the timetable course (stundenplankurs) table.
+     * Therefore the id of the timetable course to delete needs to be passed as an parameter
+     *
+	 * @param int $spk_id ID of the timetable course, that should be deleted
+     * @access private
+     * @return void
 	 */
 	private function delete_from_stundenplankurs($spk_id){
+        // delete the timetabelcourse from the timetable course table
 	    $this->db->where('SPKursID', $spk_id);
 	    $this->db->delete('stundenplankurs');
 	}
@@ -1792,6 +1806,8 @@ class Admin_model extends CI_Model {
 //	    print_r($id);
 //	    echo '<p/re>';
 	}
+
+    //######################### methods needed to clean all event groups
 
     /**
      * Selects the group and user id of all students, who take part in event groups

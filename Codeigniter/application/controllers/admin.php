@@ -1824,6 +1824,11 @@ class Admin extends FHD_Controller {
         // delete all data related to chosen timetable
         $this->admin_model->delete_stdplan_related_records($degree_program_ids);
 
+        // name of the deleted timetable as an string
+        $deleted_timetable = $degree_program_ids[0] . ' - ' . $degree_program_ids[2] . ' - ' . $degree_program_ids[1] .'. Semester';
+        // set an feedback message!
+        $this->message->set('Der ausgew&auml;hlte Stundenplan ('. $deleted_timetable .') wurde erfolgreich aus der Datenbank gel&ouml;scht!', 'success');
+
         // reload the timetable delete view
         redirect('admin/stdplan_delete');
 
