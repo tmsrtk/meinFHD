@@ -119,8 +119,15 @@ class Timetable_xml_parser {
     }
 
     /**
-     * Starts the process to parse an timetable xml file.
+     * Starts the process to parse an timetable xml file and returns an array with the parsed data or error messages,
+     * if the parsing process was not successful.
+     *
      * @param $xml_file string Name and path of the uploaded xml-file, that should be parsed.
+     * @access public
+     * @return array An array with the parsed data, or error messages will be returned. Therefore the following array structures
+     *               are possible: If there occurred errors during the parsing process: Array-Index 'errors' holds the error messages.
+     *               If the parsing process was successful the array structure is as follows: [0]-> ids of the parsed timetable,
+     *               ['created_courses']-> Details about new created degree program courses, ['parsed_data']-> The parsed and inserted datasets.
      */
     public function parse_timetable_xml($xml_file){
 
@@ -235,7 +242,7 @@ class Timetable_xml_parser {
      * Finds an start tag in the timetable xml file. Also processes the node element data.
      *
      * @param $parser xml_parser The regarding xml-parser.
-     * @param $node_element_name string The name of the node element too lok for.
+     * @param $node_element_name string The name of the node element to look for.
      * @param $attributes string The associative element in the attribute array
      * @return void
      * @access private
@@ -294,17 +301,17 @@ class Timetable_xml_parser {
                 case 13: $this->hour_index = 13; break;
             }
 
-            $this->array_veranstaltungen[$this->day_index][$this->hour_index][$this->event_index][4] = $attributes["tag"];
-            $this->array_veranstaltungen[$this->day_index][$this->hour_index][$this->event_index][5] = $attributes["stunde"];
+            $this->array_veranstaltungen[$this->day_index][$this->hour_index][$this->event_index][4] = $attributes["tag"]; // save the day number
+            $this->array_veranstaltungen[$this->day_index][$this->hour_index][$this->event_index][5] = $attributes["stunde"]; // save the hour
 
             // we can now go to the next day
             $this->sameday = false;
         }
 
         // if it is still the same day
-        if( $this->sameday ) {
-            $this->array_veranstaltungen[$this->day_index][$this->hour_index][$this->event_index][4] = $this->event_index;
-            $this->array_veranstaltungen[$this->day_index][$this->hour_index][$this->event_index][5] = $this->hour_index;
+        if( $this->sameday ){
+            $this->array_veranstaltungen[$this->day_index][$this->hour_index][$this->event_index][4] = $this->day_index; // set the appropriate day index for the viewed event
+            $this->array_veranstaltungen[$this->day_index][$this->hour_index][$this->event_index][5] = $this->hour_index; // set the appropriate hour index for the viewed event
         }
 
         // if the node is from the type 'veranstaltung'
@@ -321,11 +328,12 @@ class Timetable_xml_parser {
 
             // it is still the same day
             $this->sameday = true;
+
         }
     }
 
     /**
-     * Finds an end tag in the timetble xml-file.
+     * Finds an end tag in the timetable xml-file.
      * Function will not provide any function.
      *
      * @param $parser xml_parser The regarding xml-parser.
@@ -340,7 +348,9 @@ class Timetable_xml_parser {
     /**
      * Prepares the parsed timetable data for inserting it into the database.
      *
-     * @return array The array that can be inserted into the database.
+     * @return array Associative array that holds the data, that has been saved in the database. Therefore the following indexes have been set:
+     *               'created_courses' -> all newly created courses during the parsing process, 'parsed_data' -> information about the regular
+     *                parsed and saved datasets.
      * @access private
      */
     private function _prepare_parsed_timetable_data(){
@@ -348,6 +358,7 @@ class Timetable_xml_parser {
         $duplicate_event = array(); // array for saving duplicated events
 
         $debugging = array(); // array to to check parsing more comfortably
+        $created_courses = array(); // array to hold all newly created courses
 
         // run through the parsed data
 
@@ -391,10 +402,9 @@ class Timetable_xml_parser {
                                 $course_name = $this->array_fachtext[$i][2];
                             }
                         }
-
                         // get the dozent_id and save it into an temp array
                         $dozent_tmp = array();
-                        $dozent_tmp = $this->CI->timetable_parsing_model->get_dozentid_for_name($course[3]);
+                        $dozent_tmp = $this->CI->timetable_parsing_model->get_dozentid_for_name(utf8_encode($course[3]));
 
                         // if there is a known dozent
                         if($dozent_tmp){
@@ -447,7 +457,6 @@ class Timetable_xml_parser {
 
                         // if the course is a wpf
                         if($is_wpf){
-
                             // if course is wpf - wpf_kurz has to be cut
                             $course_id_tmp = $this->CI->timetable_parsing_model->get_course_id($wpf_kurz, $stdgng_id);
                         }
@@ -461,6 +470,7 @@ class Timetable_xml_parser {
                         if($course_id_tmp){
                             $course_id = $course_id_tmp->KursID;
                         }
+
                         else {
                             // get the short-name of the course
                             $short_name = ($is_wpf) ? $wpf_kurz : $course[0];
@@ -471,6 +481,18 @@ class Timetable_xml_parser {
                             // and the new course_id has to be saved to $course_id
                             $new_course_id = $this->CI->timetable_parsing_model->get_max_course_id_from_studiengangkurs();
                             $course_id = $new_course_id->KursID;
+
+                            // create feedback message for admin to get to know which course have been created
+                            $new_created_course = '';
+                            $new_created_course .= '<div>****************************************<br />';
+                            $new_created_course .= 'KursID: ' . $course_id . '<br/>';
+                            $new_created_course .= 'Kursname: ' . $course_name . '<br/>';
+                            $new_created_course .= 'Semester: ' . $this->dp_semester . '<br/>';
+                            $new_created_course .= 'StudiengangID: ' . $stdgng_id . '<br/>';
+                            $new_created_course .= '****************************************</div>';
+
+                            $created_courses[] = $new_created_course;
+
                         }
 
                         // get the 'VeranstaltungsformID' / event_type_id
@@ -518,28 +540,27 @@ class Timetable_xml_parser {
 
                         // separate the group id
                         if($group_tmp){
-
                             $group_id = $group_tmp->GruppeID;
                         }
 
                         // construct data for the debugging array
                         $data = '';
-                        $data .= '<div>********************naechster Datensatz********************<br />';
-                        $data .= 'KursID:'.$course_id.'<br />';
-                        $data .= 'Kursname:'.$course_name.'<br />';
-                        $data .= 'VeranstaltungsformID:'.$event_type_id.'<br />';
-                        $data .= 'VeranstaltungsformAlternative:'.substr($course[1], 2).'<br />';
-                        $data .= 'WPFName:'.($is_wpf ? $wpfname : '').'<br />';
-                        $data .= 'Raum:'.$course[2].'<br />';
-                        $data .= 'DozentID:'.$dozent_id.'<br />';
-                        $data .= 'StartID:'.($course[5] + 1).'<br />';
-                        $data .= 'EndeID:'.($course[5] + $course_duration).'<br />';
-                        $data .= 'TagID:'.($course[4] + 1).'<br />';
-                        $data .= 'isWPF:'.($is_wpf ? '1' : '0').'<br />';
-                        $data .= 'Farbe:'.$course[6].'<br />';
-                        $data .= 'GruppeID:'.$group_id.'<br />';
-                        $data .= 'Editor:'.$this->editor_id.'<br />';
-                        $data .= '*****************************************************************</div>';
+                        $data .= '<div>********************n&auml;chster Datensatz********************<br />';
+                        $data .= 'KursID: '.$course_id.'<br />';
+                        $data .= 'Kursname: '.$course_name.'<br />';
+                        $data .= 'VeranstaltungsformID: '.$event_type_id.'<br />';
+                        $data .= 'VeranstaltungsformAlternative: '.substr($course[1], 2).'<br />';
+                        $data .= 'WPFName: '.($is_wpf ? $wpfname : '').'<br />';
+                        $data .= 'Raum: '.$course[2].'<br />';
+                        $data .= 'DozentID: '.$dozent_id.'<br />';
+                        $data .= 'StartID: '.($course[5] + 1).'<br />';
+                        $data .= 'EndeID: '.($course[5] + $course_duration).'<br />';
+                        $data .= 'TagID: '.($course[4] + 1).'<br />';
+                        $data .= 'isWPF: '.($is_wpf ? '1' : '0').'<br />';
+                        $data .= 'Farbe: '.$course[6].'<br />';
+                        $data .= 'GruppeID: '.$group_id.'<br />';
+                        $data .= 'Editor: '.$this->editor_id.'<br />';
+                        $data .= '*********************************************************</div>';
                         $debugging[] = $data;
 
                         // save the parsed and prepared data to the database
@@ -582,8 +603,16 @@ class Timetable_xml_parser {
 
         } // end foreach
 
+        // construct the array with the info, that should be returned
+        $array_to_return = array();
+
+        // add the array with the new created courses
+        $array_to_return['created_courses'] = $created_courses;
+        // add the array with the regular written course data
+        $array_to_return['parsed_data'] = $debugging;
+
         // return the debugging array
-        return $debugging;
+        return $array_to_return;
     }
 
     /**

@@ -94,23 +94,25 @@ class Timetable_parsing_model extends CI_Model{
      */
     public function get_dozentid_for_name($name){
 
-        $data = array();
         // construct the query
         $this->db->distinct();
         $this->db->select('a.BenutzerID, a.Nachname');
-        $this->db->from('benutzer as a');
-        $this->db->join('benutzer_mm_rolle as b', 'a.BenutzerID = b.BenutzerID and b.RolleID = 2');
+        $this->db->from('benutzer as a, benutzer_mm_rolle as b');
+        $this->db->where('a.BenutzerID = b.BenutzerID');
+         // RolleID = 2 -> Dozent; RolleID = 3 -> Betreuer
+        $this->db->where_in('b.RolleID', array('2', '3'));
         $this->db->like('a.Nachname', $name);
 
         // query the database for the searched dozent
         $q = $this->db->get();
+
+        $data = array(); // array to hold the result (return value)
 
         if($q->num_rows() == 1){ // if there is one dozent, who has got the searched name
 
             foreach ($q->result() as $row){
                 $data = $row;
             }
-
             // return information about the dozent
             return $data;
         }
@@ -149,29 +151,6 @@ class Timetable_parsing_model extends CI_Model{
         }
     }
 
-    /**
-     * Helper to get degree_program-id from po and abk
-     *
-     * @param int $po pruefungsordnung
-     * @param int $stdgng_short abkuerzung
-     * @access public
-     * @return object
-     */
-    public function get_stdgng_id($po, $stdgng_short){
-        $data = array();
-        $this->db->select('StudiengangID');
-        $this->db->where('Pruefungsordnung', $po);
-        $this->db->where('StudiengangAbkuerzung', $stdgng_short);
-        $q = $this->db->get('studiengang');
-
-        if($q->num_rows() == 1){
-            foreach ($q->result() as $row){
-                $data = $row;
-            }
-            return $data;
-        }
-    }
-
 
     /**
      * Gets the course_id for the passed course name and degree program id.
@@ -183,13 +162,15 @@ class Timetable_parsing_model extends CI_Model{
      */
     public function get_course_id($course_name, $stdgng_id){
 
-        $data = array();
         // construct the query statement
         $this->db->select('KursID');
         $this->db->where('kurs_kurz', $course_name);
         $this->db->where('StudiengangID', $stdgng_id);
+
         // query the database
         $q = $this->db->get('studiengangkurs');
+
+        $data = array(); // array for the result (return value)
 
         // if there is one course that belongs to the given course name and degree program id
         if($q->num_rows() == 1){
@@ -250,11 +231,12 @@ class Timetable_parsing_model extends CI_Model{
      * @return array Associative array with the highest course id. Index is ['KursID']
      */
     public function get_max_course_id_from_studiengangkurs(){
-        $data = array();
 
         // query the database for the highest course id
-        $this->db->select_max('KursID');
+        $this->db->select_max('studiengangkurs.KursID');
         $q = $this->db->get('studiengangkurs');
+
+        $data = array(); // array to store the query result (array to return)
 
         // if there is a result / a highest course id
         if($q->num_rows() == 1){

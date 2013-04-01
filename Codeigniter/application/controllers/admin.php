@@ -1539,12 +1539,12 @@ class Admin extends FHD_Controller {
 			$data['wpf_name'] = $timetable_event->WPFName;
 			$data['farbe'] = $timetable_event->Farbe;
 
-			/*
-			 * Each timetable course represents an single row -> load the partial view for the currently viewed timetable event
-			 * and save it in the array, that holds each single row of the selected timetable
-			 */
+            /*
+             * Each timetable course represents an single row -> load the partial view for the currently viewed timetable event
+             * and save it in the array, that holds each single row of the selected timetable
+             */
 
-			$rows[] = $this->load->view('admin/partials/stdplan_coursetable_row', $data, TRUE);
+            $rows[] = $this->load->view('admin/partials/stdplan_coursetable_row', $data, TRUE);
 	    }
 
         // add the row array to the global data array
@@ -1592,7 +1592,7 @@ class Admin extends FHD_Controller {
         // run the form validation
         // if some errors occured during the form validation repopulate the timetable and display the validation errors
 	    if ($this->form_validation->run() == FALSE) {
-			// reload timetable with the the validation errors // TODO repopulation and displaying validation errors does not work
+			// reload timetable with the the validation errors
             $this->data->add('stdplan_id_automatic_reload', $stdplan_id_automatic_reload);
 			$this->stdplan_edit();
 		}
@@ -1984,7 +1984,7 @@ class Admin extends FHD_Controller {
 	    $this->data->add('stdgng_uploads_headlines', $degree_program_headlines);
 	    $this->data->add('stdgng_uploads', $degree_program_files);
 
-        return $this->load->view('admin/partials/stdplan_import_filelist', $this->data->load(), TRUE);
+        return $this->load->view('admin/stdplan_import_filelist', $this->data->load(), TRUE);
     }
 
     /**
@@ -2065,22 +2065,20 @@ class Admin extends FHD_Controller {
 
             // load parser and start parsing
             $this->load->library('timetable_xml_parser');
-            $ids_or_errors = $this->timetable_xml_parser->parse_timetable_xml($this->upload->data());
-
-            // check for errors during the parsing process
+            $ids_or_errors = $this->timetable_xml_parser->parse_timetable_xml($this->upload->data()); // start parsing and save the written parsing result
 
             // the parsing process was fine -> show an view with the parsed data, so that the admin can check the parsed data
             if($ids_or_errors[0] != 'errors') {
                 $this->data->add('ids', $ids_or_errors[0]);
-                unset($ids_or_errors[0]);
-                $this->data->add('data', $ids_or_errors);
-                $this->load->view('admin/partials/stdplan_import_success_view', $this->data->load());
+                $this->data->add('created_courses', $ids_or_errors[1]['created_courses']); // add info about the created courses to the view
+                $this->data->add('parsed_data', $ids_or_errors[1]['parsed_data']); // add info about the parsed data to the view
+                $this->load->view('admin/stdplan_import_success_view', $this->data->load());
             }
 
             // there occurred some errors during the parsing process -> show an detailed error view for the admin
             else {
                 $this->data->add('errors', $ids_or_errors);
-                $this->load->view('admin/partials/stdplan_import_error_view', $this->data->load());
+                $this->load->view('admin/stdplan_import_error_view', $this->data->load());
             }
         }
     }

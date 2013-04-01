@@ -260,11 +260,13 @@ class Helper_model extends CI_Model {
 	 * @return object
 	 */
     public function get_max_group_id_from_gruppe(){
-		$data = array();
-		$this->db->select_max('GruppeID');
-		$q = $this->db->get('gruppe');
 
-		if($q->num_rows() == 1){
+		$this->db->select_max('gruppe.GruppeID');
+        $q = $this->db->get('gruppe');
+
+        $data = array(); // array to hold the query result
+
+        if($q->num_rows() == 1){
 			foreach ($q->result() as $row){
 				$data = $row;
 			}
@@ -278,8 +280,9 @@ class Helper_model extends CI_Model {
 	 * @return object
 	 */
     public function get_max_spkurs_id(){
-		$data = array();
-		$this->db->select_max('SPKursID');
+
+        $data = array();
+		$this->db->select_max('stundenplankurs.SPKursID');
 		$q = $this->db->get('stundenplankurs');
 
 		if($q->num_rows() == 1){
@@ -442,13 +445,16 @@ class Helper_model extends CI_Model {
 	 * @return object
 	 */
     public function get_stdgng_id($po, $stdgng_short){
-		$data = array();
-		$this->db->select('StudiengangID');
-		$this->db->where('Pruefungsordnung', $po);
-		$this->db->where('StudiengangAbkuerzung', $stdgng_short);
-		$q = $this->db->get('studiengang');
 
-		if($q->num_rows() == 1){
+		$this->db->select('studiengang.StudiengangID', false);
+		$this->db->where('studiengang.Pruefungsordnung', $po);
+		$this->db->where('studiengang.StudiengangAbkuerzung', $stdgng_short);
+        // query the database for the result
+        $q = $this->db->get('studiengang');
+
+        $data = array(); // array to hold the query result
+
+        if($q->num_rows() == 1){
 			foreach ($q->result() as $row){
 				$data = $row;
 			}
