@@ -145,11 +145,13 @@ CI_phpStorm.php
 ######################################################################################################
 *.esproj
 
-# File created by saving the Semesterplan:
+# Files created by saving the Semesterplan and during the timetable import:
 ######################################################################################################
-Codeigniter/upload/
+Codeigniter/resources/uploads/
+Codeigniter/resources/uploads/stundenplaene/
 
 
 # meinfhd.css & meinfhd-responsive.css:
 ######################################################################################################
 Codeigniter/resources/css/meinfhd.css
+Codeigniter/resources/css/meinfhd-responsive.css
