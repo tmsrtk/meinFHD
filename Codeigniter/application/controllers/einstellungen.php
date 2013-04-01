@@ -7,7 +7,7 @@
  * @copyright Fachhochschule Duesseldorf, 2012
  * @link http://www.fh-duesseldorf.de
  * @author Jan Eichler(JE), <jan.eichler@fh-duesseldorf.de>
- * @author Christian Kundruß(CK), <christian.kundruss@fh-duesseldorf.de>
+ * @author Christian Kundruss(CK), <christian.kundruss@fh-duesseldorf.de>
  */
 
 /**
@@ -34,7 +34,7 @@ class Einstellungen extends FHD_Controller {
     }
 
     /**
-     * Loads the 'Persönliche Einstellungen' View.
+     * Loads the 'Persoenliche Einstellungen' View.
      * Selects therefore the necessary data from the database.
      *
      * @access public
@@ -65,7 +65,7 @@ class Einstellungen extends FHD_Controller {
 	/**
 	 * Form validation for the personal preferences mask.
      * The method is going to be called from the authenticated user while pressing
-     * 'Änderungen speichern'.
+     * 'Aenderungen speichern'.
      *
      * @access public
      * @return void
@@ -95,7 +95,7 @@ class Einstellungen extends FHD_Controller {
 			// check if current value is different from the value in db
 			if ($current_user_data['LoginName'] != $new_form_values['loginname']) 
 			{
-                $this->form_validation->set_rules('login', 'Loginname', 'callback_validate_loginname['.$data['info']['LoginName'].']');
+                $this->form_validation->set_rules('login', 'Loginname', 'callback_validate_loginname['.$new_form_values['loginname'].']');
 			}
 		}
 
@@ -200,7 +200,7 @@ class Einstellungen extends FHD_Controller {
             Log::new_log_entry(Log::PERSOENLICHE_DATEN_BEARBEITEN, 7);
 
             // set a message and redirect to the preferences index page
-			$this->message->set('Änderungen erfolgreich übernommen', 'success');
+			$this->message->set('&Auml;nderungen erfolgreich &uuml;bernommen!', 'success');
 			redirect(site_url('einstellungen/index'));
 
 		}
@@ -241,8 +241,7 @@ class Einstellungen extends FHD_Controller {
             if (!$this->form_validation->min_length($login, $min)){
 
                 // if yes, return "not valid" and set the error-msg
-                $this->form_validation->set_message('validate_loginname', 'Loginname zu kurz. Es werden mindestens 6 Zeichen benötigt.');
-                $this->message->set('Loginname zu kurz. Es werden mindestens 6 Zeichen benötigt.', 'error');
+                $this->form_validation->set_message('validate_loginname', 'Der Loginname ist zu kurz. Es werden mindestens 6 Zeichen ben&ouml;tigt.');
 
                 return false;
             }
@@ -250,8 +249,7 @@ class Einstellungen extends FHD_Controller {
             // more characters than the maximum length?
             if (!$this->form_validation->max_length($login, $max)){
 
-                $this->form_validation->set_message('validate_loginname', 'Loginname zu lang. Es dürfen höchstens 200 Zeichen verwendet werden.');
-                $this->message->set('Loginname zu lang. Es drüfen höchstens 200 Zeichen verwendet werden.', 'error');
+                $this->form_validation->set_message('validate_loginname', 'Der Loginname ist zu lang. Es d&uuml;rfen h&ouml;chstens 200 Zeichen verwendet werden.');
 
                 return false;
             }
@@ -259,8 +257,7 @@ class Einstellungen extends FHD_Controller {
             // the unthinkable did happen. The user hasn't got an (unique) loginname so far. Check for a unique Loginname.
             if (!$this->form_validation->is_unique($login, 'benutzer.LoginName')){
 
-                $this->form_validation->set_message('validate_loginname', 'Loginname schon vorhanden. Bitte wähle einen anderen Loginnamen.');
-                $this->message->set('Loginname schon vorhanden. Bitte wähle einen anderen Loginnamen.', 'error');
+                $this->form_validation->set_message('validate_loginname', 'Loginname schon vorhanden. Bitte w&auml;hle einen anderen Loginnamen.');
 
                 return false;
             }
@@ -285,8 +282,7 @@ class Einstellungen extends FHD_Controller {
 		if (!$this->form_validation->valid_email($mail)){
 
             // set the custom error message
-            $this->form_validation->set_message('validate_email', 'Keine korrekte Emailadresse. Überprüfe deine Eingabe!');
-		    $this->message->set('Keine korrekte Emailadresse. Überprüfe deine Eingabe!', 'error');
+            $this->form_validation->set_message('validate_email', 'Keine korrekte Emailadresse. &Uuml;berpr&uuml;fe deine Eingabe!');
 
             return FALSE;
 		}
@@ -296,40 +292,12 @@ class Einstellungen extends FHD_Controller {
 	}
 
     /**
-     * Validates the entered matrikelnummer for correctness.
-     *
-     * @access public
-     * @return bool TRUE if the entered matrikelnummer is correct, FALSE otherwise
-     */
-    public function validate_matrikelnummer()
-    {
-        if (isset($_POST['matrikel'])){
-
-            // does it contain any letters or other non-numbery characters?
-            if (!$this->form_validation->is_natural($_POST['matrikel'])){
-
-                $this->message->set('Keine korrekte Matrikelnummer. Überprüfe deine Eingabe!', 'error');
-                return FALSE;
-            }
-
-            // is it already in use by another student?
-            if (!$this->form_validation->is_unique($_POST['matrikel'], 'benutzer.Matrikelnummer')){
-
-                $this->message->set('Matrikelnummer wird schon verwendet. Überprüfe deine Eingabe oder wende dich an den Administrator!', 'error');
-                return FALSE;
-            }
-        }
-
-        // if none of the above triggers, the entered number seems to be valid
-        return TRUE;
-    }
-
-    /**
      * Validates the email flag.
      * Workaround: Everytime the function is called it will return TRUE, because the validation rule will only be set if
      * the email flag was changed by the user. Regular validation of an checkbox is not possible, because an unset checkbox
      * will result in no entry in the $POST-Array.
      *
+     * @access public
      * @return bool TRUE if the function is called
      */
     public function validate_email_flag(){
@@ -343,6 +311,7 @@ class Einstellungen extends FHD_Controller {
      * is designed for ajax-requests.
      *
      * @access public
+     * @return void / echos a string with the change degree program view
      */
     public function ajax_load_change_degree_program_view(){
 
@@ -433,7 +402,7 @@ class Einstellungen extends FHD_Controller {
             else { // validation was incorrect -> display error message and reload the preferences view
 
                 // set a message and redirect to the preferences index page
-                $this->message->set('Beim Wechsel des Studiengangs ist ein Fehler aufgetreten. Möglicherweise waren nicht alle Felder des Formulars gefüllt', 'error');
+                $this->message->set('Beim Wechsel des Studiengangs ist ein Fehler aufgetreten. M&ouml;glicherweise waren nicht alle Felder des Formulars gef&uuml;llt.', 'error');
                 redirect(site_url('einstellungen/index'));
             }
         }

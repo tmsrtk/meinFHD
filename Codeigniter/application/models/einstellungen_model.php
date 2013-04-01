@@ -1,4 +1,4 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
  * meinFHD WebApp
@@ -7,7 +7,7 @@
  * @copyright Fachhochschule Duesseldorf, 2012
  * @link http://www.fh-duesseldorf.de
  * @author Jan Eichler(JE), <jan.eichler@fh-duesseldorf.de>
- * @author Christian Kundruß(CK), <christian.kundruss@fh-duesseldorf.de>
+ * @author Christian Kundruss�(CK), <christian.kundruss@fh-duesseldorf.de>
  */
 
 /**
@@ -31,7 +31,9 @@ class Einstellungen_model extends CI_Model {
     /**
      * Selects the students user data from the database for the given user-id
      * and returns it as an array.
+     *
      * @param $userid Integer ID of the user, where the data should be selected for.
+     * @access public
      * @return mixed An array will be returned if there are information for the given user id, otherwise NULL will be returned.
      */
 	public function query_userdata_student($userid)
@@ -40,8 +42,7 @@ class Einstellungen_model extends CI_Model {
 		$this->db->select('b.*, sg.*')
 				->from('benutzer b')
 				->join('studiengang sg', 'b.StudiengangID = sg.StudiengangID')
-				->where('b.BenutzerID', $userid)
-				;
+				->where('b.BenutzerID', $userid);
 
 		return $this->db->get()->row_array();
 	}
@@ -51,6 +52,7 @@ class Einstellungen_model extends CI_Model {
      * array.
      *
      * @param $userid Integer ID of the user, where the data should be selected for.
+     * @access public
      * @return mixed An array will be returned if there are information for the given user id, otherwise NULL will be returned.
      */
 	public function query_userdata($userid)
@@ -58,8 +60,7 @@ class Einstellungen_model extends CI_Model {
         // select the whole user information and return it
 		$this->db->select('b.*')
 				->from('benutzer b')
-				->where('b.BenutzerID', $userid)
-				;
+				->where('b.BenutzerID', $userid);
 
 		return $this->db->get()->row_array();
 	}
@@ -160,7 +161,7 @@ class Einstellungen_model extends CI_Model {
     public function create_csv_file($filename_prefix, $content){
 
         $filename = $filename_prefix . md5($this->user_model->get_loginname()) . '.csv'; // construct the filename
-        $filepath = './resources/uploads/' . $filename; // specify the full storage path
+        $filepath = './resources/uploads/studienplaene/' . $filename; // specify the full storage path
 
         // if there already exists a file -> delete it‚
         if(file_exists($filepath))

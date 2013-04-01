@@ -1,137 +1,134 @@
 <?php extend('base/template.php'); # extend main template ?>
-<?php startblock('title');?><?php get_extended_block();?> - Persönliche Einstellungen<?php endblock(); ?>
+<?php startblock('title');?><?php get_extended_block();?> - Pers&ouml;nliche Einstellungen<?php endblock(); ?>
 
 <?php
-    # general form setup
-    $data_formopen = array(
-        'class' => 'form-horizontal',
-        'id' => 'change_personal_preferences'
+# general form setup
+$data_formopen = array(
+    'class' => 'form-horizontal',
+    'id' => 'change_personal_preferences'
+);
+
+$data_labelattrs = array(
+    'class' => 'control-label'
+);
+
+$data_loginname = array(
+    'class' => 'span3',
+    'name' => 'loginname',
+    'id' => 'loginname',
+    'placeholder' => 'Loginname',
+    'value' => $formdata['LoginName'],
+);
+
+$data_passwort = array(
+    'class' => 'span3',
+    'name' => 'password',
+    'id' => 'password',
+    'placeholder' => 'Passwort',
+);
+
+$data_passwort_repeat = array(
+    'class' => 'span3',
+    'name' => 'password2',
+    'id' => 'password2',
+    'placeholder' => 'Passwort best&auml;tigen',
+);
+
+$data_forename = array(
+    'class' => 'span3',
+    'name' => 'forename',
+    'id' => 'forename',
+    'placeholder' => 'Vorname',
+    'value' => $formdata['Vorname'],
+);
+
+$data_name = array(
+    'class' => 'span3',
+    'name' => 'lastname',
+    'id' => 'lastname',
+    'placeholder' => 'Nachname',
+    'value' => $formdata['Nachname'],
+);
+
+$data_title = array(
+    'class' => 'span3',
+    'name' => 'title',
+    'id' => 'title',
+    'placeholder' => 'Titel',
+    'value' => $formdata['Titel'],
+);
+
+$data_email = array(
+    'class' => 'span3',
+    'name' => 'email',
+    'id' => 'email',
+    'placeholder' => 'Emailadresse',
+    'value' => $formdata['Email'],
+);
+
+$data_raum = array(
+    'class' => 'span2',
+    'name' => 'room',
+    'id' => 'room',
+    'placeholder' => 'Raum',
+    'value' => $formdata['Raum'],
+);
+
+
+
+// declare student specific data only when the authenticated user is a student
+if(in_array(Roles::STUDENT, $userroles)){
+
+    $data_semesteranfang = array(
+        'name' => 'semesteranfang',
+        'id' => 'semesteranfang',
     );
 
-    $data_labelattrs = array(
-        'class' => 'control-label'
+    $data_startjahr = array(
+        'class' => 'span1',
+        'name' => 'startjahr',
+        'id' => 'startjahr',
+        'placeholder' => 'Startjahr',
+        'value' => $formdata['StudienbeginnJahr'],
     );
 
-    $data_loginname = array(
-        'class' => 'span3',
-        'name' => 'loginname',
-        'id' => 'loginname',
-        'placeholder' => 'Loginname',
-        'value' => $formdata['LoginName'],
+    $data_private_correspondence = array(
+        'name' => 'EmailDarfGezeigtWerden',
+        'id' => 'EmailDarfGezeigtWerden',
     );
 
-    $data_passwort = array(
-        'class' => 'span3',
-        'name' => 'password',
-        'id' => 'password',
-        'placeholder' => 'Passwort',
+    $data_studiengang = array(
+        'name' => 'studiengang',
+        'id' => 'studiengang',
+        'disabled' => 'disabled',
+        'value' => $formdata['StudiengangName'] . ' ' . $formdata['Pruefungsordnung'],
     );
 
-    $data_passwort_repeat = array(
-        'class' => 'span3',
-        'name' => 'password2',
-        'id' => 'password2',
-        'placeholder' => 'Passwort bestätigen',
+    $change_degree_program_data = array(
+        'name' => 'change_degree_program',
+        'id' => 'btn_change_degree_program',
+        'class' => 'btn btn-warning',
+        'content' => 'Studiengang wechseln',
     );
 
-    $data_forename = array(
-        'class' => 'span3',
-        'name' => 'forename',
-        'id' => 'forename',
-        'placeholder' => 'Vorname',
-        'value' => $formdata['Vorname'],
-    );
-
-    $data_name = array(
-        'class' => 'span3',
-        'name' => 'lastname',
-        'id' => 'lastname',
-        'placeholder' => 'Nachname',
-        'value' => $formdata['Nachname'],
-    );
-
-    $data_title = array(
-        'class' => 'span3',
-        'name' => 'title',
-        'id' => 'title',
-        'placeholder' => 'Titel',
-        'value' => $formdata['Titel'],
-    );
-
-    $data_email = array(
-        'class' => 'span3',
-        'name' => 'email',
-        'id' => 'email',
-        'placeholder' => 'Emailadresse',
-        'value' => $formdata['Email'],
-    );
-
-    $data_raum = array(
-        'class' => 'span2',
-        'name' => 'room',
-        'id' => 'room',
-        'placeholder' => 'Raum',
-        'value' => $formdata['Raum'],
-    );
-
-    // declare student specific data only when the authenticated user is a student
-    if(in_array(Roles::STUDENT, $userroles)){
-
-        $data_semesteranfang = array(
-            'name' => 'semesteranfang',
-            'id' => 'semesteranfang',
-        );
-
-        $data_startjahr = array(
-            'class' => 'span1',
-            'name' => 'startjahr',
-            'id' => 'startjahr',
-            'placeholder' => 'Startjahr',
-            'value' => $formdata['StudienbeginnJahr'],
-        );
-
-        $data_private_correspondence = array(
-            'name' => 'EmailDarfGezeigtWerden',
-            'id' => 'EmailDarfGezeigtWerden',
-        );
-
-        $data_studiengang = array(
-            'name' => 'studiengang',
-            'id' => 'studiengang',
-            'disabled' => 'disabled',
-            'value' => $formdata['StudiengangName'] . ' ' . $formdata['Pruefungsordnung'],
-        );
-
-        $change_degree_program_data = array(
-            'name' => 'change_degree_program',
-            'id' => 'btn_change_degree_program',
-            'class' => 'btn btn-warning',
-            'content' => 'Studiengang wechseln',
-        );
-
-        // define variables for studienbeginn semester type radio buttons, that should be selected by default (only for students)
-        if($userdata['studienbeginn_semestertyp'] == 'WS'){
-            $check_ws = TRUE;
-            $check_ss = FALSE;
-        }
-        else{
-            $check_ws = FALSE;
-            $check_ss = TRUE;
-        }
-
-        // define variable to present the saved status for private mail correspondence
-        if($formdata['EmailDarfGezeigtWerden'] == 1){
-            $show_email_cb = TRUE;
-        }
-        else {
-            $show_email_cb = FALSE;
-        }
+    // define variables for studienbeginn semester type radio buttons, that should be selected by default (only for students)
+    if($userdata['studienbeginn_semestertyp'] == 'WS'){
+        $check_ws = TRUE;
+        $check_ss = FALSE;
+    }
+    else{
+        $check_ws = FALSE;
+        $check_ss = TRUE;
     }
 
-    $submit_data = array(
-        'name'	=> 'speichern',
-        'class'	=> 'btn btn-danger'
-    );
+    // define variable to present the saved status for private mail correspondence
+    if($formdata['EmailDarfGezeigtWerden'] == 1){
+        $show_email_cb = TRUE;
+    }
+    else {
+        $show_email_cb = FALSE;
+    }
+}
 ?>
 
 <?php startblock('content'); # content for this view ?>
@@ -205,7 +202,7 @@
 
         <?php if (in_array(Roles::STUDENT, $userroles)) : ?>
             <div class="control-group">
-                <?php echo form_label('Dozenten dürfen mich unter dieser Adresse auch persönlich erreichen', 'EmailDarfGezeigtWerden', $data_labelattrs); ?>
+                <?php echo form_label('Dozenten d&uuml;rfen mich unter dieser Adresse auch pers&ouml;nlich erreichen', 'EmailDarfGezeigtWerden', $data_labelattrs); ?>
                 <div class="controls">
                     <?php echo form_checkbox($data_private_correspondence, 1, $show_email_cb); ?>
                 </div>
@@ -235,13 +232,13 @@
                 <div class="controls">
                     <label class="radio">
                         <?php echo form_radio($data_semesteranfang, 'WS', $check_ws); ?>
-                        WS
+                        Wintersemester
                     </label>
                 </div>
                 <div class="controls">
                     <label class="radio">
                         <?php echo form_radio('semesteranfang', 'SS', $check_ss); ?>
-                        SS
+                        Sommersemester
                     </label>
                 </div>
             </div>
@@ -254,12 +251,12 @@
             <?php endif ?>
 
         <div class="form-actions">
-            <?php echo form_submit($submit_data, 'Änderungen speichern'); ?>
+            <input type="submit" name="speichern" class="btn btn-danger" value="&Auml;nderungen speichern" />
         </div>
         <?php echo form_close(); ?>
     </div><!-- preferences content end-->
-
 </div>
+
 <?php endblock(); ?>
 
 <?php startblock('postCodeContent'); ?>
@@ -277,13 +274,10 @@
             type: 'POST',
             success: function(success_data){
                 $('#modalcontent').html(success_data);
-                // before prompting the modal scroll view to the top -> modal is presented on top of the page
-                $(document).scrollTop(1);
                 $('#change_degree_program_modal').modal('show');
             }
         });
     });
 <?php endblock(); ?>
-
 
 <?php end_extend(); ?>

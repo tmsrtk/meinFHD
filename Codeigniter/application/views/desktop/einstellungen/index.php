@@ -1,5 +1,5 @@
 <?php extend('base/template.php'); # extend main template ?>
-<?php startblock('title');?><?php get_extended_block();?> - Persönliche Einstellungen<?php endblock(); ?>
+<?php startblock('title');?><?php get_extended_block();?> - Pers&ouml;nliche Einstellungen<?php endblock(); ?>
 
 <?php
     # general form setup
@@ -31,7 +31,7 @@
         'class' => 'span3',
         'name' => 'password2',
         'id' => 'password2',
-        'placeholder' => 'Passwort bestätigen',
+        'placeholder' => 'Passwort best&auml;tigen',
     );
 
     $data_forename = array(
@@ -129,11 +129,6 @@
             $show_email_cb = FALSE;
         }
     }
-
-    $submit_data = array(
-        'name'	=> 'speichern',
-        'class'	=> 'btn btn-danger'
-    );
 ?>
 
 <?php startblock('content'); # content for this view ?>
@@ -207,7 +202,7 @@
 
             <?php if (in_array(Roles::STUDENT, $userroles)) : ?>
             <div class="control-group">
-                <?php echo form_label('Dozenten dürfen mich unter dieser Adresse auch persönlich erreichen', 'EmailDarfGezeigtWerden', $data_labelattrs); ?>
+                <?php echo form_label('Dozenten d&uuml;rfen mich unter dieser Adresse auch pers&ouml;nlich erreichen', 'EmailDarfGezeigtWerden', $data_labelattrs); ?>
                 <div class="controls">
                     <?php echo form_checkbox($data_private_correspondence, 1, $show_email_cb); ?>
                 </div>
@@ -256,7 +251,7 @@
             <?php endif ?>
 
             <div class="form-actions">
-                <?php echo form_submit($submit_data, 'Änderungen speichern'); ?>
+                <input type="submit" name="speichern" class="btn btn-danger" value="&Auml;nderungen speichern" />
             </div>
             <?php echo form_close(); ?>
         </div><!-- preferences content end-->
