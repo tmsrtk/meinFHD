@@ -145,11 +145,11 @@ CI_phpStorm.php
 ######################################################################################################
 *.esproj
 
-# File created by saving the Semesterplan:
+# Ignore files, that are located in the uploads folder of CI
 ######################################################################################################
-Codeigniter/upload/
-
+Codeigniter/resources/uploads/
 
 # meinfhd.css & meinfhd-responsive.css:
 ######################################################################################################
 Codeigniter/resources/css/meinfhd.css
+Codeigniter/resources/css/meinfhd-responsive.css
