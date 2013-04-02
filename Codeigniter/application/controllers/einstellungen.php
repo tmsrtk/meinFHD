@@ -429,6 +429,5 @@ class Einstellungen extends FHD_Controller {
         return FALSE;
     }
 }
-
 /* End of file einstellungen.php */
 /* Location: ./application/controllers/einstellungen.php */

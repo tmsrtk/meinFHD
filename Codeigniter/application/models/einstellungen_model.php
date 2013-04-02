@@ -7,7 +7,7 @@
  * @copyright Fachhochschule Duesseldorf, 2012
  * @link http://www.fh-duesseldorf.de
  * @author Jan Eichler(JE), <jan.eichler@fh-duesseldorf.de>
- * @author Christian Kundrussü(CK), <christian.kundruss@fh-duesseldorf.de>
+ * @author Christian Kundruss(CK), <christian.kundruss@fh-duesseldorf.de>
  */
 
 /**
