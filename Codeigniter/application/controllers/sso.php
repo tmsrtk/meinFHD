@@ -1,26 +1,17 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
-/**
- * meinFHD WebApp
- *
- * @version 0.0.1
- * @copyright Fachhochschule Duesseldorf, 2012
- * @link http://www.fh-duesseldorf.de
- * @author Christian Kundruss (CK) <christian.kundruss@fh-duesseldorf.de>
- */
-
 /**
  * Class SSO
  *
  * This class deals with the authentication process via the configured Single-Sign-On IdP, if the users chooses the
  * SSO login method on the login page.
  *
+ * @version 0.0.1
+ * @copyright Fachhochschule Duesseldorf, 2012
+ * @link http://www.fh-duesseldorf.de
  * @author Christian Kundruss (CK) <christian.kundruss@fh-duesseldorf.de>
- * @todo E-Mail function needs to be configured with the productive configuration.
  */
 class SSO extends FHD_Controller {
 
-    // --- definition of class variables begin ---
     /**
      * @var String Stores the User ID of the global authenticated user.
      */
@@ -30,15 +21,15 @@ class SSO extends FHD_Controller {
      *            Structure -> BenutzerID, LoginName, Passwort, Email, Vorname, Nachname, FHD_IdP_UID
      */
     private $linked_user;
-    // --- definition of class variables end ---
 
     /**
      * Default constructor. Used for initialization.
      * Is called if an object of this class is created.
      * Loads information about the configured IdP, the authenticated user and the linked user (If there is an linked user)
+     *
      * @access public
      * @return void
-     * */
+     */
     public function __construct() {
         parent::__construct();
 
@@ -71,13 +62,10 @@ class SSO extends FHD_Controller {
         if ($this->samlauthentication->is_authenticated()) {
 
             // if the user has got an linked account -> perform login with the linked local user account
-            // if the global uid is linked to an local account establish a local session
             if ($this->linked_user) {
                 $this->establish_local_session();
             }
-
             // the user has no linked account and is not blacklisted -> give him the possibility to link or create an account
-            // otherwise request for linking: 2 alternatives -> user has got an account and links; -> user requests an account that is automatically linked
             else {
                 redirect('sso/link_account');
             }
@@ -131,7 +119,6 @@ class SSO extends FHD_Controller {
      *
      * @access public
      * @return void
-     * @todo Final configuration of E-Mail function. Messages are already implemented.
      */
     public function link_account() {
 
@@ -150,8 +137,8 @@ class SSO extends FHD_Controller {
             // check if the global account is on the blacklist
             if($this->SSO_model->is_blacklisted($this->idp_auth_uid)){
                 // show message and redirect back to the link account page
-                $message_body = '<p>Beim Verknüpfen Deines lokalen Accounts mit dem zentralen Account ist ein Fehler aufgetreten. Dein zentraler'.
-                    ' Account ist für meinFHD gesperrt. Bitte kontaktiere den Support unter <a href="mailto:meinfhd.medien@fh-duesseldorf.de">meinfhd.medien@fh-duesseldorf.de</></p>';
+                $message_body = '<p>Beim Verkn&uuml;pfen Deines lokalen Accounts mit dem zentralen Account ist ein Fehler aufgetreten. Dein zentraler'.
+                    ' Account ist f&uuml;r meinFHD gesperrt. Bitte kontaktiere den Support unter <a href="mailto:meinfhd.medien@fh-duesseldorf.de">meinfhd.medien@fh-duesseldorf.de</></p>';
                 $this->message->set(sprintf($message_body));
                 redirect('app/login'); // reload controller for displaying the error message
             }
@@ -174,7 +161,6 @@ class SSO extends FHD_Controller {
                     // update data of the linked user
                     $this->linked_user = $this->get_linked_user();
 
-                    // TODO: send the user a mail, that his local account is linked
                     $email_reciever = $this->linked_user['Email'];
 
                     $email_subject = '[meinFHD] Account erfolgreich verkn&uuml;pft';
@@ -183,6 +169,7 @@ class SSO extends FHD_Controller {
                         ' verkn&uuml;pft.</p><p>Du kannst dich jeder Zeit &uuml;ber das Shibboleth-Verfahren anmelden!</p>';
 
                     // call the send mail method
+                    $this->mailhelper->send_meinfhd_mail($email_reciever, $email_subject, $email_message_body);
 
                     // establish local session / login
                     $this->establish_local_session();
@@ -191,7 +178,7 @@ class SSO extends FHD_Controller {
 
             else { // link was not successful
                 // show message and redirect back to the link account page
-                $message_body = '<p>Beim Verknüpfen Deines lokalen Accounts mit dem zentralen Account ist ein Fehler aufgetreten. Bitte überprüfe die von dir '.
+                $message_body = '<p>Beim Verkn&uuml;pfen Deines lokalen Accounts mit dem zentralen Account ist ein Fehler aufgetreten. Bitte &Uuml;berpr&uuml;fe die von dir '.
                                 'eingegebene Kombination aus Benutzername und Passwort.</p> <p>Sollte der Fehler weiterhin auftreten kontaktiere bitte den Support unter' .
                                 ' <a href="mailto:meinfhd.medien@fh-duesseldorf.de">meinfhd.medien@fh-duesseldorf.de</a></p>';
                 $this->message->set(sprintf($message_body),'error');
@@ -244,7 +231,6 @@ class SSO extends FHD_Controller {
             $rules = array();
 
             $rules[] = $this->adminhelper->get_formvalidation_studiengang();
-            //$rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
 
             // set the student validation rules
             $this->form_validation->set_rules($rules);
@@ -273,7 +259,7 @@ class SSO extends FHD_Controller {
             // check if the given matrikelnummer has an account or not
             if($this->SSO_model->check_matrikelnummer_has_account($form_data['matrikelnummer'])){ // the inputted matrikelnummer has already an account
                 // do nothing, but show the user a message
-                $message_body = '<p>Für die von dir angegebene Matrikelnummer existiert bereits ein lokaler Account. Solltest du dein Passwort vergessen haben,' .
+                $message_body = '<p>F&uuml;r die von dir angegebene Matrikelnummer existiert bereits ein lokaler Account. Solltest du dein Passwort vergessen haben,' .
                     ' so kannst du dir auf der <a href=" <?php print base_url()?>'.'/app/login">Startseite</a> ein neues anfordern.</p>
                                 <p>Andernfalls nehme bitte Kontakt mit dem Support unter <a href="mailto:meinfhd.medien@fh-duesseldorf.de">meinfhd.medien@fh-duesseldorf.de</a> auf.</p>';
                 $this->message->set(sprintf($message_body),'error');
@@ -295,7 +281,8 @@ class SSO extends FHD_Controller {
                 $email_message_body = '<h2>Einladungs-Anfoderung</h2><p>Es existiert eine Anfrage f&uuml;r Benutzereintragung mit der globalen Benutzer-ID: ' .
                                        $this->idp_auth_uid . ', die auf der Blacklist steht.</p><p>Bitte &uuml;berpr&uuml;fe die vorliegende Anfrage.</p>';
 
-                // TODO: send mail to user, that he has to wait
+                // send mail to the user
+                $this->mailhelper->send_meinfhd_mail($email_reciever, $email_subject, $email_message_body);
 
                 // use the same variables
                 $email_reciever = $form_data['email']; // the user email address
@@ -305,20 +292,19 @@ class SSO extends FHD_Controller {
                 $email_message_body = '<p>Deine Anfrage wurde als Einladung gespeichert. Bitte habe Verst&auml;ndnis, dass die Freischaltung nicht sofort erfolgen kann, ' .
                     'sondern erst durch einen Administrator pers&ouml;nlich freigeschaltet werden muss. In der Regel dauert das nicht l&auml;nger als einen Tag.</p>';
 
-               // call the sendmail method
-
+                // call the sendmail method
+                $this->mailhelper->send_meinfhd_mail($email_reciever, $email_subject, $email_message_body);
 
                 // show a message -> contact admin and redirect back to the login page
                 $message_body = '<p>Beim Anlegen des lokalen Accounts ist ein Fehler aufgetreten. Deine Informationen wurden als Einladung gespeichert und der Support'.
-                    ' darüber informiert. Solltest du keine Rückmeldung erhalten kontaktiere bitte den Support unter <a href="mailto:meinfhd.medien@fh-duesseldorf.de">meinfhd.medien@fh-duesseldorf.de</a></p>';
+                    ' dar&uuml;ber informiert. Solltest du keine R&uuml;ckmeldung erhalten kontaktiere bitte den Support unter <a href="mailto:meinfhd.medien@fh-duesseldorf.de">meinfhd.medien@fh-duesseldorf.de</a></p>';
                 $this->message->set(sprintf($message_body),'error');
+
                 // redirect to login-form
                 redirect('app/login');
             }
             else { // user is not blacklisted -> create his account
                 $this->_create_user($form_data);
-
-                // TODO: send email to user that the account was successfully created
 
                 $email_reciever = $form_data['email'];
 
@@ -334,6 +320,7 @@ class SSO extends FHD_Controller {
                                       '<p>Dein meinFHD-Team</p>';
 
                 // call the send mail method
+                $this->mailhelper->send_meinfhd_mail($email_reciever, $email_subject, $email_message_body);
 
                 // load the user welcome view
                 $this->load->view('sso/user_welcome', $this->data->load());
