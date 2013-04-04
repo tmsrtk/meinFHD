@@ -1,19 +1,18 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Admin Controller
+ * Class Admin
+ *
+ * The admin class / admin controller provides all admin features, that can be submitted
+ * via the admin views from an administrator.
  *
  * @version 0.0.1
- * @copyright Fachhochschule Duesseldorf, 2012
+ * @package meinFHD\controllers
+ * @copyright Fachhochschule Duesseldorf, 2013
  * @link http://www.fh-duesseldorf.de
- * @author Konstantin Voth, <konstantin.voth@fh-duesseldorf.de>
- * @author Frank Gottwald, <frank.gottwald@fh-duesseldorf.de>
- * @author Christian Kundruß, <christian.kundruss@fh-duesseldorf.de>
- */
-
-/**
- * Admin-Controller
- * The admin controller provides all necessary meinFHD 2.0 admin functions.
+ * @author Konstantin Voth (KV), <konstantin.voth@fh-duesseldorf.de>
+ * @author Frank Gottwald (FG), <frank.gottwald@fh-duesseldorf.de>
+ * @author Christian Kundruss (CK), <christian.kundruss@fh-duesseldorf.de>
  */
 class Admin extends FHD_Controller {
 
@@ -45,9 +44,9 @@ class Admin extends FHD_Controller {
 	    $this->load->model('admin_model');
 
 	    // get all roles, role ids and nomenclature
-	    $this->roles = $this->admin_model->getAllRoles();
-	    $this->permissions = $this->admin_model->getAllPermissions();
-	    $this->role_ids = $this->admin_model->getAllRoleIds();
+	    $this->roles = $this->admin_model->get_all_roles();
+	    $this->permissions = $this->admin_model->get_all_permissions();
+	    $this->role_ids = $this->admin_model->get_all_role_ids();
 	}
 
 	/**
@@ -83,7 +82,7 @@ class Admin extends FHD_Controller {
              * It is possbile that a role has no permissions. Therefore the array is going to be initialized with null. Index 0 of the array
              * will be empty.
              */
-			$single_role_permissions = $this->admin_model->getAllRolePermissions($rid);
+			$single_role_permissions = $this->admin_model->get_all_role_permissions($rid);
 			// if there permissions for the role? if not -> do nothing
 			if($single_role_permissions){
 
@@ -128,7 +127,7 @@ class Admin extends FHD_Controller {
 		$this->data->add('tableviewData', $data['tableviewData']); // add the data to the global data array
 
 		// save the data, that is needed for the view and add them to the global data array
-		$this->data->add('roleCounter', $this->admin_model->countRoles());
+		$this->data->add('roleCounter', $this->admin_model->count_roles());
 		$this->data->add('roles', $this->roles);
 		$this->data->add('permissions', $this->permissions);
 
@@ -151,7 +150,7 @@ class Admin extends FHD_Controller {
 	*/
 	public function savePermissions(){
 
-		$this->admin_model->deleteRolePermissions();
+		$this->admin_model->delete_role_permissions();
 
 		// iterate through each role and permission
 		foreach($this->permissions as $p){
@@ -161,11 +160,11 @@ class Admin extends FHD_Controller {
 					// if there are entries for the role-permission-combination
 				if($this->input->post(($p->BerechtigungID).$r)){
 
-						$rp['RolleID'] = $r;
+                    $rp['RolleID'] = $r;
 					$rp['BerechtigungID'] = $p->BerechtigungID;
 
 					// save the permission changes
-					$this->admin_model->updateRolePermissions($rp);
+					$this->admin_model->update_role_permissions($rp);
 				}
 			}
 		}
@@ -205,7 +204,7 @@ class Admin extends FHD_Controller {
 	public function create_user_mask()
 	{
 		// get all possible roles for the form dropdown
-		$this->data->add('all_roles', $this->admin_model->get_all_roles());
+		$this->data->add('all_roles', $this->admin_model->get_all_roles_for_dropdown());
 		// get all possible degree programs for the form dropdown
 		$this->data->add('studiengaenge', $this->admin_model->get_all_studiengaenge());
         // load the view with the specified data
@@ -222,7 +221,7 @@ class Admin extends FHD_Controller {
 	public function edit_user_mask()
 	{
 		// get all possible roles for the form dropdown
-		$this->data->add('all_roles', $this->admin_model->get_all_roles());
+		$this->data->add('all_roles', $this->admin_model->get_all_roles_for_dropdown());
         // load the view
 		$this->load->view('admin/user_edit', $this->data->load());
 	}
@@ -266,7 +265,7 @@ class Admin extends FHD_Controller {
 		// get all users
 		$this->data->add('all_user', $this->admin_model->get_all_user_with_roles());
 		// get all roles
-		$this->data->add('all_roles', $this->admin_model->get_all_roles());
+		$this->data->add('all_roles', $this->admin_model->get_all_roles_for_dropdown());
 		// load the view
 		$this->load->view('admin/user_edit_roles', $this->data->load());
 	}
@@ -973,7 +972,7 @@ class Admin extends FHD_Controller {
         // get all courses of the specified degree program
 	    $courses_of_single_degree_program = array();
 	    $courses_of_single_degree_program = $this->admin_model->get_degree_program_courses($degree_program_chosen_id);
-	    $details_of_single_degree_program = $this->admin_model->get_degree_program_details_asrow($degree_program_chosen_id);
+	    $details_of_single_degree_program = $this->admin_model->get_degree_program_details_as_row($degree_program_chosen_id);
 
 	    // get number of semesters and prepare data for dropdown
 	    $regelsemester = $details_of_single_degree_program->Regelsemester;
@@ -1383,21 +1382,11 @@ class Admin extends FHD_Controller {
 	/*** << edit **************************************************************
 	**************************************************************************/
 
-
-	/*
-	 *
-	 * ******************************* Studiengangverwaltung
-	 * ************************************** Frank Gottwald
-	 *
-	 * ***********************************************************************/
-
-    // TODO check for deprecated stuff, test functionality and behaviour. Is everything as expected
-
     /*
-    * ===============================================================================
-    *                           Timetable administration
-    * ===============================================================================
-    */
+     * ===============================================================================
+     *                           Timetable administration
+     * ===============================================================================
+     */
 
 	/**
      * Opens the timetable edit view. The method could be called from the main menue
@@ -1864,24 +1853,16 @@ class Admin extends FHD_Controller {
     }
 
     /*
-    * ===============================================================================
-    *                           End timetable administration
-    * ===============================================================================
-    */
-
-	/*
-	 *
-	 * ******************************* Stundenplanverwaltung
-	 * ************************************** Frank Gottwald
-	 *
-	 * ***********************************************************************/
+     * ===============================================================================
+     *                           End timetable administration
+     * ===============================================================================
+     */
 
     /*
-    * ==================================================================================
-    *                   Timetable import
-    * ==================================================================================
-    */
-
+     * ==================================================================================
+     *                   Timetable import
+     * ==================================================================================
+     */
 
     /**
      * Shows and loads the timetable import view with all currently uploaded timetable files.
@@ -2084,9 +2065,10 @@ class Admin extends FHD_Controller {
     }
 
     /*
-    * ==================================================================================
-    *                                   End timetable import
-    * ==================================================================================
-    */
-
+     * ==================================================================================
+     *                                   End timetable import
+     * ==================================================================================
+     */
 }
+/* End of file admin.php */
+/* Location: ./application/controllers/admin.php */
