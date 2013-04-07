@@ -65,7 +65,6 @@ class Admin extends FHD_Controller {
 	* Edit Permissions - Overview
 	* Shows all permissions and roles and gives an admin the possibility to edit those.
 	*
-	* @category permissions_edit.php
     * @access public
     * @return void
 	*/
@@ -174,24 +173,82 @@ class Admin extends FHD_Controller {
 	}
 
     /*
-     * User management
+     * ==================================================================================
+     *                                   User Management start
+     * ==================================================================================
      */
 
-	/**
-	* User Invitation - Overview
-	* Shows all open user requests. Requests can be accepted or deleted.
-	*
-	* @category user_invite.php
-    * @access public
-    * @return void
-    */
-	public function show_open_user_requests()
-	{
-		// get all open user requests
-		$this->data->add('user_invitations', $this->admin_model->request_all_invitations());
+    /**
+     * User Invitation - Overview
+     * Shows / loads the view with all open user requests. Requests can be accepted or deleted.
+     *
+     * @access public
+     * @return void
+     */
+    public function show_open_user_requests()
+    {
+        // get all open user requests
+        $this->data->add('user_invitations', $this->admin_model->request_all_invitations());
         // load the view and add the content of the global data array
-		$this->load->view('admin/user_requests', $this->data->load());
-	}
+        $this->load->view('admin/user_requests', $this->data->load());
+    }
+
+    /**
+     * Creates an user from an invitation request or deletes
+     * otherwise the selected / specified invitation request.
+     * The id of the invitation request is therefore passed
+     * in the $POST-Array.
+     *
+     * @access public
+     * @return void
+     */
+    public function create_user_from_invitation_requests()
+    {
+        // get the invitation id from the post array
+        $invitation_id = $this->input->post('request_id');
+
+        // get the chosen action from "functions dropdown"
+        $user_function = $this->input->post('user_function');
+
+        /*
+         * perform the action, that was chosen by the user
+         * 0: create user
+         * 1: delete request
+         */
+        switch ($user_function)
+        {
+            case '0':
+                // create a new user from the invitation
+                $new_user_info = $this->admin_model->save_new_user_from_invitation($invitation_id);
+                // send mail to the accepted user with login information
+                $this->mailhelper->send_meinfhd_mail(
+                    $new_user_info['Emailadresse'], "[meinFHD] Herzlich Willkommen bei meinFHD",
+                    "Hallo ". $new_user_info['Vorname'] . " " . $new_user_info['Nachname'] . ",<br/><br/>" .
+                        "<p>Deine Benutzeranfrage wurde akzeptiert.</br>".
+                        "Der Anmeldename ist Deine Emailadresse und das Passwort lautet: {$new_user_info['Passwort']}<br/><br/></p>".
+                        "Dein meinFHD-Team"
+                );
+                $this->message->set('Der User wurde von der Einladungsliste erstellt.', 'success');
+                redirect(site_url().'admin/show_open_user_requests');
+                break;
+            case '1':
+                // delete the user invitation
+                $deleted_request_info = $this->admin_model->delete_invitation($invitation_id);
+                // send mail that the invitation was not accepted
+                $this->mailhelper->send_meinfhd_mail(
+                    $deleted_request_info['Emailadresse'],"[meinFHD] Deine Zugangsanforderung f�r meinFHD wurde abgelehnt",
+                    "Hallo ". $deleted_request_info['Vorname'] . " " . $deleted_request_info['Nachname'] . ",<br/></br/>" .
+                        "<p>Deine Benutzeranfrage wurde nicht akzeptiert.<br/>".
+                        "Bei R&uuml;ckfragen wende dich bitte pers&ouml;nlich an das Support-Team!<br/><br/></p>".
+                        "Dein meinFHD-Team"
+                );
+                $this->message->set('Der User wurde von der Einladungsliste gel&ouml;scht.', 'error');
+                redirect(site_url().'admin/show_open_user_requests');
+                break;
+            default:
+                break;
+        }
+    }
 
 	/**
 	* Create User - Form
@@ -270,10 +327,6 @@ class Admin extends FHD_Controller {
 		$this->load->view('admin/user_edit_roles', $this->data->load());
 	}
 
-    /*
-     * User management after this comment.
-     */
-
 	/**
 	 * Gets the input data, generates a password, routes to the model function to save
 	 * the user in the DB and sends an email to the created user.
@@ -294,64 +347,11 @@ class Admin extends FHD_Controller {
 		$this->admin_model->save_new_user($form_data, $password);
 
 		// send e-mail to the new user
-		$this->mailhelper->send_meinfhd_mail($form_data['email'], "Der User {$form_data['loginname']} wurde erstellt.", "Ihr Passwort lautet: {$password}");
+		$this->mailhelper->send_meinfhd_mail($form_data['email'], "[meinFHD] Dein Benutzeraccount wurde erstellt","<p>Hallo, <br/>dein Benutzeraccount wurde erfolgreich".
+                                                                  "erstellt.<br/>Du kannst dich mit folgenden Benutzerdaten anmelden:<br/>".
+                                                                  "Username:{$form_data['loginname']} <br/>Passwort: {$password}</p><br/>Dein meinFHD-Team");
 	}
 
-	/**
-	 * Creates or deletes the user from his invitation request or deletes
-     * otherwise the selected / specified invitation.
-	 *
-	 * @category user_invite.php
-     * @access public
-     * @return void
-	 */
-	public function create_user_from_invitation_requests()
-	{
-		// get the invitation id from the post array
-		$invitation_id = $this->input->post('request_id');
-
-		// get the chosen action from "functions dropdown"
-		$user_function = $this->input->post('user_function');
-
-        /*
-         * perform the action, that was chosen by the user
-         * 0: create user
-         * 1: delete request
-         */
-		switch ($user_function)
-		{
-			case '0':
-				// create a new user from the invitation
-				$new_user_info = $this->admin_model->save_new_user_from_invitation($invitation_id);
-                // send mail to the accepted user with login information
-                $this->mailhelper->send_meinfhd_mail(
-                    $new_user_info['Emailadresse'], "Herzlich Willkommen bei meinFHD",
-                    "Hallo ". $new_user_info['Vorname'] . " " . $new_user_info['Nachname'] . ",<br/><br/>" .
-                    "<p>Deine Benutzeranfrage wurde akzeptiert.</br>".
-                    "Der Anmeldename ist Deine Emailadresse und das Passwort lautet: {$new_user_info['Passwort']}<br/><br/></p>".
-                    "Dein meinFHD-Team"
-                );
-				$this->message->set('Der User wurde von der Einladungsliste erstellt.', 'error');
-				redirect(site_url().'admin/show_open_user_requests');
-				break;
-			case '1':
-                // delete the user invitation
-				$deleted_request_info = $this->admin_model->delete_invitation($invitation_id);
-                // send mail that the invitation was not accepted
-                $this->mailhelper->send_meinfhd_mail(
-                    $deleted_request_info['Emailadresse'],"Deine Zugangsanforderung für meinFHD wurde abgelehnt",
-                    "Hallo ". $deleted_request_info['Vorname'] . " " . $deleted_request_info['Nachname'] . ",<br/></br/<>" .
-                    "<p>Deine Benutzeranfrage wurde nicht akzeptiert.<br/>".
-                    "Bei Rückfragen wende dich bitte persönlich an das Support-Team!<br/><br/></p>".
-                    "Dein meinFHD-Team"
-                );
-                $this->message->set('Der User wurde von der Einladungsliste gelöscht.', 'error');
-				redirect(site_url().'admin/show_open_user_requests');
-				break;
-			default:
-				break;
-		}
-	}
 
 	/**
 	 * Saves the user changes that where made by an admin.

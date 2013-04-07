@@ -51,8 +51,6 @@ table {
   }
 }
 
-
-
 // CONDENSED TABLE W/ HALF PADDING
 // -------------------------------
 
@@ -62,7 +60,6 @@ table {
     padding: 4px 5px;
   }
 }
-
 
 // BORDERED VERSION
 // ----------------
@@ -132,7 +129,6 @@ table {
   }
 }
 
-
 // HOVER EFFECT
 // ------------
 // Placed here since it has to come after the potential zebra striping
@@ -143,6 +139,22 @@ table {
   }
 }
 
+// ZEBRA STRYPING FOR CUSTOM TABLE TO BE ABLE TO DISPLAY DIFFERENT CELL SIZINGS PROPERLY
+//---------------------------------------------------------------------------------------
+.table-striped-custom{
+  tbody{
+    tr{
+      border-top: 1px solid @tableBorder; // add top border to the rows
+      background-color: @tableBackgroundAccent;
+    }
+    td{
+      border-top: none; // remove top border from the single coloumns
+    }
+  }
+  tbody tr:hover  {
+    background-color: @tableBackgroundHover;
+  }
+}
 
 // TABLE CELL SIZING
 // -----------------
