@@ -434,4 +434,22 @@ td .lab-cb{
 }
 
 
+// ZEBRA STRYPING FOR CUSTOM TABLE TO BE ABLE TO DISPLAY DIFFERENT CELL SIZINGS PROPERLY
+//---------------------------------------------------------------------------------------
+.table-striped-custom{
+  tbody{
+    tr{
+      border-top: 1px solid @tableBorder; // add top border to the rows
+      background-color: @tableBackgroundAccent;
+    }
+    td{
+      border-top: none; // remove top border from the single coloumns
+    }
+  }
+  tbody tr:hover  {
+    background-color: @tableBackgroundHover;
+  }
+}
+
+
 
