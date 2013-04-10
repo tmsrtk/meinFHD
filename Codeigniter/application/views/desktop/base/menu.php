@@ -30,7 +30,7 @@
 									<ul class="dropdown-menu level-2">
 										<?php if ( $this->authentication->has_permissions('hat_einladungsaufforderung') ) : ?>
 										<?php endif ?>
-										<li><a href="<?php print base_url('admin/show_open_user_requests'); ?>">Einladungsanforderungen</a></li>
+										<li><a href="<?php print base_url('admin/open_user_requests'); ?>">Einladungsanforderungen</a></li>
 										<?php if ( $this->authentication->has_permissions('hat_benutzer_anlegen') ) : ?>
 										<li><a href="<?php print base_url('admin/create_user_mask'); ?>">Benutzer anlegen</a></li>
 										<?php endif ?>

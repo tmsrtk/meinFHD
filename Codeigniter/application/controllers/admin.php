@@ -185,7 +185,7 @@ class Admin extends FHD_Controller {
      * @access public
      * @return void
      */
-    public function show_open_user_requests()
+    public function open_user_requests()
     {
         // get all open user requests
         $this->data->add('user_invitations', $this->admin_model->request_all_invitations());
@@ -229,7 +229,7 @@ class Admin extends FHD_Controller {
                         "Dein meinFHD-Team"
                 );
                 $this->message->set('Der User wurde von der Einladungsliste erstellt.', 'success');
-                redirect(site_url().'admin/show_open_user_requests');
+                redirect(site_url().'admin/open_user_requests');
                 break;
             case '1':
                 // delete the user invitation
@@ -243,7 +243,7 @@ class Admin extends FHD_Controller {
                         "Dein meinFHD-Team"
                 );
                 $this->message->set('Der User wurde von der Einladungsliste gel&ouml;scht.', 'error');
-                redirect(site_url().'admin/show_open_user_requests');
+                redirect(site_url().'admin/open_user_requests');
                 break;
             default:
                 break;
@@ -254,7 +254,6 @@ class Admin extends FHD_Controller {
 	* Create User - Form
 	* Loads the create user form, that is displayed in the admin backend.
 	*
-	* @category user_add.php
     * @access public
     * @return void
 	*/
@@ -262,13 +261,81 @@ class Admin extends FHD_Controller {
 	{
 		// get all possible roles for the form dropdown
 		$this->data->add('all_roles', $this->admin_model->get_all_roles_for_dropdown());
-		// get all possible degree programs for the form dropdown
-		$this->data->add('studiengaenge', $this->admin_model->get_all_studiengaenge());
+
         // load the view with the specified data
 		$this->load->view('admin/user_add', $this->data->load());
 	}
 
-	/**
+    /**
+     * Form validation for creating a new user. The inputs will be checked for correctness.
+     * If everything is correct, the new user will be created and an email with the login
+     * information will be sent to the entered email address.
+     *
+     * @access public
+     * @return void
+     */
+    public function validate_create_user_mask()
+    {
+        // set the custom error delimiters for displaying the form validation errors
+        $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+
+        // specifiy the form validation rules
+        $rules = array();
+
+        $rules[] = $this->adminhelper->get_formvalidation_role();
+        $rules[] = $this->adminhelper->get_formvalidation_loginname();
+        $rules[] = $this->adminhelper->get_formvalidation_email();
+        $rules[] = $this->adminhelper->get_formvalidation_forename();
+        $rules[] = $this->adminhelper->get_formvalidation_lastname();
+
+        $this->form_validation->set_rules($rules);
+
+        // check for correctness
+        if($this->form_validation->run() == FALSE)
+        {
+            // there occured some errors during the validation -> display the mask with the errors
+            $this->show_create_user_mask();
+        }
+        else // validation was correct
+        {
+            // save the input / form data
+            $form_data = $this->input->post();
+            $form_data['startjahr'] = date("Y"); // add the 'studienbeginnjahr' to the input array (because there are no different form elements depending on the selected role)
+
+            // create the new user, send him an email with the login information
+            $this->_create_user($form_data);
+
+            // display a message
+            $this->message->set('Der Benutzer wurde erfolgreich erstellt!', 'success');
+            redirect(site_url().'admin/create_user_mask');
+        }
+    }
+
+    /**
+     * Creates / adds a new user with the provided information to the database.
+     *
+     * Therefore it gets the input data, generates a password, routes to the model function to save
+     * the user in the DB and sends an email to the created user with his login name and password.
+     *
+     * @access private
+     * @return void
+     */
+    private function _create_user($input_data)
+    {
+        // generate password
+        $password = $this->adminhelper->passwort_generator();
+
+        // save new user in db
+        $this->admin_model->save_new_user($input_data, $password);
+
+        // send e-mail to the new user
+        $this->mailhelper->send_meinfhd_mail($input_data['email'], "[meinFHD] Dein Benutzeraccount wurde erstellt","<p>Hallo,<br/><br/>dein Benutzeraccount wurde erfolgreich".
+            "erstellt.<br/>Du kannst dich mit folgenden Benutzerdaten anmelden:<br/>".
+            "<strong>Username:</strong> {$input_data['loginname']}<br/><strong>Passwort:</string> {$password}</p><p>Das Passwort wurde automatisch generiert ".
+            "und sollte aus Sicherheitsgr&uuml;nden nach dem ersten Login manuell von dir ge&auml;ndert werden.</p><br/>Dein meinFHD-Team");
+    }
+
+    /**
 	* Shows the edit user - form
 	*
 	* @category user_edit.php
@@ -328,32 +395,6 @@ class Admin extends FHD_Controller {
 	}
 
 	/**
-	 * Gets the input data, generates a password, routes to the model function to save
-	 * the user in the DB and sends an email to the created user.
-	 *
-	 * @category user_add.php
-     * @access public
-     * @return void
-	 */
-	private function create_user()
-	{
-		// get values from post
-		$form_data = $this->input->post();
-
-		// generate password
-		$password = $this->adminhelper->passwort_generator();
-
-		// save new user in db
-		$this->admin_model->save_new_user($form_data, $password);
-
-		// send e-mail to the new user
-		$this->mailhelper->send_meinfhd_mail($form_data['email'], "[meinFHD] Dein Benutzeraccount wurde erstellt","<p>Hallo, <br/>dein Benutzeraccount wurde erfolgreich".
-                                                                  "erstellt.<br/>Du kannst dich mit folgenden Benutzerdaten anmelden:<br/>".
-                                                                  "Username:{$form_data['loginname']} <br/>Passwort: {$password}</p><br/>Dein meinFHD-Team");
-	}
-
-
-	/**
 	 * Saves the user changes that where made by an admin.
 	 *
 	 * @category user_edit.php
@@ -374,72 +415,6 @@ class Admin extends FHD_Controller {
         );
         // update the user dataset
 		$this->admin_model->update_user($user_id, $data);
-	}
-
-	/**
-	 * Formvalidation method for creating a new user.
-	 *
-	 * @category user_add.php
-     * @access public
-     * @return void
-	 */
-	public function validate_create_user_form()
-	{
-        // set the custom error delimiters for displaying the form validation errors
-		$this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
-
-        // specifiy the form validation rules
-		$rules = array();
-
-		$rules[] = $this->adminhelper->get_formvalidation_role();
-		$rules[] = $this->adminhelper->get_formvalidation_loginname();
-		$rules[] = $this->adminhelper->get_formvalidation_email();
-		$rules[] = $this->adminhelper->get_formvalidation_forename();
-		$rules[] = $this->adminhelper->get_formvalidation_lastname();
-
-		$this->form_validation->set_rules($rules);
-
-		// get the selected user role
-		$role = $this->input->post('role');
-
-		/*
-		 * Depending on the role, there are different validations necessary.
-		 */
-        // if a student was selected?
-		if ($role === '5')
-		{
-			$rules = array();
-
-			$rules[] = $this->adminhelper->get_formvalidation_studiengang();
-			$rules[] = $this->adminhelper->get_formvalidation_matrikelnummer();
-
-			$this->form_validation->set_rules($rules);
-
-			// if erstsemestler checkbox was checked or not
-			if ( empty($form_values['erstsemestler']) )
-			{
-				// if not checked, -> invitation for non erstsemestler, -> more inputs to fill out
-				$rules[] = $this->adminhelper->get_formvalidation_startjahr();
-				$rules[] = $this->adminhelper->get_formvalidation_semesteranfang();
-
-				$this->form_validation->set_rules($rules);
-			}
-		}
-
-		// check for correctness
-		if($this->form_validation->run() == FALSE)
-		{
-			$this->create_user_mask();
-		}
-		else // validation was correct
-		{
-			// save in db
-			$this->create_user();
-
-			// display a message
-			$this->message->set('User erfolgreich erstellt!', 'error');
-			redirect(site_url().'admin/create_user_mask');
-		}
 	}
 
 	/**

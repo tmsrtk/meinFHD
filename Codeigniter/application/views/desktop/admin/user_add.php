@@ -3,140 +3,116 @@
 <?php startblock('title');?><?php get_extended_block();?> - Benutzer anlegen<?php endblock(); ?>
 
 <?php startblock('preCodeContent'); # additional markup before content ?>
-				<div class="span4"></div>
-				<div class="span4 well well-small">
+<div class="span3"></div>
+<div class="span6 well well-small">
 <?php endblock(); ?>
 
 <?php
-	// general form setup
-	$data_formopen = array('class' => '', 'id' => 'create_user');
-	$data_roles = 'class="role input-xxxlarge"';
-	$data_loginname = array(
-			'class' => 'input-xxxlarge',
+	// general form setup before content
+	$data_formopen = array(
+        'class' => 'form-horizontal',
+        'id' => 'create_user'
+    );
+
+    $data_roles = 'class="input-xxlarge" id="role"';
+
+    $data_loginname = array(
+			'class' => 'input-xxlarge',
 			'name' => 'loginname',
-			'placeholder' => 'Loginname*',
+            'id' => 'loginname',
+			'placeholder' => 'Loginname',
 			'value' => set_value('loginname')
-		);
+    );
+
 	$data_email = array(
-			'class' => 'input-xxxlarge',
+			'class' => 'input-xxlarge',
 			'name' => 'email',
-			'placeholder' => 'E-Mail*',
+            'id' => 'email',
+			'placeholder' => 'E-Mail',
 			'value' => set_value('email')
-		);
+    );
+
 	$data_forename = array(
-				'class' => 'input-xxxlarge',
-				'name' => 'forename',
-				'placeholder' => 'Vorname',
-				'value' => set_value('forename')
-		);
+            'class' => 'input-xxlarge',
+            'name' => 'forename',
+            'id' => 'forename',
+            'placeholder' => 'Vorname',
+            'value' => set_value('forename')
+    );
+
 	$data_lastname = array(
-			'class' => 'input-xxxlarge',
+			'class' => 'input-xxlarge',
 			'name' => 'lastname',
+            'id' => 'lastname',
 			'placeholder' => 'Nachname',
 			'value' => set_value('lastname')
-		);
-	$data_matrikelnummer = array(
-			'class' => 'input-xxxlarge',
-			'name' => 'matrikelnummer',
-			'placeholder' => 'Matrikelnummer',
-			'value' => set_value('matrikelnummer')
-		);
-	$data_startjahr = array(
-			'class' => 'input-xxxlarge',
-			'name' => 'startjahr',
-			'placeholder' => 'Startjahr',
-			'value' => set_value('startjahr')
-		);
-	$data_studiengang = 'class="studiengang"';
-	$submit_data = array(
+    );
+
+    $submit_data = array(
 			'name'			=> 'submit',
 			'class'			=> 'btn btn-danger'
-		);
+    );
+
+    $data_labelattrs = array(
+        'class' => 'control-label'
+    );
 ?>
 
 <?php startblock('content'); # additional markup before content ?>
-					<div class="row-fluid">
-						<h2>Benutzer anlegen</h2>
-						<?php echo validation_errors(); // validation errors or empty string otherwise ?>
-					</div>
-					<hr>
-					<?php echo form_open('admin/validate_create_user_form/', $data_formopen); // main inputs for all users ?>
-						<fieldset id="user-info">
-							<?php echo form_dropdown('role', $all_roles, /*standard value*/set_value('role'), $data_roles); ?>
-							<?php echo form_input($data_loginname); ?>
-							<?php echo form_input($data_email); ?>
-							<?php echo form_input($data_forename); ?>
-							<?php echo form_input($data_lastname); ?>
-						</fieldet>
-						<fieldset id="studentdata">
-							
-							<?php
-								// student specific input fields, only visible if 'student' is selected from dropdown
-								// matrnr, startjahr+sem, studiengang
-								echo form_input($data_matrikelnummer);
-								echo form_input($data_startjahr);
-								// echo form_radio('semesteranfang', 'WS', TRUE);
-								// creating the radio manually, to use the set_radio() method
-								// echo '<input type="radio" name="semesteranfang" value="WiSe"'.set_radio('semesteranfang', 'WiSe', TRUE).' />';
-								// echo 'WiSe';
-								// // echo form_radio('semesteranfang', 'SS', FALSE);
-								// echo '<input type="radio" name="semesteranfang" value="SoSe"'.set_radio('semesteranfang', 'SoSe', FALSE).' />';
-								// echo 'SoSe'; echo '<br />';
+    <div class="row-fluid">
+        <h2>Benutzer anlegen</h2>
+        <p>
+            Zum Anlegen eines neuen Benutzers bitte alle mit einem Stern (*) gekennzeichneten Felder sowie die
+            Benutzerrolle ausw&auml;hlen.<br/>
+            Die weiteren, rollenspezifischen Informationen m&uuml;ssen vom erstellten Benutzer in seinen
+            pers&ouml;nlichen Einstellungen sp&auml;ter erg&auml;nzt werden.
+        </p>
+        <?php echo validation_errors(); // validation errors or empty string otherwise ?>
+    </div>
+    <hr/>
 
-								echo '<input type="radio" name="semesteranfang" value="WS"'.set_radio('semesteranfang', 'WS', TRUE).' />';
-								echo 'WS';
-								// echo form_radio('semesteranfang', 'SS', FALSE);
-								echo '<input type="radio" name="semesteranfang" value="SS"'.set_radio('semesteranfang', 'SS', FALSE).' />';
-								echo 'SS'; echo '<br />';
-							?>
-							<?php echo form_dropdown('studiengang', $studiengaenge, /*standard value*/'', $data_studiengang); ?>
-						</fieldset>
-						<hr>
-						<?php echo form_submit($submit_data, 'Neuen Benutzer anlegen'); ?>
-					<?php echo form_close(); ?>
-					
+    <?php echo form_open('admin/validate_create_user_mask/', $data_formopen); ?>
+        <div class="control-group">
+            <?php echo form_label('Rolle*', 'role', $data_labelattrs); ?>
+            <div class="controls docs-input-sizes">
+                <?php echo form_dropdown('role', $all_roles, set_value('role'), $data_roles); ?>
+            </div>
+        </div>
+        <div class="control-group">
+            <?php echo form_label('Loginname*', 'loginname', $data_labelattrs); ?>
+            <div class="controls docs-input-sizes">
+                <?php echo form_input($data_loginname); ?>
+            </div>
+        </div>
+        <div class="control-group">
+            <?php echo form_label('E-Mail*', 'email', $data_labelattrs); ?>
+            <div class="controls docs-input-sizes">
+                <?php echo form_input($data_email); ?>
+            </div>
+        </div>
+        <div class="control-group">
+            <?php echo form_label('Vorname', 'forename', $data_labelattrs); ?>
+            <div class="controls docs-input-sizes">
+                <?php echo form_input($data_forename); ?>
+            </div>
+        </div>
+        <div class="control-group">
+            <?php echo form_label('Nachname', 'lastname', $data_labelattrs); ?>
+            <div class="controls docs-input-sizes">
+                <?php echo form_input($data_lastname); ?>
+            </div>
+        </div>
+        <hr/>
+        <div class="control-group">
+            <div class="controls docs-input-sizes">
+                <?php echo form_submit($submit_data, 'Neuen Benutzer anlegen'); ?>
+            </div>
+        </div>
+    <?php echo form_close(); ?>
+</div>
 <?php endblock(); ?>
-
 <?php startblock('postCodeContent'); # additional markup before content ?>
-					</div>
-					<div class="span4"></div>
-<?php endblock(); ?>
-
-<?php startblock('customFooterJQueryCode');?>
-	var Studentsdata = {
-		init : function( config ) {
-			this.config = config;
-			this.bindEvents();
-			this.toggleStudentsdata(this.config.roleDropdown);
-		},
-		
-		bindEvents : function() {
-			var self = this;
-			this.config.roleDropdown.on( 'change', function() {
-				self.toggleStudentsdata($(this));
-			} );
-		},
-		
-		toggleStudentsdata : function(selectbox) {
-			var studentdata_container = this.config.studentdataField;
-			var dropdown_value = (selectbox)
-				? dropdown_value = selectbox.val()
-				: '0';
-			(dropdown_value === '5') ? studentdata_container.slideDown() : studentdata_container.slideUp();
-		}
-	};
-	
-	// in case of more than one object
-	// var sd1 = Object.create( Studentsdata );
-	// sd1.init({
-	// 	studentdataField : $('#studentdata'),
-	// 	roleDropdown : $('select.role')
-	// });
-	
-	Studentsdata.init({
-		studentdataField : $('#studentdata'),
-		roleDropdown : $('select.role')
-	});
+<div class="span3"></div>
 <?php endblock(); ?>
 
 <?php end_extend(); ?>

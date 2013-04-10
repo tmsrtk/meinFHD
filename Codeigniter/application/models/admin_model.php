@@ -174,12 +174,21 @@ class Admin_model extends CI_Model {
 				'Email'                     => $form_data['email'],
 				'Vorname'                   => $form_data['forename'],
 				'Nachname'                  => $form_data['lastname'],
-				'Matrikelnummer'            => $form_data['matrikelnummer'],
 				'StudienbeginnJahr' 		=> $form_data['startjahr'],
-				'StudienbeginnSemestertyp' 	=> $form_data['semesteranfang'],
-				'StudiengangID' 			=> $form_data['studiengang'],
 				'Passwort' 				    => md5($password)
 			);
+
+        // if the form_data - array contains student information (matrikelnummer, studiengang, semesteranfang) add them to the data array
+        if (array_key_exists('matrikelnummer',$form_data)){
+            $data['Matrikelnummer'] = $form_data['matrikelnummer'];
+        }
+        else if (array_key_exists('semesteranfang', $form_data)){
+            $data['StudienbeginnSemestertyp'] = $form_data['semesteranfang'];
+        }
+        else if (array_key_exists('studiengang', $form_data)){
+            $data['StudiengangID'] = $form_data['studiengang'];
+        }
+
 
 		$this->db->insert('benutzer', $data);
 
