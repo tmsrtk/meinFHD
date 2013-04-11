@@ -189,7 +189,6 @@ class Admin_model extends CI_Model {
             $data['StudiengangID'] = $form_data['studiengang'];
         }
 
-
 		$this->db->insert('benutzer', $data);
 
 		// query directly the user_id of the just created user

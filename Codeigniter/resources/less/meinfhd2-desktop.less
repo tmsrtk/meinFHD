@@ -436,13 +436,13 @@ td .lab-cb{
 
 // ZEBRA STRYPING FOR CUSTOM TABLE TO BE ABLE TO DISPLAY DIFFERENT CELL SIZINGS PROPERLY
 //---------------------------------------------------------------------------------------
-.table-striped-custom{
-  tbody{
-    tr{
+.table-striped-custom {
+  tbody {
+    tr {
       border-top: 1px solid @tableBorder; // add top border to the rows
       background-color: @tableBackgroundAccent;
     }
-    td{
+    td {
       border-top: none; // remove top border from the single coloumns
     }
   }
@@ -450,6 +450,24 @@ td .lab-cb{
     background-color: @tableBackgroundHover;
   }
 }
+
+// EMULATION OF ZEBRA STRYPED TABLE FOR DIV´s
+//--------------------------------------------
+div .zebra-striped-div {
+
+  padding-top: 8px;
+  border-top: 1px solid @tableBorder;
+  background-color: @tableBackgroundAccent;
+}
+
+div .zebra-striped-div:nth-child(even) {
+  background-color: @tableBackground;
+}
+// emulating the hover effect for the single row
+div .zebra-striped-div:hover {
+  background-color: @tableBackground;
+}
+
 
 
 

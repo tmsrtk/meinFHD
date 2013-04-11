@@ -1,5 +1,4 @@
 <?php
-
 $formdata = array(
     'class' => 'input-xxlarge',
     'name' => $name,
@@ -8,8 +7,6 @@ $formdata = array(
     );
 
 ?>
-
-
 <div class="span2">
 	<?php echo form_input($formdata); ?>
 </div>

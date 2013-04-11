@@ -10,11 +10,10 @@
 	$data_role = array();
 	$data_role = $all_roles;
 	// add as first element
-	array_unshift($data_role, 'Bitte wählen');
+	array_unshift($data_role, 'Bitte w&auml;hlen');
 	$data_role_ext = 'class="user_change_rolle_dd" id="user_cr_role"';
 
 	$searchbox_content = '';
-	#(!empty($_POST['email']))?$searchbox_content=$_POST['email']:'';				// FLASHDATA STUFF
 	$searchbox_content = $this->session->flashdata('searchbox');
 
 	$data_search = array(
@@ -33,31 +32,22 @@
 		<div class="span4"><h5>Suche</h5><?php echo form_input($data_search); ?></div>
 		<?php echo form_close(); ?>
 	</div>
-	<hr>
+	<hr/>
 
 	<?php echo validation_errors(); // validation errors or empty string otherwise ?>
-
-	<div class="row-fluid">
-		<table id="user_overview" class="table table-striped">
-			<thead>
-				<tr>
-					<th>
-						<div class="span2">Loginname</div>
-						<div class="span2">Nachname</div>
-						<div class="span2">Vorname</div>
-						<div class="span2">E-Mail</div>
-						<div class="span2">Funktion</div>
-						<div class="span2">Los</div>
-					</th>
-				</tr>
-			</thead>
-
-			<tbody id="user_content">
-				<!-- Userdata -->
-			</tbody>
-		</table>
-	</div>
-
+    <div class="row-fluid">
+        <div id="user_overview">
+            <div class="span2"><strong>Loginname</strong></div>
+            <div class="span2"><strong>Nachname</strong></div>
+            <div class="span2"><strong>Vorname</strong></div>
+            <div class="span2"><strong>E-Mail</strong></div>
+            <div class="span2"><strong>Funktion</strong></div>
+            <div class="span2"><strong>Ausf&uuml;hren?</strong></div>
+        </div>
+    </div>
+    <div id="user_content">
+        <!-- User Data -->
+    </div>
 	<div id="modalcontent"></div>
 
 <?php endblock(); ?>
@@ -91,9 +81,6 @@
 
 			var self = this;
 
-			// console.log(filter);
-			// console.log(searchbox);
-
 			clearTimeout( self.timer );
 
 			// fire the command after 400 ms, so when the user types a name in the searchbox
@@ -104,7 +91,7 @@
 
 				var data = '';
 
-				// if filter not 0 = "Bitte auswählen" -> no role_id var
+				// if filter not 0 = "Bitte auswaehlen" -> no role_id var
 				( filter.val() !== '0' ) ? data+='role_id='+filter.val()+'&' : data+='role_id=&';
 				// more than two letters, typed in the searchbox
 				( searchbox.val().length > 2 ) ? data+='searchletter='+searchbox.val() : data+='searchletter=';
@@ -222,7 +209,7 @@
 	UsersEditAjax.init({
 		roleDropdown : $('#user_cr_role'),
 		searchInput : $('#user_cr_search'),
-		dataContent : $('tbody#user_content'),
+		dataContent : $('div#user_content'),
 		counter : $('.studentcounter')
 	});
 
@@ -232,29 +219,28 @@
 	$("#user_content").on("click", "input#save", function() {
 		// determine which function was selected from the dropdown
 		// 0 = speichern, 1 = pw resetten, 2 = Studienplan resetten, 3 = Als..anmelden
-		var user_function =  $(this).parents("form#edit_user_row").find("#user_function").val();
+		var user_function =  $(this).parents('form[id^="edit_user_row_"]').find("#user_function").val();
 
 		if (user_function === '0') {
 			$(this).attr("data-clicked", "true");
-			// createDialog('Änderungen speichern', 'Sollen die Änderungen wirklich gespeichert werden?').dialog("open");
-			_showModal('Änderungen speichern', 'Sollen die Änderungen wirklich gespeichert werden?', true);
-		} else if (user_function === '1') {
+            _showModal('&Auml;nderungen speichern', 'Sollen die &Auml;nderungen wirklich gespeichert werden?', true);
+		}
+        else if (user_function === '1') {
 			$(this).attr("data-clicked", "true");
-			_showModal('Passwort resetten', 'Möchten Sie das Passwort für diesen Benutzer wirklich zurücksetzen?', true);
-		} else if (user_function === '2') {
+            _showModal('Passwort resetten', 'M&ouml;chtest du das Passwort f&uuml;r diesen Benutzer wirklich zur&uuml;cksetzen?', true);
+		}
+        else if (user_function === '2') {
 			$(this).attr("data-clicked", "true");
-			_showModal('Studienplan resetten', 'Möchten Sie den Studienplan für diesen Benutzer wirklich zurücksetzen?', true);
-		} else if (user_function === '3') {
+		    _showModal('Studienplan resetten', 'M&ouml;chtest du den Studienplan f&uuml;r diesen Benutzer wirklich zur&uuml;cksetzen?', true);
+        }
+        // login as
+        else if (user_function === '3') {
 			$(this).attr("data-clicked", "true");
-
-   		   	// Edits by Christian Kundruss
-            // for the login as function the model is unneccessary in my opinion...
-            //createDialog('Anmelden als...', 'Möchten Sie sich wirklich als dieser Benutzer anmelden?').dialog("open");
-
              // if we do not use the modal box pass the information of the choosen user to the controller
              $("input[type=submit][data-clicked=true]").parents("form#edit_user_row").submit();
              $("td.user_content_row input#save").removeAttr("data-clicked");
-		} else {
+		}
+        else {
 
 		}
 

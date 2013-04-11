@@ -294,7 +294,7 @@ class Admin extends FHD_Controller {
         if($this->form_validation->run() == FALSE)
         {
             // there occured some errors during the validation -> display the mask with the errors
-            $this->show_create_user_mask();
+            $this->create_user_mask();
         }
         else // validation was correct
         {
@@ -350,7 +350,41 @@ class Admin extends FHD_Controller {
 		$this->load->view('admin/user_edit', $this->data->load());
 	}
 
-	/**
+    /**
+     * Decides which function was selected and routes to the associated method.
+     *
+     * @category user_edit.php
+     * @access public
+     * @return void
+     */
+    public function validate_edit_user_form()
+    {
+        /*
+         * Get the choosen action from "functions dropdown".
+         * 0: save, 1: pw reset, 2: semesterplan reset, 3: log-in as
+         */
+        $user_function = $this->input->post('user_function');
+
+        switch ($user_function) {
+
+            case '0':
+                $this->_validate_edits();
+                break;
+            case '1':
+                $this->_reset_pw();
+                break;
+            case '2':
+                $this->_reset_studienplan();
+                break;
+            case '3':
+                $this->_login_as_user();
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
 	* Shows the delete user - form
 	*
 	* @category user_delete.php
@@ -418,41 +452,7 @@ class Admin extends FHD_Controller {
 	}
 
 	/**
-	 * Decides which function was selected and routes to the associated method.
-	 *
-	 * @category user_edit.php
-     * @access public
-     * @return void
-	 */
-	public function validate_edit_user_form()
-	{
-		/*
-		 * Get the choosen action from "functions dropdown".
-		 * 0: save, 1: pw reset, 2: semesterplan reset, 3: log-in as
-		 */
-		$user_function = $this->input->post('user_function');
-
-		switch ($user_function) {
-
-			case '0':
-				$this->_validate_edits();
-				break;
-			case '1':
-				$this->_reset_pw();
-				break;
-			case '2':
-				$this->_reset_semesterplan();
-				break;
-			case '3':
-				$this->_login_as_user();
-				break;
-			default:
-				break;
-		}
-	}
-
-	/**
-	 * Validation method for the user changes.
+	 * Validates the made changes, if they should saved.
 	 *
 	 * @category user_edit.php
      * @access private
@@ -511,7 +511,7 @@ class Admin extends FHD_Controller {
 			// save in db
 			$this->save_user_changes();
             // display a message
-			$this->message->set('Der User wurde erfolgreich bearbeitet.', 'error');
+			$this->message->set('Der User wurde erfolgreich bearbeitet.', 'success');
 			$this->session->set_flashdata('searchbox', $new_form_values['email']);
             // redirect back to the edit user mask
 			redirect(site_url().'admin/edit_user_mask');
@@ -519,7 +519,8 @@ class Admin extends FHD_Controller {
 	}
 
 	/**
-	 * Resets a user´s password, and sends an email to him with the new password.
+	 * Resets the login password for the user, whose user_id that is passed in the
+     * $POST-Array. The new password will be send in an email to the user.
 	 *
 	 * @category user_edit.php
      * @access private
@@ -541,32 +542,34 @@ class Admin extends FHD_Controller {
 		$this->admin_model->update_user($new_form_values['user_id'], $data);
 
 		// send email with the new password to the user
-		 $this->mailhelper->send_meinfhd_mail(
-		 	$new_form_values['email'],
-		 	"Ihr Passwort wurde zurückgesetzt".
-		 	"<p>Ihr neues Passwort lautet: {$password}</p>"
-         );
+        $email_reciever = $new_form_values['email'];
+        $email_subject = '[meinFHD] Passwort zur�ckgesetzt';
+        $email_body = "Hallo,<br/><br/>dein Passwort wurde durch einen Administrator zur&uuml;ckgesetzt.<p>Dein Passwort lautet nun: {$password}</p>Dein meinFHD-Team";
 
-        // display a message and redirect the user back to the edit user mask
-		$this->message->set('Das Passwort wurde erfolgreich zurückgesetzt.', 'error');
+        $this->mailhelper->send_meinfhd_mail($email_reciever, $email_subject, $email_body);
+
+        // display a message and redirect the user back to the edit u ser mask
+		$this->message->set('Das Passwort wurde erfolgreich zur&uuml;ckgesetzt.', 'success');
 		redirect(site_url().'admin/edit_user_mask');
 	}
 
 	/**
-	 * Resets a user´s semesterplan.
+	 * Resets the studienplan of the user, whose user_id
+     * is passed in the $POST-Array. Method is used while an admin
+     * edits manually some user information.
 	 *
 	 * @category user_edit.php
      * @access private
      * @return void
 	 */
-	private function _reset_semesterplan()
+	private function _reset_studienplan()
 	{
 		// get the id of which user the semesterplan should be restored
 		$input_data = $this->input->post();
         // reset the semesterplan
 		$this->admin_model->reconstruct_semesterplan($input_data['user_id']);
         // display a message and redirect back to the edit user mask
-		$this->message->set('Der Studienplan wurde erfolgreich zurückgesetzt.', 'error');
+		$this->message->set('Der Studienplan wurde erfolgreich zur&uuml;ckgesetzt.', 'success');
 		redirect(site_url().'admin/edit_user_mask');
 	}
 
@@ -621,12 +624,14 @@ class Admin extends FHD_Controller {
     }
 
 	/**
-	 * Method for rendering the needed search-response and HTML Markup.
-     * It`s usually used via ajax.
+	 * Method for rendering the needed search-response and HTML Markup. It returns
+     * all users, that match the selected role and the inputted searchletter.
+     * Method is made for the use via ajax. The result (all single user views) will
+     * be echoed out.
 	 *
 	 * @category user_edit.php
      * @access public
-     * @return void
+     * @return void|echo The result string ist echoed out directly.
 	 */
 	public function ajax_show_user()
 	{
@@ -651,7 +656,9 @@ class Admin extends FHD_Controller {
 			// get the user with needed html markup and add it to the result string
 			foreach ($q as $key => $value)
 			{
-				$result .= $this->load->view('admin/partials/user_single_form', $value, TRUE);
+                // add the role id to the value array, because in the view we need the role id to provide the role specific functions
+                $value['role_id'] = $role_id;
+				$result .= $this->load->view('admin/partials/user_edit_single_form', $value, TRUE);
 			}
 		}
 
@@ -665,11 +672,14 @@ class Admin extends FHD_Controller {
 	}
 
 	/**
-	 * Returns the sum of all matched users.
+	 * Returns the sum of all matched (searched) users. Therefore the searchletter
+     * are passed in the $GET-Array.
      * Method is usually called via ajax. The result is going
-     * to be echoed.
+     * to be echoed out.
+     *
+     * @category user_edit.php
 	 * @access public
-     * @return void
+     * @return void|echo The result / user count is directly echoed / printed out.
 	 */
 	public function ajax_show_user_count()
 	{
