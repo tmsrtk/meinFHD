@@ -379,25 +379,15 @@ class Admin extends FHD_Controller {
             case '3':
                 $this->_login_as_user();
                 break;
+            case '4':
+                $this->_delete_user();
+                break;
             default:
+                $this->message->set('Bei der Verarbeitung der ausgew&auml;hlten Funktion ist ein Fehler aufgetreten.', 'error');
+                redirect(site_url().'/admin/edit_user_mask');
                 break;
         }
     }
-
-    /**
-	* Shows the delete user - form
-	*
-	* @category user_delete.php
-    * @access public
-    * @return void
-	*/
-	public function delete_user_mask()
-	{
-		// get all users
-		$this->data->add('user', $this->admin_model->get_all_user());
-        // load the view
-		$this->load->view('admin/user_delete', $this->data->load());
-	}
 
 	/**
 	* Shows the import user mask
@@ -579,11 +569,10 @@ class Admin extends FHD_Controller {
      * Modifications by Christian Kundruss: If the local account is linked to an global
      * user id, the global uid will be add to the 'shibboleth blacklist'.
      * </p>
-     * @access public
+     * @access private
      * @return void
-	 * @category user_delete.php
 	 */
-	public function delete_user()
+	private function _delete_user()
 	{
         // get the id of the user that should be deleted
 		$user_id = $this->input->post('user_id');
@@ -600,8 +589,8 @@ class Admin extends FHD_Controller {
         // delete the user from the database
 		$this->admin_model->model_delete_user($user_id);
         // display a success message and return to the delete user mask
-		$this->message->set('Der User wurde erfolreich gelöscht.', 'error');
-		redirect(site_url().'admin/delete_user_mask');
+		$this->message->set('Der Benutzer wurde erfolreich gel&ouml;scht.', 'success');
+		redirect(site_url().'admin/edit_user_mask');
 	}
 
     /**

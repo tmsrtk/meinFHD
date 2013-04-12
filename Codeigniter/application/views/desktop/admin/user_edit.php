@@ -218,10 +218,10 @@
 	// to open the prompt dialog 
 	$("#user_content").on("click", "input#save", function() {
 		// determine which function was selected from the dropdown
-		// 0 = speichern, 1 = pw resetten, 2 = Studienplan resetten, 3 = Als..anmelden
+		// 0 = speichern, 1 = pw resetten, 2 = Studienplan resetten, 3 = Als..anmelden, 4 = Benutzer loeschen
 		var user_function =  $(this).parents('form[id^="edit_user_row_"]').find("#user_function").val();
 
-		if (user_function === '0') {
+    	if (user_function === '0') {
 			$(this).attr("data-clicked", "true");
             _showModal('&Auml;nderungen speichern', 'Sollen die &Auml;nderungen wirklich gespeichert werden?', true);
 		}
@@ -236,13 +236,17 @@
         // login as
         else if (user_function === '3') {
 			$(this).attr("data-clicked", "true");
-             // if we do not use the modal box pass the information of the choosen user to the controller
-             $("input[type=submit][data-clicked=true]").parents("form#edit_user_row").submit();
-             $("td.user_content_row input#save").removeAttr("data-clicked");
+            // if we do not use the modal box pass the information of the choosen user to the controller
+            $("input[type=submit][data-clicked=true]").parents("form[id^=edit_user_row_]").submit();
+            console.log($("input[type=submit][data-clicked=true]").parents("form[id^=edit_user_row_]"));
+		}
+        else if (user_function === '4') {
+            $(this).attr("data-clicked", "true");
+            _showModal('Benutzer l&ouml;schen', 'M&ouml;chtest du den Benutzer wirklich l&ouml;schen?', true);
 		}
         else {
 
-		}
+        }
 
 		// prevent default submit behaviour
 		return false;
