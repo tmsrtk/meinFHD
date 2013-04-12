@@ -5,11 +5,21 @@ $data_formopen = array(
 );
 
 // prepare the array for the functions that could be selected based on the user role
-$data_dropdown = array('Speichern', 'Passwort resetten', 'Als ... anmelden'); // base functions for every user
+//$data_dropdown = array('Speichern', 'Passwort resetten', 'Als ... anmelden'); // base functions for every user
+$data_dropdown = array();
+$data_dropdown[0] = 'Speichern';
+$data_dropdown[1] = 'Passwort resetten';
+$data_dropdown[3] = 'Als ... anmelden';
+$data_dropdown[4] = 'Benutzer l&ouml;schen'; // at least add the delete function
+
 // if the actual user is a student role id -> 5 provide the function to reset a study plan
 if ($role_id == 5){
-    $data_dropdown[] = 'Studienplan resetten';
+    $data_dropdown[2] = 'Studienplan resetten';
 }
+
+
+// reihenfolge der user functions für die modalen dialoge ändern. Zuordnung des textes möglich in der if schleife??
+
 $data_dropdown_attrs = 'id="user_function" class="input-xxlarge"';
 
 $submit_data = array(
