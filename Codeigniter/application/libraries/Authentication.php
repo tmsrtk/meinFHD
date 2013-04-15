@@ -1,21 +1,17 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * meinFHD WebApp
- * 
- * @version 0.0.2
- * @copyright Fachhochschule Duesseldorf, 2012
- * @link http://www.fh-duesseldorf.de
- * @author Manuel Moritz (MM), <manuel.moritz@fh-duesseldorf.de>, Christian Kundruß (CK), <christian.kundruss@fh-duesseldorf.de>
- */
-
-/**
- * Authentication Library
+ * Class Authentication / Authentication library
  *
  * Library includes all necessary authentication functions. It implements the main authentication process including the firewall
  * to grant user specific access to the protected content.
+ *
+ * @version 0.0.2
+ * @package meinFHD\libraries
+ * @copyright Fachhochschule Duesseldorf, 2012
+ * @link http://www.fh-duesseldorf.de
  * @author Manuel Moritz (MM) <manuel.moritz@fh-duesseldorf.de>
- * @author Christian Kundruß (CK) <christian.kundruss@fh-duesseldorf.de>
+ * @author Christian Kundruss (CK), <christian.kundruss@fh-duesseldorf.de>
  */
 class Authentication {
 
@@ -133,9 +129,9 @@ class Authentication {
         $this->admin_uid = $this->CI->session->userdata('uid');// save the information of the admin (actual authenticated user) in the authentication object
 
         // security check if the chosen user is valid, that there is only one user with the equal username (usually there is only one user....)
-        $query = $this->CI->db->query('SELECT BenutzerID, Vorname, Nachname
+        $query = $this->CI->db->query('SELECT BenutzerID, Vorname, Nachname, Email
                                        FROM benutzer
-                                       where BenutzerID = ?',$userdata['user_id']);
+                                       WHERE BenutzerID = ?',$userdata['user_id']);
 
         if ($query->num_rows() == 1){ // the user only exists once in the database
             $this->CI->session->set_userdata('admin_uid', $this->admin_uid);
@@ -144,8 +140,12 @@ class Authentication {
             // save the "new" user with the given user_id
             $this->uid = $userdata['user_id'];
 
-            // save the name of the logged in user for further displays
             $this->name = $query->row()->Vorname . ' ' . $query->row()->Nachname;
+            // save the email address of the "new" user
+            $this->email = $query->row()->Email;
+            // add the email to the session data
+            $this->CI->session->set_userdata('email', $this->email);
+
             // initialize the session with the new user-id
             $this->CI->session->set_userdata('uid', $this->uid);
 
@@ -168,7 +168,6 @@ class Authentication {
      * @param string $username
      * @param string $hashed_password
      * @return bool TRUE if the login was successful, otherwise FALSE
-     * @todo Rename Method to be able to use it for the permanent login also, Namen beim sso aufrufer entsprechend refactorn...
      */
     public function sso_login($username, $hashed_password) {
 
@@ -189,7 +188,6 @@ class Authentication {
 
             // establish the session
             $this->CI->session->set_userdata('uid', $this->uid);
-            //$this->CI->session->set_userdata('SSO-Login', 'TRUE'); TODO wird vermutlich nicht gebraucht.... PRUEFEN!
 
             return TRUE; // session has been established
         }
@@ -205,7 +203,6 @@ class Authentication {
 	 *
 	 * @access private
 	 * @return void
-     * @todo alle rollen prüfen, ob die gelieferten Werte in irgendeiner Art und Weise brauchbar sind.
 	 */
 	private function _load_roles()
 	{
@@ -321,14 +318,15 @@ class Authentication {
 	}
 
     /**
-     * Function siwtches the user back to his administrator session.
+     * Function switches the user back to his administrator session.
      * Is used if an admin authenticates authenticates himself as another user and then performs an logout.
      *
      * @author Christian Kundruss
      * @access public
-     * @return void
+     * @return string Email of the user, the admin was logged in as.
      */
     public function switch_back_to_admin() {
+
         // change the current user-id to the user-id of the admin
         $this->uid = $this->CI->session->userdata('admin_uid');
         $this->name = ' ';
@@ -337,6 +335,9 @@ class Authentication {
         $this->CI->session->set_userdata('uid', $this->uid);
         $this->CI->session->set_userdata('login_from_admin', 'FALSE'); // login does not come any longer from an administrator
         $this->CI->session->unset_userdata('admin_uid');
+
+        // return the email address of the user the admin was logged in as
+        return $this->CI->session->userdata('email');
     }
 
 	/**
@@ -524,10 +525,6 @@ class Authentication {
             // establish a session for the user
             $this->sso_login($query->row()->LoginName, $query->row()->Passwort);
         }
-
-        // validate the hash against the database
-        // if everything is valid -> read out the username and the hashed password
-        //$this->sso_login($username, $hashed_password);
     }
 }
 /* End of file Authentication.php */

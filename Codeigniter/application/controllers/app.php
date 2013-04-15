@@ -4,10 +4,11 @@
  * meinFHD WebApp
  * 
  * @version 0.0.2
- * @copyright Fachhochschule Duesseldorf, 2012
+ * @package meinFHD\controllers
+ * @copyright Fachhochschule Duesseldorf, 2013
  * @link http://www.fh-duesseldorf.de
  * @author Manuel Moritz (MM), <manuel.moritz@fh-duesseldorf.de>
- * @author Christian Kundruß(CK), <christian.kundruss@fh-duesseldorf.de>
+ * @author Christian Kundruss (CK), <christian.kundruss@fh-duesseldorf.de>
  */
 
 /**
@@ -138,11 +139,13 @@ class App extends FHD_Controller {
 	{
         // --- Modification for returning to admin session, if the admin is logged in as another user Begin ---
         if ($this->authentication->is_logged_in_from_admin() == 'TRUE') { // the user is logged in from an admin, change the user data and switch back to admin session
-            $this->authentication->switch_back_to_admin();
+            $email_old_user = $this->authentication->switch_back_to_admin(); // switch back to the admin session and get the email of the user the admin was authenticated as
             // show a message that the return into the admin session was successful
             $this->message->set('Du befindest dich wieder in der Administrator-Session.');
+
+            $this->session->set_flashdata('searchbox', $email_old_user); // set flashdata to search / highlight the changed user
             // redirect to the 'benutzerverwaltung/benutzer bearbeiten'; outgoing point
-            redirect('admin/edit_user_mask');
+            redirect(site_url().'admin/edit_user_mask');
         }
         // --- Main Modification End ---
         // --- Modifications to check if the user is logged in via an global session by CK ---
@@ -307,8 +310,8 @@ class App extends FHD_Controller {
             $this->admin_model->put_new_user_to_invitation_requests($form_values);
 
             // send mail to admin, that a new request was saved
-            //$email_reciever = 'meinfhd.medien@fh-duesseldorf.de'; // TODO: where to get the email address from?! Maybe create a config file?
-            $email_reciever = 'christian.kundruss@fh-duesseldorf.de'; // just for debug / for live installation the address needs to be changed
+        //    $email_reciever = 'meinfhd.medien@fh-duesseldorf.de';
+            $email_reciever = 'christian.kundruss@fh-duesseldorf.de'; // TODO LIVE CONFIGURATION USE THE OTHER EMAIL ADDRESS (MAYBE CONFIG FILE??)
 
             $email_subject = '[meinFHD] Neue Einladungs-Anforderung wurde gespeichert';
 
@@ -326,16 +329,17 @@ class App extends FHD_Controller {
 
             $email_subject = '[meinFHD] Deine Anfrage wurde gespeichert';
 
-            $email_message_body = '<p>Deine Anfrage wurde als Einladung gespeichert. Bitte habe Verst&auml;ndnis, dass die Freischaltung nicht sofort erfolgen kann, ' .
-                'sondern erst durch einen Administrator pers&ouml;nlich freigeschaltet werden muss. In der Regel dauert das nicht l&auml;nger als einen Tag.</p>';
+            $email_message_body = '<p>Hallo, <br/>Deine Anfrage wurde als Einladung gespeichert. Bitte habe Verst&auml;ndnis, dass die Freischaltung nicht sofort erfolgen kann, ' .
+                'sondern erst durch einen Administrator pers&ouml;nlich freigeschaltet werden muss. In der Regel dauert das nicht l&auml;nger als einen Tag.</p>'.
+                'Dein meinFHD-Team';
 
             // call the sendmail method
             $this->mailhelper->send_meinfhd_mail($email_reciever, $email_subject, $email_message_body);
 
             // reload the startpage (loginpage) with an success message
             $this->message->set('Die Einladungsanforderung wurde erfolgreich abgeschickt! '.
-            'Bitte haben Sie Verständnis dafür, dass Ihre Freischaltung nicht sofort erfolgen kann, '.
-            'da Sie durch einen Administrtor persönlich freigeschaltet werden muss. In der Regel dauert dies nicht länger als einen Tag.');
+            'Bitte haben Sie Verst&auml;ndnis daf&auml;r, dass Ihre Freischaltung nicht sofort erfolgen kann, '.
+            'da Sie durch einen Administrtor pers&ouml;nlich freigeschaltet werden muss. In der Regel dauert dies nicht l&auml;nger als einen Tag.');
             // load the login page another time to show the info
             redirect('app/login');
         }

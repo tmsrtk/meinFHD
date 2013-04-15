@@ -1,22 +1,15 @@
  <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
-/**
- * meinFHD WebApp
- *
- * @version 0.0.1
- * @copyright Fachhochschule Duesseldorf, 2012
- * @link http://www.fh-duesseldorf.de
- * @author Christian Kundruss (CK), <christian.kundruss@fh-duesseldorf.de>
- */
-
-/**
- * SAML Authentication Library
- *
- * This library is a wrapper to integrate simpleSAMLphp into the CI-Framework.
- * Moreover it supplies methods to realize the authentication via an identity provider.
- * @author Christian Kundruss (CK) <christian.kundruss@fh-duesseldorf.de>
- */
-
+ /**
+  * Class Samlauthentication / SAML Authentication Library
+  *
+  * This library is a wrapper to integrate simpleSAMLphp into the CI-Framework.
+  * Moreover it supplies methods to realize the authentication via an identity provider.
+  *
+  * @version 0.0.1
+  * @copyright Fachhochschule Duesseldorf, 2012
+  * @link http://www.fh-duesseldorf.de
+  * @author Christian Kundruss (CK), <christian.kundruss@fh-duesseldorf.de>
+  */
 class Samlauthentication {
 
     /**
@@ -100,7 +93,6 @@ class Samlauthentication {
         $this->authSource->logout();
     }
 
-
     /**
      * Checks if the global authenticated user has already an linked local identity.
      *
@@ -127,3 +119,4 @@ class Samlauthentication {
 
 }
 /* End of file Samlauthentication.php */
+/* Location: ./application/libraries/Samlauthentication.php */

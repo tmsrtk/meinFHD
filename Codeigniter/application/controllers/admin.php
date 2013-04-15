@@ -352,6 +352,11 @@ class Admin extends FHD_Controller {
 
     /**
      * Decides which function was selected and routes to the associated method.
+     * The different user selected functions are associated with the following numbers:
+     * 0: Save; 1: Reset password; 2: Reset Semesterplan; 3: Login as selected user;
+     * 4: Delete user. These parameters need to be passed from the view, when the
+     * form is submitted. The parameters need to be the option number from
+     * the dropdown in the user_edit.php view.
      *
      * @category user_edit.php
      * @access public
@@ -361,7 +366,7 @@ class Admin extends FHD_Controller {
     {
         /*
          * Get the choosen action from "functions dropdown".
-         * 0: save, 1: pw reset, 2: semesterplan reset, 3: log-in as
+         * 0: save, 1: pw reset, 2: semesterplan reset, 3: log-in as 4: delte user
          */
         $user_function = $this->input->post('user_function');
 
@@ -390,59 +395,9 @@ class Admin extends FHD_Controller {
     }
 
 	/**
-	* Shows the import user mask
-	*
-	* @category user_import.php
-    * @access public
-    * @return void
-	*/
-	public function import_user_mask()
-	{
-		$this->load->view('admin/user_import', $this->data->load());
-	}
-
-	/**
-	* Shows all users and their associated roles.
-	*
-	* @category user_edit_roles.php
-    * @access public
-    * @return void
-	*/
-	public function edit_roles_mask()
-	{
-		// get all users
-		$this->data->add('all_user', $this->admin_model->get_all_user_with_roles());
-		// get all roles
-		$this->data->add('all_roles', $this->admin_model->get_all_roles_for_dropdown());
-		// load the view
-		$this->load->view('admin/user_edit_roles', $this->data->load());
-	}
-
-	/**
-	 * Saves the user changes that where made by an admin.
-	 *
-	 * @category user_edit.php
-     * @access public
-     * @return void
-	 */
-	public function save_user_changes()
-	{
-        // get the id of the changed user via post
-		$user_id = $this->input->post('user_id');
-
-        // create the update array -> new user information
-		$data = array(
-				'LoginName'					=> $this->input->post('loginname'),
-				'Vorname'					=> $this->input->post('forename'),
-				'Nachname'					=> $this->input->post('lastname'),
-				'Email'						=> $this->input->post('email')
-        );
-        // update the user dataset
-		$this->admin_model->update_user($user_id, $data);
-	}
-
-	/**
 	 * Validates the made changes, if they should saved.
+     * If the changes were correct, they will be saved in the database. Otherwise
+     * the view will be repopulated and the error messages will be highlighted.
 	 *
 	 * @category user_edit.php
      * @access private
@@ -475,7 +430,7 @@ class Admin extends FHD_Controller {
 
 		/*
 		 * Even if these fields do not need any validation rules, they have to be set, otherwise
-		 * they are not avaliable after the ->run() method.
+		 * they are not available after the ->run() method.
 		 */
 		if ($current_user_data['Vorname'] != $new_form_values['forename'])
 		{
@@ -493,13 +448,14 @@ class Admin extends FHD_Controller {
 		// check for (in)correctness
 		if($this->form_validation->run() == FALSE)
 		{
-			// call edit user mask again
-			$this->edit_user_mask();
+            $this->session->set_flashdata('searchbox', $new_form_values['email']);
+            // call edit user mask again
+            redirect(site_url().'admin/edit_user_mask');
 		}
 		else
 		{
 			// save in db
-			$this->save_user_changes();
+			$this->_save_user_changes();
             // display a message
 			$this->message->set('Der User wurde erfolgreich bearbeitet.', 'success');
 			$this->session->set_flashdata('searchbox', $new_form_values['email']);
@@ -507,6 +463,29 @@ class Admin extends FHD_Controller {
 			redirect(site_url().'admin/edit_user_mask');
 		}
 	}
+
+    /**
+     * Saves the user changes that where made by an admin / inputted in the form for the specified user.
+     *
+     * @category user_edit.php
+     * @access private
+     * @return void
+     */
+    private function _save_user_changes()
+    {
+        // get the id of the changed user via post
+        $user_id = $this->input->post('user_id');
+
+        // create the update array -> new user information
+        $data = array(
+            'LoginName'					=> $this->input->post('loginname'),
+            'Vorname'					=> $this->input->post('forename'),
+            'Nachname'					=> $this->input->post('lastname'),
+            'Email'						=> $this->input->post('email')
+        );
+        // update the user dataset
+        $this->admin_model->update_user($user_id, $data);
+    }
 
 	/**
 	 * Resets the login password for the user, whose user_id that is passed in the
@@ -538,15 +517,19 @@ class Admin extends FHD_Controller {
 
         $this->mailhelper->send_meinfhd_mail($email_reciever, $email_subject, $email_body);
 
-        // display a message and redirect the user back to the edit u ser mask
+        // display a message and redirect the user back to the edit user mask
 		$this->message->set('Das Passwort wurde erfolgreich zur&uuml;ckgesetzt.', 'success');
-		redirect(site_url().'admin/edit_user_mask');
+        // set flashdata to search / highlight the changed user
+        $this->session->set_flashdata('searchbox', $new_form_values['email']);
+        redirect(site_url().'admin/edit_user_mask');
 	}
 
 	/**
 	 * Resets the studienplan of the user, whose user_id
      * is passed in the $POST-Array. Method is used while an admin
-     * edits manually some user information.
+     * edits manually some user information. Afterwards the edit user mask
+     * is opened again and searches automatically for the dataset of
+     * the changed user.
 	 *
 	 * @category user_edit.php
      * @access private
@@ -555,19 +538,23 @@ class Admin extends FHD_Controller {
 	private function _reset_studienplan()
 	{
 		// get the id of which user the semesterplan should be restored
-		$input_data = $this->input->post();
+		$new_form_values = $this->input->post();
         // reset the semesterplan
-		$this->admin_model->reconstruct_semesterplan($input_data['user_id']);
+		$this->admin_model->reconstruct_semesterplan($new_form_values['user_id']);
         // display a message and redirect back to the edit user mask
 		$this->message->set('Der Studienplan wurde erfolgreich zur&uuml;ckgesetzt.', 'success');
-		redirect(site_url().'admin/edit_user_mask');
+        // set flashdata to search / highlight the changed user
+        $this->session->set_flashdata('searchbox', $new_form_values['email']);
+        redirect(site_url().'admin/edit_user_mask');
 	}
 
 	/**
 	 * <p>
      * Deletes an user by his id. The id is submitted via POST.
-     * Modifications by Christian Kundruss: If the local account is linked to an global
+     * If the local account is linked to an global
      * user id, the global uid will be add to the 'shibboleth blacklist'.
+     * After the user is successfully deleted, the edit user mask will be
+     * opened again.
      * </p>
      * @access private
      * @return void
@@ -577,14 +564,13 @@ class Admin extends FHD_Controller {
         // get the id of the user that should be deleted
 		$user_id = $this->input->post('user_id');
 
-        // modifications for blacklisting by CK
+        // account blacklisting for single sign on authentication
         // if the users account is already linked to an global identity -> blacklist the global userid before deleting his identity
         $linked_userdata = $this->admin_model->is_user_linked($user_id);
         if ($linked_userdata) { // the user is linked
             // add him to the blacklist
             $this->admin_model->add_user_to_blacklist($linked_userdata);
         }
-        // end modifications by CK
 
         // delete the user from the database
 		$this->admin_model->model_delete_user($user_id);
@@ -595,7 +581,8 @@ class Admin extends FHD_Controller {
 
     /**
      * Authenticates the admin under the account of the selected user.
-     * @author Christian Kundruß (c) 2012
+     *
+     * @authro Christian Kunndruss (c) 2012
      * @access private
      * @return void
      */
@@ -604,7 +591,7 @@ class Admin extends FHD_Controller {
 
         if($this->authentication->login_as_user($user_information)) { // authentication was successful
             $message_body = 'Eingeloggt als ' . $this->authentication->get_name() .  ' (User-ID:  ' . $this->authentication->user_id() . ')';
-            // print a message to get to know as who you are logged in, and to show that the authentication was succesful
+            // print a message to get to know as who you are logged in, and to show that the authentication was successful
             $this->message->set(sprintf($message_body));
 
             // redirect the user to the dashboard
@@ -695,7 +682,37 @@ class Admin extends FHD_Controller {
 		echo $result;
 	}
 
-	/**
+    /**
+     * Shows the import user mask
+     *
+     * @category user_import.php
+     * @access public
+     * @return void
+     */
+    public function import_user_mask()
+    {
+        $this->load->view('admin/user_import', $this->data->load());
+    }
+
+    /**
+     * Shows all users and their associated roles.
+     *
+     * @category user_edit_roles.php
+     * @access public
+     * @return void
+     */
+    public function edit_roles_mask()
+    {
+        // get all users
+        $this->data->add('all_user', $this->admin_model->get_all_user_with_roles());
+        // get all roles
+        $this->data->add('all_roles', $this->admin_model->get_all_roles_for_dropdown());
+        // load the view
+        $this->load->view('admin/user_edit_roles', $this->data->load());
+    }
+
+
+    /**
 	 * Changes the role for the selected user.
 	 *
 	 * @category user_edit_roles.php
