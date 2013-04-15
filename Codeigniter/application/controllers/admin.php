@@ -683,18 +683,6 @@ class Admin extends FHD_Controller {
 	}
 
     /**
-     * Shows the import user mask
-     *
-     * @category user_import.php
-     * @access public
-     * @return void
-     */
-    public function import_user_mask()
-    {
-        $this->load->view('admin/user_import', $this->data->load());
-    }
-
-    /**
      * Shows all users and their associated roles.
      *
      * @category user_edit_roles.php
