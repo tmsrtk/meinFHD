@@ -15,12 +15,15 @@ $submitButtonAttributes = array(
 );
 
 ?>
-<h1>Rechteverwaltung</h1>
-<p>
-    Hier k&ouml;nnen den verschiedenen Rollen die einzelnen Rechte durch an- bzw.
-    abw&auml;hlen der Checkboxen zugeteilt werden. <strong>Wichtig:</strong> Die
-    vorgenommenen &Auml;nderungen m&uuml;ssen anschlie&szlig;end gespeichert werden. Ansonsten gehen diese verloren.
-</p>
+<div class="row-fluid">
+    <h2>Rechteverwaltung</h2>
+    <p>
+        Hier k&ouml;nnen den verschiedenen Rollen die einzelnen Rechte durch an- bzw.
+        abw&auml;hlen der Checkboxen zugeteilt werden. <strong>Wichtig:</strong> Die
+        vorgenommenen &Auml;nderungen m&uuml;ssen anschlie&szlig;end gespeichert werden. Ansonsten gehen diese verloren.
+    </p>
+<div class="row-fluid">
+
 <?php echo form_open('admin/save_permissions'); ?>
 <div class="row-fluid">
     <div class="span8"></div>
