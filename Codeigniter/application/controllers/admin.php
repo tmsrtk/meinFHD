@@ -61,117 +61,6 @@ class Admin extends FHD_Controller {
 		$this->create_user_mask();
 	}
 
-	/**
-	* Edit Permissions - Overview
-	* Shows all permissions and roles and gives an admin the possibility to edit those.
-	*
-    * @access public
-    * @return void
-	*/
-	public function show_role_permissions(){
-
-        /*
-         * Iterate through all role ids and save them in an nested array.
-         * -> Per role id one array with all correspondig permissions (array([roleid] => array([index] => permissions)...).
-         * Alle RoleIDs durchlaufen und in einem verschachtelten Array speichern.
-         */
-		foreach ($this->role_ids as $rid) {
-            /*
-             * Get the permissions for a specified role id.
-             * It is possbile that a role has no permissions. Therefore the array is going to be initialized with null. Index 0 of the array
-             * will be empty.
-             */
-			$single_role_permissions = $this->admin_model->get_all_role_permissions($rid);
-			// if there permissions for the role? if not -> do nothing
-			if($single_role_permissions){
-
-                foreach ($single_role_permissions as $rp){
-
-						$all_role_permissions[$rid][]= $rp;
-				}
-			}
-		}
-
-        /*
-         * Create an array, that is going to be used for the data output.
-         * -> Simple array with all used roles and permissions. The following index encryption is used; index % 5 == 0 is the RoleId.
-         */
-
-		// iterate through all permissions
-		foreach ($this->permissions as $p) {
-
-			$data['tableviewData'][] = $p->BerechtigungID; // save the permission ID
-
-            // iterate through all permissions for every role
-			foreach ($this->roles as $r){
-
-				// if there are values in the array Role_permissions[RoleID] (Index 0 is an empty field)
-				if(array_key_exists('1', $all_role_permissions[$r->RolleID])){
-                    // Wenn das zur Rolle zugehörige Array die RechteID als Wert enthält
-					if(array_search($p->BerechtigungID, $all_role_permissions[$r->RolleID])){
-						// save the ID
-						$data['tableviewData'][] = $p->BerechtigungID;
-					}
-                    else {
-						// the permission_id does not correpsond to the role - save x
-						$data['tableviewData'][] = 'x';
-					}
-				}
-                else {
-					// there are no permissions for the role - save 4 times the x
-					$data['tableviewData'][] = 'x';
-				}
-			}
-		}
-		$this->data->add('tableviewData', $data['tableviewData']); // add the data to the global data array
-
-		// save the data, that is needed for the view and add them to the global data array
-		$this->data->add('roleCounter', $this->admin_model->count_roles());
-		$this->data->add('roles', $this->roles);
-		$this->data->add('permissions', $this->permissions);
-
-        // view information
-		$siteinfo = array(
-			'title'			=> 'Rollenverwaltung',
-			'main_content'	=>	'admin_rollenverwaltung'
-        );
-
-		$this->data->add('siteinfo', $siteinfo); // add the view information
-		$this->load->view('admin/permissions_edit', $this->data->load()); // load the view and load the global data array content
-	}
-
-	/**
-	* Saves all made permission edits.
-	*
-	* @category permissions_edit.php
-    * @access public
-    * @return void
-	*/
-	public function savePermissions(){
-
-		$this->admin_model->delete_role_permissions();
-
-		// iterate through each role and permission
-		foreach($this->permissions as $p){
-
-			foreach($this->role_ids as $r){
-
-					// if there are entries for the role-permission-combination
-				if($this->input->post(($p->BerechtigungID).$r)){
-
-                    $rp['RolleID'] = $r;
-					$rp['BerechtigungID'] = $p->BerechtigungID;
-
-					// save the permission changes
-					$this->admin_model->update_role_permissions($rp);
-				}
-			}
-		}
-
-		// reload the view
-		$this->show_role_permissions();
-	}
-
     /*
      * ==================================================================================
      *                                   User Management start
@@ -681,6 +570,127 @@ class Admin extends FHD_Controller {
         // echo the result -> equal to return, because the method is called via ajax
 		echo $result;
 	}
+
+    /*
+     * ==================================================================================
+     *                  Privilege administration (Rechteverwaltung) start
+     * ==================================================================================
+     */
+
+    /**
+     * Edit Permissions - Overview
+     * Shows / displays all permissions and roles and gives an admin the possibility
+     * to edit those.
+     *
+     * @access public
+     * @return void
+     */
+    public function show_role_permissions(){
+
+        /*
+         * Iterate through all role ids and save them in an nested array.
+         * -> Per role id one array with all corresponding permissions (array([roleid] => array([index] => permissions)...).
+         */
+        foreach ($this->role_ids as $rid) {
+            /*
+             * Get the permissions for a specified role id.
+             * It is possible that a role has no permissions. Therefore the array is going to be initialized with null. Index 0 of the array
+             * will be empty.
+             */
+            $single_role_permissions = $this->admin_model->get_all_role_permissions($rid);
+            // if there are some permissions for the role? if not -> do nothing
+            if($single_role_permissions){
+
+                foreach ($single_role_permissions as $rp){
+
+                    $all_role_permissions[$rid][]= $rp;
+                }
+            }
+        }
+
+        /*
+         * Create an array, that is going to be used for the data output. -> prepare data to be easily displayed in the view
+         * -> Simple array with all used roles and their assigned permissions. The following index encryption is used; index % 5 == 0 is the RoleId.
+         */
+
+        // iterate through all permissions
+        foreach ($this->permissions as $p) {
+
+            $data['tableviewData'][] = $p->BerechtigungID; // save the permission ID
+
+            // iterate through all permissions for every role
+            foreach ($this->roles as $r){
+
+                // if there are values in the array Role_permissions[RoleID] (Index 0 is an empty field)
+                if(array_key_exists('1', $all_role_permissions[$r->RolleID])){
+
+                    // if the array, that matches the role contains the permission id
+                    if(in_array($p->BerechtigungID, $all_role_permissions[$r->RolleID])){
+                        // save the ID
+                        $data['tableviewData'][] = $p->BerechtigungID;
+                    }
+                    else {
+                        // the permission_id does not correspond to the role - save x
+                        $data['tableviewData'][] = 'x';
+
+                    }
+                }
+                else {
+                    // there are no permissions for the role - save 4 times the x
+                    $data['tableviewData'][] = 'x';
+                }
+            }
+        }
+
+        // add the data to the global data(table) array
+        $this->data->add('tableviewData', $data['tableviewData']);
+
+        // save the data, that is needed for the view and add them to the global data array
+        $this->data->add('roleCounter', $this->admin_model->count_roles());
+        $this->data->add('roles', $this->roles);
+        $this->data->add('permissions', $this->permissions);
+        // load the view and add the global data array content
+        $this->load->view('admin/permissions_edit', $this->data->load());
+    }
+
+    /**
+     * Saves all permission edits, that were made in the
+     * edit permissions view / form
+     *
+     * @access public
+     * @return void
+     */
+    public function save_permissions(){
+
+        // delete the old (existing) role_permission configuration
+        $this->admin_model->delete_role_permissions();
+
+        // iterate through each permission
+        foreach($this->permissions as $p){
+            // iterate through each role
+            foreach($this->role_ids as $r){
+                // if there are entries for the role-permission-combination -> save the,
+                if($this->input->post(($p->BerechtigungID).$r)){
+
+                    $rp['RolleID'] = $r; // save / set the role id
+                    $rp['BerechtigungID'] = $p->BerechtigungID; // save the assigned permission id
+
+                    // save the permission changes
+                    $this->admin_model->update_role_permissions($rp);
+                }
+            }
+        }
+
+        // set a message and reload the view
+        $this->message->set('DIe &Auml;nderungen wurden erfolgreich gespeichert.', 'success');
+        redirect(site_url().'/admin/show_role_permissions');
+    }
+
+    /*
+     * ==================================================================================
+     *                  Privilege administration (Rechteverwaltung) end
+     * ==================================================================================
+     */
 
     /**
      * Shows all users and their associated roles.

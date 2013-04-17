@@ -91,44 +91,6 @@ class Admin_model extends CI_Model {
 	    return $this->db->count_all('rolle');
 	}
 
-    /**
-     * Deletes all configured permissions for every role.
-     */
-    public function delete_role_permissions(){
-	    $this->db->empty_table('rolle_mm_berechtigung');
-	}
-
-	/**
-	 * Inserts the passed role permissions into the database table
-     * 'rolle_mm_berechtigung'.
-     *
-     * @access public
-	 * @param array $rp Array with the role permissions, that should
-     *                  be inserted.
-	 */
-	public function update_role_permissions($rp){
-	    $this->db->insert('rolle_mm_berechtigung', $rp);
-	}
-
-    /**
-     * Returns all permissions that are
-     *
-     * @access public
-     * @param $rid int RoleID where the permissions should be returned for.
-     * @return array Array with the permissions for the passed RoleID.
-     */
-    public function get_all_role_permissions($rid){
-	    $data = array();
-	    
-	    $this->db->select('BerechtigungID');
-	    $q = $this->db->get_where('rolle_mm_berechtigung', array('RolleID' => $rid));
-
-	    foreach ($q->result_array() as $row){
-			$data[] = $row['BerechtigungID'];
-	    }
-	    return $data;
-	}
-
     /*
      * ==================================================================================
      *                                Authorization system end
@@ -881,6 +843,64 @@ class Admin_model extends CI_Model {
     /*
      * ==================================================================================
      *                                User management end
+     * ==================================================================================
+     */
+
+    /*
+     * ==================================================================================
+     *                     Privilege administration (Rechteverwaltung) start
+     * ==================================================================================
+     */
+
+    /**
+     * Returns all permissions that are assigned to the given role. Therefore the id
+     * of the role is passed as an parameter.
+     *
+     * @access public
+     * @param $rid int RoleID where the permissions should be returned for.
+     * @return array Array with the permissions for the passed RoleID.
+     */
+    public function get_all_role_permissions($rid){
+        $data = array();
+
+        $this->db->select('BerechtigungID');
+        $q = $this->db->get_where('rolle_mm_berechtigung', array('RolleID' => $rid));
+
+        foreach ($q->result_array() as $row){
+            $data[] = $row['BerechtigungID'];
+        }
+        return $data;
+    }
+
+    /**
+     * Deletes all configured (existing) permissions for every role.
+     * Cleans the database table 'rolle_mm_berechtigung'.
+     *
+     * @access public
+     * @return void
+     */
+    public function delete_role_permissions(){
+        $this->db->empty_table('rolle_mm_berechtigung');
+    }
+
+    /**
+     * Inserts the passed role permissions into the database table
+     * 'rolle_mm_berechtigung'. Therefore the method expects an array
+     * with the following keys: ['RolleID'] -> ID of the role,
+     * ['BerechtigungID'] -> ID of the permission, that should be assigned
+     * to the dedicated role.
+     *
+     * @access public
+     * @param array $rp array Array with the role permissions, that should
+     *                        be inserted.
+     */
+    public function update_role_permissions($rp){
+        $this->db->insert('rolle_mm_berechtigung', $rp);
+    }
+
+    /*
+     * ==================================================================================
+     *                     Privilege administration (Rechteverwaltung) end
      * ==================================================================================
      */
 
