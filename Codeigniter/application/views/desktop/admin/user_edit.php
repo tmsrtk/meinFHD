@@ -5,7 +5,7 @@
 <?php startblock('content'); # additional markup before content ?>
 
 <?php
-	// needet vars
+	// needed vars
 	$data_formopen = array('class' => 'form-search', 'id' => 'edit_user');
 	$data_role = array();
 	$data_role = $all_roles;
