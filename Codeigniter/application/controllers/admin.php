@@ -488,13 +488,24 @@ class Admin extends FHD_Controller {
         }
     }
 
+    /*
+     * =============================================================================================================
+     *   Comprehensive AJAX methods for getting only the user rows for editing, that matches the filter criteria
+     * =============================================================================================================
+     */
+
 	/**
 	 * Method for rendering the needed search-response and HTML Markup. It returns
-     * all users, that match the selected role and the inputted searchletter.
+     * all users, that match the selected role and the inputted searchletter. In
+     * addition it renders different row views in dependency of the $GET-Parameter
+     * 'subviewtype'.
+     * The following subview types are configured:
+     * - 'user_edit' -> Renders / displays single edit user user rows
+     * - 'role_edit' -> Renders / displays sinlge edit user role rows
+     *
      * Method is made for the use via ajax. The result (all single user views) will
      * be echoed out.
 	 *
-	 * @category user_edit.php
      * @access public
      * @return void|echo The result string ist echoed out directly.
 	 */
@@ -506,6 +517,9 @@ class Admin extends FHD_Controller {
 		// get the selected role and the search input
 		$role_id = $this->input->get('role_id');
 		$searchletter = $this->input->get('searchletter');
+
+        // get the passed subviewtype that should be loaded
+        $subviewtype = $this->input->get('subviewtype');
 
 		// if nothing is set, query would response all users, so lets prevent this
 		if ( empty($role_id) && empty($searchletter) )
@@ -523,7 +537,11 @@ class Admin extends FHD_Controller {
 			{
                 // add the role id to the value array, because in the view we need the role id to provide the role specific functions
                 $value['role_id'] = $role_id;
-				$result .= $this->load->view('admin/partials/user_edit_single_form', $value, TRUE);
+
+                // load the right (single) subview according the subviewtype-parameter
+                if ($subviewtype == 'edit_user_information'){ // the user edit view should be loaded
+				    $result .= $this->load->view('admin/partials/user_edit_single_form', $value, TRUE);
+                }
 			}
 		}
 
@@ -542,7 +560,6 @@ class Admin extends FHD_Controller {
      * Method is usually called via ajax. The result is going
      * to be echoed out.
      *
-     * @category user_edit.php
 	 * @access public
      * @return void|echo The result / user count is directly echoed / printed out.
 	 */
@@ -692,6 +709,12 @@ class Admin extends FHD_Controller {
      * ==================================================================================
      */
 
+    /*
+     * ==================================================================================
+     *              (User) Role administration (Benutzerrollenverwaltung) start
+     * ==================================================================================
+     */
+
     /**
      * Shows all users and their associated roles.
      *
@@ -737,6 +760,12 @@ class Admin extends FHD_Controller {
         // reload the edit roles mask after the changes have been saved in the databse
 		redirect('/admin/edit_roles_mask/', 'refresh');
 	}
+
+    /*
+     * ==================================================================================
+     *           (User) Role administration (Benutzerrollenverwaltung) end
+     * ==================================================================================
+     */
 
     /*
      * ===================================================
