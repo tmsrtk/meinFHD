@@ -31,8 +31,7 @@
 <div class="row-fluid">
     <div class="span12"><h2>Benutzerrollenverwaltung</h2>
         <p>
-            Hier k&ouml;nnen alle Benutzer mit ihren zugeh&ouml;hrigen Rollen bearbeitet werden. Jeder Rollenwechsel bzw.
-            das Hinzuf&uuml;gen von weiteren Rollen wird dem Benutzer per E-Mail mitgeteilt.
+            Hier k&ouml;nnen alle Benutzer mit ihren zugeh&ouml;hrigen Rollen bearbeitet werden.
         </p>
     </div>
 </div>
