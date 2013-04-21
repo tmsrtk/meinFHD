@@ -41,7 +41,7 @@
 										<li><a href="<?php print base_url('admin/show_role_permissions'); ?>">Rechte verwalten</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_rollen_verwalten') ) : ?>
-										<li><a href="<?php print base_url('admin/edit_roles_mask'); ?>">Rollen verwalten</a></li>
+										<li><a href="<?php print base_url('admin/edit_roles_mask'); ?>">Benutzerrollen verwalten</a></li>
 										<?php endif ?>
 									</ul> <!-- /.nav .level-2 -->
 								</li>
