@@ -5,120 +5,92 @@
 <?php startblock('content'); # additional markup before content ?>
 
 <?php
-	// needet vars
-	$data_formopen = array('id' => 'changeroles_user_row');
-	$data_submit = array(
-		'name'			=> 'delete_user_btn',
-		'class'			=> 'btn btn-mini btn-danger save_userroles_btn'
-	);
-	//--------------------------------------------------------------------------
+	// definition of basic variables
+	$data_formopen = array('class' => 'form-search');
+
+    // prepare data for the role filter dropdown
+    $data_role = array();
+    $data_role = $all_roles;
+    // add "placeholder" as first element
+    array_unshift($data_role, 'Bitte w&auml;hlen');
+    $data_role_ext = 'class="role_filter_dd" id="role_filter"';
+
+    $searchbox_content = '';
+    // if an value for the searchbox is set in flashdata to relocate the dataset
+    $searchbox_content = $this->session->flashdata('searchbox');
+
+    $data_search = array(
+        'id' => 'user_cr_search',
+        'class' => 'search-query',
+        'name' => 'search_user',
+        'placeholder' => 'Benutzer suchen',
+        'value' => $searchbox_content
+    );
 ?>
+
 <div class="row-fluid">
-	<h2>Benutzerrollen bearbeiten</h2>
+    <div class="span12"><h2>Benutzerrollenverwaltung</h2>
+        <p>
+            Hier k&ouml;nnen alle Benutzer mit ihren zugeh&ouml;hrigen Rollen bearbeitet werden. Jeder Rollenwechsel bzw.
+            das Hinzuf&uuml;gen von weiteren Rollen wird dem Benutzer per E-Mail mitgeteilt.
+        </p>
+    </div>
 </div>
-<hr>
 <div class="row-fluid">
-	<table id="user_overview" class="table table-striped">
-		<thead>
-			<tr>
-				<th>
-					<div class="span2">Loginname</div>
-					<div class="span2">Nachname</div>
-					<div class="span2">Vorname</div>
-					<div class="span2">Rollen</div>
-					<div class="span2">Los</div>
-				</th>
-			</tr>
-					<?php # FB::log($all_user); ?>
-		</thead>
-		<tbody>
-			<?php foreach ($all_user as $user) : ?>
-			<tr>
-				<td id="content_userrow">
-					<?php echo form_open('admin/changeroles_user/', $data_formopen); ?>
-					<?php echo form_hidden('user_id', $user['BenutzerID']); ?>
-
-					<div class="span2"><?php echo $user['LoginName']; ?></div>
-					<div class="span2"><?php echo $user['Nachname']; ?></div>
-					<div class="span2"><?php echo $user['Vorname']; ?></div>
-					<div class="span2">
-					<?php
-						// gib fuenf checkboxen aus
-						// pruefe fuer jede checkbox ob ihr index in dem array des aktuellen users uebereinstimmt
-						// wenn ja, true ansonsten false
-
-						$sum_roles = count($all_roles);
-
-						// for each possible role
-						for ($i=1; $i <= $sum_roles; $i++)
-						{
-							$tmp = FALSE;
-							// look if its in the actual user
-							foreach ($user['roles'] as $role)
-							{
-								// if so, set temp var to true, else leave false
-								($i == $role['RolleID']) ? $tmp = TRUE : $tmp = FALSE;
-								// if tmp var was set to true, stop looking for this possible role, cause the user has it
-								if ($tmp) {
-									break;
-								}
-							}
-
-							// wenn aktueller user ein student ist, und die aktuelle checkbox admin, dozent oder betreuer
-							// darstellt, zeige diese nicht an
-							// etc..
-							// foreach ($user['roles'] as $key => $value)
-							// {
-							// 	// log_message('error', $value);
-
-							// 	if (in_array('5', $value) && ($i == 1 || $i == 2 || $i == 3))
-							// 	{
-							// 		// do not show these checkboxes
-							// 	}
-							// 	// elseif (in_array(array('1', '2', '3'), $value) && ($i == 4 || $i == 5)) {  not worknig??
-							// 	elseif (in_array('1', $value) && ($i == 4 || $i == 5))
-							// 	{
-							// 		// do not show these checkboxes
-							// 	}
-							// 	elseif (in_array('2', $value) && ($i == 4 || $i == 5))
-							// 	{
-							// 		// do not show these checkboxes
-							// 	}
-							// 	elseif (in_array('3', $value) && ($i == 4 || $i == 5))
-							// 	{
-							// 		// do not show these checkboxes
-							// 	}
-							// 	else
-							// 	{
-							// 		// print the role checkbox
-							// 		echo form_checkbox('cb_userroles[]', $i, $tmp);
-							// 		echo $all_roles[$i];
-							// 		echo br();
-							// 		break;
-							// 	}
-							// }
-
-							// print the role checkbox
-							echo form_checkbox('cb_userroles[]', $i, $tmp);
-							echo ' ' . $all_roles[$i];
-							echo br();
-						}
-					?>
-					</div> <?php // ROLLEN ?>
-
-
-					<?php echo "<div class=\"span2\">".form_submit($data_submit, 'Speichern')."</div>"; ?>
-					<?php echo form_close(); ?>
-					<div class="clearfix"></div>
-				</td>
-			</tr>
-			<?php endforeach ?>
-		</tbody>
-	</table>
+    <?php echo form_open('', $data_formopen); ?>
+    <div class="span4"><h5>Anzahl:</h5><span class="badge badge-success" id="result_counter"></span></div>
+    <div class="span4"><h5>Filter</h5><?php echo form_dropdown('role_filter_dd', $data_role, '0', $data_role_ext); ?></div>
+    <div class="span4"><h5>Suche</h5><?php echo form_input($data_search); ?></div>
+    <?php echo form_close(); ?>
 </div>
+<hr/>
+
+<div class="row-fluid">
+    <div id="list_header">
+        <div class="span2"><strong>Loginname</strong></div>
+        <div class="span2"><strong>Nachname</strong></div>
+        <div class="span2"><strong>Vorname</strong></div>
+        <div class="span3"><strong>E-Mail</strong></div>
+        <div class="span2"><strong>Rollen</strong></div>
+        <div class="span1"><strong>Speichern?</strong></div>
+    </div>
+</div>
+<div class="row-fluid">
+    <div id="user_content">
+    <!-- content with the single user forms goes here -->
+    </div>
+</div>
+
+<div id="modalcontent">
+    <!-- place for rendering modals -->
+</div>
+
+<?php endblock(); ?>
+
+<?php startblock('headJSfiles'); ?>
+                {meinfhd_user_search: "<?php print base_url(); ?>resources/js/meinfhd.user_search.js"},
 <?php endblock(); ?>
 
 <?php startblock('customFooterJQueryCode');?>
 
+                UsersEditAjax.init({
+                    roleDropdown : $('#role_filter'),
+                    searchInput : $('#user_cr_search'),
+                    dataContent : $('div#user_content'),
+                    counter : $('#result_counter'),
+                    site_url : "<?php print site_url(); ?>",
+                    subviewtype : "edit_user_role"
+                });
+
+                // recognize if the save button is pressed for any user row and open up a confirmation modal
+                $("#user_content").on("click", "input[id^=save_user_roles_]", function() {
+
+                    $(this).attr("data-clicked", "true");
+                    // display an modal to verify the action
+                    _showModal('Rollen&auml;nderungen speichern', 'Sollen die Rollen&auml;nderungen f&uuml;r den ausgew&auml;hlten Nutzer wirklich gespeichert werden?', true);
+
+                    // prevent default submit behaviour
+                    return false;
+                });
 <?php endblock(); ?>
 <?php end_extend(); # end extend main template ?>

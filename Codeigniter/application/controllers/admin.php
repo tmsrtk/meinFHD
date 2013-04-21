@@ -539,6 +539,16 @@ class Admin extends FHD_Controller {
                 if ($subviewtype == 'edit_user_information'){ // the user edit view should be loaded
 				    $result .= $this->load->view('admin/partials/user_edit_single_form', $value, TRUE);
                 }
+                else if ($subviewtype == 'edit_user_role'){ // the user edit roles view should be loaded
+                    // add the user information to the data array
+                    $this->data->add('user_info', $value);
+                    // add the roles of the user to the data array
+                    $this->data->add('user_roles', $this->admin_model->get_all_userroles($value['BenutzerID']));
+                    // add all possible roles to the data array
+                    $this->data->add('all_roles', $this->admin_model->get_all_roles_for_dropdown());
+                    // load the partial view add / pass the data array and append the result to the result string
+                    $result .= $this->load->view('admin/partials/user_edit_roles_single_form', $this->data->load(), TRUE);
+                }
 			}
 		}
 
@@ -696,7 +706,7 @@ class Admin extends FHD_Controller {
         }
 
         // set a message and reload the view
-        $this->message->set('DIe &Auml;nderungen wurden erfolgreich gespeichert.', 'success');
+        $this->message->set('Die &Auml;nderungen wurden erfolgreich gespeichert.', 'success');
         redirect(site_url().'/admin/show_role_permissions');
     }
 
@@ -721,8 +731,6 @@ class Admin extends FHD_Controller {
      */
     public function edit_roles_mask()
     {
-        // get all users
-        $this->data->add('all_user', $this->admin_model->get_all_user_with_roles());
         // get all roles
         $this->data->add('all_roles', $this->admin_model->get_all_roles_for_dropdown());
         // load the view
@@ -742,20 +750,27 @@ class Admin extends FHD_Controller {
         // get the form input from the POST-array
 		$formdata = $this->input->post();
 
-		// clear saves for the actual user
+		// clear the saved roles for the user where the form has been submitted for
 		$this->admin_model->clear_userroles($formdata['user_id']);
 
-		// set new settings
-		if (isset($formdata['cb_userroles']))
-		{
-			foreach ($formdata['cb_userroles'] as $role)
-			{
-				$this->admin_model->save_userrole($formdata['user_id'], $role);
+		// set the new roles and save them in the database
+		if (isset($formdata['cb_userroles'])){
+
+            // save each set role for the specified user
+			foreach ($formdata['cb_userroles'] as $role){
+                $this->admin_model->save_userrole($formdata['user_id'], $role);
 			}
 		}
 
-        // reload the edit roles mask after the changes have been saved in the databse
-		redirect('/admin/edit_roles_mask/', 'refresh');
+        /*
+         * the changes have been saved successfully -> get the user information, redirect
+         * to the edit role mask and pass the email address of the user (flashdata), where the changes
+         * have been saved to be able to select the dataset if the user
+         */
+        $user_information = $this->admin_model->get_user_by_id($formdata['user_id']);
+
+        $this->session->set_flashdata('searchbox', $user_information['LoginName']);
+		redirect('/admin/edit_roles_mask/');
 	}
 
     /*

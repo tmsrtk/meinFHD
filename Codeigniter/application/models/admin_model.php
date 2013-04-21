@@ -312,32 +312,42 @@ class Admin_model extends CI_Model {
 		return $my_result;
 	}
 
+    /*
+     * ==================================================================================
+     *              (User) Role administration (Benutzerrollenverwaltung) start
+     * ==================================================================================
+     */
+
 	/**
-	 * Deletes the role values of the given user id.
+	 * Deletes all set / saved roles for the given user id.
+     * Cleans the database table 'benutzer_mm_rolle' for the given user id.
      *
      * @access public
-	 * @param $user_id int User id of the user.
+	 * @param $user_id int ID of the user where the roles should be deleted for.
 	 */
 	public function clear_userroles($user_id)
 	{
-		if ( ! empty($user_id) )
+        // if the passed user id is not empty
+		if ( !empty($user_id) )
 		{
 			$this->db->delete('benutzer_mm_rolle', array('BenutzerID' => $user_id));
 		}
 	}
 
 	/**
-	 * Saves the new role for an user. Therefore the id of the user and the id of the
-     * role is passed as an parameter.
+	 * Saves the passed role for the passed user id in the database table 'benutzer_mm_rolle'.
+     * The method only accepts on role for one user id at one time (call).
      *
      * @access public
-	 * @param $user_id int User id.
+	 * @param $user_id int ID of the user where the role should be saved for.
 	 * @param $role int ID of the role, which the user should get.
 	 */
 	public function save_userrole($user_id, $role)
 	{
-		if ( ! empty($user_id) && ! empty($role) )
-		{
+        // if the passed user and role id is not empty
+		if ( (!empty($user_id)) && (!empty($role)) ){
+
+            // prepare the data to be inserted
 			$data = array(
 				'BenutzerID' => $user_id,
 				'RolleID' => $role
@@ -347,6 +357,11 @@ class Admin_model extends CI_Model {
 		}
 	}
 
+    /*
+     * ==================================================================================
+     *           (User) Role administration (Benutzerrollenverwaltung) end
+     * ==================================================================================
+     */
 	/**
 	 * Returns all possible degree programs (Studiengaenge) with their latest PO version.
      * Outgoing situation: Creating Accounts for older / deprecated degree programs is not longer necessary.
@@ -431,7 +446,7 @@ class Admin_model extends CI_Model {
 	public function get_user_per_role_searchletter($role_id='', $searchstring='')
 	{
 		$this->db->distinct();
-        $this->db->select('benutzer.*, benutzer_mm_rolle.RolleID');
+        $this->db->select('benutzer.*');
 	    $this->db->from('benutzer');
 		$this->db->join('benutzer_mm_rolle', 'benutzer_mm_rolle.BenutzerID = benutzer.BenutzerID');
 
@@ -653,27 +668,6 @@ class Admin_model extends CI_Model {
         $q = $this->db->get();
 
 		return $q->result_array();
-	}
-
-	/**
-	 * Returns all users with their roles.
-     *
-     * @access public
-	 * @return array|null Array of all users and their roles.
-	 */
-	public function get_all_user_with_roles()
-	{
-		$result = array();
-		$all_user = $this->_get_all_user_raw()->result_array();
-
-		foreach ($all_user as $key => $value) {
-
-			// get user specific roles
-			$value['roles'] = $this->get_all_userroles($value['BenutzerID']);
-			// add to result array
-			$result[] = $value;
-		}
-		return $result;
 	}
 
 	/**
