@@ -535,9 +535,6 @@ class Admin extends FHD_Controller {
 			// get the user with needed html markup and add it to the result string
 			foreach ($q as $key => $value)
 			{
-                // add the role id to the value array, because in the view we need the role id to provide the role specific functions
-                $value['role_id'] = $role_id;
-
                 // load the right (single) subview according the subviewtype-parameter
                 if ($subviewtype == 'edit_user_information'){ // the user edit view should be loaded
 				    $result .= $this->load->view('admin/partials/user_edit_single_form', $value, TRUE);

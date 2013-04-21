@@ -431,7 +431,7 @@ class Admin_model extends CI_Model {
 	public function get_user_per_role_searchletter($role_id='', $searchstring='')
 	{
 		$this->db->distinct();
-        $this->db->select('benutzer.*');
+        $this->db->select('benutzer.*, benutzer_mm_rolle.RolleID');
 	    $this->db->from('benutzer');
 		$this->db->join('benutzer_mm_rolle', 'benutzer_mm_rolle.BenutzerID = benutzer.BenutzerID');
 
