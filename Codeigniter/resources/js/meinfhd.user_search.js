@@ -9,7 +9,7 @@ var UsersEditAjax = {
     init : function( config ) {
         this.config = config;
         this.bindEvents();
-        this.requestSearch(this.config.roleDropdown, this.config.searchInput);
+        this.requestSearch(this.config.roleDropdown, this.config.searchInput, this.config.subviewtype);
     },
 
     bindEvents : function() {
