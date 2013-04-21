@@ -535,15 +535,16 @@ class Admin extends FHD_Controller {
 			// get the user with needed html markup and add it to the result string
 			foreach ($q as $key => $value)
 			{
+                // add the user information to the data array
+                $this->data->add('user_info', $value);
+                // add the roles of the user to the data array
+                $this->data->add('user_roles', $this->admin_model->get_all_userroles($value['BenutzerID']));
+
                 // load the right (single) subview according the subviewtype-parameter
                 if ($subviewtype == 'edit_user_information'){ // the user edit view should be loaded
-				    $result .= $this->load->view('admin/partials/user_edit_single_form', $value, TRUE);
+				    $result .= $this->load->view('admin/partials/user_edit_single_form', $this->data->load(), TRUE);
                 }
                 else if ($subviewtype == 'edit_user_role'){ // the user edit roles view should be loaded
-                    // add the user information to the data array
-                    $this->data->add('user_info', $value);
-                    // add the roles of the user to the data array
-                    $this->data->add('user_roles', $this->admin_model->get_all_userroles($value['BenutzerID']));
                     // add all possible roles to the data array
                     $this->data->add('all_roles', $this->admin_model->get_all_roles_for_dropdown());
                     // load the partial view add / pass the data array and append the result to the result string

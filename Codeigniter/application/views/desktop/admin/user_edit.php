@@ -73,7 +73,7 @@
 	$("#user_content").on("click", "input#save", function() {
 		// determine which function was selected from the dropdown
 		// 0 = speichern, 1 = pw resetten, 2 = Studienplan resetten, 3 = Als..anmelden, 4 = Benutzer loeschen
-		var user_function =  $(this).parents('form[id^="edit_user_row_"]').find("#user_function").val();
+		var user_function =  $(this).parents('form[id^="edit_user_row_"]').find("[id^=user_function]").val();
 
     	if (user_function === '0') {
 			$(this).attr("data-clicked", "true");
