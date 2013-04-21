@@ -17,14 +17,14 @@
                 {bootstrap_transition: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-transition.js"},
                 {bootstrap_tab: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-tab.js"},
                 {bootstrap_dropdown: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-dropdown.js"},
-<?php start_block_marker('headJSfiles'); ?>
-
 				{bootstrap_button: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-button.js"},
 				{bootstrap_modal: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-modal.js"},
 				{bootstrap_transition: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-transition.js"},
 				{bootstrap_tab: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-tab.js"},
 				{bootstrap_fixedtheader: "<?php print base_url(); ?>resources/bootstrap/js/table-fixed-header.js"},
 				{bootstrap_datepicker: "<?php print base_url(); ?>resources/datepicker/js/bootstrap-datepicker.js"},
+<?php start_block_marker('headJSfiles'); ?>
+
 <?php end_block_marker(); ?>
 				{meinfhd: "<?php print base_url(); ?>resources/js/meinfhd.js"}
 
