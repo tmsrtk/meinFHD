@@ -9,78 +9,135 @@
 <?php endblock(); ?>
 
 <?php
-// general form setup
+    // general form setup before content
 
-#textarea
-$degree_program_details_textarea_data = array(
-	'name' => 'Beschreibung',
-	'id' => 'input-degree-program-description',
-	'class' => 'input-xxxlarge',
-	'value' => '',
-	'rows' => 7,
-	'cols' => 40
-);
-# submit button
-$btn_attributes = 'class = "btn-warning input-xxxlarge"';
+    $data_formopen = array(
+        'class' => 'form-horizontal',
+        'id' => 'create_degree_program'
+    );
 
+
+    $data_labelattrs = array(
+        'class' => 'control-label'
+    );
+
+    $data_pruefungsordnung = array(
+        'class' => 'input-medium',
+        'name' => 'pruefungsordnung',
+        'id' => 'pruefungsordnung',
+        'placeholder' => 'z.B. 2010',
+        'value' => set_value('pruefungsordnung')
+    );
+
+    $data_studiengangname = array(
+        'class' => 'input-medium',
+        'name' => 'studiengangname',
+        'id' => 'studiengangname',
+        'placeholder' => 'z.B. B.Sc. Medieninformatik',
+        'value' => set_value('studiengangname')
+    );
+
+    $data_abkuerzung = array(
+        'class' => 'input-medium',
+        'name' => 'studiengangsabkuerzung',
+        'id' => 'studiengangsabkuerzung',
+        'placeholder' => 'z.B. BMI',
+        'value' => set_value('studiengangsabkuerzung')
+    );
+
+    $data_regelsemester = array(
+        'class' => 'input-medium',
+        'name' => 'regelsemester',
+        'id' => 'regelsemester',
+        'placeholder' => 'z.B. 7',
+        'value' => set_value('regelsemester')
+    );
+
+    $data_creditpoints = array(
+        'class' => 'input-medium',
+        'name' => 'creditpoints',
+        'id' => 'creditpoints',
+        'placeholder' => 'z.B. 210',
+        'value' => set_value('creditpoints')
+    );
+
+    #textarea
+    $data_beschreibung = array(
+        'name' => 'beschreibung',
+        'id' => 'beschreibung',
+        'class' => 'input-xxlarge',
+        'placeholder' => 'Beschreibung des Studiengangs in textueller Form. Bitte keine HTML-Tags oder HTML-Elemente eintragen.',
+        'rows' => 7,
+        'cols' => 40,
+        'value' => set_value('beschreibung')
+    );
+
+    $submit_data = array(
+        'name'			=> 'submit',
+        'class'			=> 'btn btn-danger input-medium'
+    );
 ?>
 <?php startblock('content'); # additional markup before content ?>
 	    <div class="row-fluid">
 		    <h2>Studiengang anlegen</h2>
+            <p>
+                Zum Anlegen eines neuen Studiengangs m&uuml;ssen alle mit einem Stern (*) gekennzeichneten Felder
+                ausgef&uuml;llt werden, bevor das Formular abgesendet wird.
+            </p>
 	    </div>
-	    <hr>
-	    <?php echo validation_errors(); ?>
-	    <div class="row-fluid">
-	    <?php echo form_open('admin/validate_new_created_degree_program'); ?>
-		    <div id="degree-program-details">
-			    <div id="degree-program-details-1" class="span6">
-				    <?php 
-					    foreach ($all_degree_programs[0] as $key => $value){
-						    if( $key == 'StudiengangName' || 
-							    $key == 'StudiengangAbkuerzung' || 
-							    $key == 'Pruefungsordnung' || 
-							    $key == 'Regelsemester' || 
-							    $key == 'Creditpoints') {
-								
-									// change placeholder-text
-									$placeholder = '';
-									switch($key){
-										case 'StudiengangName' : $placeholder = 'Studiengang'; break;
-										case 'StudiengangAbkuerzung' : $placeholder = 'Abkürzung'; break;
-										case 'Regelsemester' : $placeholder = 'Semester'; break;
-										default : $placeholder = $key; break;
-									}
+        <?php echo validation_errors(); ?>
+	    <hr/>
 
-								    // create empty fields - new course will be created
-								    $inputFieldData = array(
-									    'name' => $key,
-									    'id' => $key,
-									    'class' => 'input-xxxlarge',
-									    'value' => set_value($key, ''),
-									    'placeholder' => $placeholder
-								    );
+        <div class="row-fluid">
+            <?php echo form_open('admin/validate_create_degree_program', $data_formopen); ?>
 
-								    // print input field
-								    echo form_input($inputFieldData);
-							    }
-						    }
-
-						    // put some static data into post - CreditpointsMin (actually not needed) and FachbereichID (final = 5)
-						    $static_data = array(
-							    'CreditpointsMin' => '0',
-							    'FachbereichID' => '5'
-					    );
-
-					    echo form_hidden($static_data);
-				    ?>
-
-			    </div>
-			    <div id="degree-program-details-2" class="span6">
-				    <?php echo form_textarea($degree_program_details_textarea_data); ?>
-				    <?php echo form_submit('save_degree_program_detail_changes', 'Neuen Studiengang speichern', $btn_attributes); ?>
-			    </div>
-		    </div>
-	    <?php echo form_close(); ?>
+            <div class="control-group">
+                <?php echo form_label('Pr&uuml;fungsordnung*','pruefungsordnung', $data_labelattrs); ?>
+                <div class="controls docs-input-sizes">
+                    <?php echo form_input($data_pruefungsordnung); ?>
+                </div>
+            </div>
+            <div class="control-group">
+                <?php echo form_label('Name des Studiengangs*', 'studiengangname', $data_labelattrs); ?>
+                <div class="controls docs-input-sizes">
+                    <?php echo form_input($data_studiengangname); ?>
+                </div>
+            </div>
+            <div class="control-group">
+                <?php echo form_label('Studiengangsabk&uuml;rzung*', 'studiengangsabkuerzung', $data_labelattrs); ?>
+                <div class="controls docs-input-sizes">
+                    <?php echo form_input($data_abkuerzung); ?>
+                </div>
+            </div>
+            <div class="control-group">
+                <?php echo form_label('Anzahl der Regelsemester*', 'regelsemester', $data_labelattrs); ?>
+                <div class="controls docs-input-sizes">
+                    <?php echo form_input($data_regelsemester); ?>
+                </div>
+            </div>
+            <div class="control-group">
+                <?php echo form_label('Summe der Creditpoints*', 'creditpoints', $data_labelattrs); ?>
+                <div class="controls docs-input-sizes">
+                    <?php echo form_input($data_creditpoints); ?>
+                </div>
+            </div>
+            <div class="control-group">
+                <?php echo form_label('Studiengangsbeschreibung*', 'beschreibung', $data_labelattrs); ?>
+                <br/>
+                <br/>
+                <?php echo form_textarea($data_beschreibung); ?>
+            </div>
+            <hr/>
+            <div class="control-group">
+                <div class="controls docs-input-sizes">
+                    <?php echo form_submit($submit_data, 'Neuen Studiengang anlegen'); ?>
+                </div>
+            </div>
+            <?php
+                echo form_hidden('fachbereich', 5);
+                echo form_hidden('creditpoints_min', 0);
+                echo form_close();
+            ?>
 	    </div><!-- /.row-fluid -->
 <?php endblock(); ?>
 

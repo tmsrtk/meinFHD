@@ -781,43 +781,50 @@ class Admin extends FHD_Controller {
      */
 
     /*
-     * ===================================================
-     * Degree program management after this comment.
-     * ===================================================
+     * ==================================================================================
+     *           Degree program management start
+     * ==================================================================================
      */
 
     // ==== adding a new degree program ====
 
 	/**
-	 * Show the add degree program view with empty input-fields.
-	 * Method is usually called from the main menu.
+	 * Shows the add degree program view with empty input-fields.
+	 * Method is usually called from the main menu and gives the
+     * admin the possibility to create an new degree program from scratch..
 	 *
      * @access public
      * @return void
 	 */
 	public function degree_program_add(){
 
-	    // get all degree programs for the view
-	    $this->data->add('all_degree_programs', $this->admin_model->get_all_degree_programs());
+        // load the add degree program view
 	    $this->load->view('admin/degree_program_add', $this->data->load());
-
 	}
 
 	/**
-	 * Form validation for the add degree program form.
+	 * Form validation method for the add degree program form.
+     * If there were not any errors during the validation the
+     * new degree program will be created and saved in the database.
+     * Therefore the method _create_new_degree_program will be called. After
+     * creating the new degree program it redirects to the degree program edit
+     * view and the new created degree program will be preselected.
 	 *
      * @access public
      * @return void
 	 */
-	public function validate_new_created_degree_program(){
+	public function validate_create_degree_program(){
+
+        // set custom delimiter for validation errors
+        $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
 
         // set the form validation rules
-	    $this->form_validation->set_rules('Pruefungsordnung', 'Pruefungsordnung fehlt', 'required|numeric');
-	    $this->form_validation->set_rules('StudiengangName', 'Name für den Studiengang fehlt', 'required');
-	    $this->form_validation->set_rules('StudiengangAbkuerzung', 'Abkürzung fehlt', 'required');
-	    $this->form_validation->set_rules('Regelsemester', 'Regelsemester fehlt', 'required|numeric');
-	    $this->form_validation->set_rules('Creditpoints', 'Creditpoints fehlen', 'required|numeric');
-	    $this->form_validation->set_rules('Beschreibung', 'Beschreibung fehlt', 'required');
+	    $this->form_validation->set_rules('pruefungsordnung', 'Pr&uuml;fungsordnung', 'required|numeric');
+	    $this->form_validation->set_rules('studiengangname', 'Studiengangname', 'required');
+	    $this->form_validation->set_rules('studiengangsabkuerzung', 'Abk&uuml;rzung', 'required|alpha_dash');
+	    $this->form_validation->set_rules('regelsemester', 'Regelsemester', 'required|numeric');
+	    $this->form_validation->set_rules('creditpoints', 'Creditpoints', 'required|numeric');
+	    $this->form_validation->set_rules('beschreibung', 'Beschreibung', 'required');
 
         // run the form validation
 	    if ($this->form_validation->run() == FALSE) { // validation was not successful
@@ -825,46 +832,38 @@ class Admin extends FHD_Controller {
 			$this->degree_program_add();
 	    }
         else { // form validation was successful
-			$this->save_new_created_degree_program(); // save the newly created degree program
+			$this->_create_new_degree_program($this->input->post()); // create the degree program from the form input
 	    }
 	}
 
 	/**
-	 * Saves a new degree program into the database wit the given values via POST.
+	 * Creates a new degree program from the form input / form data,
+     * that is passed as an parameter.
      *
-     * @access public
+     * @access private
+     * @param $form_data array The user input from the form.
      * @return void
-     * TODO check if the given name of the degree programm is already used -> maybe it does not need to be checked
 	 */
-	public function save_new_created_degree_program(){
+	private function _create_new_degree_program($form_data){
 
-        // specify the needed input attributes
-	    $insert_fields = array(
-			    'Pruefungsordnung',
-			    'StudiengangName',
-			    'StudiengangAbkuerzung',
-			    'Regelsemester',
-			    'Creditpoints',
-			    'CreditpointsMin',
-			    'FachbereichID',
-			    'Beschreibung'
+        // prepare the data, that should be inserted
+	    $data_to_insert = array(
+			    'Pruefungsordnung'      => $form_data['pruefungsordnung'],
+			    'StudiengangName'       => $form_data['studiengangname'],
+			    'StudiengangAbkuerzung' => $form_data['studiengangsabkuerzung'],
+			    'Regelsemester'         => $form_data['regelsemester'],
+			    'Creditpoints'          => $form_data['creditpoints'],
+			    'CreditpointsMin'       => $form_data['creditpoints_min'],
+			    'FachbereichID'         => $form_data['fachbereich'],
+                'Beschreibung'          => $form_data['beschreibung']
 			    );
-
-	    // get the data from the form-submission corresponding to the defined input fields above
-	    for($i = 0; $i < count($insert_fields); $i++){
-
-		    if($_POST[$insert_fields[$i]] != null){
-
-			        $insert_new_dp[$insert_fields[$i]] = $_POST[$insert_fields[$i]];
-		    }
-	    }
 
 	    // save new record - model returns id of new created degree program
 		$new_id = 0;
-	    $new_id = $this->admin_model->create_new_degree_program($insert_new_dp);
+	    $new_id = $this->admin_model->create_new_degree_program($data_to_insert);
 
 	    // redirect to degree program view with active dropdown (i.e. the new created)
-		$this->session->set_flashdata('reload', $new_id); // pass new id via flashdata
+		$this->session->set_flashdata('reload', $new_id); // pass new id via flashdata to be able to preselect it
         redirect('admin/degree_program_edit');
 	}
 

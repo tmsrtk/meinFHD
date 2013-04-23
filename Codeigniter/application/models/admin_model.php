@@ -1235,28 +1235,33 @@ class Admin_model extends CI_Model {
 			$this->db->insert('pruefungssammlung', $value);
 	    }
 	}
-
+    
 	/**
-	 * Creates a new degree program in the database.
+	 * Creates a new degree program in the database. Therefore the information for the new degree program
+     * are passed as an one dimensional array and are already formatted. Every key in the array needs to
+     * correspond to an database field in the table 'studiengang'.
 	 *
      * @access public
-	 * @param array $data Degree program information, that should be stored.
+	 * @param array $data Degree program information, that should be stored. Every key in the array needs
+     *                    to correspond to an database field in the table 'studiengang'.
 	 * @return int|0 The ID of the created degree program. If there occures an error during the
-     *               creation process of the new degree program 0 will be returned
+     *               insert process of the new degree program 0 will be returned
 	 */
 	public function create_new_degree_program($data){
+
 	    $this->db->insert('studiengang', $data);
 		
-		// get new created dp_id
+		// get id of the newly created degree program
 		$this->db->select_max('StudiengangID');
 		$q = $this->db->get('studiengang');
-		
+
+        // check if there is at least one result and return the degree program id
 	    if($q->num_rows() == 1){
 			foreach ($q->result_array() as $row){
 				return $row['StudiengangID'];
 			}
 	    }
-				
+
 		return 0;
 	}
 	
