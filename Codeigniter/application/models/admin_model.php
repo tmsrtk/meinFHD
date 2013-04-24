@@ -973,7 +973,6 @@ class Admin_model extends CI_Model {
 	/**
 	 * Queries the database for all degree programs and returns an array with the
      * PO, name, abbreviation (unique combination) of all degree programs.
-	 * The returned array is used in filter-views
      *
      * @access public
 	 * @return array|null If there are any degree programs, they will be returned as an array,
@@ -982,7 +981,7 @@ class Admin_model extends CI_Model {
 	public function get_all_degree_programs(){
 	    $data = array();
 
-	    $this->db->order_by('StudiengangID', 'desc');
+	    $this->db->order_by('pruefungsordnung', 'asc');
 	    $q = $this->db->get('studiengang');
 		
 	    if($q->num_rows() > 0){
@@ -1235,7 +1234,7 @@ class Admin_model extends CI_Model {
 			$this->db->insert('pruefungssammlung', $value);
 	    }
 	}
-    
+
 	/**
 	 * Creates a new degree program in the database. Therefore the information for the new degree program
      * are passed as an one dimensional array and are already formatted. Every key in the array needs to

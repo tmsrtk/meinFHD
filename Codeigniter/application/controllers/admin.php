@@ -869,61 +869,45 @@ class Admin extends FHD_Controller {
 
     // ==== copying and deleting a degree program ====
 
-	/**
-	 * Helper method called when degree programm should be deleted.
-	 * Routes to the degree_program_copy_delete-method and passes a boolean that
-	 * specifies that the method has been called from the main-menue.
+    /**
+     * Opens the delete degree program view, where all existing degree programs are listed.
      *
      * @access public
      * @return void
-	 */
-	public function degree_program_delete(){
-	    $this->_degree_program_copy_delete(TRUE);
-	}
+     */
+    public function show_delete_degree_program(){
 
-	/**
-	 * Helper method called when degree program should be copied.
-	 * Routes to the degree_program_copy_delete-method and passes a boolean that
-	 * specifies that the method has been called from the main menue.
-     *
+        // get all degree programs from the database and add them to the view
+        $this->data->add('all_degree_programs', $this->admin_model->get_all_degree_programs());
+        // load the delete degree program view
+        $this->load->view('admin/delete_degree_program', $this->data->load());
+    }
+
+    /**
+     * Deletes the selected / specified degree program and all dependencies from the database.
+     * Therefor the id of the degree program to delete needs to be submitted via $POST with the key
+     * 'degree_program_id'.
      * @access public
      * @return void
-	 */
-	public function degree_program_copy(){
-	    $this->_degree_program_copy_delete(FALSE);
-	}
+     */
+    public function delete_degree_program(){
 
-	/**
-	 * Shows a list of all degree programs to give the opportunity to delete/copy them.
-	 * @param $delete boolean Flag to use the same view for copying and deleting.
-     * @access private
-     * @return void
-	 */
-	private function _degree_program_copy_delete($delete){
+        $degree_program_id = $this->input->post('degree_program_id');
 
-	    // get all degree programs for the view
-	    $this->data->add('all_degree_programs', $this->admin_model->get_all_degree_programs());
-	    $this->data->add('delete', $delete);
-
-	    $this->load->view('admin/degree_program_copy_delete', $this->data->load());
-	}
-
-	/**
-	 * Deletes a whole degree program.
-	 * Called from within view after OK button has been submitted.
-     *
-     * @access public
-     * return void
-	 */
-	public function delete_degree_program() {
-
-        // get the id of the degree program that should be deleted and delete it from the database
-	    $delete_id = $this->input->post('degree_program_id');
-	    $this->admin_model->delete_degree_program($delete_id);
-
-	    // show view again
-	    redirect('admin/degree_program_delete');
-	}
+        // if the degree program id is valid delete it from the database
+        if ($degree_program_id != 0){
+            // delete the degree program and all his dependencies from the database
+            $this->admin_model->delete_degree_program($degree_program_id);
+            // set an success message and redirect to the delete degree program view
+            $this->message->set('Der ausgew&auml;hlte Studiengang wurde erfolgreich gel&ouml;scht.', 'success');
+            redirect('admin/show_delete_degree_program');
+        }
+        else{ // otherwise something went wrong
+            $this->message->set('W&auml;hrend des L&ouml;schvorgangs ist ein Fehler aufgetreten. Die ID des Studiengangs, '.
+                                'der gel&ouml;scht werden soll war nicht korrekt.');
+            redirect('admin/show_delete_degree_program');
+        }
+    }
 
 	/**
 	 * Copies a whole degree program - called when the ok button is submitted.
