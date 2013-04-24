@@ -909,9 +909,26 @@ class Admin extends FHD_Controller {
         }
     }
 
+    /**
+     * Opens the copy degree program view, where all existing degree programs are listed. Gives the user / administrator
+     * the possibility to copy an already existing degree program.
+     *
+     * @access public
+     * @return void
+     */
+    public function show_copy_degree_program(){
+
+        // get all degree programs from the database and add them to the view
+        $this->data->add('all_degree_programs', $this->admin_model->get_all_degree_programs());
+        // load the delete degree program view
+        $this->load->view('admin/copy_degree_program', $this->data->load());
+    }
 	/**
 	 * Copies a whole degree program - called when the ok button is submitted.
-	 * Called from within view after the OK button is submitted.
+     * The id of the degree program, that should be copied is going to be submitted / passed
+     * via the $POST-Array with the parameter 'degree_program_id'. After the degree program
+     * has been successfully copied the user will be redirected to the edit degree program view
+     * for the copied degree program.
      *
      * @access public
      * @return void
@@ -925,8 +942,11 @@ class Admin extends FHD_Controller {
         $new_id = 0;
 		$new_id = $this->admin_model->copy_degree_program($copy_id);
 
-		// pass new id via flashdata
+		// pass new id via flashdata to be able to load the copied degree program
 		$this->session->set_flashdata('reload', $new_id);
+        // set an success message with an notice for the user
+        $this->message->set('Der ausgew&auml;hlte Studiengang wurde erfolgreich kopiert. Du hast nun' .
+                            ' die M&ouml;glichkeit diesen zu bearbeiten und anzupassen.', 'success');
 	    // call degree-program-edit view of that course
 	    redirect('admin/degree_program_edit');
 	}

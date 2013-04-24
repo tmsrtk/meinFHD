@@ -1306,11 +1306,10 @@ class Admin_model extends CI_Model {
 	    $this->db->delete('pruefungssammlung', array('KursID' => $course_id));
 	    $this->db->delete('studiengangkurs', array('KursID' => $course_id));
 	}
-	
-	
+
 	/**
-	 * Copies a specified degree program - alters name and short name (adds [KOPIE])
-	 * NOTICE: db-field only takes 30 letters
+	 * Copies a specified degree program with all existing courses. Alters the name (adds [KOPIE])
+	 * in front of the degree program name. NOTICE: The database field only takes 30 letters.
      *
      * @access public
 	 * @param int $dp_id ID of the degree program that should be copied
@@ -1328,8 +1327,7 @@ class Admin_model extends CI_Model {
 	    }
 	    
 	    // alter name of degree program and delete old id!!
-	    $data['StudiengangName'] .= ' - [KOPIE]';
-	    $data['StudiengangAbkuerzung'] .= ' - [KOPIE]';
+	    $data['StudiengangName'] = '[KOPIE]' . $data['StudiengangName'];
 	    unset($data['StudiengangID']);
 	    
 	    // inserting new degree program into db 'studiengang'
@@ -1358,13 +1356,16 @@ class Admin_model extends CI_Model {
 						if($value !== '0'){
 						$exam_data[$key] = $value;
 						}
-					} else {
+					}
+                    else {
 						// set new StudiengangID
 						if (strstr($key, 'StudiengangID')){
 							$course_data[$key] = $max_dp_id;
-						} else if (strstr($key, 'KursID')){
+						}
+                        else if (strstr($key, 'KursID')){
 						// nothing to do 
-						} else {
+						}
+                        else {
 							$course_data[$key] = $value;
 						}
 					}
