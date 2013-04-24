@@ -60,7 +60,7 @@
 										<li><a href="<?php print base_url('admin/degree_program_edit'); ?>">Studiengang bearbeiten</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_studiengang_kopieren') ) : ?>
-										<li><a href="<?php print base_url('admin/degree_program_copy'); ?>">Studiengang kopieren</a></li>
+										<li><a href="<?php print base_url('admin/show_copy_degree_program'); ?>">Studiengang kopieren</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_studiengang_loeschen') ) : ?>
 										<li><a href="<?php print base_url('admin/show_delete_degree_program'); ?>">Studiengang l&ouml;schen</a></li>
