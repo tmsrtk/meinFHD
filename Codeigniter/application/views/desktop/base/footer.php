@@ -21,7 +21,7 @@
 				{bootstrap_modal: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-modal.js"},
 				{bootstrap_transition: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-transition.js"},
 				{bootstrap_tab: "<?php print base_url(); ?>resources/bootstrap/js/bootstrap-tab.js"},
-				{bootstrap_fixedtheader: "<?php print base_url(); ?>resources/bootstrap/js/table-fixed-header.js"},
+				{bootstrap_fixed_table_header: "<?php print base_url(); ?>resources/js/table-fixed-header.js"},
 				{bootstrap_datepicker: "<?php print base_url(); ?>resources/datepicker/js/bootstrap-datepicker.js"},
 <?php start_block_marker('headJSfiles'); ?>
 
