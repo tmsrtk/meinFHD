@@ -114,7 +114,6 @@ function _createModalDialog(title, text, withOK) {
 		.append('<div class="modal-body"><p>'+text+'</p></div>')
 		.append('<div class="modal-footer"><a href="#" class="btn" data-dismiss="modal">Schlie&szlig;en</a>');
 		if (withOK) myModalDialog.find('.modal-footer').append('<a href="" class="btn btn-primary" data-accept="modal">OK</a></div>');
-		// <a href="" class="btn btn-primary" data-accept="modal">OK</a></div>
 	return myModalDialog;
 }
 

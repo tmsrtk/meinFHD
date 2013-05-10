@@ -952,31 +952,30 @@ class Admin extends FHD_Controller {
 	}
 
     // ==== editing a degree program ====
-    // TODO check for deprecated stuf, test functionality and behaviour. Is everything as expected?
 
 	/**
 	 * Shows the edit degree program view with dropdown.
-	 * If there is something passed (via flashdata) the view loads a specific degree-program,
-	 * if not: user will see the empty view.
+	 * If there is an degree program id as an parameter, the view loads a specific degree-program,
+	 * if not: user will see the empty view. Furthermore the id of the degree program can also
+     * be passed via flashdata under the key 'reload'.
      *
      * @access public
+     * @param int $dp_id_to_reload ID of the degree program, that should be reloaded. If nothing is passed as an
+     *                             parameter, the default value is 0.
      * @return void
 	 */
-	public function degree_program_edit(){
+	public function degree_program_edit($dp_id_to_reload = 0){
 
-        // is there something submitted via flashdata?
-		$reload = $this->session->flashdata('reload');
-
-		if(!$reload){
-			$reload = 0; // if nothing has been passed
-		}
-
+        // for redirect purposes the flashdata method is used. so get the flashdata input
+        $tmp_reload = $this->session->flashdata('reload');
+        if($tmp_reload > 0){ // check if the id, that is passed via flashdata is valid
+            $dp_id_to_reload = $tmp_reload; // if the id is valid it becomes the degree program id to load
+        }
 	    // get all degree programs for filter-view
 	    $this->data->add('all_degree_programs', $this->admin_model->get_all_degree_programs());
 	    // set degree_program_id to 0 - indicates, that view has been loaded directly from controller
 	    // no autoreload without validation
-	    $this->data->add('degree_program_id_automatic_reload', $reload);
-
+	    $this->data->add('degree_program_id_automatic_reload', $dp_id_to_reload);
 	    $this->load->view('admin/degree_program_edit', $this->data->load());
 	}
 
@@ -990,7 +989,6 @@ class Admin extends FHD_Controller {
      * @access public
      * @param $degree_program_id int ID of the degree program, where the courses should be displayed for. If no parameter is passed, the default value is 0.
      * @return void
-     * @TODO check for deprecated (outcommented) stuff, test functionality
 	 */
 	public function ajax_show_courses_of_degree_program($degree_program_id = '0'){
 
@@ -1006,53 +1004,23 @@ class Admin extends FHD_Controller {
         // get all courses of the specified degree program
 	    $courses_of_single_degree_program = array();
 	    $courses_of_single_degree_program = $this->admin_model->get_degree_program_courses($degree_program_chosen_id);
+        // get all details of the selected degree program
 	    $details_of_single_degree_program = $this->admin_model->get_degree_program_details_as_row($degree_program_chosen_id);
 
 	    // get number of semesters and prepare data for dropdown
 	    $regelsemester = $details_of_single_degree_program->Regelsemester;
-
+        // prepare values for the semester dropdown
 	    for($i = 0; $i < $regelsemester; $i++){
-//		if($i != 0){
 			$semester_dropdown_options[$i] = $i+1;
-//		} else {
-//			$semester_dropdown_options[$i] = '';
-//		}
+
 	    }
 
 	    // degree_program_id is already needed here to generate unique ids for delete-buttons
 	    $data['dp_id'] = $degree_program_chosen_id;
 	    $data['semester_dropdown'] = $semester_dropdown_options;
 
-	    // fill first element of object-array with default-values -
-	    // >> necessary because first line of table view should be
-	    // for creation of new courses
-	    // only KursID is needed, because creation of input-fields grabs
-	    // KursID to generate unique names => array[0]
-//	    $courses_of_single_degree_program[0]['KursID'] = '0';
-//	    $courses_of_single_degree_program[0]['Kursname'] = '';
-//	    $courses_of_single_degree_program[0]['kurs_kurz'] = '';
-//	    $courses_of_single_degree_program[0]['Creditpoints'] = '';
-//	    $courses_of_single_degree_program[0]['SWS_Vorlesung'] = '';
-//	    $courses_of_single_degree_program[0]['SWS_Uebung'] = '';
-//	    $courses_of_single_degree_program[0]['SWS_Praktikum'] = '';
-//	    $courses_of_single_degree_program[0]['SWS_Projekt'] = '';
-//	    $courses_of_single_degree_program[0]['SWS_Seminar'] = '';
-//	    $courses_of_single_degree_program[0]['SWS_SeminarUnterricht'] = '';
-//	    $courses_of_single_degree_program[0]['Semester'] = '0';
-//	    $courses_of_single_degree_program[0]['Beschreibung'] = '';
-//	    // if there will be more exam-types added: this is the place to add them too!!
-//	    $courses_of_single_degree_program[0]['pruefungstyp_1'] = FALSE;
-//	    $courses_of_single_degree_program[0]['pruefungstyp_2'] = FALSE;
-//	    $courses_of_single_degree_program[0]['pruefungstyp_3'] = FALSE;
-//	    $courses_of_single_degree_program[0]['pruefungstyp_4'] = FALSE;
-//	    $courses_of_single_degree_program[0]['pruefungstyp_5'] = FALSE;
-//	    $courses_of_single_degree_program[0]['pruefungstyp_6'] = FALSE;
-//	    $courses_of_single_degree_program[0]['pruefungstyp_7'] = FALSE;
-//	    $courses_of_single_degree_program[0]['pruefungstyp_8'] = FALSE;
-
-
-	    // building a first line to save a new course to db
-	    $data['new_course'] = $this->load->view('admin/partials/degree_program_coursetable_row_first', $data, TRUE);
+	    // building a first line for adding a new course into the database and degree program
+	    $data['new_course'] = $this->load->view('admin/partials/degree_program_coursetable_first_row', $data, TRUE);
 
 	    $rows = array(); // init
 
@@ -1062,7 +1030,7 @@ class Admin extends FHD_Controller {
 			//for each record - print out table-row with form-fields
 			foreach($courses_of_single_degree_program as $sd){
 
-					// build a table-row for each course
+                // build a table-row for each course
 				$data['KursID'] = $sd['KursID'];
 				$data['Kursname'] = $sd['Kursname'];
 				$data['kurs_kurz'] = $sd['kurs_kurz'];
@@ -1076,7 +1044,11 @@ class Admin extends FHD_Controller {
 				$data['SemesterDropdown'] = $semester_dropdown_options;	// array holding all dropdown-options
 				$data['Semester'] = $sd['Semester'];
 				$data['Beschreibung'] = $sd['Beschreibung'];
-				// if there will be more exam-types added: this is the place to add them too!!
+
+				/*
+				 * Add the different exam-types and prepare them for displaying in the view.
+				 * If there will be more exam-types added: this is the place to add them too!!
+				 */
 				$data['pruefungstyp_1'] = (($sd['pruefungstyp_1'] == '1') ? TRUE : FALSE); // convert data (1/0) to boolean
 				$data['pruefungstyp_2'] = (($sd['pruefungstyp_2'] == '1') ? TRUE : FALSE);
 				$data['pruefungstyp_3'] = (($sd['pruefungstyp_3'] == '1') ? TRUE : FALSE);
@@ -1094,7 +1066,6 @@ class Admin extends FHD_Controller {
 	    // make data available in view
 	    $data['dp_details'] = $details_of_single_degree_program;
 	    $data['dp_course_rows'] = $rows;
-//	    $data['course_tablehead'] = $this->load->view('admin/partials/degree_program_coursetable_head', '', TRUE);
 
 	    // prepare the result content
 	    $result = '';
@@ -1105,112 +1076,141 @@ class Admin extends FHD_Controller {
 	    echo $result;
 	}
 
-	/**
-	 * validates if all changes that've been made are correct
-	 * - PO - required, numeric
-	 * - Name - required
-	 * - Abk. - required
-	 * - Regelsemester - required, numeric
-	 * - CP - required, numeric
-	 */
-	public function validate_degree_program_details_changes(){
+    /**
+     * Validates the degree program detail changes for correctness. The following inputs are required:
+     * - Pruefungsordnung -> required, numeric
+     * - Name -> required
+     * - Abkuerzung -> required
+     * - Regelsemester -> required, numeric
+     * - CP / Creditpoints -> required, numeric.
+     * If all inputs are correct, the changes will be saved in the database and the edit degree program view will be
+     * reopened again. Otherwise the edit degree program view will be opened with the validation errors.
+     *
+     * @access public
+     * @return void
+     */
+    public function validate_edit_degree_program_details(){
 
-	    // TODO??? PO-Name-Abk-Kombi must be UNIQUE
-
-	    // get degree_program_id
+	    // get the degree_program_id
 	    $dp_id = $this->input->post('degree_program_id');
 
-	    $this->form_validation->set_rules(
-		    $dp_id.'Pruefungsordnung', 'Pruefungsordnung fehlt', 'required|numeric');
-	    $this->form_validation->set_rules(
-		    $dp_id.'StudiengangName', 'Name für den Studiengang fehlt', 'required');
-	    $this->form_validation->set_rules(
-		    $dp_id.'StudiengangAbkuerzung', 'Abkürzung fehlt', 'required');
-	    $this->form_validation->set_rules(
-		    $dp_id.'Regelsemester', 'Regelsemester fehlt', 'required|numeric');
-	    $this->form_validation->set_rules(
-		    $dp_id.'Creditpoints', 'Creditpoints fehlen', 'required|numeric');
-	    $this->form_validation->set_rules(
-		    $dp_id.'Beschreibung', 'Beschreibung fehlt', 'required');
+        // define all validation rules
+	    $this->form_validation->set_rules('pruefungsordnung', 'Pr&uuml;fungsordnung', 'required|numeric');
+	    $this->form_validation->set_rules('studiengangname', 'Name des Studiengangs', 'required');
+	    $this->form_validation->set_rules('studiengangsabkuerzung', 'Studiengangsabk&uuml;rzung', 'required');
+	    $this->form_validation->set_rules('regelsemester', 'Anzahl der Regelsemester', 'required|numeric');
+	    $this->form_validation->set_rules('creditpoints', 'Summe der Creditpoints', 'required|numeric');
+	    $this->form_validation->set_rules('beschreibung', 'Beschreibung', 'required');
 
-	    if ($this->form_validation->run() == FALSE) {
-			// reload view
-			$this->session->set_flashdata('reload', $dp_id);
-			redirect('admin/degree_program_edit');
-	    } else {
-			$this->save_degree_program_details_changes();
+        // set the error delimiter
+        $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+
+        // run the form validation
+	    if ($this->form_validation->run() == FALSE) { // if the validation was not successful repopulate the view
+			// reload view and display validation errors
+            $this->degree_program_edit($dp_id);
+	    }
+        else { // otherwise the validation was successful -> save the changes and reload the degree program dialog
+			$this->_save_degree_program_details();
+            $this->message->set('Die &Auml;nderungen an den Stundiengangdetails wurden erfolgreich gespeichert.', 'success');
+            redirect(site_url() . 'admin/degree_program_edit/' . $dp_id);
 	    }
 	}
 
 	/**
 	 * Validates if changes match validation-criteria
 	 */
-	public function validate_degree_program_course_changes(){
 
-	    // get all course-ids belonging to a specified degree program
+    /**
+     * Validates the degree program course changes for correctness against the defined validation criteria.
+     */
+    /**
+     * Validates the degree program course changes, that were made during the degree program administration.
+     * If the inputs for all courses are correct, the changes will be saved in the database, otherwise the
+     * form will be repopulated.
+     *
+     * @access public
+     * @return void
+     */
+    public function validate_degree_program_course_changes(){
+
+	    // get the id of the currently viewed degree program
 	    $dp_id = $this->input->post('degree_program_id');
-	    $degree_program_course_ids = $this->admin_model->get_degree_program_course_ids($dp_id);
+	    // get all courses, that belong to the viewed degree program
+        $degree_program_course_ids = $this->admin_model->get_degree_program_course_ids($dp_id);
 
-	    foreach($degree_program_course_ids as $id){
-			// run through all ids and generate id-specific validation-rules
-			$this->form_validation->set_rules(
-				$id->KursID.'Kursname', 'Kursname fehlt - ID: '.$id->KursID, 'required');
-			$this->form_validation->set_rules(
-				$id->KursID.'kurs_kurz', 'Kurzbezeichnung fehlt - ID: '.$id->KursID, 'required');
-			$this->form_validation->set_rules(
-				$id->KursID.'Creditpoints', 'Creditpoints fehlen oder nicht numerisch - ID: '.$id->KursID, 'required|numeric');
-	    }
+        // run through all courses and generate id-specific validation-rules
+        foreach($degree_program_course_ids as $id){
+			$this->form_validation->set_rules($id->KursID.'Kursname', 'Kursname (Kurs-ID: '.$id->KursID . ')', 'required');
+			$this->form_validation->set_rules($id->KursID.'kurs_kurz', 'Kurzbezeichnung (Kurs-ID: '.$id->KursID . ')', 'required');
+			$this->form_validation->set_rules($id->KursID.'Creditpoints', 'Creditpoints (Kurs-ID: '.$id->KursID .')', 'required|is_natural_no_zero');
+            $this->form_validation->set_rules($id->KursID.'SWS_Vorlesung', 'SWS-Vorlesung (Kurs-ID: '.$id->KursID .')', 'is_natural_no_zero');
+            $this->form_validation->set_rules($id->KursID.'SWS_Uebung', 'SWS-&Uuml;bung (Kurs-ID: '.$id->KursID .')', 'is_natural_no_zero');
+            $this->form_validation->set_rules($id->KursID.'SWS_Praktikum', 'SWS-Praktikum (Kurs-ID: '.$id->KursID .')', 'is_natural_no_zero');
+            $this->form_validation->set_rules($id->KursID.'SWS_Projekt', 'SWS-Projekt (Kurs-ID: '.$id->KursID .')', 'is_natural_no_zero');
+            $this->form_validation->set_rules($id->KursID.'SWS_Seminar', 'SWS-Seminar (Kurs-ID: '.$id->KursID .')', 'is_natural_no_zero');
+            $this->form_validation->set_rules($id->KursID.'SWS_SeminarUnterrricht', 'SWS-Seminarristischer Unterricht (Kurs-ID: '.$id->KursID .')', 'is_natural_no_zero');
+        }
 
+        // set the custom error delimiter
+        $this->form_validation->set_error_delimiters('<div class="alert alert-error">', '</div>');
+
+        // run the form validation and check for correctness
 	    if ($this->form_validation->run() == FALSE) {
 			// reload view
-			$this->session->set_flashdata('reload', $dp_id);
-			$this->degree_program_edit();
-		} else {
-			$this->save_degree_program_course_changes();
+			$this->degree_program_edit($dp_id);
+		}
+        else { // the validation was correct, so save the changes
+            // save the changes
+			$this->_save_degree_program_course_changes();
+            // show an success message and reload the degree-program-edit-view
+            $this->message->set('Die &Auml;nderungen an den einzelnen Kursen wurden erfolgreich gespeichert.', 'success');
+            $this->session->set_flashdata('reload', $dp_id);
+            redirect('admin/degree_program_edit');
 	    }
 	}
 
+    /**
+     * Saves all degree program course details, which are submitted via the form and the POST-Array.
+     * Prepares the information from the post-array for saving them in the database.
+     *
+     * @access private
+     * @return void
+     */
+    private function _save_degree_program_course_changes(){
 
-
-	/**
-	 * Saving all values after submit button has been clicked.
-	 */
-	public function save_degree_program_course_changes(){
-		// getting id from post
-		$dp_id = 0; // it shouldn't happen that no id comes from post.. but..
+        // get the degree program id form the post array
+		$dp_id = 0;
 		$dp_id = $this->input->post('degree_program_id');
 
-//		echo '<pre>';
-//		print_r($this->input->post());
-//		echo '</pre>';
-
-	    // build an array, containing all keys that have to be updated in db
+	    // build an array, containing all keys that have to be updated in the database
 	    $update_fields = array(
-			    'Kursname',
-			    'kurs_kurz',
-			    'Creditpoints',
-			    'SWS_Vorlesung',
-			    'SWS_Uebung',
-			    'SWS_Praktikum',
-			    'SWS_Projekt',
-			    'SWS_Seminar',
-			    'SWS_SeminarUnterricht',
-			    'Semester',
-			    'Beschreibung');
+            'Kursname',
+            'kurs_kurz',
+            'Creditpoints',
+            'SWS_Vorlesung',
+            'SWS_Uebung',
+            'SWS_Praktikum',
+            'SWS_Projekt',
+            'SWS_Seminar',
+            'SWS_SeminarUnterricht',
+            'Semester',
+            'Beschreibung'
+        );
 
-	    // provide incoming exam-types in array
+	    // provide incoming exam-types in an array
 	    $update_checkboxes = array(
-			    'ext_1',
-			    'ext_2',
-			    'ext_3',
-			    'ext_4',
-			    'ext_5',
-			    'ext_6',
-			    'ext_7',
-			    'ext_8'
+            'ext_1',
+            'ext_2',
+            'ext_3',
+            'ext_4',
+            'ext_5',
+            'ext_6',
+            'ext_7',
+            'ext_8'
 	    );
 
-	    // get ids of a single studiengang - specified by id
+	    // get the ids of all single courses, that belong the the degree program
 	    $dp_ids = $this->admin_model->get_degree_program_course_ids($dp_id);
 
 	    // get values of nested object - KursIds - to run through the ids and update records
@@ -1218,10 +1218,11 @@ class Admin extends FHD_Controller {
 			$dp_id_values[] = $si->KursID;
 	    }
 
-	    // run through all course-ids that belong to a single degree-program, build data-array for updating records in db
-	    // AND update data for every id
+	    // run through all course-ids that belong to the degree-program, build data-array for updating records in the database and update the data for every course
 	    foreach($dp_id_values as $id){
+
 			$update_dp_data = array(); // init
+
 			// produces an array holding db-keys as keys and data as values
 			for ($i = 0; $i < count($update_fields); $i++){
 				// data from dropdown represents position in array - has to be mapped to real ID (+1)
@@ -1231,20 +1232,19 @@ class Admin extends FHD_Controller {
 				}
 			}
 
-			// call function in model to update records
+			// update the database entry for the actual viewed course
 			$this->admin_model->update_degree_program_courses($update_dp_data, $id);
 
+            // handle checkboxes for exam types
 			$exam_cb_data = array(); // init
 			$tmp_exam_cb_data = array(); // init
 
-			// handle checkboxes
-			// !! have to be handled different, because not every field is submitted,
-			// but only the ones that are active at the moment
-			// >> run through all possible updates and
+			// !! have to be handled different, because not every field is submitted, only the ones that are active at the moment
+			// >> run through all possible checkboxes and
 			foreach ($update_checkboxes as $value) {
 				// check if the box is checked
 				if($this->input->post($id.$value) === '1'){
-					// in case it is checked, extract exam-type and store data in array
+					// in case it is checked, extract the exam-type and store data in array
 					$split = explode('_', $value); // second value is exam-type-id
 					$tmp_exam_cb_data['KursID'] = $id;
 					$tmp_exam_cb_data['PruefungstypID'] = $split[1];
@@ -1255,125 +1255,61 @@ class Admin extends FHD_Controller {
 				}
 			}
 
-			// save cb-data to db - passed array contains all checkboxes that have to be stored
+			// save cb-data to the database- passed array contains all checkboxes that have to be stored
 			$this->admin_model->save_exam_types_for_course($exam_cb_data, $id);
-
 	    }
-
-	    // show degree-program-edit-view again with activated dp_id
-		$this->session->set_flashdata('reload', $dp_id);
-	    redirect('admin/degree_program_edit');
 	}
 
+    /**
+     * Saves all degree program details, which are submitted via the form and the POST-Array.
+     * It prepares the information from the post-array for saving them in the database.
+     *
+     * @access private
+     * @return void
+     */
+    private function _save_degree_program_details(){
 
-	/**
-	 * Save all fields (degree program) - getting data from POST
-	 */
-	public function save_degree_program_details_changes(){
-	    $updateFields = array(
-			'Pruefungsordnung',
-			'StudiengangName',
-			'StudiengangAbkuerzung',
-			'Regelsemester',
-			'Creditpoints',
-			'Beschreibung'
-	    );
+        // get the id of the degree program, which is modified
+        $dp_id = $this->input->post('degree_program_id');
 
-	    // get value via hidden field
-	    $dp_id = $this->input->post('degree_program_id');
+        // get the form inputs
+        $form_data = $this->input->post();
 
-		$update_dp_description_data = array();
-	    // run through fields and produce an associative array holding keys and values - $_POST
-	    for($i = 0; $i < count($updateFields); $i++){
-			$update_dp_description_data[$updateFields[$i]] = $_POST[$dp_id.$updateFields[$i]];
-	    }
+        $array_to_update = array(
+            'Pruefungsordnung' => $form_data['pruefungsordnung'],
+            'StudiengangName' => $form_data['studiengangname'],
+            'StudiengangAbkuerzung' => $form_data['studiengangsabkuerzung'],
+            'Regelsemester' => $form_data['regelsemester'],
+            'Creditpoints' => $form_data['creditpoints'],
+            'Beschreibung' => $form_data['beschreibung']
+        );
 
-	    // save data
-	    $this->admin_model->update_degree_program_description_data($update_dp_description_data, $dp_id);
-
-	    // show StudiengangDetails-List again
-	    $this->session->set_flashdata('reload', $dp_id);
-	    redirect('admin/degree_program_edit');
-
+	    // update the saved degree program information in the database
+	    $this->admin_model->update_degree_program_description_data($array_to_update, $dp_id);
 	}
 
-//	/**
-//	 * Gets data of new course to create and validates
-//	 * DEPRECATED - use these functions when there is one single line (1! form) for adding new course
-//	 */
-//	function validate_new_degree_program_course(){
-//	    $stdgng_id = $this->input->post('StudiengangID');
-//
-//	    $this->form_validation->set_rules('Kursname', 'Kursname fehlt', 'required');
-//	    $this->form_validation->set_rules('kurs_kurz', 'Abkürzung fehlt', 'required');
-//	    $this->form_validation->set_rules('Creditpoints', 'Creditpoints fehlen oder nicht numerisch', 'required|numeric');
-//	    $this->form_validation->set_rules('SWS_Vorlesung', 'SWS-Vorlesung nicht numerisch', 'numeric');
-//	    $this->form_validation->set_rules('SWS_Uebung', 'SWS-Übung nicht numerisch', 'numeric');
-//	    $this->form_validation->set_rules('SWS_Praktikum', 'SWS-Praktikum nicht numerisch', 'numeric');
-//	    $this->form_validation->set_rules('SWS_Projekt', 'SWS-Projekt nicht numerisch', 'numeric');
-//	    $this->form_validation->set_rules('SWS_Seminar', 'SWS-Seminar nicht numerisch', 'numeric');
-//	    $this->form_validation->set_rules('SWS_SeminarUnterricht', 'SWS-SeminarUnterricht nicht numerisch', 'numeric');
-//
-//
-//	    if ($this->form_validation->run() == FALSE) {
-//			// reload view
-//			$this->session->set_flashdata('reload', $stdgng_id);
-//			$this->degree_program_edit();
-//		} else {
-//			$this->save_degree_program_new_course();
-//	    }
-//	}
-//
-//	/**
-//	 * After validation, new course is saved here.
-//	 * DEPRECATED - use these functions when there is one single line (1! form) for adding new course
-//	 */
-//	function save_degree_program_new_course(){
-//	    $new_course = array();
-//	    $new_course = $this->input->post();
-//
-//	    // data
-//	    $course_data = array();
-//	    $exam_data = array();
-//
-//	    // run through data and prepare for saving
-//	    foreach ($new_course as $key => $value) {
-//			// if not submit-button-data
-//			if($key != 'save_new_course'){
-//				// and not exam-data
-//				if(!strstr($key, 'ext')){
-//					$course_data[$key] = $value;
-//				} else {
-//					// exam data to separate array
-//					$exam_data[$key] = $value;
-//				}
-//			}
-//	    }
-//
-//	    // insert course-data into db
-//	    $this->admin_model->insert_new_course($course_data, $exam_data);
-//
-//	    // back to view
-//	    $this->degree_program_edit();
-//	}
-
-
 	/**
-	 * Deletes single course from studiengangkurs-table
+	 * Deletes an single course from studiengangkurs-table
 	 * Called from degree_program_edit view after user confirmed
-	 * deletion with click on OK in confirmation-dialog
-	 * After altering db, ajax_show_course_of_degree_program
-	 * is called (passed parameter indicates dp to load)
+	 * deletion with click on OK in the confirmation-dialog.
+	 * After altering the database, ajax_show_course_of_degree_program
+	 * is called (passed parameter indicates dp to load) to reload / update the content of the degree program.
+     *
+     * @access public
+     * @return void|echo Calls the ajax_show_course_of_degree_program. The result of this method will be echoed
+     *                   and needs to be displayed in the view.
 	 */
 	public function ajax_delete_single_course_from_degree_program(){
-	   $delete_course_id =  $this->input->post('course_data');
 
-	   $split = explode('_', $delete_course_id);
+        $input_course_id=  $this->input->post('course_data');
 
-	   // $split[0] = course id
+	    $split = explode('_', $input_course_id);
+	    // description of the split-array: $split[0] = course id, $split[1] = degree_program_id
+
+        // delete the selected course from the database
 	   $this->admin_model->delete_degree_program_single_course($split[0]);
 
-	   // call view with updated data
+	   // call view with the updated data again
 	   echo $this->ajax_show_courses_of_degree_program($split[1]);
 	}
 
@@ -1385,22 +1321,24 @@ class Admin extends FHD_Controller {
 	 */
 	public function ajax_create_new_course_in_degree_program(){
 		$new_course_data = $this->input->post('course_data');
-		$course_data_save_to_db = array();
+
+        $course_data_save_to_db = array();
 		$exam_data_save_to_db = array();
 
-		// get degree-program-id for reload
-		$dp_id = $new_course_data[0];
-
-		// run through submitted course data
+		// run through the array with the submitted course data
 		foreach($new_course_data as $data){
+            // split the array, to separate the information from their key
 			$split = explode('-', $data);
+
+            // if the viewed element does not match to the exam types attribute add it to the course_data_save_to_db-array
 			if(!stristr($split[1], 'ext')){
 				// map array data (Semester) to ID (+1)
 				switch ($split[1]) {
-					case 'Semester' : $course_data_save_to_db[$split[1]] = $split[0] + 1; break; // array!! +1
+					case 'Semester' : $course_data_save_to_db[$split[1]] = $split[0] + 1; break; // array!! +1 to get the right semester
 					default : $course_data_save_to_db[$split[1]] = $split[0]; break;
 				}
-			} else {
+			}
+            else {
 				// !! only add data to array for exam_types that should be saved
 				if($split[0] == 'checked') {
 					$exam_data_save_to_db[$split[1]] = 1;
@@ -1408,13 +1346,13 @@ class Admin extends FHD_Controller {
 			}
 		}
 
+        // get the id of the degree program, where the course should be added to, just for be able to reload the view properly
+        $dp_id = $course_data_save_to_db['StudiengangID'];
+        // insert the course to the database
 		$this->admin_model->insert_new_course($course_data_save_to_db, $exam_data_save_to_db);
-
+        // reload the degree program content view
 		echo $this->ajax_show_courses_of_degree_program($dp_id);
 	}
-
-	/*** << edit **************************************************************
-	**************************************************************************/
 
     /*
      * ===============================================================================

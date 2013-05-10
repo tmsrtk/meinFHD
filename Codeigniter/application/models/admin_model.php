@@ -995,7 +995,7 @@ class Admin_model extends CI_Model {
 	}
 
 	/**
-	 * Returns all records belonging to a single degree program (specified by id)
+	 * Returns all records belonging to a single degree program (specified by his id)
      *
      * @access public
 	 * @param int $dp_id id of degree program which should be returned return
@@ -1029,11 +1029,13 @@ class Admin_model extends CI_Model {
 						// check if TypID is in course_exams array
 						if(in_array($e_type->PruefungstypID, $course_exams)){
 							$data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = '1';
-						} else {
+						}
+                        else {
 							$data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = '0';
 						}
 					// otherwise >> 0 for alle exam_types
-					} else {
+					}
+                    else {
 						$data[$counter]['pruefungstyp_'.$e_type->PruefungstypID] = '0';
 					}
 
@@ -1111,7 +1113,8 @@ class Admin_model extends CI_Model {
 	}
 	
 	/**
-	 * Returns all details for a passed degree program id.
+	 * Returns all details for the passed degree program id as an single row. If there is only one existing
+     * dataset, an result will be returned. Otherwise NULL is going to be returned.
      *
      * @access public
 	 * @param int $degree_program_id ID of the degree program, where the details should be selected for
@@ -1144,7 +1147,7 @@ class Admin_model extends CI_Model {
 	}
 
 	/**
-	 * Inserts data of new created course into db - order is important!
+	 * Inserts data of new created course into the database - order is important!
 	 * 1. create new course
 	 * 2. fetch id of new created course
 	 * 3. save exam data
@@ -1152,6 +1155,7 @@ class Admin_model extends CI_Model {
      * @access public
 	 * @param array $course_data The data / information about the course
 	 * @param array $exam_data The information about the exam type.
+     * @return void
 	 */
 	public function insert_new_course($course_data, $exam_data){
 	    $e_data = array();
@@ -1176,10 +1180,8 @@ class Admin_model extends CI_Model {
 	    foreach ($e_data as $e) {
 			$this->db->insert('pruefungssammlung', $e);
 	    }
-	    
 	}
-	
-	
+
 	/**
 	 * Helper to get highest degree program course-id
      *
@@ -1221,7 +1223,7 @@ class Admin_model extends CI_Model {
      * @access public
 	 * @param array $cb_data The data of the (view) checkbox.
      * @param int $course_id The ID of the course, that should be updated.
-     * @return date
+     * @return void
 	 */
 	public function save_exam_types_for_course($cb_data, $course_id = ''){
 	    // !! deletes all exam-types for that course first
@@ -1296,7 +1298,8 @@ class Admin_model extends CI_Model {
 	}
 	
 	/**
-	 * Deletes a single course from the database (table studiengangkurs).
+	 * Deletes a single course from the database (table studiengangkurs). Therefore
+     * the id of the course, that should be deleted needs to be passed as an parameter.
      *
      * @access public
 	 * @param int $course_id ID of the course that should be deleted
