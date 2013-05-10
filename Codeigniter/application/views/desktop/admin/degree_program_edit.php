@@ -224,7 +224,7 @@
 		var dpTable = $('.table-fixed-header');
 		
 		// add fixed header to table
-		//dpTable.fixedHeader();
+		dpTable.fixedHeader();
 	}
 <?php endblock(); ?>
 
