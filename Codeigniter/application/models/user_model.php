@@ -1,82 +1,154 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * User Model Class which stores all the needed user data.
+ * Class User_model
+ * The user model provides all necessary db operations, to access user specific
+ * data, which is stored in the database. Moreover it provides all necessary functions
+ * and operations to provide user specific content.
+ *
+ * @version 0.0.1
+ * @package meinFHD\models
+ * @copyright Fachhochschule Duesseldorf, 2013
+ * @link http://www.fh-duesseldorf.de
+ * @author Frank Gottwald (FG), <frank.gottwald@fh-duesseldorf.de>
+ * @author Christian Kundruss (CK), <christian.kundruss@fh-duesseldorf.de>
  */
 class User_model extends CI_Model {
 
-	private $user_id = 0;
+    /**
+     * @var int Stores the user id of the authenticated user.
+     */
+    private $user_id = 0;
 
-	private $email = '';
-	private $loginname = '';
-	private $forename = '';
-	private $lastname = '';
+    /**
+     * @var string Stores the email address of the authenticated user.
+     */
+    private $email = '';
 
-	private $user_roles = array();
-	private $user_permissions_all = array();
+    /**
+     * @var string Stores the loginname of the authenticated user.
+     */
+    private $loginname = '';
+
+    /**
+     * @var string Stores the forename of the authenticated user.
+     */
+    private $forename = '';
+
+    /**
+     * @var string Stores the lastname of the authenticated user.
+     */
+    private $lastname = '';
+
+    /**
+     * @var array Array, that stores all roles, that are assigned to the authenticated user.
+     */
+    private $user_roles = array();
+
+    /**
+     * @var array Array, that stores all permissions, that are assigned to the authenticated user
+     */
+    private $user_permissions_all = array();
 	
 	// course_ids (mapped with roles)
-	private $user_course_ids = array();
+    /**
+     * @var array Array, that stores all courses (course ids) with the mapped role the authenticated user
+     * has got.
+     */
+    private $user_course_ids = array();
 
-	// studienplan
-	private $studiengang_id = 0;
-	private $semesterplan_id = 0;
-	private $act_semester = 0;
-	private $studienbeginn_jahr = 0;
-	private $studienbeginn_typ = '';
+    /**
+     * @var int Stores the degree program id, which the authenticated user participates in. The default value is 0.
+     */
+    private $studiengang_id = 0;
 
-	private $studiengang_data = array();
+    /**
+     * @var int Stores the id of the semesterplan, that is owned by the authenticated user. The default value is 0.
+     */
+    private $semesterplan_id = 0;
 
-	/**
-	 * 
-	 */
-	public function __construct()
+    /**
+     * @var int Stores the semester number of the authenticated user. The default value is 0.
+     */
+    private $act_semester = 0;
+
+    /**
+     * @var int Stores the year, in which the authenticated user (student) started studying. The default value is 0.
+     */
+    private $studienbeginn_jahr = 0;
+
+    /**
+     * @var string Stores the type of the startsemester (wintersemester(ws) or sommersemester (ss)) of the
+     *             authenticated user. The default value is 0.
+     */
+    private $studienbeginn_typ = '';
+
+    /**
+     * @var array Array to store all necessary degree program data.
+     */
+    private $studiengang_data = array();
+
+    /**
+     * Default constructor. Used for initialization.
+     *
+     * @access public
+     * @return void
+     */
+    public function __construct()
 	{
 		parent::__construct();
 
+        // cal the init function to get all necessary data, while initializing the instance.
 		$this->_init();
 	}
 
 	/**
 	 * Responsible to get all needed userdata
 	 */
-	private function _init()
-	{
-		$uid = $this->authentication->user_id();
-		if ($uid)
-		{
-			$this->user_id = $uid;
 
+    /**
+     * Gets all necessary userdata from the database and saves it in the instance
+     * variables. In addition the userdata is added to the global data array, to provide
+     * the information to the views.
+     *
+     * @access private
+     * @return void
+     */
+    private function _init()
+    {
+        // get the id of the authenticated user
+		$uid = $this->authentication->user_id();
+        /*
+         * if there is an user id (authenticated user) get all user specific information and store them in the
+         * instance variables.
+         */
+        if ($uid)
+		{
+            // query and save all user specific information
+			$this->user_id = $uid;
 			$this->lastname = $this->_query_user_singlecolumndata('Vorname');
 			$this->forename = $this->_query_user_singlecolumndata('Nachname');
 			$this->loginname = $this->_query_user_singlecolumndata('LoginName');
 			$this->email = $this->_query_user_singlecolumndata('Email');
-
 			$this->user_roles = $this->_query_all_roles();
 			$this->user_permissions_all = $this->_query_all_permissions();
-
 			$this->studienbeginn_jahr = $this->_query_user_singlecolumndata('StudienbeginnJahr');
 			$this->studienbeginn_typ = $this->_query_user_singlecolumndata('StudienbeginnSemestertyp');
-
 			$this->semesterplan_id = $this->_query_semesterplanid();
+
 			// get actual Semester every time when the user connects and save it in the db
-			// $this->act_semester = $this->adminhelper->getSemester($this->studienbeginn_typ, $this->studienbeginn_jahr);
 			$this->act_semester = $this->adminhelper->get_act_semester($this->studienbeginn_typ, $this->studienbeginn_jahr);
-			// TODO: need to check if its a student/tutor?
 			$this->update_usersemester($this->user_id, $this->act_semester);
 
-			// log_message('error', $this->act_semester);
-
+            // get and save information about the degree program of the user
 			$this->studiengang_id = $this->_query_studiengang_id();
 			$this->studiengang_data = $this->_query_studiengang_data();
-
 			
-			// course_ids
-			$this->user_course_ids = $this->get_course_ids_with_roles();
-			
+			// get and save the course ids the user participates in mapped to the roles he has got there
+			$this->user_course_ids = $this->_get_course_ids_with_roles();
 		}
 
-		// global data
+		// build an array with global userdata
 		$userdata = array(
 	                'userid' 					=> $this->user_id,
 	                'loginname' 				=> $this->loginname,
@@ -89,18 +161,18 @@ class User_model extends CI_Model {
 	                'studiengang_data'			=> $this->studiengang_data
 	            );
 
-		// write userdata in global $data
+		// write userdata to the global $data-array
         $this->data->add('userdata', $userdata);
-
 	}
 
 	/**
 	 * Updates the current Semester of the user. Called everytime the user
 	 * logs into the system.
 	 *
-	 * @param  integer  $user_id   UserID of the user.
-	 * @param  integer $sem_count actual semester.
-	 *
+     * @access public
+	 * @param integer $user_id UserID of the user.
+	 * @param integer $sem_count actual semester.
+	 * @return void
 	 */
 	public function update_usersemester($user_id, $sem_count=0)
 	{
@@ -109,10 +181,13 @@ class User_model extends CI_Model {
 
 	/**
 	 * Abstract method to get all the DB data of one row.
+     * Selects data from an specified column out of the user table (Datenbanktabelle 'benutzer') for the authenticated
+     * user. Therefore the name of the column, needs to be passed as an parameter. The information stored in the
+     * desired column will be returned as an array with the column name as an key.
 	 *
-	 * @param  String $columnname From which column you want to receive the data.
-	 *
-	 * @return mixed             Array with all the data of the queried column.
+	 * @param String $columnname Name of the column, from which you want to receive the data.
+	 * @return array|null If there is any data for the authenticated user it will be returned in an array with the
+     *                    coloumnname as the key. Otherwise null will be returned.
 	 */
 	private function _query_user_singlecolumndata($columnname)
 	{
@@ -125,33 +200,39 @@ class User_model extends CI_Model {
 	}
 
 	/**
-	 * Queries the Studiengang of the actual user.
+	 * Queries the degree program id for the actual authenticated user and returns it.
 	 *
-	 * @return integer the desired studiengang id.
+     * @access private
+	 * @return integer The desired degree program id.
 	 */
-	public function _query_studiengang_id()
+	private function _query_studiengang_id()
 	{
 		$this->db->select('StudiengangID')
 				->from('benutzer')
 				->where('BenutzerID', $this->user_id)
 				;
 		$q = $this->db->get()->row_array();
+
 		return $q['StudiengangID'];
 	}
 
 	/**
-	 * Queries the studiengang data by the studiengang id.
+	 * Queries the degree program data by the studiengang id, that is stored
+     * in the instance variable $studiengang_id and returns it as an
+     * row array.
 	 *
-	 * @return mixed Array with all Studiengangdata.
+     * @access private
+	 * @return array Array with all degree program data (every column from the database table 'studiengang').
 	 */
-	public function _query_studiengang_data()
+	private function _query_studiengang_data()
 	{
 		$this->db->select('*')
 				->from('studiengang')
 				->where('StudiengangID', $this->studiengang_id)
 				;
 		$q = $this->db->get()->row_array();
-		return $q;
+
+        return $q;
 	}
 
 	/**
@@ -171,21 +252,20 @@ class User_model extends CI_Model {
 	}
 
 	/**
-	 * Queries all the permission the actual user has.
+	 * Queries all permissions of the actual authenticated user and returns them as an result array.
 	 *
-	 * @return Array one-dim array with all permissions the user has.
+     * @access private
+	 * @return Array one-dim array with all permissions the user has got
 	 */
 	private function _query_all_permissions()
 	{
+        // get the role of the authenticated user
 		$this->db->select('RolleID')
 					   ->from('benutzer_mm_rolle')
 					   ->where('BenutzerID', $this->user_id);
 		$user_id_role = $this->db->get()->result();
 
-		// var_dump($user_id_role);
-
-		// return;
-		
+		// get the permissions and clean them
 		$result_raw = array();
 		
 		foreach ($user_id_role as $key => $value) {
@@ -195,20 +275,21 @@ class User_model extends CI_Model {
 			$result_raw[] = $this->db->get()->result_array();
 		}
 
-		// var_dump($result_raw);
-
 		$result_clean = $this->_clean_permissions_array($result_raw);
 
 		return $result_clean;
 	}
 
-
-	/** */
-	// checks array for duplicates and deletes these. creates a 1dim array
-	private function _clean_permissions_array($permissions_to_clean)
+    /**
+     * Cleans the permissions array: Searches for duplicate entries, deletes them
+     * and creates an 1 dimensional array and returns it.
+     *
+     * @access private
+     * @param $permissions_to_clean The raw array, that should be cleaned.
+     * @return array 1 dimensional array with the cleaned permissions.
+     */
+    private function _clean_permissions_array($permissions_to_clean)
 	{
-		// var_dump($permissions_to_clean);
-
 		$permissions_cleaned = array();
 		foreach ($permissions_to_clean as $role) 
 		{
@@ -220,51 +301,38 @@ class User_model extends CI_Model {
 				}
 			}
 		}
+
 		return $permissions_cleaned;
 	}
 
-	/** */
 	// checks array for duplicates and deletes these. creates a 1dim array
-	private function _clean_roles_array($permissions_to_clean)
+    /**
+     * Cleans the roles array: Searches for duplicate entries, deletes them
+     * and creates an 1 dimensional array and returns it.
+     *
+     * @access private
+     * @param $roles_to_clean The raw array, that should be cleaned.
+     * @return array 1 dimensional array with the cleaned roles.
+     */
+	private function _clean_roles_array($roles_to_clean)
 	{
-		// var_dump($permissions_to_clean);
-
-		$permissions_cleaned = array();
-		foreach ($permissions_to_clean as $role) 
+		$roles_cleaned = array();
+		foreach ($roles_to_clean as $role)
 		{
-			#echo '<div style="height: 100px;"></div>';
-			#krumo($role);
-			if ( ! in_array($role['RolleID'], $permissions_cleaned))
+			if ( ! in_array($role['RolleID'], $roles_cleaned))
 				{
 					array_push($permissions_cleaned, $role['RolleID']);
 				}
-			
-			/*
-			# PHP 5.4: illegal string offset warning 'RolleID' (jetzt) in zeile 150
-			# -> seit 5.4 wird genauer auf datentypen geachtet und $v['RolleID'] ist ein string und kein array
-			# warum und weshalb es ein array sein muss bzw der fehler auftaucht, kann ich nicht genau sagen ...
-			# laut Dokumentation erwartet in_array() eigentlich einen string.. evtl hat sich in 5.4 da was ge�ndert
-			# Peter Jaraczewski: ich hab das mal VOR den foreach loops gedumpt und das array hatte nur eine dimension
-			# Peter Jaraczewski: oder kann es eine 2. auch kriegen ?
-			# Frank Gottwald: ich denke ja - kontext ist immer wichtig :\
-			# TODO: verification needed here!
-			foreach ($role as $v)
-			{
-				krumo($v);
-				if ( ! in_array($v['RolleID'], $permissions_cleaned))
-				{
-					array_push($permissions_cleaned, $v['RolleID']);
-				}
-			}
-			*/
 		}
 		return $permissions_cleaned;
 	}
 
 	/**
-	 * Queries all roles the actual user has.
+	 * Queries all roles for the actual authenticated user and returns
+     * them.
 	 *
-	 * @return Array Return all the roles, the actual user has.
+     * @access private
+	 * @return array All roles, the actual authenticated user has got.
 	 */
 	private function _query_all_roles()
 	{
@@ -272,22 +340,29 @@ class User_model extends CI_Model {
 				 ->from('benutzer_mm_rolle')
 				 ->where('BenutzerID', $this->user_id);
 
-		return $this->_clean_roles_array($this->db->get()->result_array());
+        $all_roles_uncleaned = $this->db->get()->result_array();
+        // clean the roles array
+        $cleaned_user_roles = $this->_clean_roles_array($all_roles_uncleaned);
+
+        return $cleaned_user_roles;
 	}
 
-	
-
-	
 	/**
-	 * Returns all ids for this user mapped to containing roles.
-	 * @return array(int => int) all ids mapped to roles
+     * Query the database for all course ids for the actual authenticated user
+     * mapped to the associated roles the user has got in the courses.
+     *
+     * @access private
+	 * @return array(int => int) All course ids mapped to the user roles in an 1 dimensional array.
+     *                           The course id is the key of the array.
 	 */
-	private function get_course_ids_with_roles(){
+	private function _get_course_ids_with_roles(){
+
 	    $ids = array();
 	    $course_ids_prof = array();
 	    $course_ids_labing = array();
 	    $course_ids_tut = array();
-	    // profs
+
+	    // look for courses, where the user could be an professor
 	    if(in_array(2, $this->user_roles)){
 		$course_ids_prof = $this->_get_user_course_ids_from_spkurs();
 			if($course_ids_prof){
@@ -296,7 +371,7 @@ class User_model extends CI_Model {
 				}
 			}
 	    }
-	    // labings
+	    // look for courses, where the user could be an labings
 	    if(in_array(3, $this->user_roles)){
 		$course_ids_labing = $this->_get_user_course_ids_from_labing_tut('kursbetreuer');
 			if($course_ids_labing){
@@ -305,7 +380,8 @@ class User_model extends CI_Model {
 				}
 			}
 	    }
-	    // tuts
+
+	    // look for courses, where the user could be an tutor
 	    if(in_array(4, $this->user_roles)){
 		$course_ids_tut = $this->_get_user_course_ids_from_labing_tut('kurstutor');
 			if($course_ids_tut){
@@ -314,13 +390,16 @@ class User_model extends CI_Model {
 				}
 			}
 	    }
+
 	    return $ids;
 	}
 	
 	/**
-	 * Returns all course-ids a user has - focus on eventtype 1 !!
-	 * WPFs not covered with this query!!
-	 * @return array
+	 * Returns all course-ids a user has got, which are part of the timetable courses (database table
+     * 'stundenplankurs') - focus on eventtype 1 !!. WPFs wont`be considered.
+     *
+     * @access private
+	 * @return array All user courses, which are part of the 'stundenplankurs'-table in an 1 dimensional array.
 	 */
 	private function _get_user_course_ids_from_spkurs(){
 	    $data = ''; // init
@@ -338,18 +417,19 @@ class User_model extends CI_Model {
 	    }
 
 	    if ($data) {
-			$data = $this->clean_nested_array($data);
+			$data = $this->_clean_nested_array($data);
 	    }
 
-	    
 	    return $data;
 	}
 	
-	
 	/**
-	 * Returns all course-ids for that user (labing or tut)
-	 * @param String $table name of table that should be used
-	 * @return array with all containing course_ids
+	 * Returns all course-ids for that user (labing or tut).
+     * Therefore the name of the table where the courses should
+     * be selected needs to be passed as an parameter.
+	 *
+     * @param string $table Name of table that should be used
+	 * @return array Array with all containing course_ids
 	 */
 	private function _get_user_course_ids_from_labing_tut($table){
 	    $this->db->select('KursID');
@@ -359,21 +439,24 @@ class User_model extends CI_Model {
 	    
 	    foreach ($q->result_array() as $row) { 
 			$data[] = $row;
-			}
-			if($data){
-				$data = $this->clean_nested_array($data);
-			}
+        }
+
+        if($data){
+            $data = $this->_clean_nested_array($data);
+        }
 	    
 	    return $data;
 	}
-	
-	
+
 	/**
-	 * Runs through nested array and returns simple indexed array with values
-	 * @param type $array
-	 * @return type
+	 * Runs through an nested array and creates an simple indexed array with values,
+     * which will be returned afterwards.
+     *
+     * @access private
+	 * @param array $array The array, that should be cleaned.
+	 * @return array The cleaned, simple indexed array.
 	 */
-	private function clean_nested_array($array){
+	private function _clean_nested_array($array){
 	    $clean = array();
 	    foreach ($array as $a) {
 			foreach ($a as $key => $value) {
@@ -383,15 +466,18 @@ class User_model extends CI_Model {
 	    return $clean;
 	}
 
-
-
-
-
-	// getter and setter
+    /*
+     * ==================================================================================
+     *                                getter and setter methods
+     * ==================================================================================
+     */
 
 	/**
-	 * Returns all roles one user is assigned to
-	 * @return array simple array containing all roles
+	 * Returns all roles to which the actual authenticated user is assigned to in an simple
+     * array.
+     *
+     * @access public
+	 * @return array Simple (one dimensional) array containing all roles.
 	 */
 	public function get_all_roles()
 	{
@@ -399,27 +485,21 @@ class User_model extends CI_Model {
 	}
 
 	/**
-	 * Returns all course_id-role-combinations for one user
-	 * @return array associative array [course-id] => [role]
+	 * Returns all permissions the actual authenticated user has got.
+     *
+     * @access public
+	 * @return array Simple (one dimensional) array with all permissions the user has got.
 	 */
 	public function get_all_permissions()
 	{
 		return $this->user_permissions_all;
 	}
 
-	public function get_permission_by_role($role)
-	{
-
-	}
-
-	public function get_permission_by_roles($roles)
-	{
-
-	}
-
 	/**
-	 * Returns the user-id
-	 * @return int the user-id
+	 * Returns the user-id of the authenticated user.
+     *
+     * @access public
+	 * @return int ID of the authenticated user.
 	 */
 	public function get_userid()
 	{
@@ -429,10 +509,26 @@ class User_model extends CI_Model {
 		}
 	}
 
+    /**
+     * Returns the loginname of the authenticated user.
+     *
+     * @access public
+     * @return string The loginname of the actual authenticated user
+     */
+    public function get_loginname(){
+
+        // if there is a loginname return it
+        if(!empty($this->loginname))
+            return $this->loginname;
+    }
+
 	/**
-	 * Returns the semesterplan-id.
+	 * Returns the semesterplan-id of the authenticated user. If there is no
+     * semesterplan id set, nothing will be returned.
 	 *
-	 * @return int semesterplan-id
+     * @access public
+	 * @return int|nothing If there is an semesterplan id it will be returned, otherwise
+     *                  nothing will be returned.
 	 */
 	public function get_semesterplanid()
 	{
@@ -443,9 +539,11 @@ class User_model extends CI_Model {
 	}
 
 	/**
-	 * Returns the actual semester.
+	 * Returns the semester number of the actual authenticated user.
+     * If there is no semester number saved, nothing will be returned.
 	 *
-	 * @return int actual semester.
+     * @access public
+	 * @return int|nothing actual semester.
 	 */
 	public function get_actsemester()
 	{
@@ -456,9 +554,12 @@ class User_model extends CI_Model {
 	}
 
 	/**
-	 * Returns the Studienbeginn Semestertyp
+	 * Returns the Studienbeginn Semestertyp of the authenticated user,
+     * if it is set. Otherwise nothing will be returned.
 	 *
-	 * @return String WS or SS
+     * @access public
+	 * @return string|nothing WS or SS if it is set, otherwise nothing
+     *                        will be returned.
 	 */
 	public function get_studienbeginn_semestertyp()
 	{
@@ -469,9 +570,12 @@ class User_model extends CI_Model {
 	}
 
 	/**
-	 * Returns the Studiebeginn Jahr.
+	 * Returns the study start year for the authenticated user,
+     * if it is set. Otherwise nothing will be returned.
 	 *
-	 * @return int e.g.: 2012
+     * @access public
+	 * @return int|nothing The year in which the user started studying if
+     *                     it is set. If it is not set, nothing will be returned.
 	 */
 	public function get_studienbeginn_jahr()
 	{
@@ -481,41 +585,15 @@ class User_model extends CI_Model {
 		}
 	}
 
-
 	/**
-	 * Returns course-ids for a single user mapped to roles
-	 * @return array [course_id] => [role_id]
+	 * Returns all course-ids for the authenticated user mapped to the roles
+     * he has got.
+     *
+     * @access public
+	 * @return array 1 dimensional array with all courses mapped to the roles. The array
+     *               has got the following key-value-structure: [course_id] => [role_id]
 	 */
 	public function get_user_course_ids(){
 	    return $this->user_course_ids;
 	}
-
-
-
-//	// HAS BEEN NECESSARY AS LONG AS LAGING- & TUT-TABLE CONTAIN SPKURSID (CHANGED TO KURSID)
-//	/**
-//	 * Runs through an array of spcourse_ids to find the matching course_ids
-//	 * Necessary because labings and tuts-table contain sp_course_ids
-//	 * @param array $sp_course_ids_tut
-//	 * @return array $course_ids
-//	 */
-//	private function _get_course_ids_from_spcourse_ids($sp_course_ids_tut){
-//
-//	    $course_ids_duplicates = array(); // init
-//	    
-//	    foreach($sp_course_ids_tut as $id){
-//		$this->db->select('KursID')->from('stundenplankurs')->where('SPKursID', $id);
-//		$course_ids_duplicates[] = $this->db->get()->result_array();
-//	    }
-//	    
-//	    // clean that result - 2 times nested oO
-//	    $course_ids_duplicates = $this->clean_nested_array(
-//				     $this->clean_nested_array($course_ids_duplicates));
-//	    
-//	    // remove duplicates
-//	    $course_ids = array_unique($course_ids_duplicates);
-//	    
-//	    return $course_ids;
-//	}
-	
 }
