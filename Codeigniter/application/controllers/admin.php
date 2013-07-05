@@ -1377,7 +1377,8 @@ class Admin extends FHD_Controller {
 
         // if called from another method, the timetable id is already placed in the data array
         if (array_key_exists('stdplan_id_automatic_reload',$this->data->load())){
-            $timetable_id = $this->data->load()['stdplan_id_automatic_reload'];
+            $data_arr = $this->data->load();
+            $timetable_id = $data_arr['stdplan_id_automatic_reload'];
         }
 
         // if called from the parsing page
