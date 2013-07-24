@@ -1,17 +1,13 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
- * meinFHD WebApp
+ * Class Roles
+ * Holds all static role properties.
  *
  * @version 0.0.2
  * @copyright Fachhochschule Duesseldorf, 2012
  * @link http://www.fh-duesseldorf.de
- * @author Christian Kundruß(CK), <christian.kundruss@fh-duesseldorf.de>
+ * @author Christian Kundruss (CK), <christian.kundurss@fh-duesseldorf.de>
  */
-
-/**
-* Class Roles
-* Holds static role properties.
-*/
 class Roles{
 
     /**
