@@ -47,10 +47,12 @@ class App extends FHD_Controller {
 	{
 		// user is logged in -> set message and redirect to frontpage
 		if ($this->agent->is_mobile()) {
-			redirect('dashboard/mobile');
-		}
+//			redirect('dashboard/mobile');
+		    redirect('stundenplan/woche');
+        }
 		else {
-			redirect('dashboard/index');
+//			redirect('dashboard/index');
+            redirect('stundenplan/woche');
 		}
 	}
 	
@@ -81,7 +83,8 @@ class App extends FHD_Controller {
 
             // validate the permanent login cookie value. If the cookie value is valid the user will be validated.
             $this->authentication->validate_permanent_login_cookie_and_authenticate($this->input->cookie('meinFHD_remember_me'));
-            redirect('dashboard/index'); // the session has been established
+//            redirect('dashboard/index'); // the session has been established
+            redirect('stundenplan/woche');
         }
 
         // there is no global session & no linked account & no permanent login cookie -> show the local login page when visiting the page
@@ -106,7 +109,8 @@ class App extends FHD_Controller {
 
                     // user is logged in -> set message and redirect to the frontpage / dashboard
                     $this->message->set(sprintf('Eingeloggt! (ID: %s)', $this->authentication->user_id()));
-                    redirect('dashboard/index');
+//                    redirect('dashboard/index');
+                    redirect('stundenplan/woche');
                 }
                 else // the authentication was not successful
                 {
@@ -363,4 +367,4 @@ class App extends FHD_Controller {
     }
 }
 /* End of file App.php */
-/* Location: ./application/controllers/App.php */
+/* Location: ./application/controllers/app.php */
