@@ -10,7 +10,7 @@
 						<div class="nav-collapse">
 							<ul class="nav level-1"> <!-- .nav.level-1 -->
 								<?php if ( $this->authentication->has_permissions('hat_dashboard') ) : ?>
-								<li><a href="<?php print base_url('dashboard/mobile'); ?>">Übersicht</a></li>
+								<li><a href="<?php print base_url('dashboard/mobile'); ?>">&Uuml;bersicht</a></li>
 								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_dashboard') ) : ?>
 								<li><a href="<?php print base_url('dashboard'); ?>">Dashboard</a></li>
@@ -44,7 +44,7 @@
 										<li><a href="<?php print base_url('admin/edit_user_mask'); ?>">Benutzer bearbeiten</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_benutzer_loeschen') ) : ?>
-										<li><a href="<?php print base_url('admin/delete_user_mask'); ?>">Benutzer löschen</a></li>
+										<li><a href="<?php print base_url('admin/delete_user_mask'); ?>">Benutzer l&ouml;schen</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_rechte_verwalten') ) : ?>
 										<li><a href="<?php print base_url('admin/show_role_permissions'); ?>">Rechte verwalten</a></li>
@@ -91,7 +91,7 @@
 										<li><a href="<?php print base_url('admin/show_stdplan_list'); ?>">Stundenplan bearbeiten</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_stundenplan_loeschen') ) : ?>
-										<li><a href="<?php print base_url('admin/delete_stdplan_view'); ?>">Stundenplan loeschen</a></li>
+										<li><a href="<?php print base_url('admin/delete_stdplan_view'); ?>">Stundenplan l&ouml;schen</a></li>
 										<?php endif ?>
 									</ul> <!-- /.nav .level-2 -->
 								</li>
