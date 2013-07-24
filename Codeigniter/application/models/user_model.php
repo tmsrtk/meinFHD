@@ -305,7 +305,6 @@ class User_model extends CI_Model {
 		return $permissions_cleaned;
 	}
 
-	// checks array for duplicates and deletes these. creates a 1dim array
     /**
      * Cleans the roles array: Searches for duplicate entries, deletes them
      * and creates an 1 dimensional array and returns it.
@@ -321,10 +320,10 @@ class User_model extends CI_Model {
 		{
 			if ( ! in_array($role['RolleID'], $roles_cleaned))
 				{
-					array_push($permissions_cleaned, $role['RolleID']);
+					array_push($roles_cleaned, $role['RolleID']);
 				}
 		}
-		return $permissions_cleaned;
+		return $roles_cleaned;
 	}
 
 	/**
@@ -364,8 +363,8 @@ class User_model extends CI_Model {
 
 	    // look for courses, where the user could be an professor
 	    if(in_array(2, $this->user_roles)){
-		$course_ids_prof = $this->_get_user_course_ids_from_spkurs();
-			if($course_ids_prof){
+		    $course_ids_prof = $this->_get_user_course_ids_from_spkurs();
+            if($course_ids_prof){
 				foreach ($course_ids_prof as $cid) {
 					$ids[$cid] = 2;
 				}
@@ -373,8 +372,9 @@ class User_model extends CI_Model {
 	    }
 	    // look for courses, where the user could be an labings
 	    if(in_array(3, $this->user_roles)){
-		$course_ids_labing = $this->_get_user_course_ids_from_labing_tut('kursbetreuer');
-			if($course_ids_labing){
+		    $course_ids_labing = $this->_get_user_course_ids_from_labing_tut('kursbetreuer');
+
+            if($course_ids_labing){
 				foreach ($course_ids_labing as $cid) {
 					$ids[$cid] = 3;
 				}
@@ -383,7 +383,8 @@ class User_model extends CI_Model {
 
 	    // look for courses, where the user could be an tutor
 	    if(in_array(4, $this->user_roles)){
-		$course_ids_tut = $this->_get_user_course_ids_from_labing_tut('kurstutor');
+
+            $course_ids_tut = $this->_get_user_course_ids_from_labing_tut('kurstutor');
 			if($course_ids_tut){
 				foreach ($course_ids_tut as $cid) {
 					$ids[$cid] = 4;
@@ -402,22 +403,24 @@ class User_model extends CI_Model {
 	 * @return array All user courses, which are part of the 'stundenplankurs'-table in an 1 dimensional array.
 	 */
 	private function _get_user_course_ids_from_spkurs(){
-	    $data = ''; // init
+	    $data = array(); // init
 
 	    $this->db->distinct();
 	    $this->db->select('KursID');
 	    $this->db->from('stundenplankurs');
 	    $this->db->where('DozentID', $this->user_id);
 	    $this->db->where('isWPF', '0');
-	    
-	    $q = $this->db->get();
-	    
-	    foreach ($q->result_array() as $row) { 
-			$data[] = $row;
-	    }
 
+        $q = $this->db->get();
+
+        // generate the query result
+        foreach ($q->result_array() as $single_row){
+            $data[] = $single_row;
+        }
+
+        // clean / convert the array to an simple 1dim array
 	    if ($data) {
-			$data = $this->_clean_nested_array($data);
+            $data = $this->_clean_nested_array($data);
 	    }
 
 	    return $data;
@@ -456,9 +459,10 @@ class User_model extends CI_Model {
 	 * @param array $array The array, that should be cleaned.
 	 * @return array The cleaned, simple indexed array.
 	 */
-	private function _clean_nested_array($array){
-	    $clean = array();
-	    foreach ($array as $a) {
+	private function _clean_nested_array($array_to_clean){
+
+        $clean = array();
+	    foreach ($array_to_clean as $a) {
 			foreach ($a as $key => $value) {
 				$clean[] = $value;
 			}
@@ -596,4 +600,14 @@ class User_model extends CI_Model {
 	public function get_user_course_ids(){
 	    return $this->user_course_ids;
 	}
+
+    /**
+     * Returns the email address of the currently authenticated user.
+     *
+     * @access public
+     * @return string The Email-address of the currently authenticated user.
+     */
+    public function get_email_address(){
+        return $this->email;
+    }
 }
