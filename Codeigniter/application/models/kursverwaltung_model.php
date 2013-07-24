@@ -1,8 +1,27 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+/**
+ * Class Kursverwaltung_model
+ * The kursverwaltung / course administration model provides all necessary db operations, that are required for the
+ * course administration.
+ *
+ * @version 0.0.1
+ * @package meinFHD\models
+ * @copyright Fachhochschule Duesseldorf, 2013
+ * @link http://www.fh-duesseldorf.de
+ * @author Frank Gottwald (FG), <frank.gottwald@fh-duesseldorf.de>
+ * @author Christian Kundruss (CK), <christian.kundruss@fh-duesseldorf.de>
+ */
 class Kursverwaltung_model extends CI_Model {
-    
+
+    /*
+     * ==================================================================================
+     *                                   Course administration start
+     * ==================================================================================
+     */
+
     /**
-     * Returns course/ or tut-details for passed course-id & eventtype.
+     * Returns course or tut-details for the passed course-id and eventtype.
 	 * This implementation is used for lectures (Vorlesungen) and tuts (Tutorien).
 	 * 
 	 * IMPORTANT:
@@ -10,15 +29,16 @@ class Kursverwaltung_model extends CI_Model {
 	 * That means only one lecture or tut is being returned and showed.
 	 * 
 	 * For more than one lecture or tut another implementation is necessary.
-	 * 
+	 *
+     * @access public
      * @param int $course_id the course-id to get the details for
      * @param int $eventtype the eventtype to get the details for
-     * @return array array with all details for that lecture/tut
+     * @return array Array with all details for that lecture/tut
      */
     public function get_lecture_details($course_id, $eventtype){
 		$data = array(); // init
 		$q = '';
-		
+
 		$this->db->select('SPKursID, Raum, StartID, EndeID, TagID, GruppeID');
 		$this->db->where('KursID', $course_id);
 		$this->db->where('VeranstaltungsformID', $eventtype);
@@ -35,10 +55,13 @@ class Kursverwaltung_model extends CI_Model {
     
 	
     /**
-     * Returns lab, seminar, tut - details - eventtype passed
-	 * Method used for showing all lab groups and notes with participants
-     * @param int $id
-     * @param int $eventtype
+     * Returns lab, seminar, tut - details - for an passed course id depending
+     * on the passed eventtype.
+	 * Method used for showing all lab groups and notes with participants.
+     *
+     * @access public
+     * @param int $course_id ID of the course, where the details should be selected for
+     * @param int $eventtype The eventtype/VeranstaltungsformID of the course
      * @return array
      */
     public function get_course_details($course_id, $eventype){
@@ -68,17 +91,22 @@ class Kursverwaltung_model extends CI_Model {
     
 	
     /**
-     * Returns course-name and -description for given course_id
-	 * 
+     * Returns the course-short-name, the course-long-name and the course-description for the course with
+     * the given id
+	 *
+     * @access public
      * @param int $course_id course_id to get the name for
-     * @return String $data[0] first index of the result - 
-	 * containing the shortname and the description for that course
+     * @return array $data[0] first index of the result -
+	 *         containing the shortname, the longname and the description for that course.
+     *         To access the result you have the following options to access the content
+     *         of the array, that is going to be returned:
+     *              ->Kursname, ->kurs_kurz, ->Beschreibung
      */
     public function get_lecture_name($course_id){
-		$data = array(); // init
+        $data = array(); // init
 		$q = '';
 		
-		$this->db->select('kurs_kurz, Beschreibung')->where('KursID', $course_id);
+		$this->db->select('Kursname, kurs_kurz, Beschreibung')->where('KursID', $course_id);
 		$q = $this->db->get_where('studiengangkurs');
 
 		if($q->num_rows() > 0){
@@ -89,13 +117,18 @@ class Kursverwaltung_model extends CI_Model {
 
 		return $data[0];
     }
-    
-    
+
+    /**
+     *
+     *
+     * @access public
+     * @return array
+     */
     public function check_names(){
 		$data = array();
 
-		$lecture_ids = $this->get_lecture_ids();
-		$non_lecture_ids = $this->get_non_lecture_ids();
+		$lecture_ids = $this->_get_lecture_ids();
+		$non_lecture_ids = $this->_get_non_lecture_ids();
 
 		foreach($non_lecture_ids as $nl_id){
 			if(!in_array($nl_id, $lecture_ids)){
@@ -105,8 +138,15 @@ class Kursverwaltung_model extends CI_Model {
 
 		return $data;
     }
-    
-    private function get_lecture_ids(){
+
+    /**
+     * Returns all distinct course/lecture ids, that correspond to the VeranstaltungsformID 1.
+     *
+     * @access private
+     * @return array Simple 1-dimensional array with all course ids. There are no keys required to access
+     *              the content of the array.
+     */
+    private function _get_lecture_ids(){
 		$this->db->distinct();
 		$this->db->select('KursID');
 		$this->db->where('VeranstaltungsformID', 1);
@@ -126,8 +166,16 @@ class Kursverwaltung_model extends CI_Model {
 		}
 		return $ids;
     }
-    
-    private function get_non_lecture_ids(){
+
+    /**
+     * Returns all course ids / courses where the VeranstaltungsformID is not 1 (Vorlesung)
+     * from the database table stundenplankurs.
+      *
+     * @access private
+     * @return array Simple 1-dimensional array with all course ids. There are no keys required to access
+     *              the content of the array.
+     */
+    private function _get_non_lecture_ids(){
 		$this->db->distinct();
 		$this->db->select('KursID');
 		$this->db->where('VeranstaltungsformID !=', 1);
@@ -150,9 +198,15 @@ class Kursverwaltung_model extends CI_Model {
     
 
     /**
-     * Returns first and last name of prof for given course
-     * @param int $course_id the course-id
-     * @return array simple array with data
+     * Returns first and last name of the professor, who is assigned to the given course.
+     *
+     * @access public
+     * @param int $course_id The course-id where the prof / dozent should be selected for.
+     * @return array Simple 2-dimensional array with the data. There are no keys required to
+     *               access the data. Each entry in the first dimension corresponds to
+     *               one prof, the second dimension contains the information for the prof.
+     *               The information could be accessed via the keys 'Titel', 'Vorname',
+     *               'Nachname'.
      */
     public function get_profname_for_course($course_id){
 		$data = array(); // init
@@ -178,10 +232,15 @@ class Kursverwaltung_model extends CI_Model {
     
     
     /**
-     * Returns course/tut-data.
-     * @param int $id
-     * @param int $eventtype
-     * @return type
+     * Returns the course details for the given course id, that correspond to
+     * the given eventtype id.
+     *
+     * @access public
+     * @param int $course_id ID of the course, where the information should be selected for.
+     * @param int $eventtype Eventtype id (VeranstaltungsformID) of the course
+     * @return array Simple 1-dimensional array that contains the details for the given course.
+     *               The information about the course are going to be saved in the array as an
+     *               object and need to be accessed via ->Attribute_name
      */
     public function get_lab_details($course_id, $eventtype){
 		$data = array(); // init
@@ -206,10 +265,11 @@ class Kursverwaltung_model extends CI_Model {
     
     
     /**
-     * Returns all eventtypes for a course
-	 * 
-     * @param int $course_id the course id to get the eventtypes for
-     * @return array simple indexed array, holding all eventtypes a course has
+     * Returns all distinct / different eventtypes for an given course id.
+	 *
+     * @access public
+     * @param int $course_id The course id, where the eventtypes should be selected for.
+     * @return array Simple indexed array, holding all eventtypes the desired course has got.
      */
     public function get_eventtypes_for_course($course_id){
 		$data = array(); // init
@@ -225,16 +285,42 @@ class Kursverwaltung_model extends CI_Model {
 		}
 
 		// clean to have simple indexed array
-		$data = $this->clean_nested_array($data);
+		$data = $this->_clean_nested_array($data);
 
 		return $data;
+    }
+
+    /**
+     * Returns the eventtype (eventtype id) for an given spcourse id.
+     *
+     * @access public
+     * @param int $spcourse_id The spcours id, where the eventtype should be selected for
+     * @return int The eventtype of the desired spcourse
+     */
+    public function get_eventtype_for_spcourse($spcourse_id){
+
+        $this->db->select('VeranstaltungsformID');
+        $this->db->from('stundenplankurs');
+        $this->db->where('SPKursID', $spcourse_id);
+
+        $query = $this->db->get();
+
+        $eventtype = 0; // init of return variable for the eventtype
+        if($query->num_rows() == 1){
+            foreach($query->result() as $row){
+                $eventtype = $row->VeranstaltungsformID;
+            }
+        }
+
+        return $eventtype;
     }
     
     
     /**
      * Returns array with all labings/tuts belonging to a single course-id
      * Depending on passed table, passedswitch labings/tuts with passed table
-	 * 
+	 *
+     * @access public
      * @param int $course_id the course-id to get staff for
      * @param String $table table to get staff from
      * @return array array with all labings/tuts mapped to course-id [course_id] => [staff]
@@ -262,7 +348,8 @@ class Kursverwaltung_model extends CI_Model {
     /**
      * Returns array with all possible labings
      * Labings for a course are profs (RolleID=2) AND labings (RolleID=3)
-	 * 
+	 *
+     * @access public
      * @return array simple array with all labings
      */
     public function get_all_possible_labings(){
@@ -290,7 +377,8 @@ class Kursverwaltung_model extends CI_Model {
     /**
      * Returns array with all possible tutors
      * Tutors (RolleID=4)
-	 * 
+	 *
+     * @access public
      * @return array simple array with all tutors
      */
     public function get_all_tuts(){
@@ -315,13 +403,14 @@ class Kursverwaltung_model extends CI_Model {
     }
     
 	/**
-	 * Helper function to clean a nested array
+	 * Helper function to clean an nested array
 	 * Runs through nested array and returns simple indexed array with values
-	 * 
+	 *
+     * @access private
 	 * @param array $array the array to clean
 	 * @return array simple indexed array
 	 */
-    private function clean_nested_array($array){
+    private function _clean_nested_array($array){
 		$clean = array(); // init
 		foreach ($array as $a) {
 			foreach ($a as $key => $value) {
@@ -330,25 +419,28 @@ class Kursverwaltung_model extends CI_Model {
 		}
 		return $clean;
     }
-    
-    
-//  ################################################################ SAVING DATA
-    
+
     /**
-     * Saves course and group-data to db.
-     * SPKursID passed separately.
-     * Each data passed in separate arrays, too.
-     * @param int $spkurs_id
-     * @param array $spkurs_data
-     * @param array $group_data
+     * Saves the course and group detail data for an given course into the database.
+     * Therefore the SPKursID (timetable course id) is passed separately. Also the
+     * group and course information are passed in different arrays.
+     *
+     * @access public
+     * @param int $spkurs_id The timetable course id, where the information should be saved for.
+     * @param array $spkurs_data The course information, that should be stored.
+     * @param array $group_data The group information, that shoould be stored
+     * @return void
      */
     public function save_course_details($spkurs_id, $spkurs_data, $group_data){
-		$this->db->where('SPKursID', $spkurs_id);
+
+        // update the course information
+        $this->db->where('SPKursID', $spkurs_id);
 		$this->db->update('stundenplankurs', $spkurs_data);
 
-		// if spkurs that should be updated is Ü,L.P
+
+		// if there are some group information save them
 		if($group_data){
-			$group_id = $this->get_group_id_for_spkursid($spkurs_id)->GruppeID;
+			$group_id = $this->_get_group_id_for_spkursid($spkurs_id)->GruppeID;
 
 			$this->db->where('GruppeID', $group_id);
 			$this->db->update('gruppe', $group_data);
@@ -357,19 +449,21 @@ class Kursverwaltung_model extends CI_Model {
 	
     
     /**
-     * Helper to get group_id for given sp_course_id
-     * @param int $spkurs_id
-     * @return object
+     * Helper function to get the group_id for an given sp_course_id
+     *
+     * @access private
+     * @param int $spkurs_id The id of the spcourse (stundenplankurs), where the group_id should be selected for.
+     * @return object The database object, that contains the group id. The result (group_id) could be accessed via ->GruppeID
      */
-    private function get_group_id_for_spkursid($spkurs_id){
+    private function _get_group_id_for_spkursid($spcourse_id){
 		$this->db->select('GruppeID');
 		$this->db->from('stundenplankurs');
-		$this->db->where('SPKursID', $spkurs_id);
+		$this->db->where('SPKursID', $spcourse_id);
 		$q = $this->db->get();
 
 		$data = ''; // init
 
-		if($q->num_rows() > 0){
+		if($q->num_rows() == 1){
 			foreach ($q->result() as $row){
 				$data = $row;
 			}
@@ -379,14 +473,16 @@ class Kursverwaltung_model extends CI_Model {
 	
 	
 	/**
-     * Helper to get course_id for given sp_course_id
-     * @param int $spkurs_id
-     * @return object
+     * Helper function to get the course_id for an given sp_course_id
+     *
+     * @access public
+     * @param int $spcourse_id The id of the spcourse (stundenplankurs), where the group_id should be selected for.
+     * @return object The database object, that contains the group id. The result (group_id) could be accessed via ->KursID
      */
-    public function get_course_id_for_spkursid($spkurs_id){
+    public function get_course_id_for_spkursid($spcourse_id){
 		$this->db->select('KursID');
 		$this->db->from('stundenplankurs');
-		$this->db->where('SPKursID', $spkurs_id);
+		$this->db->where('SPKursID', $spcourse_id);
 		$q = $this->db->get();
 
 		$data = ''; // init
@@ -401,32 +497,35 @@ class Kursverwaltung_model extends CI_Model {
 	
 	
 	/**
-	 * Saves the description typed into textfield on my courses view.
-	 * @param type $cid
-	 * @param type $desc
+	 * Saves the description typed into the textfield on my courses view.
+     *
+     * @access public
+	 * @param int $cid The id of the course, where the information should be saved for.
+	 * @param string $desc The description, that should be saved in the database.
 	 */
 	public function save_course_description($cid, $desc){
 		$this->db->where('KursID', $cid);
 		$this->db->update('studiengangkurs', array('Beschreibung' => $desc));
 	}
-    
-    
+
+
+    /**
+     * Saves all assigned staff for the given course id in the database.
+     *
+     * @access public
+     * @param int $course_id The id of the course, where the information should be saved for-
+     * @param array $new_staff_ids Array with the new staff, that should be saved.
+     * @param string $table String with the name of the database table, where the information should be saved in.
+     */
     public function save_staff_to_db($course_id, $new_staff_ids, $table){
 		// get old staff for that course
 		$former_labings_tuts = array();
-		$former_labings_tuts = $this->get_ids_of_labings_tuts_for_course($course_id, $table);
-
-	//	echo '<pre>';
-	//	echo '<div>former_labings</div>';
-	//	print_r($former_labings);
-	//	echo '</pre>';
+		$former_labings_tuts = $this->_get_ids_of_labings_tuts_for_course($course_id, $table);
 
 		// only if there are former labings
 		if($former_labings_tuts){
 			// run through OLD and check if in NEW >> delete if not
 			foreach($former_labings_tuts as $fl){
-
-				// TODO ?? ggf. hier wenn keine neuen personen hinzugefügt werden ALLE löschen?!?!?!?!?!?!!?
 
 				if(!in_array($fl, $new_staff_ids)){
 					// delete from table
@@ -450,31 +549,29 @@ class Kursverwaltung_model extends CI_Model {
 			}
 		}
 
-	//	echo '<pre>';
-	//	print_r($former_labings_tuts);
-	//	echo '</pre>';
-
 		// role-modifications only relevant for labings - roles set/revoked implicitly
 		// note: tut-roles has to be set by admin
 		if($table == 'kursbetreuer'){
-			$this->update_roles();	    
+			$this->_update_roles();
 		}
 
     }
     
     /**
-     * Helper just to split method
+     * Helper function to update the roles
+     *
+     * @access public
+     * @return void
      */
-    private function update_roles(){
+    private function _update_roles(){
 		$former_prof_ids = array();
 		$current_prof_ids = array();
 
-	//	    $this->update_roles();
 		// get profs with role_id 3 >> i.e. labings
-		$former_prof_ids = $this->get_ids_of_profs_who_have_labing_role();
+		$former_prof_ids = $this->_get_ids_of_profs_who_have_labing_role();
 
 		// get profs from *kurs*betreuer - (laboringenieur table deprecated)
-		$current_prof_ids = $this->get_ids_of_profs_from_labing_table();
+		$current_prof_ids = $this->_get_ids_of_profs_from_labing_table();
 
 
 		// if there are former profs
@@ -508,12 +605,14 @@ class Kursverwaltung_model extends CI_Model {
     
     
     /**
-     * Helper to get labing-/tut-ids for given course
-     * @param type $course_id
-     * @param type $table
-     * @return type
+     * Helper function to get all  labing-/tut-ids for the given course
+     *
+     * @access private
+     * @param int $course_id ID of the course, where the information should be selected for.
+     * @param string $table Name of the database table, where the information should be selected from.
+     * @return array Simple 1-dimensional array with all User / DozentIDs, that are assigned to the course.
      */
-    private function get_ids_of_labings_tuts_for_course($course_id, $table){
+    private function _get_ids_of_labings_tuts_for_course($course_id, $table){
 		$this->db->select('BenutzerID');
 		$this->db->from($table);
 		$this->db->where('KursID', $course_id);
@@ -535,10 +634,12 @@ class Kursverwaltung_model extends CI_Model {
     }
     
     /**
-     * Helper to get profs with labing-role
-     * @return type
+     * Helper function to get the prof user ids with the labing-role.
+     *
+     * @access private
+     * @return array Simple 1-dimensional array with all UserIDs, that have got the labing role.
      */
-    private function get_ids_of_profs_who_have_labing_role(){
+    private function _get_ids_of_profs_who_have_labing_role(){
 		$this->db->select('a.BenutzerID, a.RolleID, b.RolleID as RolleID2');
 		$this->db->from('benutzer_mm_rolle as a');
 		$this->db->join('benutzer_mm_rolle as b', 'a.BenutzerID = b.BenutzerID');
@@ -563,10 +664,13 @@ class Kursverwaltung_model extends CI_Model {
     }
     
     /**
-     * Helper to get profs that are currently in labing-table for a course
-     * @return type
+     * Helper function to get profs that are currently in labing-table for at least one course.
+     *
+     * @access private
+     * @return array Simple 1-dimensional array with all UserIDs, who are labings and who are assigned
+     *               to at least one course.
      */
-    private function get_ids_of_profs_from_labing_table(){
+    private function _get_ids_of_profs_from_labing_table(){
 		$this->db->distinct();
 		$this->db->select('a.BenutzerID');
 		$this->db->from('kursbetreuer as a');
@@ -588,77 +692,94 @@ class Kursverwaltung_model extends CI_Model {
 		}
 		return $ids;
     }
-	
-	
-	
-	
-	public function create_file_with_participants_for_course($course_id, $is_spcourse){
-		$course_data = array();
-		$participants_data = array();
-		
-		// getting course-details
-		$this->db->select('a.Kursname, a.kurs_kurz, b.VeranstaltungsformAlternative, t.TagName, s.Beginn, r.Ende, g.TeilnehmerMax');
-		$this->db->from('studiengangkurs as a');
-		$this->db->join('stundenplankurs as b', 'a.KursID = b.KursID');
-		$this->db->join('gruppe as g', 'b.GruppeID = g.GruppeID');
-		$this->db->join('tag as t', 'b.TagID = t.TagID');
-		$this->db->join('stunde as s', 'b.StartID = s.StundeID');
-		$this->db->join('stunde as r', 'b.EndeID = r.StundeID');
-		$this->db->where('b.SPKursID', $course_id);
-		$q_course = $this->db->get();
-		
-		if($q_course->num_rows()  === 1){
-			foreach($q_course->result() as $row){
-				$course_data = $row;
-			}
-		}		
-		
-		// init
-		$file_data = '';
-		
-		// store some genereal course data to put into file
-		$file_data .= "Fach:;".$course_data->Kursname." (".$course_data->kurs_kurz.");\r";
-		$file_data .= 'Gruppe:;'.$course_data->VeranstaltungsformAlternative.";\r";
-		$file_data .= "Tag:;".$course_data->TagName.";\r";
-		$file_data .= "Beginn:;".$course_data->Beginn.";\r";
-		$file_data .= "Ende:;".$course_data->Ende.";\r";
-		$file_data .= "Teilnehmer:;".$course_data->TeilnehmerMax.";\r";
-		$file_data .= "Nachname:;Vorname:;Emailadresse:;\r";
-		
-//		$file_data .= "COURSE_ID:; ".$course_id.";\r";
-		
-		// getting participants of a single sp_course - if course or sp_course depending on passed bool-flag
-		$participants_data = $this->get_participants_for_single_sp_course($course_id, $is_spcourse);
-		
-		// save data to 'file'
-		foreach ($participants_data as $key => $value) {
-			$file_data .= $value->Nachname.";";
-			$file_data .= $value->Vorname.";";
-			$file_data .= $value->Email.";\r";
-		}
-		
-		return $file_data;
-		
-	}
-	
-	
+
+    /**
+     * Returns an string with the data, that needs to be placed inside the download file with the
+     * course participants. Therefore the data is already prepared for being placed inside the
+     * file. The names etc. are separated by ';'.
+     *
+     * @access public
+     * @param $course_id int ID of the course, where participants list should be generated for.
+     * @param $is_spcpourse bool Boolean flag if the course is an timetable (TRUE) or not (FALSE)
+     * @return string String with the file data
+     */
+    public function get_data_for_course_participants_list($course_id, $is_spcourse){
+
+        $course_data = array();
+        $participants_data = array();
+
+        // getting course-details
+        $this->db->select('a.Kursname, a.kurs_kurz, b.VeranstaltungsformAlternative, t.TagName, s.Beginn, r.Ende, g.TeilnehmerMax');
+        $this->db->from('studiengangkurs as a');
+        $this->db->join('stundenplankurs as b', 'a.KursID = b.KursID');
+        $this->db->join('gruppe as g', 'b.GruppeID = g.GruppeID');
+        $this->db->join('tag as t', 'b.TagID = t.TagID');
+        $this->db->join('stunde as s', 'b.StartID = s.StundeID');
+        $this->db->join('stunde as r', 'b.EndeID = r.StundeID');
+        $this->db->where('b.SPKursID', $course_id);
+        $q_course = $this->db->get();
+        // if there is only 1 result
+        if($q_course->num_rows() === 1){
+            foreach($q_course->result() as $row){
+                $course_data = $row;
+            }
+        }
+
+        // init
+        $file_data = '';
+
+        // store some general course data to put into file
+        $file_data .= "Fach:;".$course_data->Kursname." (".$course_data->kurs_kurz.");\r";
+        $file_data .= 'Gruppe:;'.$course_data->VeranstaltungsformAlternative.";\r";
+        $file_data .= "Tag:;".$course_data->TagName.";\r";
+        $file_data .= "Beginn:;".$course_data->Beginn.";\r";
+        $file_data .= "Ende:;".$course_data->Ende.";\r";
+
+        // getting participants of a single sp_course - if course or sp_course depending on passed bool-flag
+        $participants_data = $this->get_participants_for_single_sp_course($course_id, $is_spcourse);
+
+        // place the count of max participants inside the file
+        $file_data .= "Anzahl Teilnehmer:;".count($participants_data).";\r";
+        // header for participants list
+        $file_data .= "Nachname:;Vorname:;Emailadresse:;\r";
+
+        // put every participant into the 'file'
+        foreach ($participants_data as $key => $value) {
+            $file_data .= $value->Nachname.";";
+            $file_data .= $value->Vorname.";";
+            $file_data .= $value->Email.";\r";
+        }
+
+        return $file_data;
+    }
+
 	/**
-	 * Returns participants for a single course depending on bool that's passed
-	 * @param type $sp_course_id
-	 * @return type
+	 * Returns all participants for a single course with the following information:
+     * - Name, surname, email. The result depends on the boolean flag that is
+     * passed. The boolean flag indicates whether the desired course is an
+     * timetable course or not.
+     *
+     * @access public
+	 * @param int $sp_course_id The id of the course, where the participants should be selected for.
+     * @param boolean $is_sp_course Boolean flag, that indicates whether the course is an spcourse or not.
+	 * @return array Simple 1-dimensional array with all participant information saved as an object.
+     *               Each array entry represents an object. The information stored in the object could
+     *               be accessed via the -> selector. (Nachname, Vorname, Email)
 	 */
 	public function get_participants_for_single_sp_course($sp_course_id, $is_sp_course){
 		$participants_data = array();
 		
 		$this->db->select('Nachname, Vorname, Email');
 		$this->db->from('benutzer as a');
+
 		// if querying for participants of SP_course >> 
 		if($is_sp_course){
 			$this->db->join('gruppenteilnehmer as b', 'a.BenutzerID = b.BenutzerID');
 			$this->db->join('stundenplankurs as c', 'b.GruppeID = c.GruppeID');
 			$this->db->where('c.SPKursID', $sp_course_id);
-		// else: querying for participants of course >> 
-		} else {
+
+		}
+        else { // else: querying for participants of course >>
 			$this->db->join('benutzerkurs as b', 'a.BenutzerID = b.BenutzerID');
 			$this->db->where('b.SPKursID', $sp_course_id);
 		}
@@ -669,15 +790,15 @@ class Kursverwaltung_model extends CI_Model {
 				$participants_data[] = $row;
 			}
 		}
-		
+
 		return $participants_data;
-		
 	}
 	
 	/**
-	 * Counts all participants belonging to a single sp_course
+	 * Counts all participants belonging to a single sp_course.
 	 * courses and sp_courses (differentiation necessary for labs) depending on passed boolean
-	 * 
+	 *
+     * @access public
 	 * @param int $id always sp_course_id
 	 * @param boolean $is_sp_course sp_course or course
 	 * @return int number of participants in that course/sp_course
@@ -693,16 +814,16 @@ class Kursverwaltung_model extends CI_Model {
 		
 		return $counter;
 	}
-	
-	
+
 	/**
-	 * De/activation of application - for whole course (course_id)
+	 * De/activation of application / registration - for whole course (course_id)
 	 * Find all sp_course_ids / group_ids for a course that should be activated.
-	 * 
+	 *
+     * @access public
 	 * @param int $id course_id to de/activate courses for
 	 * @param boolean $enable current status
 	 */
-	public function update_benutzerkurs_activation($id, $enable){
+	public function update_benutzerkurs_application($id, $enable){
 		$data = array(); // init
 		$q = ''; // init
 		
@@ -726,12 +847,13 @@ class Kursverwaltung_model extends CI_Model {
 		// switch status to save depending on passed flag
 		if($enable){
 			$status = 1;
-		} else {
+		}
+        else {
 			$status = 0;
 		}
 		
-		// run through all found group-ids and activate applicaton
-		// activate all found courses with 
+		// run through all found group-ids and activate or deactivate the registration depending on the status
+        // flag
 		foreach($data as $d){
 			$this->db->where('GruppeID', $d->GruppeID);
 			$this->db->update('gruppe', array('Anmeldung_zulassen' => $status));
@@ -740,11 +862,11 @@ class Kursverwaltung_model extends CI_Model {
 	}
 	
 	/**
-	 * Checks if application for that course is already enabled or not.
+	 * Checks if application for the given course is already enabled or not.
 	 * 
-	 * @param int $course_id the id to check application-status for
-	 * @return int flag that shows if activation is enabled (1) or not (2);
-	 * returns -1 if there is no course to enable
+	 * @param int $course_id ID of the course, where the application-status should be checked for
+	 * @return int Flag that shows if activation is enabled (1) or not (2);
+	 *             returns -1 if there is no course to enable.
 	 */
 	public function get_application_status($course_id){
 		$data = array(); // init
@@ -781,12 +903,14 @@ class Kursverwaltung_model extends CI_Model {
 		
 	}
 	
-	
 
 	/**
-	 * 
-	 * @param type $matrno
-	 * @return array holding user-data OR -1 if user already has the role to be assigned
+	 * Searches an student by his matrikelnummer.
+     *
+     * @access public
+	 * @param int $matrno Matrikelnummer, where the user should be searched vor
+	 * @return array holding user-data as an object (vorname, Nachname, Matrikelnummer, BenutzerID)
+     *               OR -1 if the user already has got the role.
 	 */
 	public function search_student_by_matrno($matrno){
 		$q = ''; // init
@@ -815,14 +939,14 @@ class Kursverwaltung_model extends CI_Model {
 		}
 		
 		return $data;
-		
 	}
-	
 
 	/**
-	 * 
-	 * @param array $student_data [0] => matrno; [1] => courseId
-	 * @return int
+	 * Assigns the tutor role to an given student.
+	 *
+     * @access public
+     * @param array $student_data [0] => matrno; [1] => courseId
+	 * @return boolean TRUE if the process is finished without errors, otherwise FALSE
 	 */
 	public function assign_tut_role_to_student($student_data, $assign_id){
 		$q = ''; // init
@@ -855,20 +979,72 @@ class Kursverwaltung_model extends CI_Model {
 			$this->db->insert('kurstutor', array('BenutzerID' => $user_id, 'KursID' => $student_data[1]));
 			
 			return true;
-		} else {
+		}
+        else {
 			return false;
 		}
 	}
-	
-	
-	
-	/* 
-	 * 
-	 * ****************************************** course-mgt
-	 * ************************************** Frank Gottwald
-	 * 
-	 * ***********************************************************************/
-	
+
+    /**
+     * Returns the user information (Vorname, Nachname, Email) for the course advisers (dozent, adviser, tutor(s)),
+     * that are assigned to the given course. The select statement will be generated depending on the
+     * parameter 'adviser_type'. The following input is allowed for the parameter:
+     *      - 'dozent'  -> returns the assigned dozent
+     *      - 'tutor'   -> all assigned tutors will be returned
+     *      - 'advisor' -> all assigned advisers will be returned
+     *
+     * @access public
+     * @param int $course_id ID of the course, where the dozent(s) should be selected for
+     * @param string $advisor_type The type of advisor that should be selected from the database. The following
+     *               options will be considered: 'dozent', 'advisor', 'tutor'
+     * @return array Simple 2-dimensional array with all user and their corresponding information.
+     *               Structure: [][attributes] (in the first dimension there are all dozents saved and in the
+     *               second dimension the single attributes like Nachname, Vorname, Email).
+     */
+    public function get_assigned_adviser_information_for_single_course($course_id, $advisor_type){
+        $this->db->distinct();
+        $this->db->select('b.Vorname, b.Nachname, b.Email');
+        $this->db->from('stundenplankurs as a, benutzer as b');
+
+        // modify the statement depending on the advisor_flag that is passed
+        if ($advisor_type == 'dozent'){
+            $this->db->where('b.BenutzerID = a.DozentID');
+            // the smallest VeranstaltungsformID should be the first one
+            $this->db->order_by('a.VeranstaltungsformID','asc');
+            // limit the result, because there could be only one 'dozent' for one course.
+            // usually it is the person with that belongs to the course with the "smallest" VeranstaltungsformID
+            $this->db->limit(1);
+            $this->db->where('a.KursID', $course_id);
+            $this->db->where_in('a.VeranstaltungsformID', array(1,3,5));
+        }
+        else if($advisor_type == 'advisor'){
+            $this->db->join('kursbetreuer as c', 'c.BenutzerID = b.BenutzerID');
+        }
+        else if($advisor_type == 'tutor'){
+            $this->db->join('kurstutor as d', 'd.BenutzerID = b.BenutzerID' );
+            $this->db->where('d.KursID', $course_id);
+        }
+
+
+        $query = $this->db->get();
+
+        $result_array = array(); // init of the result array
+        // generate the query result
+        if($query->num_rows() > 0){ // check that there is really only 1 result
+            // construct the array to return
+            foreach($query->result_array() as $row){
+                $result_array[] = $row;
+            }
+        }
+
+        return $result_array;
+    }
+
+    /*
+     * ==================================================================================
+     *                                   Course administration end
+     * ==================================================================================
+     */
 	
 	
 	/* ************************************************************************
@@ -1055,7 +1231,7 @@ class Kursverwaltung_model extends CI_Model {
 		$collumn = '';
 
 		// get group_id for sp_course_id
-		$group_id = $this->get_group_id_for_spkursid($sp_course_id);
+		$group_id = $this->_get_group_id_for_spkursid($sp_course_id);
 		
 		// prepare collumn-name
 		if(($event_id - 9) <= 0){
@@ -1079,7 +1255,7 @@ class Kursverwaltung_model extends CI_Model {
 		$collumn = '';
 
 		// get group_id for sp_course_id
-		$group_id = $this->get_group_id_for_spkursid($sp_course_id);
+		$group_id = $this->_get_group_id_for_spkursid($sp_course_id);
 		
 		$save = array(
 			'zeigezwischentestat1' => $text1,
@@ -1099,40 +1275,5 @@ class Kursverwaltung_model extends CI_Model {
 	 * ************************************** Frank Gottwald
 	 * 
 	 * ***********************************************************************/
-    
-    
-    /**
-     * used to populate benutzer_mm_rolle-table in database
-     */
-//    public function update_benutzermmrolle(){
-//	$this->db->select('BenutzerID');
-//	$this->db->where('TypID', 6);
-//	$q = $this->db->get('benutzer');
-//	
-//	foreach ($q->result_array() as $row) { 
-//	    $data[] = $row;
-//	}
-//	
-//	$data = $this->clean_nested_array($data);
-//	
-//	
-//	foreach($data as $d){
-//	    $save_data['BenutzerID'] = $d;
-//	    $save_data['RolleID'] = 3;
-//	    
-//	    $this->db->insert('benutzer_mm_rolle', $save_data);
-//	    
-////	    $a[] = $save_data;
-//	}
-//	
-//	echo '<pre>';
-//	print_r($save_data);
-//	echo '</pre>';
-//	
-//    }
-    
-    
-    
-    
 }
 ?>

@@ -1,8 +1,7 @@
 <?php 
 	/**
-	 * Partial that provides an overview over relevant staff for a course.
-	 * And the possibility to assign new labings/tuts.
-	 * Furthermore there are checkboxes which belong to email-'system' of the page
+	 * Partial that provides an overview over relevant staff for a course and the possibility to assign new
+     * labings/tuts. Furthermore there are checkboxes which belong to the email-'system' of the page
 	 * 
 	 * View consists of 3 lines:
 	 * 1. profs - static: only cb, label and name of prof 
@@ -12,13 +11,11 @@
 	 * 3. tutors - dynamic for non-tuts:
 	 * - same as labings
 	 * 
-	 * After 2. and 3. line there is a panel added,
-	 * which contains all potential staff for that role.
+	 * After 2. and 3. line there is a panel added, which contains all potential staff for that role.
 	 * Panel only consists no data, if view is build for tutor!
-	 * 
 	 */
 
-    // checkbox
+    // form / checkbox setup
     $cb_data = array(
 		'class' => 'email-checkbox-staff-'.$course_id.' email-checkbox-'.$course_id,
 		'value' => '',
@@ -28,6 +25,12 @@
 <div class="span1"></div>
 <div class="span2"><h3>Personen:</h3></div>
 <div class="span9"></div>
+
+<div class="clearfix">
+    <div class="span1 bold">Email</div>
+    <div class="span10"></div>
+    <div class="span1"></div>
+</div>
 
 <div>
     <div class="clearfix">
@@ -65,7 +68,7 @@
 		<?php 
 		    // print button - only for non-tutors
 		    if(!$is_tutor){
-				echo '<a class="btn btn-mini" id="labings-slider-'.$course_id.'" href="#"><i class="icon-pencil"></i></a>';
+				echo '<a class="btn btn-mini" id="labings-slider-'.$course_id.'" href="#"><i class="icon-pencil"></i></a>&nbsp;';
 		    }
 		    // print all current labings
 		    foreach($current_labings as $labings){
@@ -94,7 +97,7 @@
 		</div>
 	    <div class="span9" id="current-tuts-<?php echo $course_id; ?>">
 		<?php if(!$is_tutor){
-		    echo '<a class="btn btn-mini" id="tuts-slider-'.$course_id.'" href="#"><i class="icon-pencil"></i></a>';
+		    echo '<a class="btn btn-mini" id="tuts-slider-'.$course_id.'" href="#"><i class="icon-pencil"></i></a>&nbsp;';
 			}
 			// print all current tutors
 			foreach($current_tuts as $tuts){

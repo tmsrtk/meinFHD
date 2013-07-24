@@ -1,8 +1,8 @@
 <?php 
 	/**
-	 * Building custom-tableheader.
+	 * Partial view for activating the application for an single course.
 	 * Depending on lab- and tutor-flag a button is added to activate the application.
-	 * Only LABS get the button when the user is NO tutor.
+	 * Only labings will get the button when the user is not an tutor.
 	 */
 ?>
 <div class="clearfix">
@@ -10,7 +10,7 @@
 	<div class="span5"><h3><?php echo $headline; ?></h3></div>
 	<div class="span3" id="activation-status-<?php echo $course_id;?>">
 		<?php 
-			echo '<p class="pull-right text-warning">'.$status_label.'</>';
+			echo '<p class="pull-right text-warning">'.$status_label.'</p>';
 		?>
 	</div>
 	<div class="span3">
