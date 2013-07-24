@@ -101,7 +101,7 @@
 										<li><a href="<?php print base_url('kursverwaltung/show_coursemgt'); ?>">Meine Kurse</a></li>
 										<?php endif ?>
 										<?php if ( $this->authentication->has_permissions('hat_kurse') ) : ?>
-										<li><a href="<?php print base_url('kursverwaltung/show_labmgt'); ?>">Praktikumsverwaltung</a></li>
+										<!--<li><a href="<?php print base_url('kursverwaltung/show_labmgt'); ?>">Praktikumsverwaltung</a></li>-->
 										<?php endif ?>
 									</ul> <!-- /.nav .level-2 -->
 								</li>
