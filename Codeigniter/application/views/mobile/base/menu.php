@@ -6,15 +6,14 @@
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</a>
-						<!--<a class="brand" href="<?php print base_url('dashboard/mobile'); ?>">meinFHD<span>mobile</span></a>-->
-                        <a class="brand" href="#">meinFHD<span>mobile</span></a>
+						<a class="brand" href="<?php print base_url('dashboard/mobile'); ?>">meinFHD<span>mobile</span></a>
 						<div class="nav-collapse">
 							<ul class="nav level-1"> <!-- .nav.level-1 -->
 								<?php if ( $this->authentication->has_permissions('hat_dashboard') ) : ?>
 								<li><a href="<?php print base_url('dashboard/mobile'); ?>">&Uuml;bersicht</a></li>
 								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_dashboard') ) : ?>
-								<!--<li><a href="<?php print base_url('dashboard'); ?>">Dashboard</a></li>-->
+								<li><a href="<?php print base_url('dashboard'); ?>">Dashboard</a></li>
 								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_stundenplan') ) : ?>
 								<li><a href="<?php print base_url('stundenplan'); ?>">Stundenplan</a></li>
