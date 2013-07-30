@@ -370,7 +370,7 @@ class User_model extends CI_Model {
 				}
 			}
 	    }
-	    // look for courses, where the user could be an labings
+	    // look for courses, where the user could be an advisor
 	    if(in_array(3, $this->user_roles)){
 		    $course_ids_labing = $this->_get_user_course_ids_from_labing_tut('kursbetreuer');
 
@@ -435,9 +435,15 @@ class User_model extends CI_Model {
 	 * @return array Array with all containing course_ids
 	 */
 	private function _get_user_course_ids_from_labing_tut($table){
-	    $this->db->select('KursID');
-	    $q = $this->db->get_where($table, array('BenutzerID' => $this->user_id));
-	    
+
+        $this->db->select($table.'.KursID');
+        $this->db->distinct();
+        $this->db->from($table);
+        $this->db->join('stundenplankurs', 'stundenplankurs.KursID = ' . $table . '.KursID');
+        $this->db->where($table . '.BenutzerID', $this->user_id);
+
+        $q = $this->db->get();
+
 	    $data = ''; // init
 	    
 	    foreach ($q->result_array() as $row) { 
