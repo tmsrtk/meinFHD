@@ -83,7 +83,7 @@ $firewall['access_control'] = array(
 
     'kursverwaltung' => array(
         'pattern' => '^/kursverwaltung',
-        'roles' => array('dozent', 'tutor'),
+        'roles' => array('dozent', 'betreuer', 'tutor'),
     ),
 
     'logbuch' => array(
@@ -103,7 +103,7 @@ $firewall['access_control'] = array(
 	
 	'modul' => array(
 		'pattern' => '^/modul',
-		'roles' => array('student', 'dozent', 'tutor'),
+		'roles' => array('student', 'dozent', 'tutor', 'betreuer'),
 	),
 
     'sso' => array(
@@ -113,7 +113,7 @@ $firewall['access_control'] = array(
 
     'stundenplan' => array(
         'pattern' => '^/stundenplan',
-        'roles' => array('student', 'dozent', 'tutor'),
+        'roles' => array('student', 'dozent', 'tutor', 'betreuer'),
     ),
 
     'studienplan' => array(
@@ -123,7 +123,7 @@ $firewall['access_control'] = array(
 
 	'veranstaltungen' => array(
 		'pattern' => '^/veranstaltungen',
-		'roles' => array('dozent', 'student', 'tutor'),
+		'roles' => array('dozent', 'student', 'tutor', 'betreuer'),
 	),
 
 );
