@@ -371,9 +371,6 @@ class Timetable_xml_parser {
                 // run through every course
                 foreach ($hours as $course) {
 
-                    // extend the script running time
-                    set_time_limit(30);
-
                     /*
                      * the xml-files contains one entry for every hour!
                      * -> same course over more than one hour exists more than one time
