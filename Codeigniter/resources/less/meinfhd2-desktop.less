@@ -225,21 +225,14 @@ form#studienplan-form {
 // STUNDENPLAN -----------------------------------------------------
 
 
-div#stundenplan {
-
+//div#stundenplan {
+div.stundenplan {
 	.table {
 		table-layout: fixed;
 
 		thead th {
-
-			h4 {
-				
-			}
-		}
-
-		td.std-time-cell div {
-			// text-align: center;
-			// padding-left: 8px;
+          background-color: #eeeeee;
+          text-align: center;
 		}
 
 	}
@@ -249,7 +242,13 @@ div#stundenplan {
 	}
 
 	.table-condensed td.std-time-cell {
-		padding: 0;
+
+        div.std-time-cell{
+          text-align: center;
+          background-color: #eeeeee;
+        }
+
+		padding: 0 !important;
 		background-image: url('../img/std-time-stripes-50.png');
 
 		.std-rel { position: relative; }
@@ -257,7 +256,6 @@ div#stundenplan {
 
 		.std-col {
 			width: 18%;
-		/* 		margin-right: 20px; */
 		}
 
 		.std-col-legend {
@@ -265,10 +263,6 @@ div#stundenplan {
 		}
 
 		.std-event {
-			// overflow: hidden;
-			// border: 1px #FAFAFA solid;
-			// color: #fff;
-
 			overflow: hidden;
 			color: #fff;
 			display: block;
