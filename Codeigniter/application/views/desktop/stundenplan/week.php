@@ -10,9 +10,9 @@
 
 	<div class="row-fluid">
 		<div class="span4">
-			<h1 class="headline">Stundenplan</h1>
+            <h1>Stundenplan</h1>
 		</div>
-		<div class="span4">
+		<div class="span8">
     		<h4>Legende</h4>
     		<span class="label btn-info">Vorlesung</span>
 			<span class="label btn-primary">&Uuml;bung</span>
