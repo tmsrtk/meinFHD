@@ -60,8 +60,10 @@ class Stundenplan extends FHD_Controller {
 	 */
 	public function woche(){
 		// Load all necessary data for "Stundenplan" :)
-		$plan = $this->stundenplan_model->get_stundenplan($this->authentication->user_id());
-		// Save the days in a seperate variable
+		//$plan = $this->stundenplan_model->get_stundenplan();
+        $plan = $this->stundenplan_model->get_stundenplan_for_all_roles();
+
+		// Save the days in a separate variable
 		$days = $plan[0];
 
 		// Load helper classes
@@ -95,7 +97,7 @@ class Stundenplan extends FHD_Controller {
 			$days[$dayname] = $sort->optimize();
 		}
 
-		$this->data->add('stundenplan', $days); 
+		$this->data->add('stundenplan', $days);
 		$this->data->add('tage', $plan[1]);
 		$this->data->add('zeiten', $plan[2]);
 		$this->data->add('aktivekurse', $plan[3]);

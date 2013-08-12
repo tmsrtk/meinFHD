@@ -502,6 +502,7 @@ class Stundenplan_Model extends CI_Model {
 	}
 
 	/**
+     * Returns the students timetable with some other arrays.
 	 * Central function, returns various arrays, the most important one is the "stundenplan"-Array (found under index [0])
 	 * The Array is 3-dimensional.
 	 * The first Array in there is indexed by Days, for example $stundenplan['Montag']]), then hours,
@@ -512,7 +513,7 @@ class Stundenplan_Model extends CI_Model {
 	 * @return array Three dimensional array structured like mentioned above
 	 */	
 	public function get_stundenplan(){
-		// query all courses from the database
+		// query all (student) courses from the database
 		$courses = $this->_get_courses_student();
 
 		// control active-flag of courses, change if necsassary(see function-doc)
@@ -520,7 +521,6 @@ class Stundenplan_Model extends CI_Model {
 
 		// add display flag(see function-doc)
 		$courses = $this->_add_displayflag($courses);
-
 
 		// create empty structure of timetable
 		$timetable = $this->_create_timetable_array();
@@ -547,6 +547,79 @@ class Stundenplan_Model extends CI_Model {
 		
 		return $return;
 	}
+
+    /**
+     * Returns the combined timetable with events of all roles the currently authenticated user
+     * is assigned to.
+     * The first Array in there is indexed by Days, for example $stundenplan['Montag']]), then hours,
+     * then an Array for all courses in this hour.
+     * You would get the name of the first course at hour 1 on a Monday by $stundenplan['Montag'][0][0]['Kursname']])
+     *
+     * @access public
+     * @return array 3-dimensional array with the timetable of all roles the user is assigned to.
+     */
+    public function get_stundenplan_for_all_roles(){
+
+        // get the student courses and prepare them
+        $student_courses = $this->_get_courses_student();
+        // control active-flag of courses, change if necessary(see function-doc)
+        $student_courses = $this->_set_active($student_courses);
+        // add display flag (see function-doc)
+        $student_courses = $this->_add_displayflag($student_courses);
+
+        // get the tutor courses and prepare them
+        $tutor_courses = $this->_get_courses_tutor();
+        // add display flag(see function-doc)
+        $tutor_courses = $this->_add_displayflag_dozent_advisor_tutor($tutor_courses);
+
+        // get the advisor courses and prepare them
+        $advisor_courses = $this->_get_courses_advisor();
+        // add display flag(see function-doc)
+        $advisor_courses = $this->_add_displayflag_dozent_advisor_tutor($advisor_courses);
+
+        // get the dozent courses and prepare them
+        $dozent_courses = $this->_get_courses_dozent();
+        // add display flag(see function-doc)
+        $dozent_courses = $this->_add_displayflag_dozent_advisor_tutor($dozent_courses);
+
+        // create empty structure of timetable
+        $stundenplan = $this->_create_timetable_array();
+
+        // sort the different courses into the timetable-array-structure
+        $stundenplan = $this->_courses_into_timetable($student_courses, $stundenplan);
+        $stundenplan = $this->_courses_into_timetable($tutor_courses, $stundenplan);
+        $stundenplan = $this->_courses_into_timetable($advisor_courses, $stundenplan);
+        $stundenplan = $this->_courses_into_timetable($dozent_courses, $stundenplan);
+
+        // free unused varaibles
+        unset($student_courses);
+        unset($tutor_courses);
+        unset($advisor_courses);
+        //unset($dozent_courses);
+
+        // assemble the return-array
+        $return = array();
+
+        // [0] : The actual timetable
+        array_push($return, $stundenplan);
+        unset($stundenplan);
+
+        // [1] : The days, indexed by numbers, their actual date
+        $days = $this->_create_days_array();
+        array_push($return, $days);
+        unset($days);
+
+        //[2] : The times, indexed by numbers (Not requiered actually)
+        $times = $this->_create_times_array();
+        array_push($return, $times);
+        unset($times);
+
+        //[3] : The courses in a list, indexed by numbers, ordered by day and hour
+        array_push($return, $dozent_courses);
+        //unset($combined_courses);
+
+        return $return;
+    }
 
 	/**
 	 * Returns the students timetable in an 3-dimensional array.
@@ -613,7 +686,7 @@ class Stundenplan_Model extends CI_Model {
      * @return array multi-dimensional array with a student's timetable.
 	 */
 	public function get_stundenplan_tutor(){
-		// query all courses from Database
+		// query all courses from the database
 		$courses = $this->_get_courses_tutor();
 
 		// add display flag(see function-doc)
@@ -656,7 +729,7 @@ class Stundenplan_Model extends CI_Model {
      */
     public function get_stundenplan_advisor(){
 
-        // query all courses from Database
+        // query all courses from the database
         $courses = $this->_get_courses_advisor();
 
         // add display flag(see function-doc)
