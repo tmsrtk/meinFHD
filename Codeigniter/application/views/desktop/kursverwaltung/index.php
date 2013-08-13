@@ -48,7 +48,7 @@
         <hr/>
         <div class="row-fluid">
             <!-- tabs for courses -->
-            <ul class="nav nav-tabs" id="course-details-navi">
+            <ul class="nav nav-tabs nav-tab-bigger-font" id="course-details-navi">
                 <?php
                     // print out an tab for each course the user is assigned to
                     foreach ($course_names_ids as $key => $value) {
@@ -110,7 +110,7 @@
                 <div class="span2"></div>
 
                 <div class="clearfix">
-                    <div class="span1 bold">Email</div>
+                    <div class="span1 bold" style="text-align: center;">Email an</div>
                     <div class="span10"></div>
                     <div class="span1"></div>
                 </div>
@@ -120,7 +120,7 @@
                     echo '<div id="staff-send-email-'. $c_id . '" class="clearfix">';
                 ?>
                     <?php echo form_open(''); ?>
-                    <div class="span1">
+                    <div class="span1" style="text-align: center">
                         <?php echo form_checkbox($cb_data); ?>
                     </div>
                     <div class="span5">
@@ -135,6 +135,12 @@
                         echo form_close();
                     ?>
                 </div>
+
+                <div class="clearfix">
+                   <div class="span1" style="text-align: center;"><i class="icon-arrow-down icon-arrow-down-zoom"></i></div>
+                   <div class="span10"></div>
+                   <div class="span1"></div>
+                </div>
                 <hr/>
 
                 <!-- staff table -->
@@ -145,19 +151,7 @@
                     echo '<hr/>';
                 ?>
 
-                <!-- group application -->
-                <?php
-                    // if there are groups, where the application can be activated for
-                    // then print one row containing the activation-button
-                    if(isset($activate_application[$c_id])){
-                        if ($activate_application[$c_id]){
-                            echo '<div>';
-                            print $activate_application[$c_id];
-                            echo '</div>';
-                            echo '<hr/>';
-                        }
-                    }
-                ?>
+
 
                 <!-- course details -->
                 <?php
@@ -191,6 +185,19 @@
                             }
                         ?>
                     </div>
+                    <!-- group application -->
+                    <?php
+                    // if there are groups, where the application can be activated for
+                    // then print one row containing the activation-button
+                    if(isset($activate_application[$c_id])){
+                        if ($activate_application[$c_id]){
+                            echo '<div>';
+                            print $activate_application[$c_id];
+                            echo '</div>';
+                            echo '<hr/>';
+                        }
+                    }
+                    ?>
                     <div class="row-fluid">
 
                         <?php

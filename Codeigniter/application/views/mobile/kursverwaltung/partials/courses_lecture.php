@@ -64,7 +64,7 @@
 
 ?>
 <div class="clearfix">
-    <div class="span1">
+    <div class="span1" style="text-align: center;">
 		<?php 
 			// print email-checkbox
 			echo form_checkbox($cb_data);

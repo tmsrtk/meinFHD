@@ -16,13 +16,6 @@
 	 * For more detailed comments have a look at that file.
 	 * 
 	 */
-/*
-    $label_attrs = array(
-		'name' => 'group_label',
-		'id' => 'course-mgt-label-'.$lecture_details->SPKursID,
-		'class' => 'label label-info',
-		'for' => 'kursverwaltung-raum'
-    );*/
 
     $label_attrs = array(
         'id' => 'course-mgt-label-'.$lecture_details->SPKursID,
@@ -50,7 +43,7 @@
     
 ?>
 <div class="clearfix">
-    <div class="span1">
+    <div class="span1" style="text-align: center;">
 	<?php echo form_checkbox($cb_data); ?>
     </div>
     

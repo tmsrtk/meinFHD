@@ -28,12 +28,23 @@
             'cols' => 40,
             'readonly' => 'readonly'
         );
+
+        $submit_data_save_description = array(
+            'name' => $course_id,
+            'value' => 'Beschreibung speichern',
+            'id' => 'save-description'.$course_id,
+            'class' => 'btn btn-warning',
+        );
 		
 		if(!$is_tutor){
-			echo form_textarea($course_description_textarea_data); 
-		}
+			echo form_textarea($course_description_textarea_data);
+            echo '<div style="text-align: right">';
+            echo form_submit($submit_data_save_description);
+            echo '</div>';
+
+        }
         else {
             echo form_textarea($course_description_textarea_readonly_data);
-		}
-	?>
+        }
+    ?>
 </div>

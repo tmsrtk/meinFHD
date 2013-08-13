@@ -21,6 +21,13 @@
         'cols' => 40,
         'readonly' => 'readonly'
     );
+
+    $submit_data_save_topics = array(
+        'name' => $course_id,
+        'value' => 'Themen speichern',
+        'id' => 'save-topics'.$course_id,
+        'class' => 'btn btn-warning',
+    );
 ?>
 
 <h3>Themen</h3>
@@ -31,6 +38,9 @@
     <?php
         if(!$is_tutor){ // user is not an tutor -> can work with topics
             echo form_textarea($course_topics_textarea_data);
+            echo '<div style="text-align: right;">';
+            echo form_submit($submit_data_save_topics);
+            echo '</div>';
         }
         else { // user is an tutor
             echo form_textarea($course_topics_textarea_readonly);

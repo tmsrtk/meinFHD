@@ -12,7 +12,7 @@
 </div>
 <br/>
 <div class="clearfix">
-    <div class="span1 bold">Email</div>
+    <div class="span1 bold" style="text-align: center;">Email an</div>
     <div class="span2 bold">Kursname</div>
     <div class="span1 bold">Raum</div>
     <div class="span2 bold">Startzeit</div>

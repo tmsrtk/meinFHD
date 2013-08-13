@@ -27,14 +27,14 @@
 <div class="span9"></div>
 
 <div class="clearfix">
-    <div class="span1 bold">Email</div>
+    <div class="span1 bold">Email an</div>
     <div class="span10"></div>
     <div class="span1"></div>
 </div>
 
 <div>
     <div class="clearfix">
-		<div class="span1">
+		<div class="span1" style="text-align: center;">
 			<?php
 				$cb_data['name'] = $course_id.'-1';
 				$cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-1';
@@ -52,7 +52,7 @@
     </div> <!-- FIRST line ends here -->
 	
     <div class="clearfix">
-		<div class="span1">
+		<div class="span1" style="text-align: center;">
 			<?php
 				$cb_data['name'] = $course_id.'-2';
 				$cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-2';
@@ -83,7 +83,7 @@
     <div class="clearfix"><?php echo $labing_panel; ?></div>
     
     <div class="clearfix">
-		<div class="span1">
+		<div class="span1" style="text-align: center">
 			<?php
 				$cb_data['name'] = $course_id.'-3';
 				$cb_data['id'] = 'email-checkbox-staff-id-'.$course_id.'-3';
