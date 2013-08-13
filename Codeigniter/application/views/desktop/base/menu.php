@@ -85,15 +85,14 @@
 								</li>
 								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_kurse') ) : ?>
-                                    <li><a href="<?php print base_url('kursverwaltung/show_coursemgt'); ?>">Kursverwaltung</a></li>
-                                </li>
+                                <li><a href="<?php print base_url('kursverwaltung/show_coursemgt'); ?>">Kursverwaltung</a></li>
 								<?php endif ?>
                                 <?php if( $this->authentication->has_permissions('hat_logbuch') ) :?>
-                                    <li><a href="<?php print base_url('logbuch/index'); ?>">Logbuch</a></li>
+                                <li><a href="<?php print base_url('logbuch/index'); ?>">Logbuch</a></li>
                                 <?php endif ?>
                                 <?php if ( $this->authentication->has_permissions('hat_persoenlichedaten_verwaltung') ) : ?>
-                                    <li><a href="<?php print base_url('einstellungen/index'); ?>">Einstellungen</a></li>
-                                    <?php endif ?>
+                                <li><a href="<?php print base_url('einstellungen/index'); ?>">Einstellungen</a></li>
+                                <?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_faq') ) : ?>
 								<li><a href="<?php print base_url('faq/index'); ?>">FAQ</a></li>
 								<?php endif ?>
