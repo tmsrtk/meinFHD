@@ -93,22 +93,6 @@
 									</ul> <!-- /.nav .level-2 -->
 								</li>
 								<?php endif ?>
-								<?php if ( $this->authentication->has_permissions('hat_datenbank_verwaltung') ) : ?>
-								<li class="dropdown">
-									<a href="<?php print base_url('#'); ?>" class="dropdown-toggle" data-toggle="dropdown">
-										Datenbankverwaltung
-										<b class="caret"></b>
-									</a>
-									<ul class="dropdown-menu level-2">
-										<?php if ( $this->authentication->has_permissions('hat_datenbank_importieren') ) : ?>
-										<li><a href="<?php print base_url('#'); ?>">Datenbank importieren</a></li>
-										<?php endif ?>
-										<?php if ( $this->authentication->has_permissions('hat_datenbank_exportieren') ) : ?>
-										<li><a href="<?php print base_url('#'); ?>">Datenbank exportieren</a></li>
-										<?php endif ?>
-									</ul> <!-- /.nav .level-2 -->
-								</li>
-                                <?php endif ?>
                                 <?php if( $this->authentication->has_permissions('hat_logbuch') ) :?>
                                 <li><a href="<?php print base_url('logbuch/index'); ?>">Logbuch</a></li>
                                 <?php endif ?>
