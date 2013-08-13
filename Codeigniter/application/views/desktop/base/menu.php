@@ -85,20 +85,8 @@
 								</li>
 								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_kurse') ) : ?>
-								<li class="dropdown">
-									<a href="<?php print base_url('#'); ?>" class="dropdown-toggle" data-toggle="dropdown">
-										Kursverwaltung
-										<b class="caret"></b>
-									</a>
-									<ul class="dropdown-menu level-2">
-										<?php if ( $this->authentication->has_permissions('hat_kurse') ) : ?>
-										<li><a href="<?php print base_url('kursverwaltung/show_coursemgt'); ?>">Meine Kurse</a></li>
-										<?php endif ?>
-										<?php if ( $this->authentication->has_permissions('hat_kurse') ) : ?>
-										<!--<li><a href="<?php print base_url('kursverwaltung/show_labmgt'); ?>">Praktikumsverwaltung</a></li>-->
-										<?php endif ?>
-									</ul> <!-- /.nav .level-2 -->
-								</li>
+                                    <li><a href="<?php print base_url('kursverwaltung/show_coursemgt'); ?>">Kursverwaltung</a></li>
+                                </li>
 								<?php endif ?>
                                 <?php if( $this->authentication->has_permissions('hat_logbuch') ) :?>
                                     <li><a href="<?php print base_url('logbuch/index'); ?>">Logbuch</a></li>

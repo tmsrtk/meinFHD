@@ -90,6 +90,9 @@
 									</ul> <!-- /.nav .level-2 -->
 								</li>
 								<?php endif ?>
+                                <?php if ( $this->authentication->has_permissions('hat_kurse') ) : ?>
+                                    <li><a href="<?php print base_url('kursverwaltung/show_coursemgt'); ?>">Kursverwaltung</a></li>
+                                <?php endif ?>
                                 <?php if( $this->authentication->has_permissions('hat_logbuch') ) :?>
                                 <li><a href="<?php print base_url('logbuch/index'); ?>">Logbuch</a></li>
                                 <?php endif ?>
