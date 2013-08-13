@@ -38,15 +38,21 @@ class Stundenplan extends FHD_Controller {
      * @return void
      */
 	public function index(){
-		// get the necessary data and load the view
-        $stundenplan = $this->stundenplan_model->get_stundenplan($this->authentication->user_id());
-		
-		$this->data->add('stundenplan', $stundenplan[0]); 
-		$this->data->add('tage', $stundenplan[1]);
-		$this->data->add('zeiten', $stundenplan[2]);
-		$this->data->add('aktivekurse', $stundenplan[3]);
-		
-		$this->load->view('stundenplan/day', $this->data->load());
+
+        if ($this->agent->is_mobile){ // if the user agent is an mobile browser load the day view
+            // get the necessary data and load the view
+            $stundenplan = $this->stundenplan_model->get_stundenplan($this->authentication->user_id());
+
+            $this->data->add('stundenplan', $stundenplan[0]);
+            $this->data->add('tage', $stundenplan[1]);
+            $this->data->add('zeiten', $stundenplan[2]);
+            $this->data->add('aktivekurse', $stundenplan[3]);
+
+            $this->load->view('stundenplan/day', $this->data->load());
+        }
+        else { // otherwise load the week view
+            redirect('stundenplan/woche');
+        }
     }
 	
 	/**
