@@ -24,7 +24,7 @@
 	<hr/>
 
 	<!-- tab-navigation -->
-	<ul class="nav nav-tabs" id="tt-tab-navi">
+	<ul class="nav nav-tabs nav-tab-bigger-font" id="tt-tab-navi">
 	<?php 
 		// print navigation depending on roles this user has
 		foreach ($stundenplaene as $r_id => $content){
