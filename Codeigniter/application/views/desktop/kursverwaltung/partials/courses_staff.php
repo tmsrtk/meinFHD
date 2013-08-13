@@ -108,7 +108,5 @@
 		?>
 	    </div>
     </div> <!-- THIRD line ends here -->
-    
     <div class="clearfix"><?php echo $tut_panel; ?></div>
-
 </div> <!-- staff part ends here -->

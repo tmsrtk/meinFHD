@@ -16,12 +16,25 @@
 	 * For more detailed comments have a look at that file.
 	 * 
 	 */
-
+/*
     $label_attrs = array(
 		'name' => 'group_label',
 		'id' => 'course-mgt-label-'.$lecture_details->SPKursID,
 		'class' => 'label label-info',
 		'for' => 'kursverwaltung-raum'
+    );*/
+
+    $label_attrs = array(
+        'id' => 'course-mgt-label-'.$lecture_details->SPKursID,
+        'class' => 'label label-info',
+    );
+
+    $course_room_attrs = array(
+        'name'  => $lecture_details->SPKursID.'_Raum',
+        'id'    => 'kursverwaltung-raum-' . $lecture_details->SPKursID,
+        'class' => 'span',
+        'value' => $lecture_details->Raum,
+        'readonly' => 'readonly'
     );
     
     // checkbox data
@@ -32,44 +45,45 @@
 		'value' => '',
 		'checked' => 'checked',
     );
+
+    $dropdown_attrs = 'class="span" disabled="disabled"';
     
 ?>
-
 <div class="clearfix">
     <div class="span1">
 	<?php echo form_checkbox($cb_data); ?>
     </div>
     
-    <?php // echo form_open(); ?>
     <div class="span2">
 	<?php
 	    if($is_lab){
 		// group-label for better overview
 			echo form_label('Gruppe '.$lecture_details->VeranstaltungsformAlternative, '', $label_attrs);
-	    } else {
+	    }
+        else {
 			echo form_label($lecture_name->kurs_kurz, '', $label_attrs);
 	    }
 	?>
     </div>
     <div class="span1">
-		<?php echo $lecture_details->Raum; ?>
+        <?php echo form_input($course_room_attrs); ?>
     </div>
     <div class="span2">
 		<?php   
 			// starttime
-			echo $starttime_options[$lecture_details->StartID-1];
+            echo form_dropdown($lecture_details->SPKursID.'_StartID', $starttime_options, $lecture_details->StartID-1, $dropdown_attrs);
 		?>
     </div>
     <div class="span2">
 		<?php
 			// endtime
-			echo $endtime_options[$lecture_details->EndeID-1];
+            echo form_dropdown($lecture_details->SPKursID.'_EndeID', $endtime_options, $lecture_details->EndeID-1, $dropdown_attrs);
 		?>
     </div>
     <div class="span2">
 		<?php
 			// day
-			echo $day_options[$lecture_details->TagID-1];
+            echo form_dropdown($lecture_details->SPKursID.'_TagID', $day_options, $lecture_details->TagID-1, $dropdown_attrs);
 		?>
     </div>
     <div class="span1">
@@ -78,10 +92,10 @@
 			if($is_lab){
 				// max participants - only relevant for labs
 				echo $lecture_details->TeilnehmerMax;
-			} else {
+			}
+            else {
 				echo '-';
 			}
-	//	    echo form_close();
 		?>
     </div>
     <!-- placeholder for submitbutton - not in tut-view -->

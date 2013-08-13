@@ -150,10 +150,12 @@
                     // if there are groups, where the application can be activated for
                     // then print one row containing the activation-button
                     if(isset($activate_application[$c_id])){
-                        echo '<div>';
-                        print $activate_application[$c_id];
-                        echo '</div>';
-                        echo '<hr/>';
+                        if ($activate_application[$c_id]){
+                            echo '<div>';
+                            print $activate_application[$c_id];
+                            echo '</div>';
+                            echo '<hr/>';
+                        }
                     }
                 ?>
 

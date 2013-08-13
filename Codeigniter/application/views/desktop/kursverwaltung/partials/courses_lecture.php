@@ -63,7 +63,6 @@
 
 
 ?>
-
 <div class="clearfix">
     <div class="span1">
 		<?php 

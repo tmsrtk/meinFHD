@@ -1,8 +1,8 @@
 <thead>
 	<tr class="row">
 		<th>Name</th>
-		<th>Überprüfung</th>
-		<?php 
+        <th>$&uuml;berpr&uuml;fung</th>
+		<?php
 			$number_of_events = 0;
 			// MUST BE BUILT DYNAMIC:
 			// >> number of events $event_dates[$sp_course_id][22]

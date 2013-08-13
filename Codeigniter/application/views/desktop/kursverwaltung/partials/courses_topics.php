@@ -11,6 +11,16 @@
         'rows' => 7,
         'cols' => 40
     );
+
+    $course_topics_textarea_readonly = array(
+        'name' => $course_id.'_topics',
+        'id' => 'input-course-topics-' . $course_id,
+        'class' => 'input-xlarge span',
+        'value' => $course_topics,
+        'rows' => 7,
+        'cols' => 40,
+        'readonly' => 'readonly'
+    );
 ?>
 
 <h3>Themen</h3>
@@ -23,12 +33,7 @@
             echo form_textarea($course_topics_textarea_data);
         }
         else { // user is an tutor
-            if ($course_topics) { // display the saved topics if they are present
-                echo $course_topics;
-            }
-            else {
-                echo 'Keine Themen vorhanden.';
-            }
+            echo form_textarea($course_topics_textarea_readonly);
         }
     ?>
 </div>

@@ -174,7 +174,7 @@ class Kursverwaltung extends FHD_Controller {
 			 * If PROF(2)or LABING(3): simple lecture-partial is used
 			 * otherwise: setting flags and use tutor-partial.
 			 */
-			if(in_array(2, $this->role_ids) || in_array(3, $this->role_ids)){
+			if(in_array(Roles::DOZENT, $this->role_ids) || in_array(Roles::BETREUER, $this->role_ids)){
 				$subview_lecture_to_load = 'kursverwaltung/partials/courses_lecture';
 			}
             else {
@@ -292,7 +292,7 @@ class Kursverwaltung extends FHD_Controller {
 				 * Add information if the save-button should be shown depending on
 				 * role (profs & labings see buttons always) and existence of tut-event.
 				 */
-				if(in_array(2, $this->role_ids) || in_array(3, $this->role_ids)){
+				if(in_array(Roles::DOZENT, $this->role_ids) || in_array(Roles::BETREUER, $this->role_ids)){
 					$show_save_button[$id] = true;
 				}
                 else {
