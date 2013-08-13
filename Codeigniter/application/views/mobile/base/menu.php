@@ -18,9 +18,6 @@
 								<?php if ( $this->authentication->has_permissions('hat_semesterplan') ) : ?>
 								<li><a href="<?php print base_url('studienplan'); ?>">Studienplan</a></li>
 								<?php endif ?>
-								<?php if ( $this->authentication->has_permissions('hat_meine_kurse') ) : ?>
-								<li><a href="<?php print base_url('veranstaltungen'); ?>">Meine Kurse</a></li>
-								<?php endif ?>
 								<?php if ( $this->authentication->has_permissions('hat_benutzerverwaltung') ) : ?>
 								<li class="dropdown">
 									<a href="<?php print base_url('admin/index'); ?>" class="dropdown-toggle" data-toggle="dropdown">
