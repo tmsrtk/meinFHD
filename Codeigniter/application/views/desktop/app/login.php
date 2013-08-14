@@ -88,7 +88,7 @@ $submitForgotPasswordButtonAttributes = array(
 
 <?php startblock('content'); # content for this view ?>
 				<div class="well well-small clearfix">
-					<h1>Login</h1>
+                    <h1>Login</h1>
 					<hr>
 					<?php echo form_open('app/login', $loginFormAttributes ); // create opening tag of login form ?>
 						<?php echo form_fieldset(); // wrap elements ina a fieldset due to semantics ?>
@@ -146,7 +146,7 @@ $submitForgotPasswordButtonAttributes = array(
 									<div class="control-group">
 										<div class="controls">
 											<div class="input-prepend input-append">
-												<span class="add-on">@</span><?php echo form_input($forgotInputAttributes); // render the forgot-password email field ?><?php echo form_button($submitForgotPasswordButtonAttributes); ?>
+												<?php echo form_input($forgotInputAttributes); // render the forgot-password email field ?><?php echo form_button($submitForgotPasswordButtonAttributes); ?>
 											</div>
 										</div>
 									</div>
