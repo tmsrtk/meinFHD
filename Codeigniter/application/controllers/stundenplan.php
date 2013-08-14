@@ -40,15 +40,7 @@ class Stundenplan extends FHD_Controller {
 	public function index(){
 
         if ($this->agent->is_mobile){ // if the user agent is an mobile browser load the day view
-            // get the necessary data and load the view
-            $stundenplan = $this->stundenplan_model->get_stundenplan($this->authentication->user_id());
-
-            $this->data->add('stundenplan', $stundenplan[0]);
-            $this->data->add('tage', $stundenplan[1]);
-            $this->data->add('zeiten', $stundenplan[2]);
-            $this->data->add('aktivekurse', $stundenplan[3]);
-
-            $this->load->view('stundenplan/day', $this->data->load());
+            $this->day();
         }
         else { // otherwise load the week view
             redirect('stundenplan/woche');
@@ -203,6 +195,25 @@ class Stundenplan extends FHD_Controller {
 		$this->data->add('stundenplaene', $wochenplaene);
 		$this->load->view('stundenplan/week', $this->data->load());
 	}
+
+    /**
+     * Controller function for the day view of the timetable.
+     * Opens up the day view, if the funcion is called.
+     *
+     * @access public
+     * @return void
+     */
+    public function day(){
+        // get the necessary data and load the view
+        $stundenplan = $this->stundenplan_model->get_stundenplan_for_all_roles();
+
+        $this->data->add('stundenplan', $stundenplan[0]);
+        $this->data->add('tage', $stundenplan[1]);
+        $this->data->add('zeiten', $stundenplan[2]);
+        $this->data->add('aktivekurse', $stundenplan[3]);
+
+        $this->load->view('stundenplan/day', $this->data->load());
+    }
 }
 /* End of file stundenplan.php */
 /* Location: ./application/controllers/stundenplan.php */
