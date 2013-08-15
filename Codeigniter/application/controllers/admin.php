@@ -1095,7 +1095,7 @@ class Admin extends FHD_Controller {
 	    $dp_id = $this->input->post('degree_program_id');
 
         // define all validation rules
-	    $this->form_validation->set_rules('pruefungsordnung', 'Pr&uuml;fungsordnung', 'required|numeric');
+	    $this->form_validation->set_rules('pruefungsordnung', 'Pr&uuml;fungsordnung', 'required|numeric|min_length[4]|max_length[4]');
 	    $this->form_validation->set_rules('studiengangname', 'Name des Studiengangs', 'required');
 	    $this->form_validation->set_rules('studiengangsabkuerzung', 'Studiengangsabk&uuml;rzung', 'required');
 	    $this->form_validation->set_rules('regelsemester', 'Anzahl der Regelsemester', 'required|numeric');
