@@ -50,7 +50,7 @@ $submit_data = array(
 	echo $this->load->view('admin/partials/user_edit_single_div', $data, TRUE);
 
     echo '<div class="span2">'.form_dropdown('user_function', $data_dropdown, '0', $data_dropdown_attrs).'</div>';
-    echo '<div class="span2">'.form_submit($submit_data, 'Los').'</div>';
+    echo '<div class="span2">'.form_submit($submit_data, 'OK').'</div>';
     echo form_hidden('user_id', $user_info['BenutzerID']); ?>
 
 <div class="clearfix"></div>
