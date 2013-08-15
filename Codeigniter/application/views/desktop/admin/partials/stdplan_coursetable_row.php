@@ -135,6 +135,28 @@
 
 
     <td>
+        <!-- dropdown for day -->
+        <?php
+        // if the viewed row is not the first row add all possible days to the dropdown and preselect the passed day
+        if(!$first_row){
+            print form_dropdown(
+                $spkurs_id.'_TagID',
+                $days_dropdown_options,
+                $tag_id-1, // !! ARRAY - minus 1
+                $dropdown_attributes
+            );
+        }
+        // if the viewed row is the first row add all possible days to the dropdown and do not preselect any value
+        else {
+            $new_course_days_dropdown_attrs = $dropdown_attributes.' id="new-course-days-dropdown"';
+            print form_dropdown(
+                'NEW_TagID',
+                $days_dropdown_options,
+                0,
+                $new_course_days_dropdown_attrs
+            );
+        }
+        ?>
         <!-- dropdown for starttime-->
         <?php
             // if the viewed row is not the first row preselect the starttime, that is passed from the controller
@@ -177,29 +199,6 @@
 					$endtimes_dropdown_options,
 					0, 
 					$new_course_endtime_dropdown_attrs
-				);
-			}
-		?>
-
-        <!-- dropdown for day -->
-		<?php
-            // if the viewed row is not the first row add all possible days to the dropdown and preselect the passed day
-		 	if(!$first_row){
-				print form_dropdown(
-					$spkurs_id.'_TagID',
-					$days_dropdown_options,
-					$tag_id-1, // !! ARRAY - minus 1
-					$dropdown_attributes
-				);
-			}
-            // if the viewed row is the first row add all possible days to the dropdown and do not preselect any value
-            else {
-				$new_course_days_dropdown_attrs = $dropdown_attributes.' id="new-course-days-dropdown"';
-				print form_dropdown(
-					'NEW_TagID',
-					$days_dropdown_options,
-					0,
-					$new_course_days_dropdown_attrs
 				);
 			}
 		?>

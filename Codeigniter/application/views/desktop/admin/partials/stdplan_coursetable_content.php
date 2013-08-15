@@ -12,9 +12,10 @@
 			<th>Veranstaltungsform:<br />
 			Alternative:<br />
 			Raum:</th>
-			<th>Beginn:<br />
-			Ende:<br />
-			Tag:</th>
+			<th>Tag:<br/>
+            Beginn:<br />
+			Ende:
+			</th>
 			<th>WPF?:<br />
 			WPF-Name:</th>
 			<th>Farbe:</th>
