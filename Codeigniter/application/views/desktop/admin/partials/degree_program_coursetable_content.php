@@ -6,11 +6,15 @@
     );
 
     $data_submit = 'id = degree-program-course-details-save-button class = "btn-warning"';
+    $data_submit2 = 'id = degree-program-course-details-save-button2 class = "btn-warning"';
+
 
 ?>
 <div id="degree-program-courses" class="span12">
     <?php
 	    echo form_open('admin/validate_degree_program_course_changes', $data_formopen);
+        echo form_submit('validate_degree_program_course_changes', html_entity_decode('&Auml;nderungen an den Kursinformationen speichern', ENT_COMPAT, 'UTF-8'), $data_submit2);
+
     ?>
 	<table class="table table-striped table-fixed-header" id="degree-program-table">
 		<thead id="dp-table-head" class="header">

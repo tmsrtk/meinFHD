@@ -30,7 +30,7 @@ class Admin extends FHD_Controller {
      * @var array Array holds all role ids
      */
     private $role_ids;
-    
+
     /**
      * Default constructor. Used for initialization.
      *
