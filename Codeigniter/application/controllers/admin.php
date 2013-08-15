@@ -30,7 +30,7 @@ class Admin extends FHD_Controller {
      * @var array Array holds all role ids
      */
     private $role_ids;
-
+    
     /**
      * Default constructor. Used for initialization.
      *
@@ -1143,7 +1143,7 @@ class Admin extends FHD_Controller {
         foreach($degree_program_course_ids as $id){
 			$this->form_validation->set_rules($id->KursID.'Kursname', 'Kursname (Kurs-ID: '.$id->KursID . ')', 'required');
 			$this->form_validation->set_rules($id->KursID.'kurs_kurz', 'Kurzbezeichnung (Kurs-ID: '.$id->KursID . ')', 'required');
-			$this->form_validation->set_rules($id->KursID.'Creditpoints', 'Creditpoints (Kurs-ID: '.$id->KursID .')', 'required|is_natural_no_zero');
+			$this->form_validation->set_rules($id->KursID.'Creditpoints', 'Creditpoints (Kurs-ID: '.$id->KursID .')', 'required|callback_check_creditpoints_input[' . $id->KursID . ']');
             $this->form_validation->set_rules($id->KursID.'SWS_Vorlesung', 'SWS-Vorlesung (Kurs-ID: '.$id->KursID .')', 'is_natural_no_zero');
             $this->form_validation->set_rules($id->KursID.'SWS_Uebung', 'SWS-&Uuml;bung (Kurs-ID: '.$id->KursID .')', 'is_natural_no_zero');
             $this->form_validation->set_rules($id->KursID.'SWS_Praktikum', 'SWS-Praktikum (Kurs-ID: '.$id->KursID .')', 'is_natural_no_zero');
@@ -1169,6 +1169,25 @@ class Admin extends FHD_Controller {
             redirect('admin/degree_program_edit');
 	    }
 	}
+
+    /**
+     * Form validation callback function for the input field creditpoints. The input needs to be an
+     * numeric value that is greater or equal to zero.
+     *
+     * @access public
+     * @param $creditpoints numeric The creditpoint value from the form
+     * @param $course_id integer ID of the courses, where the creditpoints input that should be checked for.
+     * @return boolean TRUE if the value is greater or equal to zero, otherwise FALSE.
+     */
+    public function check_creditpoints_input($creditpoints, $course_id){
+        if ($creditpoints >= 0){
+            return TRUE;
+        }
+        else{
+            $this->form_validation->set_message('check_creditpoints_input','Das Feld Creditpoints (Kurs-ID:  ' . $course_id . ' ) darf nur Werte gr&ouml;&szlig;er oder gleich null enthalten');
+            return FALSE;
+        }
+    }
 
     /**
      * Saves all degree program course details, which are submitted via the form and the POST-Array.
